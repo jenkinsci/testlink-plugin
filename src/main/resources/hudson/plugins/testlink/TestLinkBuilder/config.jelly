@@ -1,0 +1,65 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+	<!--
+		This script defines the view on the project builders section for TestLink Builder.
+	-->
+  <f:entry title="TestLink Version" help="${rootURL}/../plugin/testlink/help-testlinkVersion.html">
+  	<select class="setting-input" name="TestLinkBuilder.testLinkName">
+      <option>(Default)</option>
+      <j:forEach var="inst" items="${descriptor.installations}">
+        <f:option selected="${inst.name==instance.testLinkName}">${inst.name}</f:option>
+      </j:forEach>
+    </select>
+  </f:entry>
+  
+  <f:entry title="Project name" help="${rootURL}/../plugin/testlink/help-projectName.html">
+	  <f:textbox name="TestLinkBuilder.projectName" value="${instance.projectName}" />
+  </f:entry>
+  
+  <f:entry title="Test Plan name" help="${rootURL}/../plugin/testlink/help-planName.html">
+	  <f:textbox name="TestLinkBuilder.testPlanName" value="${instance.testPlanName}" />
+  </f:entry>
+  
+  <f:entry title="Build name" help="${rootURL}/../plugin/testlink/help-buildName.html">
+	  <f:textbox name="TestLinkBuilder.buildName" value="${instance.buildName}" />
+  </f:entry>
+  
+  <f:nested>
+	  <table>
+	    <f:optionalBlock name="TestLinkBuilder.latestRevisionInfo" title="Use latest revision from SVN" checked="${instance.latestRevisionEnabled}">
+	      <f:entry title="SVN url" help="${rootURL}/../plugin/testlink/help-svnUrl.html">
+			  <f:textbox name="latestRevisionInfo.svnUrl" value="${instance.latestRevisionInfo.svnUrl}" />
+		  </f:entry>
+		  <f:entry title="SVN user">
+			  <f:textbox name="latestRevisionInfo.svnUser" value="${instance.latestRevisionInfo.svnUser}" />
+		  </f:entry>
+		  <f:entry title="SVN password">
+			  <f:textbox name="latestRevisionInfo.svnPassword" value="${instance.latestRevisionInfo.svnPassword}" />
+		  </f:entry>
+	    </f:optionalBlock>
+	  </table>
+  </f:nested>
+  
+  <f:entry title="Maven test project directory" help="${rootURL}/../plugin/testlink/help-mavenTestProject.html">
+	  <f:textbox name="TestLinkBuilder.mavenTestProjectDirectory" value="${instance.mavenTestProjectDirectory}" />
+  </f:entry>
+  
+  <f:entry title="Maven Version" help="${rootURL}/../plugin/testlink/help-mavenVersion.html">
+  	<select class="setting-input" name="TestLinkBuilder.mavenInstallationName">
+      <option>(Default)</option>
+      <j:forEach var="inst" items="${instance.mavenInstallations}">
+        <f:option selected="${inst.name==instance.mavenInstallationName}">${inst.name}</f:option>
+      </j:forEach>
+    </select>
+  </f:entry>
+  
+  <f:entry title="Maven test project goal" help="${rootURL}/../plugin/testlink/help-mavenTestProjectGoal.html">
+  	  <f:textbox name="TestLinkBuilder.mavenTestProjectGoal" value="${instance.mavenTestProjectGoal}" default="test" />
+  </f:entry>
+  
+  <f:advanced>	  
+	  <f:entry title="Transactional execution?" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
+		  <f:checkbox name="TestLinkBuilder.transactional" value="${instance.transactional}" checked="${instance.transactional}" />
+	  </f:entry>
+  </f:advanced>
+  
+</j:jelly>
