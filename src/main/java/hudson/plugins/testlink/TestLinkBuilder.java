@@ -24,23 +24,26 @@ package hudson.plugins.testlink;
 
 import hudson.CopyOnWrite;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
+import hudson.Launcher.ProcStarter;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
-import hudson.plugins.testlink.model.TestLinkExecutionDetails;
+import hudson.plugins.testlink.model.TestLinkParser;
 import hudson.plugins.testlink.model.TestLinkTestCase;
 import hudson.tasks.Builder;
 import hudson.tasks.Maven;
 import hudson.tasks.Maven.MavenInstallation;
 import hudson.util.ArgumentListBuilder;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -82,15 +85,35 @@ extends Builder
 	 */
 	private final String projectName;
 	
+	private Integer projectId;
+	
 	/**
 	 * The name of the Test Plan.
 	 */
 	private final String testPlanName;
 	
+	private Integer testPlanId;
+	
+	public void setProjectId(Integer projectId) {
+		this.projectId = projectId;
+	}
+
+	public void setTestPlanId(Integer testPlanId) {
+		this.testPlanId = testPlanId;
+	}
+
 	/**
 	 * The name of the Build.
 	 */
 	private final String buildName;
+	
+	/**
+	 * The ID of the Build used in the tests. This ID is created automatically 
+	 * in case the Build does not exist. This parameter is not passed by the 
+	 * user. Hudson TestLink plug-in only stores its value after the Build 
+	 * is created.
+	 */
+	private Integer buildId;
 	
 	/**
 	 * Information related to the SVN that TestLink plug-in should use to 
@@ -112,6 +135,9 @@ extends Builder
 	 */
 	private final String mavenInstallationName;
 	private final String mavenTestProjectGoal;
+	
+	private String mavenExecutable;
+	
 	private final Boolean transactional;
 	
 	/**
@@ -131,6 +157,10 @@ extends Builder
 	 * existing and created by someone else.
 	 */
 	private static final String BUILD_NOTES = "Build create automatically with Hudson.";
+
+	private static final String AUTOMATED_TEST_CATEGORY = "AutomatedTestCategory";
+	private static final String AUTOMATED_TEST_FILE = "AutomatedTestFile";
+	private static final String TEST_CASE_EXECUTION_NOTES = "Test executed by Hudson TestLink plug-in.";
 	
 	/**
 	 * This constructor is bound to a stapler request. All parameters here are 
@@ -187,12 +217,29 @@ extends Builder
 	}
 	
 	/**
+	 * @return Id of TestLink Test Project
+	 */
+	public Integer getProjectId() 
+	{
+		return this.projectId;
+	}
+	
+	/**
 	 * @return Test Plan Name
 	 */
 	public String getTestPlanName()
 	{
 		return this.testPlanName;
 	}
+	
+	/**
+	 * @return Id of the Test Plan
+	 */
+	public Integer getTestPlanId() 
+	{
+		return this.testPlanId;
+	}
+
 	
 	/**
 	 * Ignored if it is marked to use SVN latest revision.
@@ -202,6 +249,16 @@ extends Builder
 	public String getBuildName()
 	{
 		return this.buildName;
+	}
+	
+	public Integer getBuildId()
+	{
+		return this.buildId;
+	}
+	
+	public void setBuildId(Integer id)
+	{
+		this.buildId = id;
 	}
 	
 	/**
@@ -263,6 +320,19 @@ extends Builder
 		return this.mavenTestProjectGoal;
 	}
 	
+	public String getMavenExecutable() {
+		return mavenExecutable;
+	}
+
+	public void setMavenExecutable(String mavenExecutable) {
+		this.mavenExecutable = mavenExecutable;
+	}
+	
+	public boolean validMaven()
+	{
+		return new File(this.mavenExecutable).exists();
+	}
+
 	/**
 	 * Returns whether it is a transactional build or not. A transactional 
 	 * build stops executing once a test fails. All tests must succeed or it 
@@ -304,8 +374,8 @@ extends Builder
 	throws InterruptedException, IOException
 	{
 		
+		// TestLink installation
 		listener.getLogger().println("Preparing TestLink client API");
-		
 		TestLinkBuilderInstallation installation = 
 			DESCRIPTOR.getInstallationByTestLinkName(this.testLinkName);
 		if ( installation == null )
@@ -318,229 +388,214 @@ extends Builder
 			installation.getUrl()
 		);
 		
-		final TestLinkExecutionDetails executionDetails = new TestLinkExecutionDetails();
-		
-		List<TestLinkTestCase> automatedTests = new ArrayList<TestLinkTestCase>();
-		
-		this.retrieveListOfAutomatedTests( automatedTests );
-		
-		for( TestLinkTestCase testCase : automatedTests )
+		// Verifying Maven installation
+		if ( ! verifyMaven( launcher ) )
 		{
-			this.executeTestCase( testCase );
-			this.updateTestCaseResultStatus ( testCase );
-		}
-		
-		this.writeReport(automatedTests);
-		
-		// end
-		
-		try 
-		{
-			// project ID
-			listener.getLogger().println("Retrieving Project ID");
-			TestLinkAPIResults projects = this.testLinkClient.getProjects();
-			if ( projects == null )
-			{
-				listener.fatalError("TestLink has no project configured yet.");
-				return false;
-			}
-			Object oProjectID = projects.getValueByName(0, "id");
-			Integer projectID = Integer.parseInt(oProjectID.toString());
-			listener.getLogger().println("Project ID: " + projectID);
-			
-			// test plan ID
-			listener.getLogger().println("Retrieving Test Plan ID for" +
-					" project: " + projectName);
-			TestLinkAPIResults projectTestPlans = 
-				this.testLinkClient.getProjectTestPlans(projectName);
-			Object o = projectTestPlans.getValueByName(0, "id");
-			Integer planID = Integer.parseInt ( o.toString() );
-			listener.getLogger().println("Test Plan ID: " + planID);
-			
-			// Creating Build
-			Integer buildID = this.testLinkClient.createBuild(
-					planID, 
-					buildName, 
-					BUILD_NOTES);
-			
-			// Retrieving automated test cases
-			List<Map<?, ?>> testCases = this.getAutomatedTestCases(planID);
-			listener.getLogger().println("Found " + testCases.size() +
-					" automated test cases for build: " + buildID);
-			
-			if ( testCases.size() > 0 )
-			{
-				// Executing automated tests
-				listener.getLogger().println("Executing automated tests");
-				try 
-				{
-					this.executeTestCasesAndUpdateStatus( projectID, planID, buildID, testCases, false, build, launcher, listener, executedTestCases );
-				} catch ( Exception e )
-				{
-					this.executeTestCasesAndUpdateStatus( projectID, planID, buildID, testCases, true, build, launcher, listener, executedTestCases );
-				}
-			}
-			
-			listener.getLogger().println("Writing testlink execution xml report");
-			
-			listener.getLogger().println("End of automated test execution");
-			
-		} catch ( Exception apie) 
-		{
-			listener.fatalError("Failed to execute TestLink: " + apie.getMessage(), apie);
+			listener.fatalError("Invalid Maven executable. Please check your maven installation or refer to documentation.");
 			return false;
 		}
 		
+		// Details about the test parameters (plan, build, project)
+		listener.getLogger().println("Updating TestLink parameters");
+		try 
+		{
+			this.updateTestLinkParameters();
+		}
+		catch (TestLinkAPIException e) 
+		{
+			e.printStackTrace(listener.fatalError("Invalid TestLink parameters: " + e.getMessage()));
+			return false;
+		}
+		
+		listener.getLogger().println("Retrieving list of automated test cases");
+		List<TestLinkTestCase> automatedTests = new ArrayList<TestLinkTestCase>();
+		try 
+		{
+			this.retrieveListOfAutomatedTests( automatedTests );
+		}
+		catch (TestLinkAPIException e) 
+		{
+			e.printStackTrace(listener.fatalError("Error retrieving list of automated test cases: " + e.getMessage()));
+			return false;
+		}
+		
+		boolean failure = false;
+		for( TestLinkTestCase testCase : automatedTests )
+		{
+			if ( this.transactional && failure )
+			{
+				testCase.setResultStatus(TestLinkAPIConst.TEST_BLOCKED);
+			} 
+			else 
+			{
+				failure = this.executeTestCase( testCase, build, listener, launcher );
+			}
+			
+			try
+			{
+				this.updateTestCaseResultStatus( testCase );
+			} 
+			catch ( TestLinkAPIException e )
+			{
+				e.printStackTrace( listener.fatalError("Error updating Test Case status: " + e.getMessage()) );
+				return false;
+			}
+		}
+		
+		FilePath workspace = build.getWorkspace();
+		File reportFile = new File(workspace.getRemote(), TestLinkParser.RESULT_FILE_NAME);
+		try
+		{
+			this.writeTestLinkReportFile(automatedTests, reportFile);
+		} catch ( IOException ioe )
+		{
+			Util.displayIOException(ioe, listener);
+			ioe.printStackTrace( listener.fatalError("Error writing testlink.xml report: " + ioe.getMessage()) );
+			return false;
+		}
+		
+		// end
 		return true;
 	}
-	
+
 	/**
-	 * @param automatedTests
+	 * 
 	 */
-	private void retrieveListOfAutomatedTests(
-			List<TestLinkTestCase> automatedTests )
+	private boolean verifyMaven(Launcher launcher) 
 	{
-		// TODO Auto-generated method stub
+		List<Maven.MavenInstallation> mavenInstallations = this.getMavenInstallations();
+		for(Maven.MavenInstallation inst : mavenInstallations)
+		{
+			if ( inst.getName().equals(mavenInstallationName))
+			{
+				try
+				{
+					this.mavenExecutable = inst.getExecutable(launcher);
+				} catch (Exception e)
+				{
+					this.mavenExecutable = mavenInstallationName + 
+						System.getProperty("file.separator") + 
+						"bin" +
+						System.getProperty("file.separator") + 
+						"mvn";
+				}
+				return true;
+			}			
+		}
+		return false;
+	}
+
+	/**
+	 * Retrieves the details about the execution of the tests on TestLink (
+	 * Test Plan Name, Test Plan Id
+	 * @return
+	 */
+	private void updateTestLinkParameters() 
+	throws TestLinkAPIException
+	{
+
+		TestLinkAPIResults projects = this.testLinkClient.getProjects();
+		Object oProjectID = projects.getValueByName(0, TestLinkAPIConst.API_RESULT_IDENTIFIER);
+		Integer projectID = Integer.parseInt(oProjectID.toString());
+		this.setProjectId( projectID );
 		
+		TestLinkAPIResults projectTestPlans = 
+			this.testLinkClient.getProjectTestPlans(projectName);
+		Object o = projectTestPlans.getValueByName(0, TestLinkAPIConst.API_RESULT_IDENTIFIER);
+		Integer planID = Integer.parseInt ( o.toString() );
+		this.setTestPlanId(planID);
+		
+		// Creating Build or Retrieving existing one
+		Integer buildID = this.testLinkClient.createBuild(
+				planID, 
+				buildName, 
+				BUILD_NOTES);
+		this.setBuildId(buildID);
+
 	}
 
 	/**
 	 * Retrieves a list of the test cases marked as automated in TestLink
 	 * given Test Plan ID.
 	 * 
-	 * @param planID Test Plan ID
+	 * @param automatedTests List to hold all automated tests
 	 * @return List of Automated Test Cases
 	 */
-	private List<Map<?, ?>> getAutomatedTestCases( Integer planID ) 
+	private void retrieveListOfAutomatedTests(
+			List<TestLinkTestCase> automatedTests ) 
 	throws TestLinkAPIException
 	{
-		List<Map<?, ?>> testCases = new ArrayList<Map<?,?>>();
-		final TestLinkAPIResults results;
 		
-		results = this.testLinkClient.getCasesForTestPlan(planID);
-		
+		// Executes a query in TL to find all Test Cases linked to a Test Plan
+		TestLinkAPIResults results = this.testLinkClient.getCasesForTestPlan( this.getTestPlanId() );
 		int resultsSize = results.size();
+		
+		// for each tc found
 		for ( int i = 0 ; i < resultsSize ; ++i )
 		{
 			Map<?, ?> result = results.getData(i);
-			Object o = result.get("execution_type");
+			Object o = result.get(TestLinkAPIConst.API_RESULT_EXEC_TYPE);
 			if ( o != null )
 			{
+				// Check if the execution type is auto
 				String executionType = (String)o;
 				if ( TestLinkAPIConst.TESTCASE_EXECUTION_TYPE_AUTO
 						.equals(executionType) )
 				{
-					testCases.add(result);
+					// convert to plug-in TC object
+					TestLinkTestCase tc = this.convertMapToTestCase( result );
+					// add to the list of tcs
+					automatedTests.add(tc);
 				}
 			}
 		}
-		return testCases;
 	}
 	
+	
 	/**
-	 * Executes the Test Case and then updates its status in TestLink. 
+	 * Converts a map returned from testlink-java-api to a TestLinkTestCase.
 	 * 
-	 * @param planID ID of Test Plan
-	 * @param buildID ID of Build
-	 * @param testCases Map containing Test Cases
-	 * @param build Hudson Build
-	 * @param launcher Hudson Launcher
-	 * @param listener Hudson Build Listener
+	 * @param testCase Map returned from testlink-java-api
+	 * @return Test Case
+	 * @throws TestLinkAPIException 
 	 */
-	private void executeTestCasesAndUpdateStatus( 
-			Integer projectID,
-			Integer planID, 
-			Integer buildID, 
-			List<Map<?, ?>> testCases, 
-			boolean forceBlockedStatus, 
-			AbstractBuild<?, ?> build, 
-			Launcher launcher, 
-			BuildListener listener, 
-			List<TestLinkTestCase> resultTestCases) 
-	throws TestLinkAPIException, Exception
+	private TestLinkTestCase convertMapToTestCase(Map<?, ?> testCase) 
+	throws TestLinkAPIException 
 	{
 		
-		// If true the execution updates test status with blocked
-		boolean blockAllTests = forceBlockedStatus;
+		TestLinkTestCase tc = new TestLinkTestCase();
+		tc.setPlanId(this.getTestPlanId());
+		tc.setBuildId(this.getBuildId());
 		
-		Iterator<Map<?, ?>> testCasesIterator = testCases.iterator();
-		while ( testCasesIterator.hasNext() )
-		{
-			final Map<?, ?> testCase = testCasesIterator.next();
-			final int testCaseId = Integer.parseInt( testCase.get("tc_id").toString() );
-			
-			final TestLinkAPIResults categoryResults = 
-				this.testLinkClient.getTestCaseCustomFieldDesignValue(
-						testCaseId,
-						projectID, 
-						"AutomatedTestCategory", 
-						"full");
-			
-			final String testCaseCategory = 
-				categoryResults.getValueByName(0, "value").toString();
-				
-			final TestLinkAPIResults fileResults = 
-				this.testLinkClient.getTestCaseCustomFieldDesignValue(
-						testCaseId,
-						projectID, 
-						"AutomatedTestFile", 
-						"full");
-			final String testCaseFile = 
-				fileResults.getValueByName(0, "value").toString();
-			
-			TestLinkTestCase tc = new TestLinkTestCase();
-			tc.setId(testCaseId);
-			tc.setBuildId(buildID);
-			tc.setPlanId(planID);
-			tc.setCategory(testCaseCategory);
-			tc.setFile(testCaseFile);
-			
-			// Update test case status
-			if ( blockAllTests )
-			{
-				tc.setResultStatus(TestLinkAPIConst.TEST_BLOCKED);
-				this.updateTestStatus(
-						tc, 
-						listener);
-				
-				this.report.addTestCase(tc);
-			} 
-			else
-			{
-				// Executes Test Case
-				int exitCode = this.executeTestCase( planID, buildID, testCaseId, testCaseCategory, testCaseFile, build, launcher, listener );
-				
-				final String testResultStatus = getTestLinkTCStatus(exitCode);
-				listener.getLogger().println("Updating TC " + testCaseId + " with status " + testResultStatus);
-				
-				tc.setResultStatus(testResultStatus);
-				this.updateTestStatus(
-						tc,
-						listener);
-				
-				if ( transactional && ! testResultStatus.equals(TestLinkAPIConst.TEST_PASSED) )
-				{
-					listener.getLogger().println("Transactional test execution failed. Stoping test execution.");
-					blockAllTests = true;
-				}
-			}
-			
-			resultTestCases.add(tc);
-			
-		}
+		// Test Case ID
+		int testCaseId = Integer.parseInt( testCase.get(TestLinkAPIConst.API_RESULT_TC_INTERNAL_ID).toString() );
+		TestLinkAPIResults apiResults = 
+			this.testLinkClient.getTestCaseCustomFieldDesignValue(
+					testCaseId,
+					this.getProjectId(), 
+					AUTOMATED_TEST_CATEGORY, 
+					"full");
+		tc.setId(testCaseId);
+		
+		// Test Case Category (suite or test case)
+		String testCaseCategory = 
+			apiResults.getValueByName(0, "value").toString();
+		tc.setCategory(testCaseCategory);	
+		
+		// Test Case File (testng suite xml, testng test case file)
+		apiResults  = 
+			this.testLinkClient.getTestCaseCustomFieldDesignValue(
+					testCaseId,
+					this.getProjectId(), 
+					AUTOMATED_TEST_FILE, 
+					"full");
+		String testCaseFile = 
+			apiResults.getValueByName(0, "value").toString();
+		tc.setFile(testCaseFile);
+		
+		return tc;
 	}
 	
-	/**
-	 * @param exitCode
-	 * @return
-	 */
-	private String getTestLinkTCStatus( int exitCode )
-	{
-		if ( exitCode == 0 )
-			return TestLinkAPIConst.TEST_PASSED;
-		return TestLinkAPIConst.TEST_FAILED;
-	}
-
 	/**
 	 * <p>Executes an automated test case. It calls the chosen Maven passing the 
 	 * test project pom.xml and adding the test file as parameter for the 
@@ -549,61 +604,28 @@ extends Builder
 	 * <p>Example of caller command: mvn -f <test_project_directory>/pom.xml 
 	 * <test_goal> -D(test=<test_file> | suiteXmlFiles=<test_file>)</p>
 	 * 
-	 * @param planID ID of Test Plan
-	 * @param buildID ID of Build
-	 * @param testCaseId ID of Test Case
-	 * @param testCaseCategory Test Case category (suite or test case)
-	 * @param testCaseFile Test Case file
-	 * @param build 
+	 * @param tc Test Case
+	 * @param build Hudson Build
+	 * @param listener Hudson Build listener
 	 * @param launcher Hudson Launcher
-	 * @param listener Hudson Build Listener 
 	 */
-	private int executeTestCase(
-		Integer planID, 
-		Integer buildID,
-		int testCaseId, 
-		String testCaseCategory, 
-		String testCaseFile, 
-		AbstractBuild<?, ?> build, 
-		Launcher launcher, 
-		BuildListener listener 
-	) 
-	throws Exception
+	private boolean executeTestCase(
+			TestLinkTestCase tc, 
+			AbstractBuild<?, ?> build, 
+			BuildListener listener, 
+			Launcher launcher) 
 	{
-		listener.getLogger().println("Executing test case " + testCaseId);
+		String mavenExecutable = this.getMavenExecutable();
 		
-		String mavenExecutable = null;
-		
-		List<Maven.MavenInstallation> mavenInstallations = this.getMavenInstallations();
-		for(Maven.MavenInstallation inst : mavenInstallations)
-		{
-			if ( inst.getName().equals(mavenInstallationName))
-			{
-				try
-				{
-					mavenExecutable = inst.getExecutable(launcher);
-				} catch (Exception e)
-				{
-					mavenExecutable = mavenInstallationName + 
-						System.getProperty("file.separator") + 
-						"bin" +
-						System.getProperty("file.separator") + 
-						"mvn";
-				}
-			}			
-		}
-		
-		if ( mavenExecutable == null )
-		{
-			throw new Exception("Invalid maven installation");
-		}
-		
+		// List of arguments passed for command line
 		ArgumentListBuilder args = new ArgumentListBuilder();
+		
 		args.add( mavenExecutable );
+		//args.add("-DMAVEN_OPTS=\"-Xmx1024m -Xms512m -XX:MaxPermSize=256m -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=45663,server=y,suspend=n\"");
 		args.add("-f", this.mavenTestProjectDirectory + 
 				System.getProperty("file.separator") + 
 				"pom.xml");
-		args.add("test", "-Dtest="+testCaseFile);
+		args.add("test", "-Dtest=" + tc.getFile());
 		args.add("&&","exit","%%ERRORLEVEL%%");
 		
 		// Try to execute the command
@@ -613,44 +635,81 @@ extends Builder
         try 
         {
             Map<String,String> env = build.getEnvironment(listener);
-            exitCode = launcher.launch().cmds(args).envs(env).stdout(listener).pwd(build.getModuleRoot()).join();
+            
+            ProcStarter ps = launcher.launch();
+            ps.cmds(args);
+            ps.envs(env);
+            ps.stdout(listener);
+            ps.pwd(build.getModuleRoot());
+            
+            exitCode = ps.join();
+            
         } catch (IOException e) {
             Util.displayIOException(e,listener);
             e.printStackTrace( listener.fatalError("Command execution failed") );
-        }
-        return exitCode;
-		
+        } catch (InterruptedException e) {
+        	e.printStackTrace( listener.fatalError("Command execution failed") );
+		}
+        
+        tc.setResultStatus( this.getTestLinkTCStatus( exitCode ) );
+        
+        return tc.getResultStatus().equals(TestLinkAPIConst.TEST_FAILED);
 	}
 	
 	/**
-	 * Updates test status based on error code. The error code is the status of 
-	 * the maven test project execution.
+	 * Returns the equivalent string status in TestLink for an exit code.
 	 * 
-	 * @param testPlanId Test Plan ID.
-	 * @param buildId Build ID.
-	 * @param testCaseId Test Case ID.
-	 * @param errorCode Error code of maven execution.
-	 * @throws AutomationException 
+	 * @param exitCode Execution command line exit code
+	 * @return
 	 */
-	private void updateTestStatus( 
-			TestLinkTestCase tc, 
-			BuildListener listener) 
-	throws TestLinkAPIException
+	private String getTestLinkTCStatus( int exitCode )
 	{
-		
-		final String execNotes = "Test executed by Hudson TestLink plug-in.";
-		listener.getLogger().println("Updating test plan ["+tc.getPlanId()+"]," +
-		" build id ["+ tc.getBuildId() +"], test case id ["+tc.getId()+"], " +
-				"exec notes [" + execNotes + "] and testResultStatus [" +tc.getResultStatus()+ "]");
+		if ( exitCode == 0 )
+			return TestLinkAPIConst.TEST_PASSED;
+		return TestLinkAPIConst.TEST_FAILED;
+	}
+	
+	/**
+	 * Updates the Test Case status in Test Link. 
+	 * 
+	 * @param tc Test Case
+	 * @throws TestLinkAPIException 
+	 */
+	private void updateTestCaseResultStatus(TestLinkTestCase tc) 
+	throws TestLinkAPIException 
+	{
 		this.testLinkClient.reportTestCaseResult(
 				tc.getPlanId(), 
 				tc.getId(), 
 				tc.getBuildId(), 
-				execNotes, 
+				TEST_CASE_EXECUTION_NOTES, 
 				tc.getResultStatus());
+	}
+	
+	/**
+	 * Writes TestLink report file.
+	 * 
+	 * @param automatedTests List of Test Cases executed.
+	 * @param reportFile File to write to
+	 * @throws IOException 
+	 */
+	private void writeTestLinkReportFile( 
+			final List<TestLinkTestCase> automatedTests, 
+			File reportFile )
+	throws IOException 
+	{
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("<testlink>\n");
+		for ( TestLinkTestCase tc : automatedTests )
+		{
+			buffer.append(tc.toXml());
+		}
+		buffer.append("</testlink>\n");
 		
-		this.report.addTestCase(tc);
-
+		FileWriter writer = new FileWriter( reportFile );
+		writer.append(buffer.toString());
+		writer.flush();
+		writer.close();
 	}
 	
 }

@@ -200,6 +200,10 @@ public class TestLinkProjectAction extends Actionable implements
 
 	}
 
+	/**
+	 * Called from floatingBox.jelly to check if we have valid results.
+	 * @return
+	 */
 	public final boolean hasValidResults()
 	{
 		AbstractBuild<?, ?> build = getLastFinishedBuild();
