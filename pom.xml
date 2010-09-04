@@ -8,7 +8,7 @@
   </parent>
 
   <artifactId>testlink</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <packaging>hpi</packaging>
   
   <properties>
@@ -87,4 +87,10 @@
   		<timezone>-3 GMT</timezone>
   	</developer>
   </developers>
+
+  <scm>
+    <connection>scm:svn:https://guest@svn.dev.java.net/svn/hudson/tags/testlink-1.0</connection>
+    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/tags/testlink-1.0</developerConnection>
+    <url>https://hudson.dev.java.net/source/browse/hudson/tags/testlink-1.0</url>
+  </scm>
 </project>
