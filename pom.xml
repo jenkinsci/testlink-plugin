@@ -10,6 +10,10 @@
   <artifactId>testlink</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>hpi</packaging>
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -74,4 +78,13 @@
       <url>http://maven.glassfish.org/content/groups/public/</url>
     </pluginRepository>
   </pluginRepositories>
+  
+  <developers>
+  	<developer>
+  		<email>brunodepaulak@yahoo.com.br</email>
+  		<id>kinow</id>
+  		<name>Bruno P. Kinoshita</name>
+  		<timezone>-3 GMT</timezone>
+  	</developer>
+  </developers>
 </project>
