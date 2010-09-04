@@ -82,6 +82,12 @@ public class ChartUtil
         final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         renderer.setSeriesLinesVisible(0, true);
         renderer.setSeriesShapesVisible(1, true);
+        
+        renderer.setSeriesPaint(0, Color.green);
+        renderer.setSeriesPaint(1, Color.red);
+        renderer.setSeriesPaint(2, Color.orange);
+        renderer.setSeriesPaint(3, Color.blue);
+        
         plot.setRenderer(renderer);
 
      // change the auto tick unit selection to integer units only...
@@ -103,14 +109,15 @@ public class ChartUtil
 		
 		TestLinkBuildAction tempAction = lastAction;
 		final XYSeriesCollection dataset = new XYSeriesCollection();
-		final XYSeries totalTests = new XYSeries( "Total Tests" );
 		final XYSeries passedTests = new XYSeries( "Passed Tests" );
 		final XYSeries failedTests = new XYSeries( "Failed Tests" );
 		final XYSeries blockedTests = new XYSeries( "Blocked Tests" );
-		dataset.addSeries(totalTests);
+		final XYSeries totalTests = new XYSeries( "Total Tests" );
+		
 		dataset.addSeries(passedTests);
 		dataset.addSeries(failedTests);
 		dataset.addSeries(blockedTests);
+		dataset.addSeries(totalTests);
 		do 
 		{
 			TestLinkResult result = tempAction.getResult();
