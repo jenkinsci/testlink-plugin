@@ -35,6 +35,7 @@ implements Serializable
 	private int id;
 	private int planId;
 	private int buildId;
+	private int projectId;
 	private String category;
 	private String file;
 	private String resultStatus;
@@ -44,13 +45,14 @@ implements Serializable
 		super();
 	}
 
-	public TestLinkTestCase(int id, int planId, int buildId, String category,
+	public TestLinkTestCase(int id, int planId, int buildId, int projectId, String category,
 			String file, String resultStatus)
 	{
 		super();
 		this.id = id;
 		this.planId = planId;
 		this.buildId = buildId;
+		this.projectId = projectId;
 		this.category = category;
 		this.file = file;
 		this.resultStatus = resultStatus;
@@ -85,6 +87,14 @@ implements Serializable
 	{
 		this.buildId = buildId;
 	}
+	
+	public int getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(int projectId) {
+		this.projectId = projectId;
+	}
 
 	public String getCategory()
 	{
@@ -115,26 +125,27 @@ implements Serializable
 	{
 		this.resultStatus = resultStatus;
 	}
-
-	@Override
-	public String toString()
-	{
-		return "TestCase [buildId=" + buildId + ", category=" + category
-				+ ", file=" + file + ", id=" + id + ", planId=" + planId
-				+ ", resultStatus=" + resultStatus + "]";
-	}
 	
+	@Override
+	public String toString() {
+		return "TestLinkTestCase [buildId=" + buildId + ", category="
+				+ category + ", file=" + file + ", id=" + id + ", planId="
+				+ planId + ", projectId=" + projectId + ", resultStatus="
+				+ resultStatus + "]";
+	}
+
 	public String toXml()
 	{
 		return 
-			"<testcase>\n" +
-			"\t<id>" + id + "</id>\n" +
-			"\t<planId>" + planId + "</planId>\n" + 
-			"\t<buildId>" + buildId + "</buildId>\n" + 
-			"\t<category>"+ category +"</category>\n" +
-			"\t<file>"+ file +"</file>\n" +
-			"\t<resultStatus>"+ resultStatus +"</resultStatus>\n" +
-			"</testcase>\n"
+			"\t<testcase>\n" +
+			"\t\t<id>" + id + "</id>\n" +
+			"\t\t<planId>" + planId + "</planId>\n" + 
+			"\t\t<buildId>" + buildId + "</buildId>\n" + 
+			"\t\t<projectId>" + projectId + "</projectId>\n" + 
+			"\t\t<category>"+ category +"</category>\n" +
+			"\t\t<file>"+ file +"</file>\n" +
+			"\t\t<resultStatus>"+ resultStatus +"</resultStatus>\n" +
+			"\t</testcase>\n"
 		;
 	}
 	
