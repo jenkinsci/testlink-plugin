@@ -10,7 +10,7 @@
             <f:textbox name="TestLink.name" value="${inst.name}" />
           </f:entry>
           
-          <f:entry title="Url">
+          <f:entry title="Url" help="${rootURL}/../plugin/testlink/help-testlinkUrl.html">
             <f:textbox name="TestLink.url" value="${inst.url}" />
           </f:entry>
 

@@ -1,0 +1,52 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+  xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
+  xmlns:i="jelly:fmt" xmlns:local="local">
+    <st:header name="Content-Type" value="text/html;charset=UTF-8" />
+    <script type="text/javascript" src="${rootURL}/plugin/ccm/yui/utilities.js"></script>
+    <script type="text/javascript" src="${rootURL}/plugin/ccm/yui/tabview-min.js"></script>
+    <script type="text/javascript" src="${rootURL}/plugin/ccm/yui/dispatcher-min.js"></script>
+
+    <script type="text/javascript">
+      var myTabs = new YAHOO.widget.TabView("statistics");
+        <j:if test="${it.report.testsPassed > 1}">
+        YAHOO.plugin.Dispatcher.delegate (new YAHOO.widget.Tab({
+            label: '${%Passed}',
+            dataSrc: 'passed',
+            cacheData: true,
+            active: false
+        }), myTabs);
+       </j:if>
+      <j:if test="${it.report.testsFailed > 1}">
+        YAHOO.plugin.Dispatcher.delegate (new YAHOO.widget.Tab({
+            label: '${%Failed}',
+            dataSrc: 'failed',
+            cacheData: true,
+            active: false
+        }), myTabs);
+     </j:if>
+     <j:if test="${it.report.testsBlocked > 1}">
+        YAHOO.plugin.Dispatcher.delegate (new YAHOO.widget.Tab({
+            label: '${%Blocked}',
+            dataSrc: 'blocked',
+            cacheData: true,
+            active: false
+        }), myTabs);
+     </j:if>
+    <j:if test="${it.report.testsTotal > 1}">
+        YAHOO.plugin.Dispatcher.delegate (new YAHOO.widget.Tab({
+            label: '${%Total}',
+            dataSrc: 'total',
+            cacheData: true,
+            active: false
+        }), myTabs);
+    </j:if>
+
+      myTabs.set('activeIndex', 0);
+
+    </script>
+
+    <st:include page="/tabview/css.jelly" />
+
+    <div id="statistics" class="yui-navset">
+    </div>
+</j:jelly>
