@@ -1,5 +1,4 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-
   <f:section title="TestLink">
     <f:entry title="TestLink installation" 
       description="List of TestLink installations on this system">
@@ -11,11 +10,27 @@
           </f:entry>
           
           <f:entry title="Url" help="${rootURL}/../plugin/testlink/help-testlinkUrl.html">
-            <f:textbox name="TestLink.url" value="${inst.url}" />
+            <f:textbox name="TestLink.url" value="${inst.url}" default="http://localhost/testlink/" />
           </f:entry>
 
           <f:entry title="Developer Key">
             <f:textbox name="TestLink.devKey" value="${inst.devKey}" />
+          </f:entry>
+          
+          <f:entry title="Test File Custom Field">
+            <f:textbox name="TestLink.testFileCustomField" value="${inst.testFileCustomField}" default="AutomatedTestFile" />
+          </f:entry>
+          
+          <f:entry title="Test Category Custom Field">
+            <f:textbox name="TestLink.testCategoryCustomField" value="${inst.testCategoryCustomField}" default="AutomatedTestCategory" />
+          </f:entry>
+          
+          <f:entry title="Test Case Category">
+            <f:textbox name="TestLink.testCaseCategory" value="${inst.testCaseCategory}" default="TestCase" />
+          </f:entry>
+          
+          <f:entry title="Test suite category">
+            <f:textbox name="TestLink.testSuiteCategory" value="${inst.testSuiteCategory}" default="TestSuite" />
           </f:entry>
           
           <f:entry title="">

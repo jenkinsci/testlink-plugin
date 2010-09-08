@@ -47,6 +47,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.plexus.util.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import testlink.api.java.client.TestLinkAPIClient;
@@ -93,14 +94,6 @@ extends Builder
 	private final String testPlanName;
 	
 	private Integer testPlanId;
-	
-	public void setProjectId(Integer projectId) {
-		this.projectId = projectId;
-	}
-
-	public void setTestPlanId(Integer testPlanId) {
-		this.testPlanId = testPlanId;
-	}
 
 	/**
 	 * The name of the Build.
@@ -156,11 +149,14 @@ extends Builder
 	 * created by the plug-in. It does not updates the Build Note if it is 
 	 * existing and created by someone else.
 	 */
-	private static final String BUILD_NOTES = "Build create automatically with Hudson.";
-
-	private static final String AUTOMATED_TEST_CATEGORY = "AutomatedTestCategory";
-	private static final String AUTOMATED_TEST_FILE = "AutomatedTestFile";
+	private static final String BUILD_NOTES = "Build created automatically with Hudson TestLink plug-in.";
 	private static final String TEST_CASE_EXECUTION_NOTES = "Test executed by Hudson TestLink plug-in.";
+	
+	private String testCategoryCustomField = null;
+	private String testFileCustomField = null;
+	
+	private String testCaseCategory;
+	private String testSuiteCategory;
 	
 	/**
 	 * This constructor is bound to a stapler request. All parameters here are 
@@ -222,6 +218,14 @@ extends Builder
 	public Integer getProjectId() 
 	{
 		return this.projectId;
+	}
+	
+	public void setProjectId(Integer projectId) {
+		this.projectId = projectId;
+	}
+
+	public void setTestPlanId(Integer testPlanId) {
+		this.testPlanId = testPlanId;
 	}
 	
 	/**
@@ -388,6 +392,8 @@ extends Builder
 			installation.getUrl()
 		);
 		
+		setupCustomFields(installation);
+		
 		// Verifying Maven installation
 		if ( ! verifyMaven( launcher ) )
 		{
@@ -411,7 +417,7 @@ extends Builder
 		List<TestLinkTestCase> automatedTests = new ArrayList<TestLinkTestCase>();
 		try 
 		{
-			this.retrieveListOfAutomatedTests( automatedTests );
+			this.retrieveListOfAutomatedTests( automatedTests, listener );
 		}
 		catch (TestLinkAPIException e) 
 		{
@@ -456,6 +462,19 @@ extends Builder
 		
 		// end
 		return true;
+	}
+
+	/**
+	 * Set up the custom fields values.
+	 * 
+	 * @param installation
+	 */
+	private void setupCustomFields(TestLinkBuilderInstallation installation) 
+	{
+		this.testFileCustomField = installation.getTestFileCustomField();
+		this.testCategoryCustomField = installation.getTestCategoryCustomField();
+		this.testCaseCategory = installation.getTestCaseCategory();
+		this.testSuiteCategory = installation.getTestSuiteCategory();
 	}
 
 	/**
@@ -519,10 +538,11 @@ extends Builder
 	 * given Test Plan ID.
 	 * 
 	 * @param automatedTests List to hold all automated tests
+	 * @param listener Hudson Build listener
 	 * @return List of Automated Test Cases
 	 */
 	private void retrieveListOfAutomatedTests(
-			List<TestLinkTestCase> automatedTests ) 
+			List<TestLinkTestCase> automatedTests, BuildListener listener ) 
 	throws TestLinkAPIException
 	{
 		
@@ -545,13 +565,42 @@ extends Builder
 					// convert to plug-in TC object
 					TestLinkTestCase tc = this.convertMapToTestCase( result );
 					// add to the list of tcs
-					automatedTests.add(tc);
+					
+					if ( this.validTestCase( tc ) )
+					{
+						automatedTests.add(tc);
+					} else 
+					{
+						listener.getLogger().println("Invalid automated Test Case found: " + tc);
+					}
 				}
 			}
 		}
 	}
 	
 	
+	/**
+	 * @param tc
+	 * @return
+	 */
+	private boolean validTestCase(TestLinkTestCase tc) 
+	{
+		// if category and file are not empty
+		if ( 
+				! StringUtils.isEmpty(tc.getCategory()) && 
+				! StringUtils.isEmpty(tc.getFile()))
+		{
+			// if category has one of the valid values
+			if ( 
+					tc.getCategory().equals( testCaseCategory) || 
+					tc.getCategory().equals( testSuiteCategory ) )
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Converts a map returned from testlink-java-api to a TestLinkTestCase.
 	 * 
@@ -573,7 +622,7 @@ extends Builder
 			this.testLinkClient.getTestCaseCustomFieldDesignValue(
 					testCaseId,
 					this.getProjectId(), 
-					AUTOMATED_TEST_CATEGORY, 
+					this.testCategoryCustomField, 
 					"full");
 		tc.setId(testCaseId);
 		
@@ -587,7 +636,7 @@ extends Builder
 			this.testLinkClient.getTestCaseCustomFieldDesignValue(
 					testCaseId,
 					this.getProjectId(), 
-					AUTOMATED_TEST_FILE, 
+					this.testFileCustomField, 
 					"full");
 		String testCaseFile = 
 			apiResults.getValueByName(0, "value").toString();
@@ -625,7 +674,16 @@ extends Builder
 		args.add("-f", this.mavenTestProjectDirectory + 
 				System.getProperty("file.separator") + 
 				"pom.xml");
-		args.add("test", "-Dtest=" + tc.getFile());
+		if ( tc.getCategory().equals( testCaseCategory ))
+		{
+			args.add("test", "-Dtest=" + tc.getFile());
+		} else if ( tc.getCategory().equals( testSuiteCategory ) )
+		{
+			args.add("test", "-Dtests=" + tc.getFile());
+		} else {
+			listener.fatalError("Invalid test category: " + tc);
+			return false;
+		}
 		args.add("&&","exit","%%ERRORLEVEL%%");
 		
 		// Try to execute the command
