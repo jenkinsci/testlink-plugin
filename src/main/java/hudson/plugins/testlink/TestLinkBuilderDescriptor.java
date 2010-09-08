@@ -55,6 +55,9 @@ extends Descriptor<Builder>
 		return DISPLAY_NAME;
 	}
 	
+	/**
+	 * @return List of TestLink installations
+	 */
 	public TestLinkBuilderInstallation[] getInstallations()
 	{
 		return this.installations;

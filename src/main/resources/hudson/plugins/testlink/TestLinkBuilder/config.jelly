@@ -33,7 +33,7 @@
 			  <f:textbox name="latestRevisionInfo.svnUser" value="${instance.latestRevisionInfo.svnUser}" />
 		  </f:entry>
 		  <f:entry title="SVN password">
-			  <f:textbox name="latestRevisionInfo.svnPassword" value="${instance.latestRevisionInfo.svnPassword}" />
+			  <f:password name="latestRevisionInfo.svnPassword" value="${instance.latestRevisionInfo.svnPassword}" />
 		  </f:entry>
 	    </f:optionalBlock>
 	  </table>

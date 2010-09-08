@@ -41,10 +41,14 @@ implements Serializable
 	 * List of metrics present in the XML file.
 	 */
 	private List<TestLinkTestCase> testCases;
+	
+	private String buildName;
+	private Integer buildId;
 
 	public TestLink() {
 		super();
 		this.testCases = new ArrayList<TestLinkTestCase>();
+		this.buildId = -1;
 	}
 
 	public List<TestLinkTestCase> getTestCases() {
@@ -55,9 +59,31 @@ implements Serializable
 		this.testCases = testCases;
 	}
 
+	public String getBuildName()
+	{
+		return buildName;
+	}
+
+	public void setBuildName( String buildName )
+	{
+		this.buildName = buildName;
+	}
+
+	public Integer getBuildId()
+	{
+		return buildId;
+	}
+
+	public void setBuildId( Integer buildId )
+	{
+		this.buildId = buildId;
+	}
+
 	@Override
-	public String toString() {
-		return "TestLink [testCases=" + testCases + "]";
+	public String toString()
+	{
+		return "TestLink [buildId=" + buildId + ", buildName=" + buildName
+				+ ", testCases=" + testCases + "]";
 	}
 	
 }

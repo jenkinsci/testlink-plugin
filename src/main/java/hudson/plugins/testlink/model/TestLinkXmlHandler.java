@@ -121,11 +121,16 @@ extends DefaultHandler
 		} else if ("testcase".equals(qName))
 		{
 			this.testLink.getTestCases().add(tempTestCase);
+		} else if ("buildName".equals(qName))
+		{
+			this.testLink.setBuildName(tempVal);
 		}
 	}
 	
 	public TestLink getTestLink()
 	{
+		if ( this.testLink.getTestCases().size() > 0 )
+			this.testLink.setBuildId( this.testLink.getTestCases().get(0).getBuildId() );
 		return this.testLink;
 	}
 	

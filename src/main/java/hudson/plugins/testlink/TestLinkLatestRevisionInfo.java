@@ -25,14 +25,27 @@ package hudson.plugins.testlink;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
+ * Class to store information regarding SVN Revision.
+ * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 01/09/2010
  */
 public class TestLinkLatestRevisionInfo
 {
 
+	/**
+	 * SVN repository URL
+	 */
 	private String svnUrl;
-	private String svnUser;
+	
+	/**
+	 * SVN username
+	 */
+	private String svnUser; 
+	
+	/**
+	 * SVN password
+	 */
 	private String svnPassword;
 	
 	@DataBoundConstructor

@@ -49,6 +49,7 @@ import java.util.Map;
 
 import org.codehaus.plexus.util.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.tmatesoft.svn.core.SVNException;
 
 import testlink.api.java.client.TestLinkAPIClient;
 import testlink.api.java.client.TestLinkAPIConst;
@@ -86,6 +87,9 @@ extends Builder
 	 */
 	private final String projectName;
 	
+	/**
+	 * The Id of the Test Project.
+	 */
 	private Integer projectId;
 	
 	/**
@@ -93,12 +97,15 @@ extends Builder
 	 */
 	private final String testPlanName;
 	
+	/**
+	 * The Id of the Test Plan.
+	 */
 	private Integer testPlanId;
 
 	/**
 	 * The name of the Build.
 	 */
-	private final String buildName;
+	private String buildName;
 	
 	/**
 	 * The ID of the Build used in the tests. This ID is created automatically 
@@ -127,10 +134,20 @@ extends Builder
 	 * Thanks for sonar plug-in for the nice example.
 	 */
 	private final String mavenInstallationName;
+	
+	/**
+	 * Goal to run with Maven. Default is test.
+	 */
 	private final String mavenTestProjectGoal;
 	
+	/**
+	 * Location of mvn.
+	 */
 	private String mavenExecutable;
 	
+	/**
+	 * Whether this build has a transactional execution of tests or not.
+	 */
 	private final Boolean transactional;
 	
 	/**
@@ -152,10 +169,24 @@ extends Builder
 	private static final String BUILD_NOTES = "Build created automatically with Hudson TestLink plug-in.";
 	private static final String TEST_CASE_EXECUTION_NOTES = "Test executed by Hudson TestLink plug-in.";
 	
+	/**
+	 * Custom field of Test Category.
+	 */
 	private String testCategoryCustomField = null;
+	
+	/**
+	 * Custom field of Test File.
+	 */
 	private String testFileCustomField = null;
 	
+	/**
+	 * Name of Test Case category.
+	 */
 	private String testCaseCategory;
+	
+	/**
+	 * Name of Test Suite category.
+	 */
 	private String testSuiteCategory;
 	
 	/**
@@ -220,10 +251,16 @@ extends Builder
 		return this.projectId;
 	}
 	
+	/**
+	 * @param projectId Test project Id
+	 */
 	public void setProjectId(Integer projectId) {
 		this.projectId = projectId;
 	}
 
+	/**
+	 * @param testPlanId Test Plan Id
+	 */
 	public void setTestPlanId(Integer testPlanId) {
 		this.testPlanId = testPlanId;
 	}
@@ -244,7 +281,6 @@ extends Builder
 		return this.testPlanId;
 	}
 
-	
 	/**
 	 * Ignored if it is marked to use SVN latest revision.
 	 * 
@@ -255,11 +291,17 @@ extends Builder
 		return this.buildName;
 	}
 	
+	/**
+	 * @return Build Id
+	 */
 	public Integer getBuildId()
 	{
 		return this.buildId;
 	}
 	
+	/**
+	 * @param id Build Id
+	 */
 	public void setBuildId(Integer id)
 	{
 		this.buildId = id;
@@ -324,14 +366,23 @@ extends Builder
 		return this.mavenTestProjectGoal;
 	}
 	
+	/**
+	 * @return Path to mvn
+	 */
 	public String getMavenExecutable() {
 		return mavenExecutable;
 	}
 
+	/**
+	 * @param mavenExecutable Path to mvn
+	 */
 	public void setMavenExecutable(String mavenExecutable) {
 		this.mavenExecutable = mavenExecutable;
 	}
 	
+	/**
+	 * @return True if mvn executable exists
+	 */
 	public boolean validMaven()
 	{
 		return new File(this.mavenExecutable).exists();
@@ -392,13 +443,32 @@ extends Builder
 			installation.getUrl()
 		);
 		
-		setupCustomFields(installation);
-		
 		// Verifying Maven installation
 		if ( ! verifyMaven( launcher ) )
 		{
 			listener.fatalError("Invalid Maven executable. Please check your maven installation or refer to documentation.");
 			return false;
+		}
+		
+		// TBD: add validation for not empty in the jelly page
+		listener.getLogger().println("Updating TestLink Custom Fields values from installation");
+		setupCustomFields( installation );
+		
+		if ( this.getLatestRevisionEnabled() )
+		{
+			listener.getLogger().println("Using SVN latest revision from repository as Build Name");
+			SVNHelper svn = new SVNHelper(
+					this.latestRevisionInfo.getSvnUrl(), 
+					this.latestRevisionInfo.getSvnUser(),
+					this.latestRevisionInfo.getSvnPassword());
+			try
+			{
+				this.buildName = Long.toString( svn.getLatestRevision() );
+			} catch (SVNException e)
+			{
+				e.printStackTrace( listener.fatalError("Error retrieving latest revision from SVN repository: " + e.getMessage()) );
+				return false;
+			}
 		}
 		
 		// Details about the test parameters (plan, build, project)
@@ -452,7 +522,7 @@ extends Builder
 		File reportFile = new File(workspace.getRemote(), TestLinkParser.RESULT_FILE_NAME);
 		try
 		{
-			this.writeTestLinkReportFile(automatedTests, reportFile);
+			this.writeTestLinkReportFile(buildName, buildId, automatedTests, reportFile);
 		} catch ( IOException ioe )
 		{
 			Util.displayIOException(ioe, listener);
@@ -478,7 +548,10 @@ extends Builder
 	}
 
 	/**
+	 * Checks if the maven installation is selected and is valid.
 	 * 
+	 * @param launcher Hudson Launcher
+	 * @return true if the maven installation is valid
 	 */
 	private boolean verifyMaven(Launcher launcher) 
 	{
@@ -500,6 +573,30 @@ extends Builder
 				}
 				return true;
 			}			
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks if the test case has all custom fields filled correctly.
+	 * 
+	 * @param tc Test Case
+	 * @return true if the Test Case configuration is OK
+	 */
+	private boolean verifyTestCase(TestLinkTestCase tc) 
+	{
+		// if category and file are not empty
+		if ( 
+				! StringUtils.isEmpty(tc.getCategory()) && 
+				! StringUtils.isEmpty(tc.getFile()))
+		{
+			// if category has one of the valid values
+			if ( 
+					tc.getCategory().equals( testCaseCategory) || 
+					tc.getCategory().equals( testSuiteCategory ) )
+			{
+				return true;
+			}
 		}
 		return false;
 	}
@@ -566,7 +663,7 @@ extends Builder
 					TestLinkTestCase tc = this.convertMapToTestCase( result );
 					// add to the list of tcs
 					
-					if ( this.validTestCase( tc ) )
+					if ( this.verifyTestCase( tc ) )
 					{
 						automatedTests.add(tc);
 					} else 
@@ -576,29 +673,6 @@ extends Builder
 				}
 			}
 		}
-	}
-	
-	
-	/**
-	 * @param tc
-	 * @return
-	 */
-	private boolean validTestCase(TestLinkTestCase tc) 
-	{
-		// if category and file are not empty
-		if ( 
-				! StringUtils.isEmpty(tc.getCategory()) && 
-				! StringUtils.isEmpty(tc.getFile()))
-		{
-			// if category has one of the valid values
-			if ( 
-					tc.getCategory().equals( testCaseCategory) || 
-					tc.getCategory().equals( testSuiteCategory ) )
-			{
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**
@@ -676,10 +750,10 @@ extends Builder
 				"pom.xml");
 		if ( tc.getCategory().equals( testCaseCategory ))
 		{
-			args.add("test", "-Dtest=" + tc.getFile());
+			args.add(this.mavenTestProjectGoal, "-Dtest=" + tc.getFile());
 		} else if ( tc.getCategory().equals( testSuiteCategory ) )
 		{
-			args.add("test", "-Dtests=" + tc.getFile());
+			args.add(this.mavenTestProjectGoal, "-Dsuite=" + tc.getFile());
 		} else {
 			listener.fatalError("Invalid test category: " + tc);
 			return false;
@@ -747,17 +821,22 @@ extends Builder
 	/**
 	 * Writes TestLink report file.
 	 * 
+	 * @param buildId Build Id
+	 * @param buildName Build Name
 	 * @param automatedTests List of Test Cases executed.
 	 * @param reportFile File to write to
 	 * @throws IOException 
 	 */
 	private void writeTestLinkReportFile( 
+			String buildName, 
+			Integer buildId, 
 			final List<TestLinkTestCase> automatedTests, 
 			File reportFile )
 	throws IOException 
 	{
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("<testlink>\n");
+		buffer.append("\t<buildName>"+buildName+"</buildName>\n");
 		for ( TestLinkTestCase tc : automatedTests )
 		{
 			buffer.append(tc.toXml());

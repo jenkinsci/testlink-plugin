@@ -74,11 +74,17 @@ implements Action, Serializable, StaplerProxy
 		return build;
 	}
 	
+	/**
+	 * @return TestLink job execution result
+	 */
 	public TestLinkResult getResult()
 	{
 		return this.result;
 	}
 	
+	/**
+	 * @return Previous TestLink report
+	 */
 	private TestLinkReport getPreviousReport()
 	{
 		TestLinkResult previousResult = this.getPreviousResult();
@@ -90,6 +96,9 @@ implements Action, Serializable, StaplerProxy
 		return previousReport;
 	}
 	
+	/**
+	 * @return Previous TestLink job execution result
+	 */
 	public TestLinkResult getPreviousResult()
 	{
 		TestLinkBuildAction previousAction = this.getPreviousAction();
@@ -101,6 +110,9 @@ implements Action, Serializable, StaplerProxy
 		return previousResult;
 	}
 	
+	/**
+	 * @return Previous Build Action
+	 */
 	public TestLinkBuildAction getPreviousAction()
 	{
 		if ( this.build != null )
@@ -114,10 +126,16 @@ implements Action, Serializable, StaplerProxy
 		return null;
 	}
 	
+	/**
+	 * @return Report summary
+	 */
 	public String getSummary(){
         return ReportSummary.createReportSummary(result.getReport(), this.getPreviousReport());
     }
-
+	
+	/**
+	 * @return Detailed Report summary
+	 */
     public String getDetails(){
         return ReportSummary.createReportSummaryDetails(result.getReport(), this.getPreviousReport());
     }

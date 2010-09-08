@@ -44,7 +44,11 @@ implements Serializable
 	private int testsPassed;
 	private int testsBlocked;
 	private int testsTotal;
+	
 	private List<TestLinkTestCase> testCases;
+	
+	private String buildName;
+	private Integer buildId;
 	
 	public TestLinkReport()
 	{
@@ -54,20 +58,8 @@ implements Serializable
 		this.testsTotal = 0;
 		this.testsPassed = 0;
 		testCases = new ArrayList<TestLinkTestCase>();
-	}
-
-	public TestLinkReport(
-			int testsFailed, 
-			int testsPassed, 
-			int testsBlocked,
-			int testsTotal )
-	{
-		super();
-		this.testsFailed = testsFailed;
-		this.testsPassed = testsPassed;
-		this.testsBlocked = testsBlocked;
-		this.testsTotal = testsTotal;
-		testCases = new ArrayList<TestLinkTestCase>();
+		this.buildName = null;
+		this.buildId = 0;
 	}
 
 	public int getTestsFailed()
@@ -93,6 +85,26 @@ implements Serializable
 	public List<TestLinkTestCase> getListOfTestCases()
 	{
 		return this.testCases;
+	}
+	
+	public String getBuildName()
+	{
+		return this.buildName;
+	}
+	
+	public void setBuildName(String buildName)
+	{
+		this.buildName = buildName;
+	}
+	
+	public Integer getBuildId()
+	{
+		return this.buildId;
+	}
+	
+	public void setBuildId(Integer buildId)
+	{
+		this.buildId = buildId;
 	}
 
 	@Override

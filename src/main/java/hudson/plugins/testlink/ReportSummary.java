@@ -24,16 +24,28 @@ package hudson.plugins.testlink;
 
 import hudson.plugins.testlink.model.TestLinkTestCase;
 
-
+/**
+ * Helper class that creates report summary.
+ * 
+ * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
+ * @since 08/09/2010
+ */
 public class ReportSummary {
 
+	/**
+	 * Creates Report Summary.
+	 * 
+	 * @param report TestLink Report
+	 * @param previous Previous TestLink Report
+	 * @return Report Summary
+	 */
 	public static String createReportSummary(
 			TestLinkReport report,
 			TestLinkReport previous) 
 	{
 		StringBuilder builder = new StringBuilder();
-		
-		builder.append("<a href=\"" + TestLinkBuildAction.URL_NAME + "\">Total of ");
+		builder.append("<p><b>Build ID "+report.getBuildId()+"</b> - <b>Build Name ["+report.getBuildName()+"]</b></p>");
+		builder.append("<p><a href=\"" + TestLinkBuildAction.URL_NAME + "\">Total of ");
         builder.append(report.getTestsTotal());
         if(previous != null){
             printDifference(
@@ -65,18 +77,25 @@ public class ReportSummary {
             		previous.getTestsBlocked(),
             		builder);
         }
-        builder.append(" tests were blocked.");
+        builder.append(" tests were blocked.</p>");
 		
 		return builder.toString();
 	}
 
+	/**
+	 * Creates detailed Report Summary.
+	 * 
+	 * @param report TestLink report
+	 * @param previous Previous TestLink report
+	 * @return Detailed Report Summary
+	 */
 	public static String createReportSummaryDetails(
 			TestLinkReport report,
 			TestLinkReport previous) 
 	{
 		StringBuilder builder = new StringBuilder();
 
-		builder.append("List of test cases and execution result status.");
+		builder.append("<p>List of test cases and execution result status.</p>");
 		builder.append("<table border=\"1\">\n");
 		builder.append("<tr><th>Id</th><th>Plan Id</th><th>Build Id</th><th>Category</th><th>File</th><th>Result Status</th></tr>\n");
 		
@@ -99,6 +118,14 @@ public class ReportSummary {
         return builder.toString();
 	}
 	
+	/**
+	 * Prints the difference between two int values, showing a plus sign if the 
+	 * current number is greater than the previous. 
+	 * 
+	 * @param current Current value
+	 * @param previous Previous value
+	 * @param builder StrinbBuilder that acts as a buffer
+	 */
 	private static void printDifference(int current, int previous, StringBuilder builder){
 		int difference = current - previous;
         builder.append(" (");

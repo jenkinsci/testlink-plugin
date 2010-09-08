@@ -9,6 +9,9 @@
 
 	        <!--st:include page="/tabview/main.jelly" /-->
 	        
+	        <p>Build Id: <b>${it.report.buildId}</b></p>
+	        <p>Build Name: <b>${it.report.buildName}</b></p>
+	        
 	        <p>Passed: <b>${it.report.testsPassed}</b></p>
 	        <p>Failed: <b>${it.report.testsFailed}</b></p>
 	        <p>Blocked: <b>${it.report.testsBlocked}</b></p>

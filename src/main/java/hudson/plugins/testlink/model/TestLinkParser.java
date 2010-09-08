@@ -119,6 +119,10 @@ implements FilePath.FileCallable<TestLinkReport>
             
             parser.parse(in, handler);
             TestLink testLink  = handler.getTestLink();
+            
+            report.setBuildId( testLink.getBuildId() );
+            report.setBuildName( testLink.getBuildName() );
+            
             List<TestLinkTestCase> testCases = testLink.getTestCases();    		
     		
             for ( TestLinkTestCase tc : testCases )
