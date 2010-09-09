@@ -475,7 +475,11 @@ extends Builder
 		listener.getLogger().println("Updating TestLink parameters");
 		try 
 		{
-			this.updateTestLinkParameters();
+			if ( ! this.updateTestLinkParameters() )
+			{
+				listener.fatalError("Invalid TestLink parameters. Check TestLink and Hudson Job parameters.");
+				return false;
+			}
 		}
 		catch (TestLinkAPIException e) 
 		{
@@ -606,14 +610,37 @@ extends Builder
 	 * Test Plan Name, Test Plan Id
 	 * @return
 	 */
-	private void updateTestLinkParameters() 
+	private boolean updateTestLinkParameters() 
 	throws TestLinkAPIException
 	{
 
 		TestLinkAPIResults projects = this.testLinkClient.getProjects();
-		Object oProjectID = projects.getValueByName(0, TestLinkAPIConst.API_RESULT_IDENTIFIER);
-		Integer projectID = Integer.parseInt(oProjectID.toString());
-		this.setProjectId( projectID );
+		int projectsSize = projects.size();
+		
+		if ( projectsSize == 0 )
+		{
+			return false;
+		}
+		
+		for ( int i = 0 ; i < projectsSize ; ++i )
+		{
+			Object oProject = projects.getData( i );
+			Map<?, ?> project = (Map<?, ?>)oProject;
+			
+			String projectName = ""+project.get(TestLinkAPIConst.API_RESULT_NAME );
+			
+			if ( this.projectName.equals(projectName) )
+			{
+				Object oProjectID = projects.getValueByName(i, TestLinkAPIConst.API_RESULT_IDENTIFIER);
+				Integer projectID = Integer.parseInt(oProjectID.toString());
+				this.setProjectId( projectID );
+				break;
+			}
+		}
+		if ( this.getProjectId() <= 0 )
+		{
+			return false;
+		}
 		
 		TestLinkAPIResults projectTestPlans = 
 			this.testLinkClient.getProjectTestPlans(projectName);
@@ -628,6 +655,8 @@ extends Builder
 				BUILD_NOTES);
 		this.setBuildId(buildID);
 
+		return true;
+		
 	}
 
 	/**
