@@ -1,0 +1,23 @@
+<div>
+  <p>
+    In a Transactional Execution if any test fails the execution is aborted 
+	and all remaining tests are marked as blocked.
+  </p>
+  <p>
+	For example, let's suppose we have tests A, B, C that are run in this 
+	order. If Transactional Execution option is marked and test A fails then A 
+	is marked with result status 'Failed'. And the tests B and C are not execute 
+	but have their result status updated to 'Blocked'.
+  </p>
+  <p>
+	This option is useful in situations where you need to save resource if 
+	any test fails or when you have a scenario where the results of a test 
+	execution provide information for the others tests.
+  </p>
+  <p>
+	For further information see TestLink plug-in Hudson Wiki page 
+	<a href="http://wiki.hudson-ci.org/display/HUDSON/TestLink+Plugin">
+	http://wiki.hudson-ci.org/display/HUDSON/TestLink+Plugin</a>.
+  </p>
+  <p>
+</div>
