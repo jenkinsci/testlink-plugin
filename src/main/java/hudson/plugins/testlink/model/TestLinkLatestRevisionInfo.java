@@ -18,64 +18,65 @@
  * with Kinow.                                      
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 31/08/2010
+ * @since 01/09/2010
  */
-package hudson.plugins.testlink;
+package hudson.plugins.testlink.model;
 
 import java.io.Serializable;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
- * Represents the TestLink installation in Hudson global configuration. 
+ * Class to store information regarding SVN Revision.
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 1.0
+ * @since 01/09/2010
  */
-public class TestLinkBuilderInstallation 
+public class TestLinkLatestRevisionInfo 
 implements Serializable
 {
 
 	/**
-	 * Name of the installation
+	 * SVN repository URL
 	 */
-	private String name;
+	private String svnUrl;
 	
 	/**
-	 * TestLink URL
+	 * SVN username
 	 */
-	private String url;
+	private String svnUser; 
 	
 	/**
-	 * A valid user dev key
+	 * SVN password
 	 */
-	private String devKey;
+	private String svnPassword;
 	
 	@DataBoundConstructor
-	public TestLinkBuilderInstallation(
-		String name, 
-		String url, 
-		String devKey
-	)
+	public TestLinkLatestRevisionInfo(
+			String svnUrl, 
+			String svnUser,
+			String svnPassword)
 	{
-		this.name = name;
-		this.url = url;
-		this.devKey = devKey;
+		super();
+		this.svnUrl = svnUrl;
+		this.svnUser = svnUser;
+		this.svnPassword = svnPassword;
 	}
 	
-	public String getName()
+	public String getSvnUrl()
 	{
-		return this.name;
+		return svnUrl;
 	}
-	
-	public String getUrl()
+
+	public String getSvnUser()
 	{
-		return this.url;
+		return svnUser;
 	}
-	
-	public String getDevKey()
+
+	public String getSvnPassword()
 	{
-		return this.devKey;
+		return svnPassword;
 	}
+
 	
 }

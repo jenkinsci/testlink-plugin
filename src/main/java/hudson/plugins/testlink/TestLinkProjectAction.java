@@ -26,7 +26,6 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Actionable;
 import hudson.model.ProminentProjectAction;
-import hudson.plugins.testlink.util.ChartUtil;
 import hudson.util.Graph;
 
 import java.io.IOException;

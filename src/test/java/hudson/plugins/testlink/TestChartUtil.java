@@ -18,64 +18,23 @@
  * with Kinow.                                      
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 31/08/2010
+ * @since 02/12/2010
  */
 package hudson.plugins.testlink;
 
-import java.io.Serializable;
-
-import org.kohsuke.stapler.DataBoundConstructor;
+import org.testng.annotations.Test;
 
 /**
- * Represents the TestLink installation in Hudson global configuration. 
- * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 1.0
+ * @since 02/12/2010
  */
-public class TestLinkBuilderInstallation 
-implements Serializable
+public class TestChartUtil
 {
 
-	/**
-	 * Name of the installation
-	 */
-	private String name;
-	
-	/**
-	 * TestLink URL
-	 */
-	private String url;
-	
-	/**
-	 * A valid user dev key
-	 */
-	private String devKey;
-	
-	@DataBoundConstructor
-	public TestLinkBuilderInstallation(
-		String name, 
-		String url, 
-		String devKey
-	)
+	@Test(testName="Test Chart Util")
+	public void testChartUtil()
 	{
-		this.name = name;
-		this.url = url;
-		this.devKey = devKey;
-	}
-	
-	public String getName()
-	{
-		return this.name;
-	}
-	
-	public String getUrl()
-	{
-		return this.url;
-	}
-	
-	public String getDevKey()
-	{
-		return this.devKey;
-	}
+		
+	}	
 	
 }

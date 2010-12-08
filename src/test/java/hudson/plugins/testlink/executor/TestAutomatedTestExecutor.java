@@ -18,64 +18,24 @@
  * with Kinow.                                      
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 31/08/2010
+ * @since 29/11/2010
  */
-package hudson.plugins.testlink;
+package hudson.plugins.testlink.executor;
 
-import java.io.Serializable;
-
-import org.kohsuke.stapler.DataBoundConstructor;
+import hudson.plugins.testlink.executor.AutomatedTestExecutor;
 
 /**
- * Represents the TestLink installation in Hudson global configuration. 
- * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 1.0
+ * @since 29/11/2010
  */
-public class TestLinkBuilderInstallation 
-implements Serializable
+public class TestAutomatedTestExecutor
 {
 
-	/**
-	 * Name of the installation
-	 */
-	private String name;
+	protected AutomatedTestExecutor executor;
 	
-	/**
-	 * TestLink URL
-	 */
-	private String url;
-	
-	/**
-	 * A valid user dev key
-	 */
-	private String devKey;
-	
-	@DataBoundConstructor
-	public TestLinkBuilderInstallation(
-		String name, 
-		String url, 
-		String devKey
-	)
+	public void setUp()
 	{
-		this.name = name;
-		this.url = url;
-		this.devKey = devKey;
-	}
-	
-	public String getName()
-	{
-		return this.name;
-	}
-	
-	public String getUrl()
-	{
-		return this.url;
-	}
-	
-	public String getDevKey()
-	{
-		return this.devKey;
+		//executor = new AutomatedTestExecutor(null, null, null, null, null, null);
 	}
 	
 }

@@ -22,7 +22,10 @@
  */
 package hudson.plugins.testlink;
 
-import hudson.plugins.testlink.model.TestLinkTestCase;
+import hudson.plugins.testlink.model.TestLinkReport;
+import hudson.plugins.testlink.util.TestLinkHelper;
+import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
+
 
 /**
  * Helper class that creates report summary.
@@ -44,7 +47,8 @@ public class ReportSummary {
 			TestLinkReport previous) 
 	{
 		StringBuilder builder = new StringBuilder();
-		builder.append("<p><b>Build ID "+report.getBuildId()+"</b> - <b>Build Name ["+report.getBuildName()+"]</b></p>");
+		builder.append("<p><b>TestLink Build ID: "+report.getBuild().getId()+"</b></p>");
+		builder.append("<p><b>TestLink Build Name: "+report.getBuild().getName()+"</b></p>");
 		builder.append("<p><a href=\"" + TestLinkBuildAction.URL_NAME + "\">Total of ");
         builder.append(report.getTestsTotal());
         if(previous != null){
@@ -97,19 +101,18 @@ public class ReportSummary {
 
 		builder.append("<p>List of test cases and execution result status.</p>");
 		builder.append("<table border=\"1\">\n");
-		builder.append("<tr><th>Id</th><th>Plan Id</th><th>Build Id</th><th>Category</th><th>File</th><th>Result Status</th></tr>\n");
+		builder.append("<tr><th>Test Case Id</th><th>Version</th><th>Name</th><th>Test Project Id</th><th>Automated Execution</th></tr>\n");
 		
-        for(TestLinkTestCase tc: report.getListOfTestCases()){
+        for(TestCase tc: report.getTestCases() )
+        {
         	builder.append("<tr>\n");
         	
         	// TBD: colors depending on status
         	builder.append("<td>"+tc.getId()+"</td>");
-        	builder.append("<td>"+tc.getPlanId()+"</td>");
-        	builder.append("<td>"+tc.getBuildId()+"</td>");
-        	builder.append("<td>"+tc.getCategory()+"</td>\n");
-        	builder.append("<td>"+tc.getFile()+"</td>\n");
-        	// TBD: show values as passed, blocked, etc
-        	builder.append("<td>"+tc.getResultStatus()+"</td>\n");
+        	builder.append("<td>"+tc.getVersion()+"</td>");
+        	builder.append("<td>"+tc.getName()+"</td>");
+        	builder.append("<td>"+tc.getTestProjectId()+"</td>");
+    		builder.append("<td>"+TestLinkHelper.getExecutionStatusTextColored( tc.getExecutionStatus() )+"</td>\n");
         	
         	builder.append("</tr>\n");
         }
@@ -117,7 +120,9 @@ public class ReportSummary {
         builder.append("</table>");
         return builder.toString();
 	}
+
 	
+
 	/**
 	 * Prints the difference between two int values, showing a plus sign if the 
 	 * current number is greater than the previous. 
@@ -128,13 +133,17 @@ public class ReportSummary {
 	 */
 	private static void printDifference(int current, int previous, StringBuilder builder){
 		int difference = current - previous;
-        builder.append(" (");
-
-        if(difference >= 0){
-            builder.append('+');
+        
+		if(difference > 0)
+        {
+			builder.append(" (");
+            
+			builder.append('+');
+			
+			builder.append(difference);
+	        builder.append(")");
         }
-        builder.append(difference);
-        builder.append(")");
+        
     }
 
 }

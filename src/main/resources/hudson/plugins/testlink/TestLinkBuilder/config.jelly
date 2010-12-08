@@ -11,8 +11,8 @@
     </select>
   </f:entry>
   
-  <f:entry title="Project name" help="${rootURL}/../plugin/testlink/help-projectName.html">
-	  <f:textbox name="TestLinkBuilder.projectName" value="${instance.projectName}" />
+  <f:entry title="Test Project name" help="${rootURL}/../plugin/testlink/help-projectName.html">
+	  <f:textbox name="TestLinkBuilder.testProjectName" value="${instance.testProjectName}" />
   </f:entry>
   
   <f:entry title="Test Plan name" help="${rootURL}/../plugin/testlink/help-planName.html">
@@ -23,43 +23,53 @@
 	  <f:textbox name="TestLinkBuilder.buildName" value="${instance.buildName}" />
   </f:entry>
   
-  <f:nested>
-	  <table>
-	    <f:optionalBlock name="TestLinkBuilder.latestRevisionInfo" title="Use latest revision from SVN" checked="${instance.latestRevisionEnabled}">
-	      <f:entry title="SVN url" help="${rootURL}/../plugin/testlink/help-svnUrl.html">
-			  <f:textbox name="latestRevisionInfo.svnUrl" value="${instance.latestRevisionInfo.svnUrl}" />
-		  </f:entry>
-		  <f:entry title="SVN user">
-			  <f:textbox name="latestRevisionInfo.svnUser" value="${instance.latestRevisionInfo.svnUser}" />
-		  </f:entry>
-		  <f:entry title="SVN password">
-			  <f:password name="latestRevisionInfo.svnPassword" value="${instance.latestRevisionInfo.svnPassword}" />
-		  </f:entry>
-	    </f:optionalBlock>
-	  </table>
-  </f:nested>
-  
-  <f:entry title="Maven test project directory" help="${rootURL}/../plugin/testlink/help-mavenTestProject.html">
-	  <f:textbox name="TestLinkBuilder.mavenTestProjectDirectory" value="${instance.mavenTestProjectDirectory}" />
+  <f:entry title="Custom fields" help="${rootURL}/../plugin/testlink/help-customFields.html">
+	  <f:textbox name="TestLinkBuilder.customFields" value="${instance.customFields}" />
   </f:entry>
   
-  <f:entry title="Maven Version" help="${rootURL}/../plugin/testlink/help-mavenVersion.html">
-  	<select class="setting-input" name="TestLinkBuilder.mavenInstallationName">
-      <option>(Default)</option>
-      <j:forEach var="inst" items="${instance.mavenInstallations}">
-        <f:option selected="${inst.name==instance.mavenInstallationName}">${inst.name}</f:option>
-      </j:forEach>
-    </select>
+  <f:entry title="Test command" help="${rootURL}/../plugin/testlink/help-testCommand.html">
+	  <f:textarea name="TestLinkBuilder.testCommand" value="${instance.testCommand}" />
   </f:entry>
   
-  <f:entry title="Maven test project goal" help="${rootURL}/../plugin/testlink/help-mavenTestProjectGoal.html">
-  	  <f:textbox name="TestLinkBuilder.mavenTestProjectGoal" value="${instance.mavenTestProjectGoal}" default="test" />
+  <f:entry title="TestLink automated tests key custom field" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
+	  <f:textbox name="TestLinkBuilder.keyCustomField" value="${instance.keyCustomField}" />
+  </f:entry>
+  
+  <f:entry title="JUnit XML report files pattern" help="${rootURL}/../plugin/testlink/help-junitIncludePattern.html">
+	  <f:textbox name="TestLinkBuilder.junitReportFilesPattern" value="${instance.junitReportFilesPattern}" />
+  </f:entry>
+  
+  <f:entry title="TestNG XML report files pattern" help="${rootURL}/../plugin/testlink/help-testNGIncludePattern.html">
+	  <f:textbox name="TestLinkBuilder.testNGReportFilesPattern" value="${instance.testNGReportFilesPattern}" />
+  </f:entry>
+  
+  <f:entry title="TAP report files pattern" help="${rootURL}/../plugin/testlink/help-tapIncludePattern.html">
+	  <f:textbox name="TestLinkBuilder.tapReportFilesPattern" value="${instance.tapReportFilesPattern}" />
   </f:entry>
   
   <f:advanced>	  
 	  <f:entry title="Transactional execution?" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
 		  <f:checkbox name="TestLinkBuilder.transactional" value="${instance.transactional}" checked="${instance.transactional}" />
 	  </f:entry>
+	  
+	  <f:nested>
+	  	<f:entry title="Use latest revision from SVN" help="${rootURL}/../plugin/testlink/help-svn.html">
+		  <table>
+		    <f:optionalBlock name="TestLinkBuilder.latestRevisionInfo" title="" checked="${instance.latestRevisionEnabled}">
+		      <f:entry title="SVN url" >
+				  <f:textbox name="latestRevisionInfo.svnUrl" value="${instance.latestRevisionInfo.svnUrl}" />
+			  </f:entry>
+			  <f:entry title="SVN user">
+				  <f:textbox name="latestRevisionInfo.svnUser" value="${instance.latestRevisionInfo.svnUser}" />
+			  </f:entry>
+			  <f:entry title="SVN password">
+				  <f:password name="latestRevisionInfo.svnPassword" value="${instance.latestRevisionInfo.svnPassword}" />
+			  </f:entry>
+		    </f:optionalBlock>
+		  </table>
+		 </f:entry>
+	  </f:nested>
+	  
   </f:advanced>
   
 </j:jelly>

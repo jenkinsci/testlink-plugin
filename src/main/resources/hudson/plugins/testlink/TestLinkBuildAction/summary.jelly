@@ -6,8 +6,6 @@
     xmlns:i="jelly:fmt">
     <t:summary icon="/plugin/testlink/icons/testlink-48.png">
 		${it.summary}
-		<ul>
 		${it.details}
-		</ul>
 	</t:summary>
 </j:jelly>

@@ -22,39 +22,54 @@
  */
 package hudson.plugins.testlink;
 
+import hudson.AbortException;
 import hudson.CopyOnWrite;
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.Util;
 import hudson.Launcher.ProcStarter;
-import hudson.model.AbstractBuild;
+import hudson.Util;
+import hudson.model.Action;
 import hudson.model.BuildListener;
-import hudson.model.Descriptor;
-import hudson.model.Hudson;
-import hudson.plugins.testlink.model.TestLinkParser;
-import hudson.plugins.testlink.model.TestLinkTestCase;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.plugins.testlink.executor.TemporaryExecutableScriptWriter;
+import hudson.plugins.testlink.finder.AutomatedTestCasesFinder;
+import hudson.plugins.testlink.model.ReportFilesPatterns;
+import hudson.plugins.testlink.model.TestLinkLatestRevisionInfo;
+import hudson.plugins.testlink.model.TestLinkReport;
+import hudson.plugins.testlink.model.TestResult;
+import hudson.plugins.testlink.parser.JUnitParser;
+import hudson.plugins.testlink.parser.Parser;
+import hudson.plugins.testlink.parser.TAPParser;
+import hudson.plugins.testlink.parser.TestNGParser;
+import hudson.plugins.testlink.svn.SVNLatestRevisionService;
+import hudson.plugins.testlink.updater.TestLinkTestStatusUpdater;
 import hudson.tasks.Builder;
-import hudson.tasks.Maven;
-import hudson.tasks.Maven.MavenInstallation;
 import hudson.util.ArgumentListBuilder;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.tmatesoft.svn.core.SVNException;
 
-import testlink.api.java.client.TestLinkAPIClient;
-import testlink.api.java.client.TestLinkAPIConst;
-import testlink.api.java.client.TestLinkAPIException;
-import testlink.api.java.client.TestLinkAPIResults;
+import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
+import br.eti.kinoshita.testlinkjavaapi.TestLinkAPIException;
+import br.eti.kinoshita.testlinkjavaapi.model.Build;
+import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
+import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
+import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
+import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
+import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
 
 /**
  * <p>
@@ -62,20 +77,13 @@ import testlink.api.java.client.TestLinkAPIResults;
  * </p>
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 30/08/2010
+ * @since 1.0
  */
 public class TestLinkBuilder 
 extends Builder
 {
 
-	/**
-	 * <p>The instance of the TestLink API client.</p> 
-	 * 
-	 * <p>Please refer to the API website for further information on it. 
-	 * <a href="http://code.google.com/p/dbfacade-testlink-rpc-api/">
-	 * http://code.google.com/p/dbfacade-testlink-rpc-api/</a></p>
-	 */
-	private TestLinkAPIClient testLinkClient = null;
+	/* --- Job properties --- */
 	
 	/**
 	 * The name of the TestLink installation.
@@ -83,37 +91,24 @@ extends Builder
 	private final String testLinkName;
 	
 	/**
-	 * The name of the Test Project.
+	 * The name of the Test Project. When the job is executed this property is 
+	 * used to build the TestProject object from TestLink using the 
+	 * Java API.
 	 */
-	private final String projectName;
+	private final String testProjectName;
 	
 	/**
-	 * The Id of the Test Project.
-	 */
-	private Integer projectId;
-	
-	/**
-	 * The name of the Test Plan.
+	 * The name of the Test Plan. When the job is executed this property is 
+	 * used to build the TestPlan object from TestLink using the 
+	 * Java API.
 	 */
 	private final String testPlanName;
 	
 	/**
-	 * The Id of the Test Plan.
-	 */
-	private Integer testPlanId;
-
-	/**
-	 * The name of the Build.
+	 * The name of the Build. If the job is using SVN latest revision this 
+	 * property may change during the job execution.
 	 */
 	private String buildName;
-	
-	/**
-	 * The ID of the Build used in the tests. This ID is created automatically 
-	 * in case the Build does not exist. This parameter is not passed by the 
-	 * user. Hudson TestLink plug-in only stores its value after the Build 
-	 * is created.
-	 */
-	private Integer buildId;
 	
 	/**
 	 * Information related to the SVN that TestLink plug-in should use to 
@@ -123,108 +118,137 @@ extends Builder
 	private final TestLinkLatestRevisionInfo latestRevisionInfo;
 	
 	/**
-	 * The directory of the Maven test Project. It can be absolute or relative 
-	 * to the project Workspace.
+	 * Comma separated list of custom fields to download from TestLink.
 	 */
-	private final String mavenTestProjectDirectory;
+	private final String customFields;
 	
 	/**
-	 * Maven installation name. It uses a cross plug-in reference to acess 
-	 * the Maven installations from Hudson global configuration. 
-	 * Thanks for sonar plug-in for the nice example.
+	 * The test command to be executed. For each Test Case found we will 
+	 * execute this command passing the Test Case information as environment 
+	 * variables.
 	 */
-	private final String mavenInstallationName;
+	private final String testCommand;
 	
 	/**
-	 * Goal to run with Maven. Default is test.
-	 */
-	private final String mavenTestProjectGoal;
-	
-	/**
-	 * Location of mvn.
-	 */
-	private String mavenExecutable;
-	
-	/**
-	 * Whether this build has a transactional execution of tests or not.
+	 * Whether this build has a transactional execution of tests or not. If a 
+	 * job has transactional execution it means that in case any Test Case 
+	 * execution fails the remaining Test Cases will be marked as <b>Blocked</b>
+	 * . If you update TestLink status then the Test Case status will be 
+	 * set to Blocked. Otherwise this information will be available only in 
+	 * Hudson.
 	 */
 	private final Boolean transactional;
 	
-	/**
-	 * The default maven goal to run.
-	 */
-	private static final String DEFAULT_MAVEN_GOAL = "test";
+	private final String keyCustomField;
 	
 	/**
-	 * The Descriptor of this Builder.
+	 * JUnit XML reports directory.
 	 */
-	@Extension 
-	public static final TestLinkBuilderDescriptor DESCRIPTOR = new TestLinkBuilderDescriptor();
+	private final String junitReportFilesPattern;
+	
+	/**
+	 * TestNG XML reports directory.
+	 */
+	private final String testNGReportFilesPattern;
+	
+	/**
+	 * TAP Streams report directory.
+	 */
+	private final String tapReportFilesPattern;
+	
+	/* --- Object properties --- */
+	
+	/**
+	 * The instance of the TestLink API client.
+	 */
+	private TestLinkAPI api = null;
 
+	private boolean failure = Boolean.FALSE;
+	
+	// Environment Variables names.
+	private static final String TESTLINK_TESTCASE_PREFIX = "TESTLINK_TESTCASE_";
+	private static final String TESTLINK_TESTCASE_ID_ENVVAR = "TESTLINK_TESTCASE_ID";
+	private static final String TESTLINK_TESTCASE_NAME_ENVVAR = "TESTLINK_TESTCASE_NAME";
+	private static final String TESTLINK_TESTCASE_TESTSUITE_ID_ENVVAR = "TESTLINK_TESTCASE_TESTSUITEID";
+	private static final String TESTLINK_TESTCASE_TESTPROJECT_ID = "TESTLINK_TESTCASE_TESTPROJECTID";
+	private static final String TESTLINK_TESTCASE_AUTHOR_ENVVAR = "TESTLINK_TESTCASE_AUTHOR";
+	private static final String TESTLINK_TESTCASE_SUMMARY_ENVVAR = "TESTLINK_TESTCASE_SUMMARY";
+	private static final String TESTLINK_BUILD_NAME_ENVVAR = "TESTLINK_BUILD_NAME";
+	private static final String TESTLINK_TESTPLAN_NAME_ENVVAR = "TESTLINK_TESTPLAN_NAME";
+	private static final String TESTLINK_TESTPROJECT_NAME_ENVVAR = "TESTLINK_TESTPROJECT_NAME";
+
+	private static final String TEMPORARY_FILE_PREFIX = "testlink_temporary_";
+		
 	/**
 	 * The default note that TestLink plug-in adds to the Build if this is  
 	 * created by the plug-in. It does not updates the Build Note if it is 
 	 * existing and created by someone else.
 	 */
-	private static final String BUILD_NOTES = "Build created automatically with Hudson TestLink plug-in.";
-	private static final String TEST_CASE_EXECUTION_NOTES = "Test executed by Hudson TestLink plug-in.";
+	//private static final String BUILD_NOTES = "Build created automatically with Hudson TestLink plug-in.";
+	private static final String WINDOWS_SCRIPT_EXTENSION = ".bat";
+	private static final String UNIX_SCRIPT_EXTENSION = ".sh";
+	private static final int READ_WRITE_PERMISSION = 0777;
 	
 	/**
-	 * Custom field of Test Category.
+	 * The Descriptor of this Builder. It contains the TestLink installation.
 	 */
-	private String testCategoryCustomField = null;
-	
-	/**
-	 * Custom field of Test File.
-	 */
-	private String testFileCustomField = null;
-	
-	/**
-	 * Name of Test Case category.
-	 */
-	private String testCaseCategory;
-	
-	/**
-	 * Name of Test Suite category.
-	 */
-	private String testSuiteCategory;
-	
+	@Extension 
+	public static final TestLinkBuilderDescriptor DESCRIPTOR = new TestLinkBuilderDescriptor();
+
 	/**
 	 * This constructor is bound to a stapler request. All parameters here are 
 	 * passed by Hudson.
 	 * 
-	 * @param testLinkName Name of the TestLink installation.
-	 * @param projectName Name of the TestLink Test Project.
-	 * @param testPlanName Name of the Test Plan.
-	 * @param buildName Name of the Build.
-	 * @param latestRevisionInfo Information bout the latest revistion from SVN.
-	 * @param mavenTestProjectDirectory Directory of the Maven test project.
-	 * @param mavenInstallationName Name of the Maven installation.
-	 * @param mavenTestProjectGoal Goal that maven runs to execute the tests.
-	 * @param transactional Whether this is a transactional build or not.
+	 * @param testLinkName TestLink Installation name.
+	 * @param testProjectName TestLink Test Project name.
+	 * @param testPlanName TestLink Test Plan name.
+	 * @param buildName TestLink Build name.
+	 * @param customFields TestLink comma-separated list of Custom Fields.
+	 * @param testCommand Test Command to execute for each Automated Test Case.
+	 * @param transactional Whether the build's execution is transactional or not.
+	 * @param latestRevisionInfo Information on SVN latest revision.
+	 * @param keyCustomField Automated Test Case key custom field. 
+	 * @param junitReportFilesPattern Pattern for JUnit report files.
+	 * @param testNGReportFilesPattern Pattern for TestNG report files.
+	 * @param tapReportFilesPattern Pattern for TAP report files.
 	 */
 	@DataBoundConstructor
 	public TestLinkBuilder(
 		String testLinkName, 
-		String projectName, 
+		String testProjectName, 
 		String testPlanName, 
 		String buildName, 
+		String customFields, 
+		String testCommand, 
+		Boolean transactional, 
 		TestLinkLatestRevisionInfo latestRevisionInfo, 
-		String mavenTestProjectDirectory, 
-		String mavenInstallationName,
-		String mavenTestProjectGoal, 
-		Boolean transactional
+		String keyCustomField, 
+		String junitReportFilesPattern, 		
+		String testNGReportFilesPattern, 
+		String tapReportFilesPattern
 	)
 	{
 		this.testLinkName = testLinkName;
-		this.projectName = projectName;
+		this.testProjectName = testProjectName;
 		this.testPlanName = testPlanName;
 		this.buildName = buildName;
 		this.latestRevisionInfo = latestRevisionInfo;
-		this.mavenTestProjectDirectory = mavenTestProjectDirectory;
-		this.mavenInstallationName = mavenInstallationName;
-		this.mavenTestProjectGoal = mavenTestProjectGoal;
-		this.transactional = transactional;		
+		this.customFields = customFields;
+		this.testCommand = testCommand;
+		this.transactional = transactional;
+		this.keyCustomField = keyCustomField;
+		this.junitReportFilesPattern = junitReportFilesPattern;
+		this.testNGReportFilesPattern = testNGReportFilesPattern;
+		this.tapReportFilesPattern = tapReportFilesPattern;
+	}
+	
+	/* (non-Javadoc)
+	 * @see hudson.tasks.BuildStepCompatibilityLayer#getProjectAction(hudson.model.AbstractProject)
+	 */
+	@Override
+	public Action getProjectAction(AbstractProject<?, ?> project) 
+	{
+		return new TestLinkProjectAction(project);
 	}
 	
 	/**
@@ -238,31 +262,9 @@ extends Builder
 	/**
 	 * @return Test Project Name
 	 */
-	public String getProjectName()
+	public String getTestProjectName()
 	{
-		return this.projectName;
-	}
-	
-	/**
-	 * @return Id of TestLink Test Project
-	 */
-	public Integer getProjectId() 
-	{
-		return this.projectId;
-	}
-	
-	/**
-	 * @param projectId Test project Id
-	 */
-	public void setProjectId(Integer projectId) {
-		this.projectId = projectId;
-	}
-
-	/**
-	 * @param testPlanId Test Plan Id
-	 */
-	public void setTestPlanId(Integer testPlanId) {
-		this.testPlanId = testPlanId;
+		return this.testProjectName;
 	}
 	
 	/**
@@ -274,14 +276,6 @@ extends Builder
 	}
 	
 	/**
-	 * @return Id of the Test Plan
-	 */
-	public Integer getTestPlanId() 
-	{
-		return this.testPlanId;
-	}
-
-	/**
 	 * Ignored if it is marked to use SVN latest revision.
 	 * 
 	 * @return Name of the Build to create or use in TestLink
@@ -292,19 +286,11 @@ extends Builder
 	}
 	
 	/**
-	 * @return Build Id
+	 * @return Test Command.
 	 */
-	public Integer getBuildId()
+	public String getTestCommand()
 	{
-		return this.buildId;
-	}
-	
-	/**
-	 * @param id Build Id
-	 */
-	public void setBuildId(Integer id)
-	{
-		this.buildId = id;
+		return this.testCommand;
 	}
 	
 	/**
@@ -325,69 +311,13 @@ extends Builder
 	}
 	
 	/**
-	 * @return Directory of the maven test project
+	 * @return Comma separated list of custom fields
 	 */
-	public String getMavenTestProjectDirectory()
+	public String getCustomFields()
 	{
-		return this.mavenTestProjectDirectory;
+		return this.customFields;
 	}
 	
-	/**
-	 * Returns the name of the current Maven installation chosen to execute 
-	 * the test project. 
-	 * 
-	 * @return Current Maven installation to execute the test project
-	 */
-	public String getMavenInstallationName()
-	{
-		return this.mavenInstallationName;
-	}
-	
-	/**
-	 * References Maven installations in Hudson. It is a cross plug-in 
-	 * reference.
-	 * 
-	 * @return List of Maven installations. 
-	 */
-	public List<MavenInstallation> getMavenInstallations()
-	{
-		return Arrays.asList(Hudson.getInstance().getDescriptorByType(Maven.DescriptorImpl.class).getInstallations());
-	}
-	
-	/**
-	 * @return The goal to call in the maven test project
-	 */
-	public String getMavenTestProjectGoal()
-	{
-		if ( this.mavenTestProjectGoal == null )
-		{
-			return DEFAULT_MAVEN_GOAL;
-		}
-		return this.mavenTestProjectGoal;
-	}
-	
-	/**
-	 * @return Path to mvn
-	 */
-	public String getMavenExecutable() {
-		return mavenExecutable;
-	}
-
-	/**
-	 * @param mavenExecutable Path to mvn
-	 */
-	public void setMavenExecutable(String mavenExecutable) {
-		this.mavenExecutable = mavenExecutable;
-	}
-	
-	/**
-	 * @return True if mvn executable exists
-	 */
-	public boolean validMaven()
-	{
-		return new File(this.mavenExecutable).exists();
-	}
-
 	/**
 	 * Returns whether it is a transactional build or not. A transactional 
 	 * build stops executing once a test fails. All tests must succeed or it 
@@ -401,481 +331,478 @@ extends Builder
 		return this.transactional;
 	}
 	
+	public String getKeyCustomField() {
+		return keyCustomField;
+	}
+
 	/**
-	 * Returns {@link TestLinkBuilder} descriptor.
-	 * @return Build Descriptor
+	 * Returns test report directories (JUnit, TestNG, TAP, ...)
+	 * 
+	 * @return Test report directoriy
 	 */
-	@Override
-	public Descriptor<Builder> getDescriptor()
+	public String getJunitReportFilesPattern() 
 	{
-		return DESCRIPTOR;
+		return junitReportFilesPattern;
+	}
+
+	/**
+	 * Returns test report directories (JUnit, TestNG, TAP, ...)
+	 * 
+	 * @return Test report directoriy
+	 */
+	public String getTestNGReportFilesPattern() 
+	{
+		return testNGReportFilesPattern;
+	}
+
+	/**
+	 * Returns test report directories (JUnit, TestNG, TAP, ...)
+	 * 
+	 * @return Test report directoriy
+	 */
+	public String getTapReportFilesPattern() 
+	{
+		return tapReportFilesPattern;
 	}
 	
+//	@Override
+//	public Descriptor<Builder> getDescriptor()
+//	{
+//		return DESCRIPTOR;
+//	}
+	// http://hudson.361315.n4.nabble.com/Saving-plugin-issue-td2236932.html
+
 	/**
 	 * <p>Called when the job is executed.</p>
 	 * 
 	 * <p>It downloads information from TestLink using testlink-java-api. 
-	 * The information gathered is sufficient to execute a maven test project 
-	 * with automated tests.</p>
+	 * The information gathered is sufficient to execute a test command 
+	 * that runs automated tests.</p>
 	 * 
-	 * <p>Later the output xml is processed by another extension point, 
-	 * the {@link TestLinkPublisher}.</p>
+	 * <p>After this step the output of the tests is parsed by {@link Parser}</p>
 	 */
 	@Override
-	public boolean perform( 
-			AbstractBuild<?, ?> build, 
-			Launcher launcher,
+	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher,
 			BuildListener listener ) 
 	throws InterruptedException, IOException
 	{
 		
-		// TestLink installation
+		// TestLink installation.
 		listener.getLogger().println("Preparing TestLink client API");
 		TestLinkBuilderInstallation installation = 
 			DESCRIPTOR.getInstallationByTestLinkName(this.testLinkName);
 		if ( installation == null )
 		{
-			listener.fatalError("Invalid TestLink installation");
-			return false;
+			throw new AbortException("Invalid TestLink installation.");
 		}
-		this.testLinkClient = new TestLinkAPIClient(
-			installation.getDevKey(), 
-			installation.getUrl()
-		);
 		
-		// Verifying Maven installation
-		if ( ! verifyMaven( launcher ) )
+		try 
 		{
-			listener.fatalError("Invalid Maven executable. Please check your maven installation or refer to documentation.");
-			return false;
+			this.api = 
+				new TestLinkAPI( installation.getUrl(), installation.getDevKey() );
+			listener.getLogger().println("Using TestLink URL: " + installation.getUrl() );
+		} 
+		catch (MalformedURLException mue) 
+		{
+			final String message = "Invalid TestLink URL: " + installation.getUrl();
+			listener.fatalError( message );
+			throw new AbortException( message );
 		}
 		
-		// TBD: add validation for not empty in the jelly page
-		listener.getLogger().println("Updating TestLink Custom Fields values from installation");
-		setupCustomFields( installation );
-		
+		// SVN revision information for Build.
 		if ( this.getLatestRevisionEnabled() )
 		{
 			listener.getLogger().println("Using SVN latest revision from repository as Build Name");
-			SVNHelper svn = new SVNHelper(
+			SVNLatestRevisionService svn = new SVNLatestRevisionService(
 					this.latestRevisionInfo.getSvnUrl(), 
 					this.latestRevisionInfo.getSvnUser(),
 					this.latestRevisionInfo.getSvnPassword());
 			try
 			{
-				this.buildName = Long.toString( svn.getLatestRevision() );
-			} catch (SVNException e)
+				Long latestRevision = svn.getLatestRevision();
+				this.buildName = Long.toString( latestRevision );
+				listener.getLogger().println( "Latest revision for " + this.latestRevisionInfo.getSvnUrl() + ": " + latestRevision );
+			} 
+			catch (SVNException e)
 			{
 				e.printStackTrace( listener.fatalError("Error retrieving latest revision from SVN repository: " + e.getMessage()) );
-				return false;
+				throw new AbortException();
+				// return false;
 			}
 		}
 		
-		// Details about the test parameters (plan, build, project)
-		listener.getLogger().println("Updating TestLink parameters");
-		try 
-		{
-			if ( ! this.updateTestLinkParameters() )
-			{
-				listener.fatalError("Invalid TestLink parameters. Check TestLink and Hudson Job parameters.");
-				return false;
-			}
-		}
-		catch (TestLinkAPIException e) 
-		{
-			e.printStackTrace(listener.fatalError("Invalid TestLink parameters: " + e.getMessage()));
-			return false;
-		}
+		final String[] customFieldsNames = this.getListOfCustomFieldsNames();
 		
-		listener.getLogger().println("Retrieving list of automated test cases");
-		List<TestLinkTestCase> automatedTests = new ArrayList<TestLinkTestCase>();
-		try 
-		{
-			this.retrieveListOfAutomatedTests( automatedTests, listener );
-		}
-		catch (TestLinkAPIException e) 
-		{
-			e.printStackTrace(listener.fatalError("Error retrieving list of automated test cases: " + e.getMessage()));
-			return false;
-		}
+		final AutomatedTestCasesFinder finder = new AutomatedTestCasesFinder(
+				listener, 
+				this.api,
+				customFieldsNames, 
+				testProjectName, 
+				testPlanName, 
+				buildName);
 		
-		boolean failure = false;
-		for( TestLinkTestCase testCase : automatedTests )
-		{
-			if ( this.transactional && failure )
-			{
-				testCase.setResultStatus(TestLinkAPIConst.TEST_BLOCKED);
-			} 
-			else 
-			{
-				failure = this.executeTestCase( testCase, build, listener, launcher );
-			}
-			
-			try
-			{
-				this.updateTestCaseResultStatus( testCase );
-			} 
-			catch ( TestLinkAPIException e )
-			{
-				e.printStackTrace( listener.fatalError("Error updating Test Case status: " + e.getMessage()) );
-				return false;
-			}
-		}
-		
-		FilePath workspace = build.getWorkspace();
-		File reportFile = new File(workspace.getRemote(), TestLinkParser.RESULT_FILE_NAME);
+		List<TestCase> automatedTestCases = null;
 		try
 		{
-			this.writeTestLinkReportFile(buildName, buildId, automatedTests, reportFile);
-		} catch ( IOException ioe )
+			automatedTestCases = finder.findAutomatedTestCases();
+		} 
+		catch (TestLinkAPIException e)
 		{
-			Util.displayIOException(ioe, listener);
-			ioe.printStackTrace( listener.fatalError("Error writing testlink.xml report: " + ioe.getMessage()) );
-			return false;
+			e.printStackTrace( listener.fatalError(e.getMessage()) );
+			throw new AbortException(e.getMessage());
 		}
 		
-		// end
-		return true;
-	}
-
-	/**
-	 * Set up the custom fields values.
-	 * 
-	 * @param installation
-	 */
-	private void setupCustomFields(TestLinkBuilderInstallation installation) 
-	{
-		this.testFileCustomField = installation.getTestFileCustomField();
-		this.testCategoryCustomField = installation.getTestCategoryCustomField();
-		this.testCaseCategory = installation.getTestCaseCategory();
-		this.testSuiteCategory = installation.getTestSuiteCategory();
-	}
-
-	/**
-	 * Checks if the maven installation is selected and is valid.
-	 * 
-	 * @param launcher Hudson Launcher
-	 * @return true if the maven installation is valid
-	 */
-	private boolean verifyMaven(Launcher launcher) 
-	{
-		List<Maven.MavenInstallation> mavenInstallations = this.getMavenInstallations();
-		for(Maven.MavenInstallation inst : mavenInstallations)
+		for ( TestCase automatedTestCase : automatedTestCases )
 		{
-			if ( inst.getName().equals(mavenInstallationName))
+			if ( this.failure  && this.transactional )
 			{
-				try
+				listener.getLogger().println("A test failed in transactional execution. Skiping tests.");
+				automatedTestCase.setExecutionStatus(ExecutionStatus.BLOCKED);
+			} 
+			else
+			{
+				final EnvVars buildEnvironmentVariables = this.buildEnvironmentVariables( automatedTestCase, listener, finder.getTestProject(), finder.getTestPlan(), finder.getBuild() ); 
+				//build.getEnvironment(listener).putAll(buildEnvironmentVariables);
+				buildEnvironmentVariables.putAll( build.getEnvironment( listener ) );
+				Integer exitCode = this.executeTestCommand( 
+						buildEnvironmentVariables, 
+						automatedTestCase, 
+						build, 
+						launcher, 
+						listener);
+				if ( exitCode != 0 )
 				{
-					this.mavenExecutable = inst.getExecutable(launcher);
-				} catch (Exception e)
-				{
-					this.mavenExecutable = mavenInstallationName + 
-						System.getProperty("file.separator") + 
-						"bin" +
-						System.getProperty("file.separator") + 
-						"mvn";
+					this.failure = true;
 				}
-				return true;
-			}			
-		}
-		return false;
-	}
-	
-	/**
-	 * Checks if the test case has all custom fields filled correctly.
-	 * 
-	 * @param tc Test Case
-	 * @return true if the Test Case configuration is OK
-	 */
-	private boolean verifyTestCase(TestLinkTestCase tc) 
-	{
-		// if category and file are not empty
-		if ( 
-				! StringUtils.isEmpty(tc.getCategory()) && 
-				! StringUtils.isEmpty(tc.getFile()))
-		{
-			// if category has one of the valid values
-			if ( 
-					tc.getCategory().equals( testCaseCategory) || 
-					tc.getCategory().equals( testSuiteCategory ) )
-			{
-				return true;
+				
 			}
 		}
-		return false;
-	}
-
-	/**
-	 * Retrieves the details about the execution of the tests on TestLink (
-	 * Test Plan Name, Test Plan Id
-	 * @return
-	 */
-	private boolean updateTestLinkParameters() 
-	throws TestLinkAPIException
-	{
-
-		TestLinkAPIResults projects = this.testLinkClient.getProjects();
-		int projectsSize = projects.size();
 		
-		if ( projectsSize == 0 )
-		{
-			return false;
-		}
+		// Create list of report files patterns
+		final ReportFilesPatterns reportFilesPatterns = this.getReportPatterns();
 		
-		for ( int i = 0 ; i < projectsSize ; ++i )
+		// Create report object
+		final TestLinkReport report = new TestLinkReport();
+		report.setBuild( finder.getBuild() );
+		report.setTestPlan( finder.getTestPlan() );
+		report.setTestProject( finder.getTestProject() );
+		report.getTestCases().addAll ( automatedTestCases );
+		
+		// Create the parsers
+		final List<Parser> parsers = 
+			this.createListOfParsers( report, reportFilesPatterns, listener );
+		
+		// Create list of test results
+		final List<TestResult> testResults = new ArrayList<TestResult>();
+		
+		// Extract test results using parsers	
+		for( final Parser parser : parsers )
 		{
-			Object oProject = projects.getData( i );
-			Map<?, ?> project = (Map<?, ?>)oProject;
-			
-			String projectName = ""+project.get(TestLinkAPIConst.API_RESULT_NAME );
-			
-			if ( this.projectName.equals(projectName) )
+			try
 			{
-				Object oProjectID = projects.getValueByName(i, TestLinkAPIConst.API_RESULT_IDENTIFIER);
-				Integer projectID = Integer.parseInt(oProjectID.toString());
-				this.setProjectId( projectID );
-				break;
-			}
-		}
-		if ( this.getProjectId() <= 0 )
-		{
-			return false;
-		}
-		
-		TestLinkAPIResults projectTestPlans = 
-			this.testLinkClient.getProjectTestPlans(projectName);
-		Object o = projectTestPlans.getValueByName(0, TestLinkAPIConst.API_RESULT_IDENTIFIER);
-		Integer planID = Integer.parseInt ( o.toString() );
-		this.setTestPlanId(planID);
-		
-		// Creating Build or Retrieving existing one
-		Integer buildID = this.testLinkClient.createBuild(
-				planID, 
-				buildName, 
-				BUILD_NOTES);
-		this.setBuildId(buildID);
-
-		return true;
-		
-	}
-
-	/**
-	 * Retrieves a list of the test cases marked as automated in TestLink
-	 * given Test Plan ID.
-	 * 
-	 * @param automatedTests List to hold all automated tests
-	 * @param listener Hudson Build listener
-	 * @return List of Automated Test Cases
-	 */
-	private void retrieveListOfAutomatedTests(
-			List<TestLinkTestCase> automatedTests, BuildListener listener ) 
-	throws TestLinkAPIException
-	{
-		
-		// Executes a query in TL to find all Test Cases linked to a Test Plan
-		TestLinkAPIResults results = this.testLinkClient.getCasesForTestPlan( this.getTestPlanId() );
-		int resultsSize = results.size();
-		
-		// for each tc found
-		for ( int i = 0 ; i < resultsSize ; ++i )
-		{
-			Map<?, ?> result = results.getData(i);
-			Object o = result.get(TestLinkAPIConst.API_RESULT_EXEC_TYPE);
-			if ( o != null )
-			{
-				// Check if the execution type is auto
-				String executionType = (String)o;
-				if ( TestLinkAPIConst.TESTCASE_EXECUTION_TYPE_AUTO
-						.equals(executionType) )
+				List<TestResult> foundResults = null;
+				
+				foundResults = build.getWorkspace().act( parser );
+				
+				if ( foundResults != null  )
 				{
-					// convert to plug-in TC object
-					TestLinkTestCase tc = this.convertMapToTestCase( result );
-					// add to the list of tcs
-					
-					if ( this.verifyTestCase( tc ) )
+					listener.getLogger().println("Found " + foundResults.size() + " test results");
+					if ( foundResults.size() > 0 )
 					{
-						automatedTests.add(tc);
-					} else 
-					{
-						listener.getLogger().println("Invalid automated Test Case found: " + tc);
+						testResults.addAll( foundResults );
 					}
 				}
 			}
+			catch (IOException e)
+			{
+				listener.getLogger().println("Failed to open report file");
+				e.printStackTrace( listener.getLogger() );
+			} 
 		}
+		
+		// Update TestLink with test results
+		final TestLinkTestStatusUpdater updater = new TestLinkTestStatusUpdater();
+		
+		try 
+		{
+			updater.updateTestCases(api, listener.getLogger(), testResults);
+		} 
+		catch (TestLinkAPIException tlae) 
+		{
+			tlae.printStackTrace( listener.fatalError( "Failed to update TestLink test results: " + tlae.getMessage() ) );
+			throw new AbortException ( tlae.getMessage() );
+		}
+		
+		report.getTestCases().clear();
+		for( TestResult testResult : testResults)
+		{
+			report.getTestCases().add ( testResult.getTestCase() );
+		}
+		
+		final TestLinkResult result = new TestLinkResult(report, build);
+        final TestLinkBuildAction buildAction = new TestLinkBuildAction(build, result);
+        
+        build.addAction( buildAction );
+		
+		// end
+		return Boolean.TRUE;
+	}
+	
+	/**
+	 * @return Array of custom fields names.
+	 */
+	protected String[] getListOfCustomFieldsNames()
+	{
+		String[] customFieldNamesArray = new String[0];
+		String customFields = this.getCustomFields();
+		
+		if( ! StringUtils.isEmpty( customFields ) )
+		{
+			StringTokenizer tokenizer = new StringTokenizer(customFields, ",");
+			if ( tokenizer.countTokens() > 0 )
+			{
+				customFieldNamesArray = new String[ tokenizer.countTokens() ];
+				int index = 0;
+				while ( tokenizer.hasMoreTokens() )
+				{
+					String customFieldName = tokenizer.nextToken();
+					customFieldName = customFieldName.trim();
+					customFieldNamesArray[ index ] = customFieldName;
+					index = index + 1;
+				}
+			}
+		}
+		
+		return customFieldNamesArray;
+	}
+	
+	/**
+	 * @param testCase
+	 * @param build 
+	 * @param testPlan 
+	 * @param testProject 
+	 * @return Environment Vars
+	 */
+	protected EnvVars buildEnvironmentVariables( TestCase testCase, BuildListener listener, TestProject testProject, TestPlan testPlan, Build build ) 
+	{
+		// Build environment variables list
+		listener.getLogger().println("Creating list of environment variables for test case execution");
+		Map<String, String> testLinkEnvironmentVariables = this.createTestLinkEnvironmentVariables( testCase, testProject, testPlan, build );
+
+		// Merge with build environment variables list
+		listener.getLogger().println("Merging build environment variables with TestLink environment variables");
+
+		final EnvVars buildEnvironment = new EnvVars( testLinkEnvironmentVariables );
+		return buildEnvironment;
+	}
+	
+	/**
+	 * @param testCase
+	 * @param build 
+	 * @param testPlan 
+	 * @param testProject 
+	 * @return Map
+	 */
+	protected Map<String, String> createTestLinkEnvironmentVariables( TestCase testCase, TestProject testProject, TestPlan testPlan, Build build ) 
+	{
+		Map<String, String> testLinkEnvVar = new HashMap<String, String>();
+		
+		testLinkEnvVar.put( TESTLINK_TESTCASE_ID_ENVVAR, ""+testCase.getId() );
+		testLinkEnvVar.put( TESTLINK_TESTCASE_NAME_ENVVAR, ""+testCase.getName() );
+		testLinkEnvVar.put( TESTLINK_TESTCASE_TESTSUITE_ID_ENVVAR, ""+testCase.getTestSuiteId() );
+		testLinkEnvVar.put( TESTLINK_TESTCASE_TESTPROJECT_ID, ""+testCase.getTestProjectId() );
+		testLinkEnvVar.put( TESTLINK_TESTCASE_AUTHOR_ENVVAR, ""+testCase.getAuthorLogin() );
+		testLinkEnvVar.put( TESTLINK_TESTCASE_SUMMARY_ENVVAR, testCase.getSummary() );
+		testLinkEnvVar.put( TESTLINK_BUILD_NAME_ENVVAR, build.getName() );
+		testLinkEnvVar.put( TESTLINK_TESTPLAN_NAME_ENVVAR, testPlan.getName() );
+		testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, testProject.getName() );
+		
+		List<CustomField> customFields = testCase.getCustomFields();
+		for (Iterator<CustomField> iterator = customFields.iterator(); iterator.hasNext();)
+		{
+			CustomField customField = iterator.next();
+			String customFieldEnvVarName = this.formatCustomFieldEnvironmentVariableName( customField.getName() );
+			testLinkEnvVar.put(customFieldEnvVarName , customField.getValue());
+		}
+		
+		return testLinkEnvVar;
+	}
+	
+	/**
+	 * @param name
+	 * @return
+	 */
+	private String formatCustomFieldEnvironmentVariableName(String name) 
+	{
+		name = name.toUpperCase(); // uppercase
+		name = name.trim(); // trim
+		name = TESTLINK_TESTCASE_PREFIX + name; // add prefix
+		name = name.replaceAll( "\\s+", "_" ); // replace white spaces
+		return name;
+	}
+	
+	/**
+	 * @param buildEnvironmentVariables
+	 * @param testCase
+	 */
+	protected Integer executeTestCommand( 
+		EnvVars buildEnvironmentVariables,
+		TestCase testCase, 
+		AbstractBuild<?, ?> hudsonBuild, 
+		Launcher launcher, 
+		BuildListener listener) 
+	{
+		
+		int exitCode = -1;
+
+		if ( this.transactional && this.failure )
+		{
+			testCase.setExecutionStatus(ExecutionStatus.BLOCKED);
+		} 
+		else 
+		{ 
+			FilePath temporaryExecutableScript = null;
+			
+			try
+			{
+				temporaryExecutableScript = this.createTemporaryExecutableScript( hudsonBuild, launcher );
+				ArgumentListBuilder args = new ArgumentListBuilder();
+				args.add( temporaryExecutableScript.getRemote() );
+				if ( ! launcher.isUnix() )
+				{
+					args.add("&&","exit","%%ERRORLEVEL%%");
+				}
+	            ProcStarter ps = launcher.launch();
+	            ps.envs( buildEnvironmentVariables );
+	            ps.cmds( args );
+	            ps.stdout( listener );
+	            ps.pwd( hudsonBuild.getModuleRoot() ); 
+	            
+	            listener.getLogger().println("Executing test command");
+	            //exitCode = ps.join();
+	            exitCode = launcher.launch( ps ).join();
+			}  
+			catch (IOException e)
+	        {
+	            Util.displayIOException(e,listener);
+	            e.printStackTrace( listener.fatalError("Test command execution failed") );
+	            failure = true;
+	        } 
+	        catch (InterruptedException e) 
+	        {
+	        	e.printStackTrace( listener.fatalError("Test command execution failed") );
+	        	failure = true;
+	        } 
+	        // Destroy temporary file.
+	        finally 
+	        {
+	        	if ( temporaryExecutableScript != null )
+				{
+					try 
+					{
+						temporaryExecutableScript.delete();
+					} 
+					catch (IOException e)
+					{
+						e.printStackTrace( listener.error("Error deleting temporary script " + temporaryExecutableScript) );
+					} 
+					catch (InterruptedException e) 
+					{
+						e.printStackTrace( listener.error("Error deleting temporary script " + temporaryExecutableScript) );
+					}
+				}
+	        }
+	        
+		}	
+		
+		return exitCode;
+
+	}
+	
+	/**
+	 * Creates a temporary executable script with the test command inside it.
+	 * 
+	 * @return FilePath object referring to the temporary executable script.
+	 * @throws InterruptedException 
+	 * @throws IOException 
+	 */
+	protected FilePath createTemporaryExecutableScript( AbstractBuild<?, ?> hudsonBuild, Launcher launcher ) 
+	throws IOException, InterruptedException
+	{
+		FilePath temporaryExecutableScript = null;
+		
+		String temporaryFileSuffix = WINDOWS_SCRIPT_EXTENSION; 
+		if ( launcher.isUnix() ) 
+		{
+			temporaryFileSuffix = UNIX_SCRIPT_EXTENSION; 
+		}
+		
+		temporaryExecutableScript = 
+			hudsonBuild.getWorkspace().createTempFile(TEMPORARY_FILE_PREFIX, temporaryFileSuffix);
+		//temporaryExecutableScript.chmod(READ_WRITE_PERMISSION); 
+		temporaryExecutableScript.chmod(READ_WRITE_PERMISSION);
+		
+		TemporaryExecutableScriptWriter scriptCreator = 
+			new TemporaryExecutableScriptWriter(
+					temporaryExecutableScript.getRemote(), 
+					launcher.isUnix(), 
+					testCommand );
+		
+		hudsonBuild.getWorkspace().act( scriptCreator );
+		    	
+    	return temporaryExecutableScript;
 	}
 
 	/**
-	 * Converts a map returned from testlink-java-api to a TestLinkTestCase.
+	 * Retrieves the object that contains all the test report files patterns.
 	 * 
-	 * @param testCase Map returned from testlink-java-api
-	 * @return Test Case
-	 * @throws TestLinkAPIException 
+	 * @return report files patterns object.
+	 * @see ReportFilesPatterns
 	 */
-	private TestLinkTestCase convertMapToTestCase(Map<?, ?> testCase) 
-	throws TestLinkAPIException 
+	protected ReportFilesPatterns getReportPatterns()
 	{
+		final ReportFilesPatterns reportFilesPatterns = new ReportFilesPatterns();
 		
-		TestLinkTestCase tc = new TestLinkTestCase();
-		tc.setPlanId(this.getTestPlanId());
-		tc.setBuildId(this.getBuildId());
+		reportFilesPatterns.setJunitXmlReportFilesPattern( this.junitReportFilesPattern );
+		reportFilesPatterns.setTestNGXmlReportFilesPattern( this.testNGReportFilesPattern );
+		reportFilesPatterns.setTapStreamReportFilesPattern( this.tapReportFilesPattern );
 		
-		// Test Case ID
-		int testCaseId = Integer.parseInt( testCase.get(TestLinkAPIConst.API_RESULT_TC_INTERNAL_ID).toString() );
-		TestLinkAPIResults apiResults = 
-			this.testLinkClient.getTestCaseCustomFieldDesignValue(
-					testCaseId,
-					this.getProjectId(), 
-					this.testCategoryCustomField, 
-					"full");
-		tc.setId(testCaseId);
-		
-		// Test Case Category (suite or test case)
-		String testCaseCategory = 
-			apiResults.getValueByName(0, "value").toString();
-		tc.setCategory(testCaseCategory);	
-		
-		// Test Case File (testng suite xml, testng test case file)
-		apiResults  = 
-			this.testLinkClient.getTestCaseCustomFieldDesignValue(
-					testCaseId,
-					this.getProjectId(), 
-					this.testFileCustomField, 
-					"full");
-		String testCaseFile = 
-			apiResults.getValueByName(0, "value").toString();
-		tc.setFile(testCaseFile);
-		
-		return tc;
+		return reportFilesPatterns;
 	}
 	
 	/**
-	 * <p>Executes an automated test case. It calls the chosen Maven passing the 
-	 * test project pom.xml and adding the test file as parameter for the 
-	 * test goal.</p>
+	 * Creates list of parsers.
 	 * 
-	 * <p>Example of caller command: mvn -f <test_project_directory>/pom.xml 
-	 * <test_goal> -D(test=<test_file> | suiteXmlFiles=<test_file>)</p>
-	 * 
-	 * @param tc Test Case
-	 * @param build Hudson Build
-	 * @param listener Hudson Build listener
-	 * @param launcher Hudson Launcher
+	 * @param report TestLink Plugin Report object
+	 * @param reportFilesPatterns Report files patterns
+	 * @param ps Print Steam to log events.
+	 * @return List of Parsers
 	 */
-	private boolean executeTestCase(
-			TestLinkTestCase tc, 
-			AbstractBuild<?, ?> build, 
-			BuildListener listener, 
-			Launcher launcher) 
+	private List<Parser> createListOfParsers(
+			TestLinkReport report, 
+			ReportFilesPatterns reportFilesPatterns, 
+			BuildListener listener) 
 	{
-		String mavenExecutable = this.getMavenExecutable();
-		
-		// List of arguments passed for command line
-		ArgumentListBuilder args = new ArgumentListBuilder();
-		
-		args.add( mavenExecutable );
-		//args.add("-DMAVEN_OPTS=\"-Xmx1024m -Xms512m -XX:MaxPermSize=256m -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=45663,server=y,suspend=n\"");
-		args.add("-f", this.mavenTestProjectDirectory + 
-				System.getProperty("file.separator") + 
-				"pom.xml");
-		if ( tc.getCategory().equals( testCaseCategory ))
-		{
-			args.add(this.mavenTestProjectGoal, "-Dtest=" + tc.getFile());
-		} else if ( tc.getCategory().equals( testSuiteCategory ) )
-		{
-			args.add(this.mavenTestProjectGoal, "-Dsuite=" + tc.getFile());
-		} else {
-			listener.fatalError("Invalid test category: " + tc);
-			return false;
-		}
-		args.add("&&","exit","%%ERRORLEVEL%%");
-		
-		// Try to execute the command
-        listener.getLogger().println("Executing command: "+args.toStringWithQuote());
-        
-        int exitCode = -1;
-        try 
-        {
-            Map<String,String> env = build.getEnvironment(listener);
-            
-            ProcStarter ps = launcher.launch();
-            ps.cmds(args);
-            ps.envs(env);
-            ps.stdout(listener);
-            ps.pwd(build.getModuleRoot());
-            
-            exitCode = ps.join();
-            
-        } catch (IOException e) {
-            Util.displayIOException(e,listener);
-            e.printStackTrace( listener.fatalError("Command execution failed") );
-        } catch (InterruptedException e) {
-        	e.printStackTrace( listener.fatalError("Command execution failed") );
-		}
-        
-        tc.setResultStatus( this.getTestLinkTCStatus( exitCode ) );
-        
-        return tc.getResultStatus().equals(TestLinkAPIConst.TEST_FAILED);
-	}
-	
-	/**
-	 * Returns the equivalent string status in TestLink for an exit code.
-	 * 
-	 * @param exitCode Execution command line exit code
-	 * @return
-	 */
-	private String getTestLinkTCStatus( int exitCode )
-	{
-		if ( exitCode == 0 )
-			return TestLinkAPIConst.TEST_PASSED;
-		return TestLinkAPIConst.TEST_FAILED;
-	}
-	
-	/**
-	 * Updates the Test Case status in Test Link. 
-	 * 
-	 * @param tc Test Case
-	 * @throws TestLinkAPIException 
-	 */
-	private void updateTestCaseResultStatus(TestLinkTestCase tc) 
-	throws TestLinkAPIException 
-	{
-		this.testLinkClient.reportTestCaseResult(
-				tc.getPlanId(), 
-				tc.getId(), 
-				tc.getBuildId(), 
-				TEST_CASE_EXECUTION_NOTES, 
-				tc.getResultStatus());
-	}
-	
-	/**
-	 * Writes TestLink report file.
-	 * 
-	 * @param buildId Build Id
-	 * @param buildName Build Name
-	 * @param automatedTests List of Test Cases executed.
-	 * @param reportFile File to write to
-	 * @throws IOException 
-	 */
-	private void writeTestLinkReportFile( 
-			String buildName, 
-			Integer buildId, 
-			final List<TestLinkTestCase> automatedTests, 
-			File reportFile )
-	throws IOException 
-	{
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("<testlink>\n");
-		buffer.append("\t<buildName>"+buildName+"</buildName>\n");
-		for ( TestLinkTestCase tc : automatedTests )
-		{
-			buffer.append(tc.toXml());
-		}
-		buffer.append("</testlink>\n");
-		
-		FileWriter writer = new FileWriter( reportFile );
-		writer.append(buffer.toString());
-		writer.flush();
-		writer.close();
+		List<Parser> parsers = new ArrayList<Parser>();
+		final Parser junitParser = new JUnitParser( 
+				report, 
+				keyCustomField,
+				listener, 
+				reportFilesPatterns.getJunitXmlReportFilesPattern() );
+		final Parser testNGParser = new TestNGParser(
+				report, 
+				keyCustomField, 
+				listener, 
+				reportFilesPatterns.getTestNGXmlReportFilesPattern() );
+		final Parser tapParser = new TAPParser( 
+				report, 
+				keyCustomField, 
+				listener, 
+				reportFilesPatterns.getTapStreamReportFilesPattern() );
+		parsers.add( junitParser );
+		parsers.add( testNGParser );
+		parsers.add( tapParser );
+		return parsers;
 	}
 	
 }

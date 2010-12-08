@@ -18,64 +18,47 @@
  * with Kinow.                                      
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 31/08/2010
+ * @since 30/11/2010
  */
-package hudson.plugins.testlink;
-
-import java.io.Serializable;
-
-import org.kohsuke.stapler.DataBoundConstructor;
+package hudson.plugins.testlink.util;
 
 /**
- * Represents the TestLink installation in Hudson global configuration. 
- * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 1.0
+ * @since 30/11/2010
  */
-public class TestLinkBuilderInstallation 
-implements Serializable
+public class TestLinkPluginException extends Exception
 {
 
 	/**
-	 * Name of the installation
+	 * 
 	 */
-	private String name;
-	
+	public TestLinkPluginException()
+	{
+	}
+
 	/**
-	 * TestLink URL
+	 * @param message
 	 */
-	private String url;
-	
+	public TestLinkPluginException(String message)
+	{
+		super(message);
+	}
+
 	/**
-	 * A valid user dev key
+	 * @param cause
 	 */
-	private String devKey;
-	
-	@DataBoundConstructor
-	public TestLinkBuilderInstallation(
-		String name, 
-		String url, 
-		String devKey
-	)
+	public TestLinkPluginException(Throwable cause)
 	{
-		this.name = name;
-		this.url = url;
-		this.devKey = devKey;
+		super(cause);
 	}
-	
-	public String getName()
+
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public TestLinkPluginException(String message, Throwable cause)
 	{
-		return this.name;
+		super(message, cause);
 	}
-	
-	public String getUrl()
-	{
-		return this.url;
-	}
-	
-	public String getDevKey()
-	{
-		return this.devKey;
-	}
-	
+
 }
