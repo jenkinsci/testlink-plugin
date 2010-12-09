@@ -19,6 +19,7 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.TestLinkTables;
@@ -52,6 +53,8 @@ implements FileCallable<List<TestResult>>
 	 */
 	protected Scanner scanner;
 	
+	private Boolean enabled = Boolean.TRUE;
+	
 	/**
 	 * @param ps Build Listener to log events.
 	 * @param includePattern Pattern to include files.
@@ -63,6 +66,19 @@ implements FileCallable<List<TestResult>>
 		this.listener = listener;
 		
 		scanner = new Scanner( listener );
+		
+		if ( StringUtils.isBlank(includePattern) )
+		{
+			this.enabled = Boolean.FALSE;
+		}
+	}
+	
+	/**
+	 * @return True when enabled, false otherwise.
+	 */
+	public Boolean isEnabled()
+	{
+		return this.enabled;
 	}
 	
 	/**

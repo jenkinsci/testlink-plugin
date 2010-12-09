@@ -498,26 +498,30 @@ extends Builder
 		// Extract test results using parsers	
 		for( final Parser parser : parsers )
 		{
-			try
+			// only call the parser if it is enabled
+			if ( parser.isEnabled() )
 			{
-				List<TestResult> foundResults = null;
-				
-				foundResults = build.getWorkspace().act( parser );
-				
-				if ( foundResults != null  )
+				try
 				{
-					listener.getLogger().println("Found " + foundResults.size() + " test results");
-					if ( foundResults.size() > 0 )
+					List<TestResult> foundResults = null;
+					
+					foundResults = build.getWorkspace().act( parser );
+					
+					if ( foundResults != null  )
 					{
-						testResults.addAll( foundResults );
+						listener.getLogger().println("Found " + foundResults.size() + " test results");
+						if ( foundResults.size() > 0 )
+						{
+							testResults.addAll( foundResults );
+						}
 					}
 				}
+				catch (IOException e)
+				{
+					listener.getLogger().println("Failed to open report file");
+					e.printStackTrace( listener.getLogger() );
+				} 
 			}
-			catch (IOException e)
-			{
-				listener.getLogger().println("Failed to open report file");
-				e.printStackTrace( listener.getLogger() );
-			} 
 		}
 		
 		// Update TestLink with test results
