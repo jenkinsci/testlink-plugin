@@ -99,7 +99,7 @@
   	<dependency>
   		<groupId>br.eti.kinoshita</groupId>
   		<artifactId>tap4j</artifactId>
-  		<version>1.3-SNAPSHOT</version>
+  		<version>1.3</version>
   		<type>jar</type>
   		<scope>system</scope>
   		<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/tap4j-1.3.jar</systemPath>
