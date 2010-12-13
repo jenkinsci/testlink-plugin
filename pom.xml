@@ -9,7 +9,7 @@
 
   <artifactId>testlink</artifactId>
   <name>TestLink Hudson Plugin</name>
-  <version>2.0.1</version>
+  <version>2.0.2-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <description>This plug-in integrates TestLink and Hudson.</description>
   <url>http://wiki.hudson-ci.org/display/HUDSON/TestLink+Plugin</url>
@@ -17,9 +17,9 @@
   <inceptionYear>2010</inceptionYear>
 
   <scm>
-	<connection>scm:svn:https://guest@svn.java.net/svn/hudson~svn/tags/testlink-2.0.1</connection>
-    <developerConnection>scm:svn:https://svn.java.net/svn/hudson~svn/tags/testlink-2.0.1</developerConnection>
-    <url>https://svn.java.net/svn/hudson~svn/tags/testlink-2.0.1</url>
+	<connection>scm:svn:https://guest@svn.java.net/svn/hudson~svn/trunk/hudson/plugins/testlink</connection>
+    <developerConnection>scm:svn:https://svn.java.net/svn/hudson~svn/trunk/hudson/plugins/testlink</developerConnection>
+    <url>https://svn.java.net/svn/hudson~svn/trunk/hudson/plugins/testlink</url>
   </scm>
 
   <build>
