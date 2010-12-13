@@ -35,7 +35,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestLinkTables;
  * @since 2.0
  */
 public abstract class Parser 
-implements FileCallable<List<TestResult>>
+implements FileCallable<TestResult[]>
 {
 	
 	/**
@@ -94,7 +94,7 @@ implements FileCallable<List<TestResult>>
 	 * @throws TestLinkPluginException
 	 * @throws IOException
 	 */
-	public List<TestResult> parse( File baseDir ) 
+	public TestResult[] parse( File baseDir ) 
 	throws IOException
 	{
 		
@@ -114,7 +114,7 @@ implements FileCallable<List<TestResult>>
 			results.addAll( foundTestResults );
 		}
 		
-		return results;
+		return results.toArray(new TestResult[0]);
 	}
 
 	/**
@@ -131,7 +131,7 @@ implements FileCallable<List<TestResult>>
 	/* (non-Javadoc)
 	 * @see hudson.FilePath.FileCallable#invoke(java.io.File, hudson.remoting.VirtualChannel)
 	 */
-	public List<TestResult> invoke( File file, VirtualChannel channel )
+	public TestResult[] invoke( File file, VirtualChannel channel )
 	throws IOException, InterruptedException 
 	{
 		return this.parse( file );

@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.List;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -86,7 +85,7 @@ public class TestJUnitParser
 		URL url = cl.getResource(".");
 		File baseDir = new File( url.getFile() );
 		
-		List<TestResult> testResults = null;
+		TestResult[] testResults = null;
 		try
 		{
 			testResults = this.parser.parse( baseDir );
@@ -97,9 +96,9 @@ public class TestJUnitParser
 		}
 		
 		Assert.assertNotNull( testResults );
-		Assert.assertTrue( testResults.size() == 1 );
+		Assert.assertTrue( testResults.length == 1 );
 		
-		Assert.assertTrue( testResults.get(0).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
+		Assert.assertTrue( testResults[0].getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
 	}
 	
 }

@@ -80,7 +80,10 @@ extends Parser
 			{
 				throw new IOException2( "Could not intialize the XML parser. Please report this issue to the plugin author", pe );
 			}
-			testResults.add( foundTestResult );
+			if ( foundTestResult != null )
+			{
+				testResults.add( foundTestResult );
+			}
 		}
 		finally 
 		{

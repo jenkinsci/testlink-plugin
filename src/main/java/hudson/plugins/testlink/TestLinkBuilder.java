@@ -503,17 +503,24 @@ extends Builder
 			{
 				try
 				{
-					List<TestResult> foundResults = null;
+					TestResult[] foundResults = null;
 					
 					foundResults = build.getWorkspace().act( parser );
 					
-					if ( foundResults != null  )
+					if ( foundResults != null && foundResults.length > 0   )
 					{
-						listener.getLogger().println("Found " + foundResults.size() + " test results");
-						if ( foundResults.size() > 0 )
+						listener.getLogger().println("Found " + foundResults.length + " test results");
+						for ( int i = 0 ; i < foundResults.length ; ++i )
 						{
-							testResults.addAll( foundResults );
+							if ( foundResults[i] != null )
+							{
+								testResults.add( foundResults[i] );
+							}
 						}
+					} 
+					else
+					{
+						listener.getLogger().println("No test results found");
 					}
 				}
 				catch (IOException e)

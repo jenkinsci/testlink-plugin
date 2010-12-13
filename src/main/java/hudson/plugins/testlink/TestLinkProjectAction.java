@@ -22,10 +22,10 @@
  */
 package hudson.plugins.testlink;
 
+import hudson.model.ProminentProjectAction;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Actionable;
-import hudson.model.ProminentProjectAction;
 import hudson.util.Graph;
 
 import java.io.IOException;
