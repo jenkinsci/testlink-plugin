@@ -99,14 +99,6 @@
   	</dependency>
   	<dependency>
   		<groupId>br.eti.kinoshita</groupId>
-  		<artifactId>tap4j</artifactId>
-  		<version>1.3</version>
-  		<type>jar</type>
-  		<scope>system</scope>
-  		<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/tap4j-1.3.jar</systemPath>
-  	</dependency>
-  	<dependency>
-  		<groupId>br.eti.kinoshita</groupId>
   		<artifactId>testlink-java-api</artifactId>
   		<version>1.9.0-4</version>
   		<type>jar</type>
@@ -123,6 +115,13 @@
   		<groupId>commons-codec</groupId>
   		<artifactId>commons-codec</artifactId>
   		<version>1.4</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>br.eti.kinoshita</groupId>
+  		<artifactId>tap4j</artifactId>
+  		<version>1.3</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
