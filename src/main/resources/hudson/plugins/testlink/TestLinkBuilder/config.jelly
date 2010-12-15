@@ -12,11 +12,13 @@
   </f:entry>
   
   <f:entry title="Test Project name" help="${rootURL}/../plugin/testlink/help-projectName.html">
-	  <f:textbox name="TestLinkBuilder.testProjectName" value="${instance.testProjectName}" />
+	  <f:textbox name="TestLinkBuilder.testProjectName" value="${instance.testProjectName}" 
+	  checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)" />
   </f:entry>
   
   <f:entry title="Test Plan name" help="${rootURL}/../plugin/testlink/help-planName.html">
-	  <f:textbox name="TestLinkBuilder.testPlanName" value="${instance.testPlanName}" />
+	  <f:textbox name="TestLinkBuilder.testPlanName" value="${instance.testPlanName}" 
+	  checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)"/>
   </f:entry>
   
   <f:entry title="Build name" help="${rootURL}/../plugin/testlink/help-buildName.html">

@@ -25,8 +25,11 @@ package hudson.plugins.testlink;
 import hudson.CopyOnWrite;
 import hudson.model.Descriptor;
 import hudson.tasks.Builder;
+import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
@@ -93,4 +96,17 @@ extends Descriptor<Builder>
 		return true;
 	}
 	
+	/* 
+	 * --- Validation methods ---
+	 */
+	public FormValidation doCheckMandatory(@QueryParameter String value)
+	{
+		FormValidation returnValue = FormValidation.ok();
+		if ( StringUtils.isBlank( value ) )
+		{
+			returnValue = FormValidation.error("This property is mandatory.");
+		}
+		return returnValue;
+	}
+
 }
