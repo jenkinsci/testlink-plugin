@@ -443,7 +443,6 @@ extends Builder
 			{
 				e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_SVNError(e.getMessage())) );
 				throw new AbortException();
-				// return false;
 			}
 		}
 		
@@ -468,6 +467,20 @@ extends Builder
 			throw new AbortException(e.getMessage());
 		}
 		
+		// Execute single test command
+		listener.getLogger().println(Messages.TestLinkBuilder_ExecutingSingleTestCommand());
+		final EnvVars singleTestEnvironmentVariables = new EnvVars();
+		Integer singleTestCommandExitCode = this.executeTestCommand( 
+				singleTestEnvironmentVariables, 
+				build, 
+				launcher, 
+				listener, 
+				singleTestCommand);
+		if ( singleTestCommandExitCode != 0 )
+		{
+			this.failure = true;
+		}
+		
 		for ( TestCase automatedTestCase : automatedTestCases )
 		{
 			if ( this.failure  && this.transactional )
@@ -480,13 +493,13 @@ extends Builder
 				final EnvVars buildEnvironmentVariables = this.buildEnvironmentVariables( automatedTestCase, listener, finder.getTestProject(), finder.getTestPlan(), finder.getBuild() ); 
 				//build.getEnvironment(listener).putAll(buildEnvironmentVariables);
 				buildEnvironmentVariables.putAll( build.getEnvironment( listener ) );
-				final Integer exitCode = this.executePerTestCommand( 
+				final Integer iterativeTestCommandExitCode = this.executeTestCommand( 
 						buildEnvironmentVariables, 
-						automatedTestCase, 
 						build, 
 						launcher, 
-						listener);
-				if ( exitCode != 0 )
+						listener, 
+						iterativeTestCommand);
+				if ( iterativeTestCommandExitCode != 0 )
 				{
 					this.failure = true;
 				}
@@ -691,14 +704,15 @@ extends Builder
 	 * @param hudsonBuild Hudson Build instance
 	 * @param launcher Hudson Build instance's launcher
 	 * @param listener Hudson Build instance's listener
+	 * @param command Command to execute
 	 * @return Integer representing the process exit code
 	 */
-	protected Integer executePerTestCommand( 
+	protected Integer executeTestCommand( 
 		EnvVars buildEnvironmentVariables,
-		TestCase testCase, 
 		AbstractBuild<?, ?> hudsonBuild, 
 		Launcher launcher, 
-		BuildListener listener) 
+		BuildListener listener, 
+		String command) 
 	{
 		
 		int exitCode = -1;
@@ -707,7 +721,7 @@ extends Builder
 		
 		try
 		{
-			temporaryExecutableScript = this.createTemporaryExecutableScript( hudsonBuild, launcher );
+			temporaryExecutableScript = this.createTemporaryExecutableScript( hudsonBuild, launcher, command );
 			ArgumentListBuilder args = new ArgumentListBuilder();
 			args.add( temporaryExecutableScript.getRemote() );
 			if ( ! launcher.isUnix() )
@@ -720,7 +734,7 @@ extends Builder
             ps.stdout( listener );
             ps.pwd( hudsonBuild.getModuleRoot() ); 
             
-            listener.getLogger().println(Messages.TestLinkBuilder_ExecutingTestCommand());
+            listener.getLogger().println(Messages.TestLinkBuilder_ExecutingIterativeTestCommand());
             //exitCode = ps.join();
             exitCode = launcher.launch( ps ).join();
 		}  
@@ -761,13 +775,19 @@ extends Builder
 	}
 	
 	/**
-	 * Creates a temporary executable script with the test command inside it.
+	 * Creates a temporary executable script with the test command inside it
 	 * 
+	 * @param hudsonBuild
+	 * @param launcher
+	 * @param command
 	 * @return FilePath object referring to the temporary executable script.
-	 * @throws InterruptedException 
-	 * @throws IOException 
+	 * @throws IOException
+	 * @throws InterruptedException
 	 */
-	protected FilePath createTemporaryExecutableScript( AbstractBuild<?, ?> hudsonBuild, Launcher launcher ) 
+	protected FilePath createTemporaryExecutableScript( 
+			AbstractBuild<?, ?> hudsonBuild, 
+			Launcher launcher, 
+			String command ) 
 	throws IOException, InterruptedException
 	{
 		FilePath temporaryExecutableScript = null;
@@ -787,7 +807,7 @@ extends Builder
 			new TemporaryExecutableScriptWriter(
 					temporaryExecutableScript.getRemote(), 
 					launcher.isUnix(), 
-					iterativeTestCommand );
+					command );
 		
 		hudsonBuild.getWorkspace().act( scriptCreator );
 		    	

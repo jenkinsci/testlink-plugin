@@ -80,7 +80,7 @@ public class ReportSummary {
             		previous.getTestsBlocked(),
             		builder);
         }
-        builder.append( Messages.ReportSummary_Summary_TestsBlocked() );
+        builder.append( " " + Messages.ReportSummary_Summary_TestsBlocked() );
         builder.append("</p>");
 		
 		return builder.toString();
