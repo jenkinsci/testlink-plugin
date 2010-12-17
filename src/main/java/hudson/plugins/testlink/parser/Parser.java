@@ -108,7 +108,7 @@ implements FileCallable<TestResult[]>
 			String fileName = files[i];
 			File file = new File( baseDir, fileName );
 			
-			listener.getLogger().println( getName() + " file found. Parsing file to extract Test Results");
+			listener.getLogger().println( getName() + " file found. Parsing file to extract Test Results" );
 			List<TestResult> foundTestResults = this.parseFile ( file );
 			
 			results.addAll( foundTestResults );
@@ -149,7 +149,7 @@ implements FileCallable<TestResult[]>
 		Attachment attachment = new Attachment();
 		String fileContent = this.getBase64FileContent( file );
 		attachment.setContent( fileContent );
-		attachment.setDescription( "JUnit report file for Automated Test Case" );
+		attachment.setDescription( getName() + " report file for Automated Test Case" );
 		attachment.setFileName( file.getName() );
 		attachment.setFileSize( file.length() );
 		attachment.setFkTable( TestLinkTables.nodesHierarchy.toString() );

@@ -47,41 +47,41 @@ public class ReportSummary {
 			TestLinkReport previous) 
 	{
 		StringBuilder builder = new StringBuilder();
-		builder.append("<p><b>TestLink Build ID: "+report.getBuild().getId()+"</b></p>");
-		builder.append("<p><b>TestLink Build Name: "+report.getBuild().getName()+"</b></p>");
-		builder.append("<p><a href=\"" + TestLinkBuildAction.URL_NAME + "\">Total of ");
-        builder.append(report.getTestsTotal());
+		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildID(report.getBuild().getId())+"</b></p>");
+		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildName(report.getBuild().getName())+"</b></p>");
+		builder.append("<p><a href=\"" + TestLinkBuildAction.URL_NAME + "\">");
+        builder.append( Messages.ReportSummary_Summary_TotalOf( report.getTestsTotal() ) );
         if(previous != null){
             printDifference(
             		report.getTestsTotal(),
             		previous.getTestsTotal(), 
             		builder);
         }
-        builder.append(" tests.</a> where ");
-        builder.append(report.getTestsPassed());
+        builder.append( " " +  Messages.ReportSummary_Summary_Tests() );
+        builder.append("</a>");
+        builder.append( " " + Messages.ReportSummary_Summary_Where( report.getTestsPassed() ) );
         if(previous != null){
             printDifference(
             		report.getTestsPassed(), 
             		previous.getTestsPassed(), 
             		builder);
         }
-        builder.append(" tests passed, ");
-        builder.append(report.getTestsFailed());
+        builder.append( " " + Messages.ReportSummary_Summary_TestsPassed( report.getTestsFailed() ) );
         if(previous != null){
             printDifference(
             		report.getTestsFailed(),
             		previous.getTestsFailed(),
             		builder);
         }
-        builder.append(" tests failed and ");
-        builder.append(report.getTestsBlocked());
+        builder.append( " " + Messages.ReportSummary_Summary_TestsFailed(report.getTestsBlocked()) );
         if(previous != null){
             printDifference(
             		report.getTestsBlocked(),
             		previous.getTestsBlocked(),
             		builder);
         }
-        builder.append(" tests were blocked.</p>");
+        builder.append( Messages.ReportSummary_Summary_TestsBlocked() );
+        builder.append("</p>");
 		
 		return builder.toString();
 	}
@@ -99,9 +99,19 @@ public class ReportSummary {
 	{
 		StringBuilder builder = new StringBuilder();
 
-		builder.append("<p>List of test cases and execution result status.</p>");
+		builder.append("<p>"+Messages.ReportSummary_Details_Header()+"</p>");
 		builder.append("<table border=\"1\">\n");
-		builder.append("<tr><th>Test Case Id</th><th>Version</th><th>Name</th><th>Test Project Id</th><th>Automated Execution</th></tr>\n");
+		builder.append("<tr><th>");
+		builder.append(Messages.ReportSummary_Details_TestCaseId() );
+		builder.append("</th><th>");
+		builder.append(Messages.ReportSummary_Details_Version() );
+		builder.append("</th><th>");
+		builder.append(Messages.ReportSummary_Details_Name());
+		builder.append("</th><th>");
+		builder.append(Messages.ReportSummary_Details_TestProjectId());
+		builder.append("</th><th>");
+		builder.append(Messages.ReportSummary_Details_ExecutionStatus());
+		builder.append("</th></tr>\n");
 		
         for(TestCase tc: report.getTestCases() )
         {

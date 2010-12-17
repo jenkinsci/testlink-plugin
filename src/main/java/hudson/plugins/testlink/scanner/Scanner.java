@@ -24,6 +24,7 @@ package hudson.plugins.testlink.scanner;
 
 import hudson.Util;
 import hudson.model.BuildListener;
+import hudson.plugins.testlink.Messages;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,7 +69,7 @@ implements Serializable
 		catch ( Exception e ) // TBD: find out which exception is thrown
 		{
 			e.printStackTrace( listener.getLogger() );
-			throw new IOException( "Failed to open base directory to look for reports: " + e.getMessage(), e );
+			throw new IOException( Messages.TestLinkBuilder_Scanner_FailedToOpenBaseDirectory(e.getMessage()), e );
 		}
 		
 		DirectoryScanner ds = fs.getDirectoryScanner();

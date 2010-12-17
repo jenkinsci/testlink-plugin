@@ -40,7 +40,7 @@ public class TestLinkBuilderDescriptor
 extends Descriptor<Builder>
 {
 
-	private static final String DISPLAY_NAME = "Invoke Testlink";
+	private static final String DISPLAY_NAME = "Invoke TestLink";
 	
 	@CopyOnWrite
 	private volatile TestLinkBuilderInstallation[] installations = 
@@ -104,7 +104,7 @@ extends Descriptor<Builder>
 		FormValidation returnValue = FormValidation.ok();
 		if ( StringUtils.isBlank( value ) )
 		{
-			returnValue = FormValidation.error("This property is mandatory.");
+			returnValue = FormValidation.error( Messages.TestLinkBuilder_MandatoryProperty() );
 		}
 		return returnValue;
 	}

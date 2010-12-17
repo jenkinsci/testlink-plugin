@@ -1,0 +1,32 @@
+<div>
+  <p>
+  	TestLink Hudson Plug-in recupera os dados dos casos de teste automatizados 
+  	do TestLink. Estes dados s&#227;o ent&#227;o definidos como vari&#225;veis de ambiente. 
+  	Desta maneira seu comando de teste iterativo pode fazer uso desta informa&#231;&#227;o 
+  	para executar seus testes automatizados.
+  </p>
+  <p>Por exemplo, voc&#234; pode executar ant passando uma classe de teste como 
+  par&#226;metro: <pre>/opt/java/apache-ant-1.8.0/bin/ant -DtestClass=$TESTLINK_TESTCASE_TEST_CLASS</pre></p>
+  <p>
+  	Lista de vari&#225;veis de ambiente que TestLink Hudson Plug-in define:
+  </p>
+  <p>
+  	<ul>
+  		<li>TESTLINK_TESTCASE_ID</li>
+  		<li>TESTLINK_TESTCASE_NAME</li>
+  		<!--li>TESTLINK_TESTCASE_TESTSUITEID</li-->
+  		<li>TESTLINK_TESTCASE_TESTPROJECTID</li>
+  		<li>TESTLINK_TESTCASE_AUTHOR</li>
+  		<li>TESTLINK_TESTCASE_SUMMARY</li>
+  		<li>TESTLINK_BUILD_NAME</li>
+  		<li>TESTLINK_TESTPLAN_NAME</li>
+  		<li>TESTLINK_TESTCASE_$CUSTOM_FIELD_NAME</li>
+  	</ul>
+  </p>
+  <p>
+  	Para cada Campo Customizado encontrado, TestLink Hudson Plug-in define uma 
+  	vari&#225;vel de ambiente com seu nome e valor, como mostrado acima 
+  	(%CUSTOM_FIELD_NAME%). Se o nome do campo customizado possuir espa&#231;os o 
+  	plug-in ir&#225; convert&#234;-los em _&#39;s.
+  </p>
+</div>

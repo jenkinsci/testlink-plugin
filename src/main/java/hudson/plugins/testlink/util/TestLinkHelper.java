@@ -3,6 +3,7 @@
  */
 package hudson.plugins.testlink.util;
 
+import hudson.plugins.testlink.Messages;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 
 /**
@@ -18,23 +19,24 @@ public class TestLinkHelper
 	 */
 	public static String getExecutionStatusText(ExecutionStatus executionStatus) 
 	{
+		String executionStatusText = Messages.TestLinkBuilder_ExecutionStatus_Undefined();
 		if ( executionStatus == ExecutionStatus.FAILED )
 		{
-			return "Failed";
+			executionStatusText = Messages.TestLinkBuilder_ExecutionStatus_Failed();
 		}
 		if ( executionStatus == ExecutionStatus.PASSED )
 		{
-			return "Passed";
+			executionStatusText = Messages.TestLinkBuilder_ExecutionStatus_Passed();
 		}
 		if ( executionStatus == ExecutionStatus.BLOCKED )
 		{
-			return "Blocked";
+			executionStatusText = Messages.TestLinkBuilder_ExecutionStatus_Blocked();
 		}
 		if ( executionStatus == ExecutionStatus.NOT_RUN )
 		{
-			return "Not Run";
+			executionStatusText = Messages.TestLinkBuilder_ExecutionStatus_NotRun();
 		}
-		return "Undefined";
+		return executionStatusText;
 	}
 	
 	/**
@@ -43,23 +45,25 @@ public class TestLinkHelper
 	 */
 	public static String getExecutionStatusTextColored(ExecutionStatus executionStatus) 
 	{
+		String executionStatusTextColored = 
+			Messages.TestLinkBuilder_ExecutionStatus_Undefined();
 		if ( executionStatus == ExecutionStatus.FAILED )
 		{
-			return "<span style='color: red'>Failed</span>";
+			executionStatusTextColored = "<span style='color: red'>"+Messages.TestLinkBuilder_ExecutionStatus_Failed()+"</span>";
 		}
 		if ( executionStatus == ExecutionStatus.PASSED )
 		{
-			return "<span style='color: green'>Passed</span>";
+			executionStatusTextColored = "<span style='color: green'>"+Messages.TestLinkBuilder_ExecutionStatus_Passed()+"</span>";
 		}
 		if ( executionStatus == ExecutionStatus.BLOCKED )
 		{
-			return "<span style='color: yellow'>Blocked</span>";
+			executionStatusTextColored = "<span style='color: yellow'>"+Messages.TestLinkBuilder_ExecutionStatus_Blocked()+"</span>";
 		}
 		if ( executionStatus == ExecutionStatus.NOT_RUN )
 		{
-			return "<span style='color: gray'>Not Run</span>";
+			executionStatusTextColored = "<span style='color: gray'>"+Messages.TestLinkBuilder_ExecutionStatus_NotRun()+"</span>";
 		}
-		return "Undefined";
+		return executionStatusTextColored;
 	}
 	
 }

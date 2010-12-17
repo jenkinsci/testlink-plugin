@@ -2,7 +2,7 @@
 	<!--
 		This script defines the view on the project builders section for TestLink Builder.
 	-->
-  <f:entry title="TestLink Version" help="${rootURL}/../plugin/testlink/help-testlinkVersion.html">
+  <f:entry title="${%TestLinkVersion}" help="${rootURL}/../plugin/testlink/help-testlinkVersion.html">
   	<select class="setting-input" name="TestLinkBuilder.testLinkName">
       <option>(Default)</option>
       <j:forEach var="inst" items="${descriptor.installations}">
@@ -11,51 +11,55 @@
     </select>
   </f:entry>
   
-  <f:entry title="Test Project name" help="${rootURL}/../plugin/testlink/help-projectName.html">
+  <f:entry title="${%TestProjectName}" help="${rootURL}/../plugin/testlink/help-projectName.html">
 	  <f:textbox name="TestLinkBuilder.testProjectName" value="${instance.testProjectName}" 
 	  checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)" />
   </f:entry>
   
-  <f:entry title="Test Plan name" help="${rootURL}/../plugin/testlink/help-planName.html">
+  <f:entry title="${%TestPlanName}" help="${rootURL}/../plugin/testlink/help-planName.html">
 	  <f:textbox name="TestLinkBuilder.testPlanName" value="${instance.testPlanName}" 
 	  checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)"/>
   </f:entry>
   
-  <f:entry title="Build name" help="${rootURL}/../plugin/testlink/help-buildName.html">
+  <f:entry title="${%BuildName}" help="${rootURL}/../plugin/testlink/help-buildName.html">
 	  <f:textbox name="TestLinkBuilder.buildName" value="${instance.buildName}" />
   </f:entry>
   
-  <f:entry title="Custom fields" help="${rootURL}/../plugin/testlink/help-customFields.html">
+  <f:entry title="${%CustomFields}" help="${rootURL}/../plugin/testlink/help-customFields.html">
 	  <f:textbox name="TestLinkBuilder.customFields" value="${instance.customFields}" />
   </f:entry>
   
-  <f:entry title="Test command" help="${rootURL}/../plugin/testlink/help-testCommand.html">
-	  <f:textarea name="TestLinkBuilder.testCommand" value="${instance.testCommand}" />
+  <f:entry title="${%SingleTestCommand}" help="${rootURL}/../plugin/testlink/help-singleTestCommand.html">
+	  <f:textarea name="TestLinkBuilder.singleTestCommand" value="${instance.singleTestCommand}" />
   </f:entry>
   
-  <f:entry title="TestLink automated tests key custom field" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
+  <f:entry title="${%IterativeTestCommand}" help="${rootURL}/../plugin/testlink/help-iterativeTestCommand.html">
+	  <f:textarea name="TestLinkBuilder.iterativeTestCommand" value="${instance.iterativeTestCommand}" />
+  </f:entry>
+  
+  <f:entry title="${%KeyCustomField}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
 	  <f:textbox name="TestLinkBuilder.keyCustomField" value="${instance.keyCustomField}" />
   </f:entry>
   
-  <f:entry title="JUnit XML report files pattern" help="${rootURL}/../plugin/testlink/help-junitIncludePattern.html">
+  <f:entry title="${%JUnitReportFilesPattern}" help="${rootURL}/../plugin/testlink/help-junitIncludePattern.html">
 	  <f:textbox name="TestLinkBuilder.junitReportFilesPattern" value="${instance.junitReportFilesPattern}" />
   </f:entry>
   
-  <f:entry title="TestNG XML report files pattern" help="${rootURL}/../plugin/testlink/help-testNGIncludePattern.html">
+  <f:entry title="${%TestNGReportFilesPattern}" help="${rootURL}/../plugin/testlink/help-testNGIncludePattern.html">
 	  <f:textbox name="TestLinkBuilder.testNGReportFilesPattern" value="${instance.testNGReportFilesPattern}" />
   </f:entry>
   
-  <f:entry title="TAP report files pattern" help="${rootURL}/../plugin/testlink/help-tapIncludePattern.html">
+  <f:entry title="${%TAPReportFilesPattern}" help="${rootURL}/../plugin/testlink/help-tapIncludePattern.html">
 	  <f:textbox name="TestLinkBuilder.tapReportFilesPattern" value="${instance.tapReportFilesPattern}" />
   </f:entry>
   
   <f:advanced>	  
-	  <f:entry title="Transactional execution?" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
+	  <f:entry title="${%Transactional}" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
 		  <f:checkbox name="TestLinkBuilder.transactional" value="${instance.transactional}" checked="${instance.transactional}" />
 	  </f:entry>
 	  
 	  <f:nested>
-	  	<f:entry title="Use latest revision from SVN" help="${rootURL}/../plugin/testlink/help-svn.html">
+	  	<f:entry title="${%SVNLatestRevision}" help="${rootURL}/../plugin/testlink/help-svn.html">
 		  <table>
 		    <f:optionalBlock name="TestLinkBuilder.latestRevisionInfo" title="" checked="${instance.latestRevisionEnabled}">
 		      <f:entry title="SVN url" >

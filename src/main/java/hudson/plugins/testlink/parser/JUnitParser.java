@@ -4,6 +4,7 @@
 package hudson.plugins.testlink.parser;
 
 import hudson.model.BuildListener;
+import hudson.plugins.testlink.Messages;
 import hudson.plugins.testlink.model.TestLinkReport;
 import hudson.plugins.testlink.model.TestResult;
 
@@ -76,11 +77,11 @@ extends Parser
 			} 
 			catch (SAXException se)
 			{
-				throw new IOException2( "Could not transform " + getName() + " report. Please report this issue to the plugin author", se );
+				throw new IOException2( Messages.TestLinkBuilder_Parser_SAX_CouldNotTransform( getName() ) );
 			} 
 			catch (ParserConfigurationException pe)
 			{
-				throw new IOException2( "Could not intialize the XML parser. Please report this issue to the plugin author", pe );
+				throw new IOException2( Messages.TestLinkBuilder_Parser_SAX_CouldNotIntializeXMLParser() );
 			}
 			if ( foundTestResult != null )
 			{
@@ -103,7 +104,7 @@ extends Parser
 				attachment = this.getAttachment( foundTestResult.getTestCase().getVersionId(), file );
 			} catch (MessagingException e)
 			{
-				throw new IOException("Failed to read JUnit report file content and convert to Base64: " +  e.getMessage(), e);
+				throw new IOException( Messages.TestLinkBuilder_Parser_AttachmentError( getName(), e.getMessage()) ) ;
 			}
 			foundTestResult.addAttachment( attachment );
 		}	

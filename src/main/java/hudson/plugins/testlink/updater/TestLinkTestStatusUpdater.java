@@ -22,6 +22,7 @@
  */
 package hudson.plugins.testlink.updater;
 
+import hudson.plugins.testlink.Messages;
 import hudson.plugins.testlink.model.TestResult;
 import hudson.plugins.testlink.util.TestLinkHelper;
 
@@ -50,12 +51,12 @@ public class TestLinkTestStatusUpdater
 	{
 		if ( testResults.size() > 0 )
 		{
-			ps.println("Updating " + testResults.size() + " test case(s) execution status");
+			ps.println( Messages.TestLinkBuilder_Update_AutomatedTestCases( testResults.size() ) );
 			// Update TestLink Test Status
 			for( TestResult testResult : testResults )
 			{
 				TestCase testCase = testResult.getTestCase();
-				ps.println("Updating automated test case " + testCase.getName() + " with execution status " + TestLinkHelper.getExecutionStatusText( testCase.getExecutionStatus() ) );
+				ps.println( Messages.TestLinkBuilder_Update_AutomatedTestCase(testCase.getName(), TestLinkHelper.getExecutionStatusText( testCase.getExecutionStatus() )) );
 				// Update Test Case status
 				ReportTCResultResponse reportTCResultResponse = api.reportTCResult(
 						testCase.getId(), 
@@ -74,9 +75,7 @@ public class TestLinkTestStatusUpdater
 				
 				for ( Attachment attachment : testResult.getAttachments() )
 				{
-					ps.println("Uploading execution " + 
-							reportTCResultResponse.getExecutionId() + " attachment " + 
-							attachment.getFileName());
+					ps.println( Messages.TestLinkBuilder_Upload_ExecutionAttachment(reportTCResultResponse.getExecutionId(), attachment.getFileName()) );
 					api.uploadAttachment(
 							reportTCResultResponse.getExecutionId(), 
 							EXECUTIONS_TABLE, // TBD: replace with TestLinkTables enum value
@@ -90,7 +89,7 @@ public class TestLinkTestStatusUpdater
 		}
 		else
 		{
-			ps.println("Skipping update test case execution status. Nothing found.");
+			ps.println(Messages.TestLinkBuilder_Update_Skipped());
 		}
 	}
 	

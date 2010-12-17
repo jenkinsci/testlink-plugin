@@ -44,7 +44,6 @@ public class TestLinkProjectAction extends Actionable implements
 		ProminentProjectAction, Serializable
 {
 
-	public static final String DISPLAY_NAME = "TestLink Results";
 	public static final String ICON_FILE_NAME = "/plugin/testlink/icons/testlink-24.png";
 	public static final String URL_NAME = "testLinkResult";
 
@@ -65,7 +64,7 @@ public class TestLinkProjectAction extends Actionable implements
 	 */
 	public String getDisplayName()
 	{
-		return DISPLAY_NAME;
+		return Messages.TestLinkProjectAction_DisplayName();
 	}
 
 	/*

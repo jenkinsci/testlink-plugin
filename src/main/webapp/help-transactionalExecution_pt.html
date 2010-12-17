@@ -1,0 +1,23 @@
+<div>
+  <p>
+  	Em uma execu&#231;&#227;o transacional se qualquer teste falhar a execu&#231;&#227;o &#233; abortada 
+  	e todos os demais testes s&#227;o marcados como Bloqueados.
+  </p>
+  <p>
+  	Por exemplo, vamos supor que n&#243;s temos os testes A, B, C que rodam nesta 
+  	mesma ordem. Se a op&#231;&#227;o de Execu&#231;&#227;o Transacional est&#225; marcada e o teste A 
+  	falha ent&#227;o A &#233; marcado com status &#39;Falhou&#39;. E os testes B e C n&#227;o s&#227;o 
+  	executados mas t&#234;m seus status atualizados para &#39;Bloqueados&#39;.
+  </p>
+  <p>
+  	Esta op&#231;&#227;o &#233; &#250;til em situa&#231;&#245;es onde voc&#234; precisa salvar recursos caso 
+  	qualquer teste falhe ou quando voc&#234; tem um cen&#225;rio onde o resultado de 
+  	uma execu&#231;&#227;o de teste fornece informa&#231;&#227;o para outros testes.
+  </p>
+  <p>
+  	Para mais informa&#231;&#245;es veja a p&#225;gina Wiki do TestLink plug-in Hudson  
+  	<a href="http://wiki.hudson-ci.org/display/HUDSON/TestLink+Plugin">
+	http://wiki.hudson-ci.org/display/HUDSON/TestLink+Plugin</a>.
+  </p>
+  <p>
+</div>

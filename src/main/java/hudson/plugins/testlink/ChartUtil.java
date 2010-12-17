@@ -108,10 +108,10 @@ public class ChartUtil
 		
 		TestLinkBuildAction tempAction = lastAction;
 		final XYSeriesCollection dataset = new XYSeriesCollection();
-		final XYSeries passedTests = new XYSeries( "Passed Tests" );
-		final XYSeries failedTests = new XYSeries( "Failed Tests" );
-		final XYSeries blockedTests = new XYSeries( "Blocked Tests" );
-		final XYSeries totalTests = new XYSeries( "Total Tests" );
+		final XYSeries passedTests = new XYSeries( Messages.ChartUtil_PassedTests() );
+		final XYSeries failedTests = new XYSeries( Messages.ChartUtil_FailedTests() );
+		final XYSeries blockedTests = new XYSeries( Messages.ChartUtil_BlockedTests() );
+		final XYSeries totalTests = new XYSeries( Messages.ChartUtil_TotalTests() );
 		
 		dataset.addSeries(passedTests);
 		dataset.addSeries(failedTests);

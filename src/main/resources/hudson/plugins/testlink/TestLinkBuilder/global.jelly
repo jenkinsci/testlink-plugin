@@ -1,11 +1,11 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <f:section title="TestLink">
-    <f:entry title="TestLink installation" 
-      description="List of TestLink installations on this system">
+    <f:entry title="${%TestLinkInstallation}" 
+      description="${%ListOfTestLinkInstallations}">
       <f:repeatable var="inst" items="${descriptor.installations}">
         <table width="100%">
           
-	  	  <f:entry title="Name">
+	  	  <f:entry title="${%Name}">
             <f:textbox name="TestLink.name" value="${inst.name}" 
                checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)" />
           </f:entry>
@@ -16,7 +16,7 @@
             checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)" />
           </f:entry>
 
-          <f:entry title="Developer Key">
+          <f:entry title="${%DeveloperKey}">
             <f:textbox name="TestLink.devKey" value="${inst.devKey}" 
             checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)" />
           </f:entry>
