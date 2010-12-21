@@ -1,0 +1,23 @@
+<div>
+  <p>
+  	En una ejecuci&#243;n transacional si cualquier prueba fallar la ejecuci&#243;n es abortada 
+  	y todas las otras pruebas s&#243;n marcadas como Bloqueadas.
+  </p>
+  <p>
+  	Por ejemplo, supongo que tenemos las pruebas A, B y C que son ejecutadas en esta 
+  	misma orden. Si la opci&#243;n de Ejecucic&#243;n Transacional est&#225; marcada y la prueba A 
+  	falla entonces A es marcado con status &#39;Fallado&#39;. Y las pruebas B y C no son 
+  	ejecutados mas tienen sus status actualizados para &#39;Bloqueados&#39;.
+  </p>
+  <p>
+  	Esta opci&#243;n es &#250;til en situaci&#243;n donde usted necesita guardar recursos caso 
+  	cualquier prueba falle o cuando usted tiene un escenario donde el resultado de 
+  	una ejecuci&#243;n de prueba proporciona informaci&#243;n para otras pruebas.
+  </p>
+  <p>
+  	Para mais informaciones vea a la p&#225;gina Wiki del TestLink plug-in Hudson  
+  	<a href="http://wiki.hudson-ci.org/display/HUDSON/TestLink+Plugin">
+	http://wiki.hudson-ci.org/display/HUDSON/TestLink+Plugin</a>.
+  </p>
+  <p>
+</div>
