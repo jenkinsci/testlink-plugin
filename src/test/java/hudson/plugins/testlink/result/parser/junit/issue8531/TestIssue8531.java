@@ -63,7 +63,7 @@ public class TestIssue8531
 		Assert.assertEquals(this.parser.getName(), "JUnit");
 		
 		ClassLoader cl = TestIssue8531.class.getClassLoader();
-		URL url = cl.getResource("hudson/plugins/testlink/parser/junit/issue8531/TEST-navigation_vers_les_massifs.xml");
+		URL url = cl.getResource("hudson/plugins/testlink/result/parser/junit/issue8531/TEST-navigation_vers_les_massifs.xml");
 		File junitFile = new File( url.getFile() );
 		
 		TestSuite testSuite = null;

@@ -23,11 +23,11 @@
  */
 package hudson.plugins.testlink.result.parser.tap;
 
-import hudson.plugins.testlink.result.parser.tap.TAPParser;
-
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URL;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -65,7 +65,7 @@ public class TestTapParser
 		Assert.assertEquals(this.parser.getName(), "TAP");
 		
 		ClassLoader cl = TestTapParser.class.getClassLoader();
-		URL url = cl.getResource("hudson/plugins/testlink/parser/tap/br.eti.kinoshita.tap.SampleTest.tap");
+		URL url = cl.getResource("hudson/plugins/testlink/result/parser/tap/br.eti.kinoshita.tap.SampleTest.tap");
 		File file = new File( url.getFile() );
 		
 		TestSet testSet = null;
@@ -83,6 +83,21 @@ public class TestTapParser
 		Assert.assertTrue( testSet.getNumberOfTestResults() == 1, "Wrong number of test results in TAP file '"+file+"'." );
 		Assert.assertTrue( testSet.getTestResult(1).getStatus()== StatusValues.OK , "Wrong status for test result 1");
 		Assert.assertTrue( testSet.getTestResult(1).getDescription().equals("testOk") );
+	}
+	
+	@Test(expectedExceptions=NotImplementedException.class)
+	public void testCallingInvalidMethodInParser()
+	{
+		this.parser.parse(new ByteArrayInputStream(new byte[1024]));
+	}
+	
+	@Test(expectedExceptions=ParserException.class)
+	public void parseInvalidTapFile()
+	{
+		ClassLoader cl = TestTapParser.class.getClassLoader();
+		URL url = cl.getResource("hudson/plugins/testlink/result/parser/tap/invalid.tap");
+		File file = new File( url.getFile() );
+		this.parser.parse( file );
 	}
 	
 }

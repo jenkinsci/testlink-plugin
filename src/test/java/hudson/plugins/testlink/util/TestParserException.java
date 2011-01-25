@@ -27,36 +27,36 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * Tests the TestLinkPluginException.
+ * Tests the ParserException.
  * 
- * @see @{link {@link TestLinkPluginException}
+ * @see {@link ParserException}
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
  */
-public class TestTestLinkPluginException
+public class TestParserException
 {
 
-	private TestLinkPluginException exception;
+	private ParserException exception;
 	
-	@Test(testName="Test TestLink Plug-in Exception")
+	@Test(testName="Test Parser Exception")
 	public void testTestLinkPluginException()
 	{
-		this.exception = new TestLinkPluginException();
+		this.exception = new ParserException();
 		
 		Assert.assertNotNull( this.exception );
 		
-		this.exception = new TestLinkPluginException("Lamen");
+		this.exception = new ParserException("Lamen");
 		
 		Assert.assertNotNull( this.exception );
 		Assert.assertEquals( this.exception.getMessage(), "Lamen" );
 		
-		this.exception = new TestLinkPluginException( new NullPointerException() );
+		this.exception = new ParserException( new NullPointerException() );
 		
 		Assert.assertNotNull( this.exception );
 		Assert.assertNotNull( this.exception.getCause() );
 		
-		this.exception = new TestLinkPluginException("Lamen", new NullPointerException() );
+		this.exception = new ParserException("Lamen", new NullPointerException() );
 		
 		Assert.assertNotNull( this.exception );
 		Assert.assertNotNull( this.exception.getCause() );

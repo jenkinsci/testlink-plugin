@@ -102,5 +102,32 @@ public class TestSVNLatestRevisionService
 		
 		Assert.assertTrue( revision > 0 );
 	}
+	
+	@Test(testName="Test Get latest revision without credentials")
+	public void testGetLatestRevisionWithoutCredentials()
+	{
+		try
+		{
+			this.service = new SVNLatestRevisionService(repoUrl, null, null);
+		}
+		catch (MalformedURLException e)
+		{
+			Assert.fail("Bad SVN Url: " + repoUrl, e);
+		}
+		
+		Long revision = Long.valueOf( -1 );
+		try
+		{
+			revision = this.service.getLatestRevision();
+		} 
+		catch (SVNException e)
+		{
+			Assert.fail("Failed to get latest revision: " + e.getMessage(), e);
+		}
+		
+		Assert.assertNotNull( revision );
+		
+		Assert.assertTrue( revision > 0 );
+	}
 
 }

@@ -60,12 +60,12 @@ public class TestTestNGParser
 	}
 	
 	@org.testng.annotations.Test(testName="Test TestNG Parser")
-	public void testTapParser()
+	public void testTestNGParser()
 	{
 		Assert.assertEquals(this.parser.getName(), "TestNG");
 		
 		ClassLoader cl = TestTestNGParser.class.getClassLoader();
-		URL url = cl.getResource("hudson/plugins/testlink/parser/testng/testng-results.xml");
+		URL url = cl.getResource("hudson/plugins/testlink/result/parser/testng/testng-results.xml");
 		File file = new File( url.getFile() );
 		
 		Suite suite = null;
@@ -116,6 +116,18 @@ public class TestTestNGParser
 		Assert.assertTrue( testMethod.getDurationMs().equals("0") );
 		Assert.assertTrue( testMethod.getStartedAt().equals("2010-11-17T13:31:41Z") );
 		Assert.assertTrue( testMethod.getFinishedAt().equals("2010-11-17T13:31:41Z") );
+		
+	}
+	
+	@org.testng.annotations.Test(description="Test with an invalid TestNG file", 
+			expectedExceptions=ParserException.class)
+	public void testInvalidTestNGFile()
+	{
+		ClassLoader cl = TestTestNGParser.class.getClassLoader();
+		URL url = cl.getResource("hudson/plugins/testlink/result/parser/testng/testng-invalid-results.xml");
+		File file = new File( url.getFile() );
+		
+		this.parser.parse( file );
 		
 	}
 	
