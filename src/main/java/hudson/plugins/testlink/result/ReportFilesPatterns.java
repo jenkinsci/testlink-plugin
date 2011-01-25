@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.model;
+package hudson.plugins.testlink.result;
 
 import java.io.Serializable;
 
@@ -32,6 +32,8 @@ import java.io.Serializable;
 public class ReportFilesPatterns 
 implements Serializable
 {
+
+	private static final long serialVersionUID = -2825703684677458681L;
 
 	/**
 	 * JUnit XML report files pattern.

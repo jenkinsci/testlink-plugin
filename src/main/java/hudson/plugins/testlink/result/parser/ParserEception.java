@@ -21,38 +21,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink;
-
-import hudson.model.AbstractBuild;
-import hudson.plugins.testlink.model.TestLinkReport;
-
-import java.io.Serializable;
+package hudson.plugins.testlink.result.parser;
 
 /**
+ * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 1.0
  */
-public class TestLinkResult 
-implements Serializable
+public class ParserEception 
+extends Exception 
 {
-	
-	private TestLinkReport report;
-	private AbstractBuild<?, ?> build;
 
-	public TestLinkResult(TestLinkReport report, AbstractBuild<?, ?> build)
-	{
-		this.report = report;
-		this.build = build;
+	private static final long serialVersionUID = -5490441763638490173L;
+
+	/**
+	 * 
+	 */
+	public ParserEception() {
+		super();
 	}
-	
-	public AbstractBuild<?, ?> getOwner()
+
+	/**
+	 * @param message
+	 */
+	public ParserEception(String message) 
 	{
-		return this.build;
+		super(message);
 	}
-	
-	public TestLinkReport getReport()
+
+	/**
+	 * @param t
+	 */
+	public ParserEception(Throwable t) 
 	{
-		return this.report;
+		super(t);
 	}
-	
+
+	/**
+	 * @param message
+	 * @param t
+	 */
+	public ParserEception(String message, Throwable t) 
+	{
+		super(message, t);
+	}
+
 }

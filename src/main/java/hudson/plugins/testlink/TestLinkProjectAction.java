@@ -27,6 +27,7 @@ import hudson.model.ProminentProjectAction;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Actionable;
+import hudson.plugins.testlink.util.Messages;
 import hudson.util.Graph;
 
 import java.io.IOException;
@@ -45,6 +46,8 @@ public class TestLinkProjectAction extends Actionable implements
 		ProminentProjectAction, Serializable
 {
 
+	private static final long serialVersionUID = 5600270062198355080L;
+	
 	public static final String ICON_FILE_NAME = "/plugin/testlink/icons/testlink-24.png";
 	public static final String URL_NAME = "testLinkResult";
 

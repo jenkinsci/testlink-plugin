@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.model;
+package hudson.plugins.testlink.result;
 
-import hudson.plugins.testlink.model.TestResult;
+import hudson.plugins.testlink.result.TestResult;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;

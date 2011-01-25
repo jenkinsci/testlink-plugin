@@ -21,43 +21,60 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.model;
+package hudson.plugins.testlink.result.parser.junit;
 
+import hudson.plugins.testlink.result.parser.junit.JUnitParser;
+import hudson.plugins.testlink.result.parser.junit.TestSuite;
+
+import java.io.File;
+import java.net.URL;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /**
+ * Tests the JUnit parser.
+ * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
  */
-public class TestTestLinkLatestRevisionInfo 
+public class TestJUnitParser
 {
-
-	private TestLinkLatestRevisionInfo latestRevisionInfo;
+	private JUnitParser parser;
 	
-	private static final String SVN_URL = "svn://houston/project";
-	private static final String SVN_USER = "user";
-	private static final String SVN_PASS = "pass";
-	
+	/**
+	 * Initializes the JUnit parser.
+	 */
 	@BeforeClass
 	public void setUp()
 	{
-		this.latestRevisionInfo = 
-			new TestLinkLatestRevisionInfo( SVN_URL, SVN_USER, SVN_PASS );
+		this.parser = new JUnitParser();
 	}
 	
-	@Test(testName="Test getters and setters")
-	public void testGetLatestRevisionInfo()
+	@Test(testName="Test JUnit Parser")
+	public void testJUnitParser()
 	{
-		String url = this.latestRevisionInfo.getSvnUrl();
-		String user = this.latestRevisionInfo.getSvnUser();
-		String pass = this.latestRevisionInfo.getSvnPassword();
+		Assert.assertEquals(this.parser.getName(), "JUnit");
 		
-		Assert.assertEquals( SVN_URL, url );
-		Assert.assertEquals( SVN_USER, user );
-		Assert.assertEquals( SVN_PASS, pass );
+		ClassLoader cl = TestJUnitParser.class.getClassLoader();
+		URL url = cl.getResource("hudson/plugins/testlink/parser/junit/TEST-br.eti.kinoshita.Test.xml");
+		File junitFile = new File( url.getFile() );
+		
+		TestSuite testSuite = null;
+		try
+		{
+			testSuite = this.parser.parse( junitFile );
+		} 
+		catch (Exception e)
+		{
+			Assert.fail("Failed to parse JUnit xml report '"+junitFile+"'.", e);
+		}
+		
+		Assert.assertNotNull( testSuite );
+		Assert.assertTrue( testSuite.getTestCases().size() == 1 );
+		
+		Assert.assertTrue( testSuite.getFailures().equals("1"));
 	}
 	
 }

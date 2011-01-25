@@ -25,7 +25,8 @@ package hudson.plugins.testlink;
 
 import hudson.model.Action;
 import hudson.model.AbstractBuild;
-import hudson.plugins.testlink.model.TestLinkReport;
+import hudson.plugins.testlink.result.TestLinkReport;
+import hudson.plugins.testlink.result.TestLinkResult;
 
 import java.io.Serializable;
 
@@ -39,6 +40,8 @@ public class TestLinkBuildAction
 implements Action, Serializable, StaplerProxy
 {
 
+	private static final long serialVersionUID = -914904584770393909L;
+	
 	public static final String DISPLAY_NAME = "TestLink";
 	public static final String ICON_FILE_NAME = "/plugin/testlink/icons/testlink-24.png";
 	public static final String URL_NAME = "testLinkResult";

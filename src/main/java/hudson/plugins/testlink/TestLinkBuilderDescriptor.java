@@ -25,6 +25,7 @@ package hudson.plugins.testlink;
 
 import hudson.CopyOnWrite;
 import hudson.model.Descriptor;
+import hudson.plugins.testlink.util.Messages;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;

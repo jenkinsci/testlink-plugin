@@ -27,7 +27,11 @@ package hudson.plugins.testlink.util;
  * @author Bruno P. Kinoshita
  * @since 2.0
  */
-public class ParserException extends Exception {
+public class ParserException 
+extends Exception 
+{
+
+	private static final long serialVersionUID = 1360623334007156711L;
 
 	/**
 	 * 

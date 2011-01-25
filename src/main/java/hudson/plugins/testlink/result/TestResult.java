@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.model;
+package hudson.plugins.testlink.result;
 
 import java.io.Serializable;
 import java.util.ArrayList;

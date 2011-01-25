@@ -23,7 +23,6 @@
  */
 package hudson.plugins.testlink.util;
 
-import hudson.plugins.testlink.Messages;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 
 /**

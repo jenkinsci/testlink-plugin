@@ -36,23 +36,19 @@ import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.plugins.testlink.executor.TemporaryExecutableScriptWriter;
-import hudson.plugins.testlink.finder.AutomatedTestCasesFinder;
-import hudson.plugins.testlink.model.ReportFilesPatterns;
 import hudson.plugins.testlink.model.TestLinkLatestRevisionInfo;
-import hudson.plugins.testlink.model.TestLinkReport;
-import hudson.plugins.testlink.model.TestResult;
-import hudson.plugins.testlink.parser.JUnitParser;
-import hudson.plugins.testlink.parser.Parser;
-import hudson.plugins.testlink.parser.TAPParser;
-import hudson.plugins.testlink.parser.TestNGParser;
+import hudson.plugins.testlink.result.ReportFilesPatterns;
+import hudson.plugins.testlink.result.TestLinkReport;
+import hudson.plugins.testlink.result.TestLinkResult;
+import hudson.plugins.testlink.result.TestResult;
+import hudson.plugins.testlink.result.TestResultSeeker;
 import hudson.plugins.testlink.svn.SVNLatestRevisionService;
-import hudson.plugins.testlink.updater.TestLinkTestStatusUpdater;
+import hudson.plugins.testlink.util.Messages;
 import hudson.tasks.Builder;
 import hudson.util.ArgumentListBuilder;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -63,7 +59,6 @@ import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.tmatesoft.svn.core.SVNException;
 
-import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPIException;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
@@ -165,11 +160,6 @@ extends Builder
 	
 	/* --- Object properties --- */
 	
-	/**
-	 * The instance of the TestLink API client.
-	 */
-	private TestLinkAPI api = null;
-
 	private boolean failure = Boolean.FALSE;
 	
 	// Environment Variables names.
@@ -396,7 +386,7 @@ extends Builder
 	 * The information gathered is sufficient to execute a test command 
 	 * that runs automated tests.</p>
 	 * 
-	 * <p>After this step the output of the tests is parsed by {@link Parser}</p>
+	 * <p>After this step the output of the tests is parsed by {@link Parser_}</p>
 	 */
 	@Override
 	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher,
@@ -411,19 +401,6 @@ extends Builder
 		if ( installation == null )
 		{
 			throw new AbortException( Messages.TestLinkBuilder_InvalidTLAPI() );
-		}
-		
-		try 
-		{
-			this.api = 
-				new TestLinkAPI( installation.getUrl(), installation.getDevKey() );
-			listener.getLogger().println( Messages.TestLinkBuilder_UsedTLURL(installation.getUrl()) );
-		} 
-		catch (MalformedURLException mue) 
-		{
-			final String message = Messages.TestLinkBuilder_InvalidTLURL( installation.getUrl() );
-			listener.fatalError( message );
-			throw new AbortException( message );
 		}
 		
 		// SVN revision information for Build.
@@ -449,18 +426,32 @@ extends Builder
 		
 		final String[] customFieldsNames = this.getListOfCustomFieldsNames();
 		
-		final AutomatedTestCasesFinder finder = new AutomatedTestCasesFinder(
-				listener, 
-				this.api,
-				customFieldsNames, 
-				testProjectName, 
-				testPlanName, 
-				buildName);
+		final String testLinkUrl = installation.getUrl();
+		final String testLinkDevKey = installation.getDevKey();
 		
-		List<TestCase> automatedTestCases = null;
+		TestLinkService testLinkSvc = null;
 		try
 		{
-			automatedTestCases = finder.findAutomatedTestCases();
+			testLinkSvc = new TestLinkService( testLinkUrl, testLinkDevKey, listener );
+		}
+		catch (MalformedURLException mue) 
+		{
+			final String message = Messages.TestLinkBuilder_InvalidTLURL( testLinkUrl);
+			listener.fatalError( message );
+			throw new AbortException( message );
+		}
+		
+		TestCase[] automatedTestCases = null;
+		try
+		{
+			automatedTestCases = 
+				testLinkSvc.findAutomatedTestCases( 
+					testProjectName, 
+					testPlanName, 
+					buildName, 
+					"Build created with Hudson", 
+					customFieldsNames
+				);
 		} 
 		catch (TestLinkAPIException e)
 		{
@@ -491,8 +482,7 @@ extends Builder
 			} 
 			else
 			{
-				final EnvVars buildEnvironmentVariables = this.buildEnvironmentVariables( automatedTestCase, listener, finder.getTestProject(), finder.getTestPlan(), finder.getBuild() ); 
-				//build.getEnvironment(listener).putAll(buildEnvironmentVariables);
+				final EnvVars buildEnvironmentVariables = this.buildEnvironmentVariables( automatedTestCase, listener, testLinkSvc.getTestProject(), testLinkSvc.getTestPlan(), testLinkSvc.getBuild() ); 
 				buildEnvironmentVariables.putAll( build.getEnvironment( listener ) );
 				final Integer iterativeTestCommandExitCode = this.executeTestCommand( 
 						buildEnvironmentVariables, 
@@ -504,7 +494,6 @@ extends Builder
 				{
 					this.failure = true;
 				}
-				
 			}
 		}
 		
@@ -513,70 +502,34 @@ extends Builder
 		
 		// Create report object
 		final TestLinkReport report = new TestLinkReport();
-		report.setBuild( finder.getBuild() );
-		report.setTestPlan( finder.getTestPlan() );
-		report.setTestProject( finder.getTestProject() );
-		report.getTestCases().addAll ( automatedTestCases );
+		report.setBuild( testLinkSvc.getBuild() );
+		report.setTestPlan( testLinkSvc.getTestPlan() );
+		report.setTestProject( testLinkSvc.getTestProject() );
+		for( TestCase testCase : automatedTestCases )
+		{
+			report.getTestCases().add ( testCase );
+		}
 		
-		// Create the parsers
-		final List<Parser> parsers = 
-			this.createListOfParsers( report, reportFilesPatterns, listener );
+		// The object that searches for test results
+		final TestResultSeeker testResultSeeker = new TestResultSeeker(reportFilesPatterns);
 		
 		// Create list of test results
-		final List<TestResult> testResults = new ArrayList<TestResult>();
-		
-		// Extract test results using parsers	
-		for( final Parser parser : parsers )
-		{
-			// only call the parser if it is enabled
-			if ( parser.isEnabled() )
-			{
-				try
-				{
-					TestResult[] foundResults = null;
-					
-					foundResults = build.getWorkspace().act( parser );
-					
-					if ( foundResults != null && foundResults.length > 0   )
-					{
-						listener.getLogger().println(Messages.TestLinkBuilder_ShowFoundTestResults(foundResults.length) );
-						for ( int i = 0 ; i < foundResults.length ; ++i )
-						{
-							if ( foundResults[i] != null )
-							{
-								testResults.add( foundResults[i] );
-							}
-						}
-					} 
-					else
-					{
-						listener.getLogger().println( Messages.TestLinkBuilder_NoTestResultsFound() );
-					}
-				}
-				catch (IOException e)
-				{
-					listener.getLogger().println( Messages.TestLinkBuilder_FailedToOpenReportFile() );
-					e.printStackTrace( listener.getLogger() );
-				} 
-			}
-		}
+		final List<TestResult> testResults = testResultSeeker.seekTestResults(null, listener);
 		
 		// Add blocked tests to the test results list
 		for( TestCase testCase : automatedTestCases )
 		{
 			if ( testCase.getExecutionStatus() == ExecutionStatus.BLOCKED )
 			{
-				TestResult blockedTestResult = new TestResult(testCase, finder.getBuild(), finder.getTestPlan());
+				TestResult blockedTestResult = new TestResult(testCase, testLinkSvc.getBuild(), testLinkSvc.getTestPlan());
 				testResults.add( blockedTestResult );
 			}
 		}
 		
-		// Update TestLink with test results
-		final TestLinkTestStatusUpdater updater = new TestLinkTestStatusUpdater();
-		
+		// Update TestLink with test results and uploads attachments
 		try 
 		{
-			updater.updateTestCases(api, listener.getLogger(), testResults);
+			testLinkSvc.updateTestCasesAndUploadAttachments( testResults );
 		} 
 		catch (TestLinkAPIException tlae) 
 		{
@@ -830,41 +783,6 @@ extends Builder
 		reportFilesPatterns.setTapStreamReportFilesPattern( this.tapReportFilesPattern );
 		
 		return reportFilesPatterns;
-	}
-	
-	/**
-	 * Creates list of parsers.
-	 * 
-	 * @param report TestLink Plugin Report object
-	 * @param reportFilesPatterns Report files patterns
-	 * @param ps Print Steam to log events.
-	 * @return List of Parsers
-	 */
-	private List<Parser> createListOfParsers(
-			TestLinkReport report, 
-			ReportFilesPatterns reportFilesPatterns, 
-			BuildListener listener) 
-	{
-		List<Parser> parsers = new ArrayList<Parser>();
-		final Parser junitParser = new JUnitParser( 
-				report, 
-				keyCustomField,
-				listener, 
-				reportFilesPatterns.getJunitXmlReportFilesPattern() );
-		final Parser testNGParser = new TestNGParser(
-				report, 
-				keyCustomField, 
-				listener, 
-				reportFilesPatterns.getTestNGXmlReportFilesPattern() );
-		final Parser tapParser = new TAPParser( 
-				report, 
-				keyCustomField, 
-				listener, 
-				reportFilesPatterns.getTapStreamReportFilesPattern() );
-		parsers.add( junitParser );
-		parsers.add( testNGParser );
-		parsers.add( tapParser );
-		return parsers;
 	}
 	
 }

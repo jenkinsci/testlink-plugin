@@ -38,6 +38,8 @@ public class TemporaryExecutableScriptWriter
 implements FileCallable<Boolean>
 {
 
+	private static final long serialVersionUID = 7740258439485357772L;
+	
 	private String scriptPath;
 	private Boolean isUnix;
 	private String testCommand;

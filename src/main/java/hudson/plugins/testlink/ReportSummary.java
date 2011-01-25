@@ -23,7 +23,8 @@
  */
 package hudson.plugins.testlink;
 
-import hudson.plugins.testlink.model.TestLinkReport;
+import hudson.plugins.testlink.result.TestLinkReport;
+import hudson.plugins.testlink.util.Messages;
 import hudson.plugins.testlink.util.TestLinkHelper;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 

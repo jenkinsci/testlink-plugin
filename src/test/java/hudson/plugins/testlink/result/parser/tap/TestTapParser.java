@@ -21,43 +21,68 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.model;
+package hudson.plugins.testlink.result.parser.tap;
 
+import hudson.plugins.testlink.result.parser.tap.TAPParser;
+
+import java.io.File;
+import java.net.URL;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import br.eti.kinoshita.tap4j.model.TestSet;
+import br.eti.kinoshita.tap4j.parser.ParserException;
+import br.eti.kinoshita.tap4j.util.StatusValues;
+
 /**
+ * Tests the TAP Parser.
+ * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
  */
-public class TestTestLinkLatestRevisionInfo 
+public class TestTapParser
 {
-
-	private TestLinkLatestRevisionInfo latestRevisionInfo;
 	
-	private static final String SVN_URL = "svn://houston/project";
-	private static final String SVN_USER = "user";
-	private static final String SVN_PASS = "pass";
+	/**
+	 * The TAP Parser.
+	 */
+	private TAPParser parser;
 	
+	/**
+	 * Initializes the TAP Parser.
+	 */
 	@BeforeClass
 	public void setUp()
 	{
-		this.latestRevisionInfo = 
-			new TestLinkLatestRevisionInfo( SVN_URL, SVN_USER, SVN_PASS );
+		this.parser = new TAPParser();
 	}
 	
-	@Test(testName="Test getters and setters")
-	public void testGetLatestRevisionInfo()
+	@Test(testName="Test TAP Parser")
+	public void testTapParser()
 	{
-		String url = this.latestRevisionInfo.getSvnUrl();
-		String user = this.latestRevisionInfo.getSvnUser();
-		String pass = this.latestRevisionInfo.getSvnPassword();
+		Assert.assertEquals(this.parser.getName(), "TAP");
 		
-		Assert.assertEquals( SVN_URL, url );
-		Assert.assertEquals( SVN_USER, user );
-		Assert.assertEquals( SVN_PASS, pass );
+		ClassLoader cl = TestTapParser.class.getClassLoader();
+		URL url = cl.getResource("hudson/plugins/testlink/parser/tap/br.eti.kinoshita.tap.SampleTest.tap");
+		File file = new File( url.getFile() );
+		
+		TestSet testSet = null;
+		
+		try
+		{
+			testSet = this.parser.parse( file );
+		}
+		catch (ParserException pe)
+		{
+			Assert.fail("Failed to parse TAP file '"+file+"'", pe);
+		}
+		
+		Assert.assertNotNull( testSet, "Failed to parse TAP. Null TestSet." );
+		Assert.assertTrue( testSet.getNumberOfTestResults() == 1, "Wrong number of test results in TAP file '"+file+"'." );
+		Assert.assertTrue( testSet.getTestResult(1).getStatus()== StatusValues.OK , "Wrong status for test result 1");
+		Assert.assertTrue( testSet.getTestResult(1).getDescription().equals("testOk") );
 	}
 	
 }

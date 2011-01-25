@@ -21,13 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.model;
+package hudson.plugins.testlink.result;
+
+import hudson.plugins.testlink.result.ReportFilesPatterns;
 
 import org.junit.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import hudson.plugins.testlink.model.ReportFilesPatterns;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br

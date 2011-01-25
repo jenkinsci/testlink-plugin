@@ -23,8 +23,6 @@
  */
 package hudson.plugins.testlink.svn;
 
-import hudson.plugins.testlink.svn.SVNLatestRevisionService;
-
 import java.net.MalformedURLException;
 
 import org.testng.Assert;

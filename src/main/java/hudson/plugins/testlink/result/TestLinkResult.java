@@ -21,43 +21,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.model;
+package hudson.plugins.testlink.result;
 
+import hudson.model.AbstractBuild;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import java.io.Serializable;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 2.0
+ * @since 1.0
  */
-public class TestTestLinkLatestRevisionInfo 
+public class TestLinkResult 
+implements Serializable
 {
+	
+	private static final long serialVersionUID = 3355678827881770594L;
+	
+	private TestLinkReport report;
+	private AbstractBuild<?, ?> build;
 
-	private TestLinkLatestRevisionInfo latestRevisionInfo;
-	
-	private static final String SVN_URL = "svn://houston/project";
-	private static final String SVN_USER = "user";
-	private static final String SVN_PASS = "pass";
-	
-	@BeforeClass
-	public void setUp()
+	public TestLinkResult(TestLinkReport report, AbstractBuild<?, ?> build)
 	{
-		this.latestRevisionInfo = 
-			new TestLinkLatestRevisionInfo( SVN_URL, SVN_USER, SVN_PASS );
+		this.report = report;
+		this.build = build;
 	}
 	
-	@Test(testName="Test getters and setters")
-	public void testGetLatestRevisionInfo()
+	public AbstractBuild<?, ?> getOwner()
 	{
-		String url = this.latestRevisionInfo.getSvnUrl();
-		String user = this.latestRevisionInfo.getSvnUser();
-		String pass = this.latestRevisionInfo.getSvnPassword();
-		
-		Assert.assertEquals( SVN_URL, url );
-		Assert.assertEquals( SVN_USER, user );
-		Assert.assertEquals( SVN_PASS, pass );
+		return this.build;
+	}
+	
+	public TestLinkReport getReport()
+	{
+		return this.report;
 	}
 	
 }

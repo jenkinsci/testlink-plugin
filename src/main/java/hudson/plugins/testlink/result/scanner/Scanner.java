@@ -21,43 +21,64 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.model;
+package hudson.plugins.testlink.scanner;
 
+import hudson.Util;
+import hudson.model.BuildListener;
+import hudson.plugins.testlink.Messages;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.types.FileSet;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
  */
-public class TestTestLinkLatestRevisionInfo 
+public class Scanner 
+implements Serializable
 {
-
-	private TestLinkLatestRevisionInfo latestRevisionInfo;
 	
-	private static final String SVN_URL = "svn://houston/project";
-	private static final String SVN_USER = "user";
-	private static final String SVN_PASS = "pass";
+	protected BuildListener listener;
 	
-	@BeforeClass
-	public void setUp()
+	public Scanner( BuildListener listener )
 	{
-		this.latestRevisionInfo = 
-			new TestLinkLatestRevisionInfo( SVN_URL, SVN_USER, SVN_PASS );
+		super();
+		this.listener = listener;
 	}
 	
-	@Test(testName="Test getters and setters")
-	public void testGetLatestRevisionInfo()
+	public String[] scanForTestResults( File baseDir, String includes ) 
+	throws IOException
 	{
-		String url = this.latestRevisionInfo.getSvnUrl();
-		String user = this.latestRevisionInfo.getSvnUser();
-		String pass = this.latestRevisionInfo.getSvnPassword();
 		
-		Assert.assertEquals( SVN_URL, url );
-		Assert.assertEquals( SVN_USER, user );
-		Assert.assertEquals( SVN_PASS, pass );
+		if ( StringUtils.isBlank( includes ) )
+		{
+			return new String[0];
+		}
+		
+		String[] fileNames = new String[0];
+		
+		FileSet fs = null;
+		try
+		{
+			fs = Util.createFileSet(baseDir, includes);
+		}
+		catch ( Exception e ) // TBD: find out which exception is thrown
+		{
+			e.printStackTrace( listener.getLogger() );
+			throw new IOException( Messages.TestLinkBuilder_Scanner_FailedToOpenBaseDirectory(e.getMessage()), e );
+		}
+		
+		DirectoryScanner ds = fs.getDirectoryScanner();
+		
+		fileNames = ds.getIncludedFiles();
+		
+		return fileNames;
+		
 	}
 	
 }

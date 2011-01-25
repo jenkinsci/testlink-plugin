@@ -24,7 +24,9 @@
 package hudson.plugins.testlink;
 
 
-import hudson.plugins.testlink.model.TestLinkReport;
+import hudson.plugins.testlink.result.TestLinkReport;
+import hudson.plugins.testlink.result.TestLinkResult;
+import hudson.plugins.testlink.util.Messages;
 
 import java.awt.Color;
 

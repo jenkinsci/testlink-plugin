@@ -1,0 +1,14 @@
+<testng-results>
+  <reporter-output>
+  </reporter-output>
+  <suite name="Command line suite" duration-ms="0" started-at="2010-11-17T13:31:41Z" finished-at="2010-11-17T13:31:41Z">
+    <groups>
+    </groups>
+    <test name="Command line test" duration-ms="0" started-at="2010-11-17T13:31:41Z" finished-at="2010-11-17T13:31:41Z">
+      <class name="br.eti.kinoshita.Test1">
+        <test-method status="PASS" signature="testVoid()" name="testVoid" duration-ms="0" started-at="2010-11-17T13:31:41Z" finished-at="2010-11-17T13:31:41Z">
+        </test-method>
+      </class>
+    </test>
+  </suite>
+</testng-results>

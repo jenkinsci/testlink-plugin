@@ -27,8 +27,11 @@ package hudson.plugins.testlink.util;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 1.2
  */
-public class TestLinkPluginException extends Exception
+public class TestLinkPluginException 
+extends Exception
 {
+
+	private static final long serialVersionUID = -6718603425053405202L;
 
 	/**
 	 * 

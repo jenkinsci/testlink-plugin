@@ -37,6 +37,8 @@ public class TestLinkBuilderInstallation
 implements Serializable
 {
 
+	private static final long serialVersionUID = -6254365355132610350L;
+
 	/**
 	 * Name of the installation
 	 */

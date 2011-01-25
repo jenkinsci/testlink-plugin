@@ -37,6 +37,8 @@ public class TestLinkLatestRevisionInfo
 implements Serializable
 {
 
+	private static final long serialVersionUID = -8531299209124605920L;
+
 	/**
 	 * SVN repository URL
 	 */
