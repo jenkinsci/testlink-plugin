@@ -87,6 +87,10 @@ public abstract class Parser<T>
 		{
 			throw new ParserException("File not found: '" + file + "'.", e);
 		}
+		catch ( Throwable t )
+		{
+			throw new ParserException("Unkown internal error: " + t.getMessage(), t);
+		}
 		finally
 		{
 			if ( fileInputStream != null )
