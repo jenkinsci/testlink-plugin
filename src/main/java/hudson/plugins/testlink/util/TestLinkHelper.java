@@ -26,15 +26,28 @@ package hudson.plugins.testlink.util;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 
 /**
+ * Helper methods for TestLink.
+ * 
  * @author Bruno P. Kinoshita
  * @since 2.0
  */
-public class TestLinkHelper 
+public final class TestLinkHelper 
 {
+	
+	/**
+	 * Default hidden constructor for a helper class.
+	 */
+	private TestLinkHelper()
+	{
+		super();
+	}
 
 	/**
-	 * @param executionStatus
-	 * @return
+	 * Retrieves the text for an execution status. If the plug-in supports 
+	 * the locale the text will be translated automatically.
+	 * 
+	 * @param executionStatus the execution status.
+	 * @return the text.
 	 */
 	public static String getExecutionStatusText(ExecutionStatus executionStatus) 
 	{
@@ -59,8 +72,13 @@ public class TestLinkHelper
 	}
 	
 	/**
-	 * @param executionStatus
-	 * @return
+	 * Retrieves the text for an execution status wrapped in html tags that add 
+	 * color to the text. Green for sucess, yellow for blocked, gray for not ran 
+	 * and red for failed. If the plug-in supports the locale the text will be 
+	 * translated automatically.
+	 * 
+	 * @param executionStatus the execution status.
+	 * @return the text wrapped in html tags that add color to the text.
 	 */
 	public static String getExecutionStatusTextColored(ExecutionStatus executionStatus) 
 	{

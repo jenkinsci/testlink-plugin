@@ -45,7 +45,7 @@ implements Serializable
 	/**
 	 * The temporary value of the body of a tag. (<tag>$body</tag>)
 	 */
-	private String tempVal;
+	private StringBuilder tempVal;
 	
 	/**
 	 * Test Suite.
@@ -88,6 +88,7 @@ implements Serializable
 	{
 		if ( "testsuite".equals(qName) )
 		{	
+			tempVal = new StringBuilder();
 			testSuite = new TestSuite();
 			testSuite.setErrors( attributes.getValue("errors") );
 			testSuite.setFailures( attributes.getValue("failures") );
@@ -101,6 +102,7 @@ implements Serializable
 		}
 		else if ( "testcase".equals(qName) )
 		{
+			tempVal = new StringBuilder();
 			testCase = new TestCase();
 			
 			testCase.setClassName( attributes.getValue("classname") );
@@ -109,15 +111,25 @@ implements Serializable
 		}
 		else if ( "failure".equals(qName) )
 		{
+			tempVal = new StringBuilder();
 			failure = new Failure();
 			failure.setMessage( attributes.getValue("message") );
 			failure.setType( attributes.getValue("type") );
 		}
 		else if ( "error".equals(qName) )
 		{
+			tempVal = new StringBuilder();
 			error = new Error();
 			error.setMessage( attributes.getValue("message") );
 			error.setType( attributes.getValue("type") );
+		}
+		else if ( "system-out".equals(qName) )
+		{
+			tempVal = new StringBuilder();
+		}
+		else if ( "system-err".equals(qName) )
+		{
+			tempVal = new StringBuilder();
 		}
 	}
 	
@@ -131,7 +143,7 @@ implements Serializable
 			int length)
 	throws SAXException 
 	{
-		tempVal = new String(ch, start, length);
+		tempVal.append( ch, start, length );
 	}
 	
 	/* (non-Javadoc)
@@ -150,21 +162,21 @@ implements Serializable
 		}
 		else if ( "failure".equals(qName) )
 		{
-			failure.setText( tempVal );
+			failure.setText( tempVal.toString() );
 			testCase.addFailure( failure );
 		}
 		else if ( "error".equals(qName) )
 		{
-			error.setText( tempVal );
+			error.setText( tempVal.toString() );
 			testCase.addError( error );
 		}
 		else if ( "system-out".equals(qName) )
 		{
-			testSuite.setSystemOut( tempVal );
+			testSuite.setSystemOut( tempVal.toString() );
 		}
 		else if ( "system-err".equals(qName) )
 		{
-			testSuite.setSystemErr( tempVal );
+			testSuite.setSystemErr( tempVal.toString() );
 		}
 	}
 	

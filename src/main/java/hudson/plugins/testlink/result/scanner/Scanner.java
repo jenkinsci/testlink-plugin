@@ -82,15 +82,15 @@ implements Serializable
 			try
 			{
 				fs = Util.createFileSet( directory, includes );
+				
+				DirectoryScanner ds = fs.getDirectoryScanner();
+				fileNames = ds.getIncludedFiles();
 			}
 			catch ( Exception e ) // TBD: find out which exception is thrown
 			{
 				e.printStackTrace( listener.getLogger() );
 				throw new IOException( Messages.TestLinkBuilder_Scanner_FailedToOpenBaseDirectory(e.getMessage()), e );
 			}
-			
-			DirectoryScanner ds = fs.getDirectoryScanner();
-			fileNames = ds.getIncludedFiles();
 		}
 		
 		return fileNames;
