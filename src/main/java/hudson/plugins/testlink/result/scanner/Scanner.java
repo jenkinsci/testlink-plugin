@@ -21,11 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.scanner;
+package hudson.plugins.testlink.result.scanner;
 
 import hudson.Util;
 import hudson.model.BuildListener;
-import hudson.plugins.testlink.Messages;
+import hudson.plugins.testlink.util.Messages;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +36,9 @@ import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.types.FileSet;
 
 /**
+ * Scans directories for files patterns. It uses patterns similar to those 
+ * used in Apache ant.
+ * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
  */
@@ -43,39 +46,52 @@ public class Scanner
 implements Serializable
 {
 	
-	protected BuildListener listener;
+	private static final long serialVersionUID = -5389895983175988121L;
 	
-	public Scanner( BuildListener listener )
+	/**
+	 * Default constructor.
+	 */
+	public Scanner()
 	{
 		super();
-		this.listener = listener;
 	}
 	
-	public String[] scanForTestResults( File baseDir, String includes ) 
+	/**
+	 * Scans a directory for files matching the includes pattern.
+	 * 
+	 * @param directory the directory to scan.
+	 * @param includes the includes pattern.
+	 * @param listener Hudson Build listener.
+	 * @return array of strings of paths for files that match the includes pattern in the directory.
+	 * @throws IOException
+	 */
+	public String[] scan( 
+		final File directory, 
+		final String includes, 
+		final BuildListener listener 
+	) 
 	throws IOException
 	{
 		
-		if ( StringUtils.isBlank( includes ) )
-		{
-			return new String[0];
-		}
-		
 		String[] fileNames = new String[0];
 		
-		FileSet fs = null;
-		try
+		if ( StringUtils.isNotBlank( includes ) )
 		{
-			fs = Util.createFileSet(baseDir, includes);
+			FileSet fs = null;
+			
+			try
+			{
+				fs = Util.createFileSet( directory, includes );
+			}
+			catch ( Exception e ) // TBD: find out which exception is thrown
+			{
+				e.printStackTrace( listener.getLogger() );
+				throw new IOException( Messages.TestLinkBuilder_Scanner_FailedToOpenBaseDirectory(e.getMessage()), e );
+			}
+			
+			DirectoryScanner ds = fs.getDirectoryScanner();
+			fileNames = ds.getIncludedFiles();
 		}
-		catch ( Exception e ) // TBD: find out which exception is thrown
-		{
-			e.printStackTrace( listener.getLogger() );
-			throw new IOException( Messages.TestLinkBuilder_Scanner_FailedToOpenBaseDirectory(e.getMessage()), e );
-		}
-		
-		DirectoryScanner ds = fs.getDirectoryScanner();
-		
-		fileNames = ds.getIncludedFiles();
 		
 		return fileNames;
 		
