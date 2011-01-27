@@ -25,7 +25,6 @@ package hudson.plugins.testlink.result.scanner;
 
 import hudson.model.BuildListener;
 import hudson.model.StreamBuildListener;
-import hudson.plugins.testlink.result.parser.junit.TestJUnitParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +48,7 @@ public class TestScanner
 	{
 		Scanner scanner = new Scanner();
 		
-		ClassLoader cl = TestJUnitParser.class.getClassLoader();
+		ClassLoader cl = TestScanner.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/scanner");
 		File directory = new File( url.getFile() );
 		
@@ -74,7 +73,7 @@ public class TestScanner
 	{
 		Scanner scanner = new Scanner();
 		
-		ClassLoader cl = TestJUnitParser.class.getClassLoader();
+		ClassLoader cl = TestScanner.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/scanner");
 		File directory = new File( url.getFile() );
 		
@@ -98,7 +97,7 @@ public class TestScanner
 	{
 		Scanner scanner = new Scanner();
 		
-		ClassLoader cl = TestJUnitParser.class.getClassLoader();
+		ClassLoader cl = TestScanner.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/scanner/TestScanner.class");
 		File directory = new File( url.getFile() );
 		

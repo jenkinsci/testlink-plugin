@@ -106,7 +106,32 @@
 					<excludes>
 						<exclude>hudson/plugins/testlink/util/*.class</exclude>
 					</excludes>
+					<systemProperties>
+						<property>
+							<name>net.sourceforge.cobertura.datafile</name>
+							<value>${basedir}/target/cobertura/cobertura.ser</value>
+						</property>
+					</systemProperties>
+					<argLine>-Xmx256m</argLine>
 				</configuration>
+				<executions>
+					<execution>
+						<id>clean</id>
+						<phase>pre-site</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>instrument</id>
+						<phase>site</phase>
+						<goals>
+							<goal>instrument</goal>
+							<goal>cobertura</goal>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

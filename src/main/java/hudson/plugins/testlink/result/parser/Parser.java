@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -42,6 +43,7 @@ import br.eti.kinoshita.tap4j.parser.ParserException;
  * @since 2.0
  */
 public abstract class Parser<T> 
+implements Serializable
 {
 
 	/**
@@ -82,6 +84,10 @@ public abstract class Parser<T>
 		{
 			fileInputStream = new FileInputStream( file );
 			resultingObject = this.parse( fileInputStream );
+			if ( resultingObject == null )
+			{
+				throw new ParserException("Invalid " + getName() + " file: " + file.getAbsolutePath());
+			}
 		} 
 		catch (FileNotFoundException e) 
 		{

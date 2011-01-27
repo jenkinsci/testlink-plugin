@@ -511,10 +511,11 @@ extends Builder
 		}
 		
 		// The object that searches for test results
-		final TestResultSeeker testResultSeeker = new TestResultSeeker(reportFilesPatterns);
+		final TestResultSeeker testResultSeeker = 
+			new TestResultSeeker(report, this.keyCustomField, reportFilesPatterns, listener);
 		
 		// Create list of test results
-		final List<TestResult> testResults = testResultSeeker.seekTestResults(null, listener);
+		final List<TestResult> testResults = testResultSeeker.seekTestResults(null);
 		
 		// Add blocked tests to the test results list
 		for( TestCase testCase : automatedTestCases )

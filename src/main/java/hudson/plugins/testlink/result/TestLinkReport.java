@@ -99,6 +99,17 @@ implements Serializable
 	{
 		return this.testCases.size();
 	}
+	
+	/**
+	 * Adds a Test Case into the list of automated Test Cases.
+	 * 
+	 * @param testCase the Test Case.
+	 * @return true if added successfully, otherwise false.
+	 */
+	public boolean addTestCase(TestCase testCase)
+	{
+		return this.testCases.add( testCase );
+	}
 
 	/**
 	 * @return
