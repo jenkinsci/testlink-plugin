@@ -216,13 +216,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>5.14.2</version>
-			<type>jar</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>br.eti.kinoshita</groupId>
 			<artifactId>testlink-java-api</artifactId>
 			<version>1.9.0-4</version>
@@ -257,6 +250,13 @@
 			<version>1.7</version>
 			<type>jar</type>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>5.14.6</version>
+			<type>jar</type>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

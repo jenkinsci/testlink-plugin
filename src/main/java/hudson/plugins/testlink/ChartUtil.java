@@ -49,6 +49,14 @@ public class ChartUtil
 {
 	
 	/**
+	 * Hidden constructor.
+	 */
+	private ChartUtil()
+	{
+		super();
+	}
+	
+	/**
 	 * Creates the TestLink Trend Chart.
 	 * 
 	 * @param dataset of XY series
@@ -67,7 +75,7 @@ public class ChartUtil
                 false                     // urls
         );
 
-        // NOW DO SOME OPTIONAL CUSTOMISATION OF THE CHART...
+        // NOW DO SOME OPTIONAL CUSTOMISATION ON THE CHART...
 
         final LegendTitle legend = chart.getLegend();
         legend.setPosition(RectangleEdge.RIGHT);

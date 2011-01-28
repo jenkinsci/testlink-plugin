@@ -25,7 +25,7 @@ package hudson.plugins.testlink.result;
 
 import hudson.plugins.testlink.result.ReportFilesPatterns;
 
-import org.junit.Assert;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 

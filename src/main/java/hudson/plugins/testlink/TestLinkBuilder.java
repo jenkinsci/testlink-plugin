@@ -497,7 +497,7 @@ extends Builder
 			}
 		}
 		
-		// Create list of report files patterns
+		// Create list of report files patterns for TAP, TestNG and JUnit.
 		final ReportFilesPatterns reportFilesPatterns = this.getReportPatterns();
 		
 		// Create report object
@@ -515,7 +515,8 @@ extends Builder
 			new TestResultSeeker(report, this.keyCustomField, reportFilesPatterns, listener);
 		
 		// Create list of test results
-		final List<TestResult> testResults = testResultSeeker.seekTestResults(null);
+		final List<TestResult> testResults = build.getWorkspace().act(testResultSeeker);
+		
 		
 		// Add blocked tests to the test results list
 		for( TestCase testCase : automatedTestCases )

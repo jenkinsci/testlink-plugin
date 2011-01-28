@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Navigation vers les massifs" errors="0" failures="0" tests="2" time="63.296000">
+  <testcase classname="Navigation vers les massifs.Acceder par la liste" name="Acceder par la liste (outline example : | Massif du Mercantour | Massif du Mercantour |)" time="31.781000">
+  </testcase>
+  <testcase classname="Navigation vers les massifs.Acceder par la carte" name="Acceder par la carte (outline example : | 3 | Massif du Mercantour |)" time="31.515000">
+  </testcase>
+</testsuite>
+

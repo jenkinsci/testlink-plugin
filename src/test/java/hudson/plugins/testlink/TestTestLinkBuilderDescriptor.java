@@ -23,16 +23,12 @@
  */
 package hudson.plugins.testlink;
 
-import hudson.model.FreeStyleBuild;
-import hudson.model.FreeStyleProject;
 import hudson.model.Hudson;
-import hudson.plugins.testlink.result.TestLinkReport;
-import hudson.plugins.testlink.result.TestLinkResult;
+import hudson.util.FormValidation;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
@@ -43,72 +39,20 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.xy.XYDataset;
 import org.jvnet.hudson.reactor.ReactorException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import br.eti.kinoshita.testlinkjavaapi.model.Build;
-import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
-import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
-
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 2.0
+ * @since 2.1
  */
-public class TestChartUtil
+public class TestTestLinkBuilderDescriptor
 {
 
 	@Test
-	public void testConstructor()
+	public void testLinkBuilderDescriptor()
 	{
-		try
-		{
-			final Constructor<?> c = ChartUtil.class.getDeclaredConstructors()[0];
-			c.setAccessible(true);
-			final Object o = c.newInstance((Object[]) null);
-
-			Assert.assertNotNull(o);
-		}
-		catch (Exception e)
-		{
-			Assert.fail("Failed to instantiate constructor: " + e.getMessage(), e);
-		}
-	}
-	
-	@Test(testName="Test Chart Util")
-	public void testChartUtil()
-	{
-		TestProject project = new TestProject(
-				1, 
-				"My project", 
-				"MP", 
-				"Notes about my project", 
-				Boolean.TRUE, 
-				Boolean.TRUE, 
-				Boolean.TRUE, 
-				Boolean.TRUE, 
-				Boolean.TRUE, 
-				Boolean.TRUE);
-		
-		TestPlan plan = new TestPlan(
-				1, 
-				"My plan", 
-				"My project", 
-				"Notes about my project", 
-				Boolean.TRUE, 
-				Boolean.TRUE
-		);
-		
-		Build build = new Build();
-		build.setId(1);
-		build.setName("My build");
-		build.setNotes("Notes about my build");
-		build.setTestPlanId(1);
-		
-		TestLinkReport report = new TestLinkReport(build, plan, project);
-		
 		ServletContext ctx = new ServletContext()
 		{
 			
@@ -242,37 +186,13 @@ public class TestChartUtil
 		{
 			Assert.fail("Failed to create Hudson objects", e);
 		}
-		FreeStyleProject hudsonProject = new FreeStyleProject(parent, "My project");
-		FreeStyleBuild hudsonBuild1 = null;
-		FreeStyleBuild hudsonBuild2 = null;
+		Assert.assertNotNull( parent );
 		
-		try
-		{
-			hudsonBuild1 = hudsonProject.createExecutable();
-			hudsonBuild1.number = 1;
-			
-			hudsonBuild2 = hudsonProject.createExecutable();
-			hudsonBuild2.number = 2;
-			
-		} catch (IOException e)
-		{
-			Assert.fail("Failed to create Hudson objects", e);
-		}
+		TestLinkBuilderDescriptor descriptor = new TestLinkBuilderDescriptor();
+		Assert.assertEquals( descriptor.getDisplayName(), "Invoke TestLink" );
 		
-		Assert.assertTrue( hudsonBuild2.getPreviousBuild().equals(hudsonBuild1));
-		
-		TestLinkResult result = new TestLinkResult(report, hudsonBuild1);
-		
-		TestLinkBuildAction action1 = new TestLinkBuildAction(hudsonBuild1, result);
-		hudsonBuild1.addAction(action1);
-		TestLinkBuildAction action2 = new TestLinkBuildAction(hudsonBuild2, result);
-		hudsonBuild2.addAction(action2);
-		
-		Assert.assertTrue( action2.getPreviousAction().equals(action1) );
-		
-		XYDataset dataset = ChartUtil.createXYDataset(action2);
-		JFreeChart chart = ChartUtil.buildXYChart(dataset);
-		Assert.assertNotNull( chart );
+		FormValidation formVal = descriptor.doCheckMandatory("Test");
+		Assert.assertNotNull( formVal );
 		
 		try
 		{
@@ -282,6 +202,6 @@ public class TestChartUtil
 		{
 			Assert.fail("Failed to put Hudson down.", e);
 		}
-	}	
+	}
 	
 }

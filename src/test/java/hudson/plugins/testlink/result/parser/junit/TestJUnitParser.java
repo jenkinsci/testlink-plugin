@@ -74,6 +74,7 @@ public class TestJUnitParser
 		Assert.assertTrue( testSuite.getTestCases().size() == 1 );
 		
 		Assert.assertTrue( testSuite.getFailures().equals("1"));
+		
 	}
 	
 	@Test(description="Tests for xml file: TEST-net.cars.engine.CarburateurTest.xml")
@@ -97,6 +98,7 @@ public class TestJUnitParser
 		Assert.assertTrue( testSuite.getTestCases().size() == 1 );
 		
 		Assert.assertTrue( testSuite.getFailures().equals("1"));
+		Assert.assertTrue( testSuite.getTimestamp().equals("2007-11-02T23:13:50") );
 		
 		Assert.assertTrue( testSuite.getHostname().equals("hazelnut.osuosl.org"));
 		TestCase t1 = testSuite.getTestCases().get(0);
@@ -106,6 +108,13 @@ public class TestJUnitParser
 		Assert.assertTrue( failure.getMessage().equals("Mix should be exactly 25. expected:<25> but was:<20>"));
 		Assert.assertTrue( failure.getType().equals("junit.framework.AssertionFailedError") );
 		Assert.assertTrue( failure.getText().equals("junit.framework.AssertionFailedError: Mix should be exactly 25. expected:<25> but was:<20>\n\tat net.cars.engine.CarburateurTest.mix(CarburateurTest.java:34)\n"));
+		
+		Assert.assertTrue( t1.removeFailure( failure ) );
+		Assert.assertTrue( t1.getFailures().size() == 0 );
+		
+		Assert.assertTrue( testSuite.removeTestCase(t1) );
+		
+		Assert.assertTrue( testSuite.getTestCases().size() == 0 );
 	}
 	
 	@Test(description="Tests for xml file: TEST-net.cars.engine.DelcoTest.xml")
@@ -134,9 +143,11 @@ public class TestJUnitParser
 		
 		String systemOut = testSuite.getSystemOut();
 		Assert.assertNotNull( systemOut );
+		Assert.assertTrue( systemOut.equals("Rotation is simulated for a four spark engine with an angle of 0?.\n"));
 		
 		String systemErr = testSuite.getSystemErr();
 		Assert.assertNotNull( systemErr );
+		Assert.assertTrue( systemErr.equals("BrunoPKinoshita"));
 	}
 	
 	@Test(description="Tests for xml file: TEST-net.cars.engine.PistonTest.xml")
@@ -175,6 +186,9 @@ public class TestJUnitParser
 		Assert.assertTrue( error.getMessage().equals("test timed out after 1 milliseconds") );
 		Assert.assertTrue( error.getText().equals("java.lang.Exception: test timed out after 1 milliseconds\n") );
 		Assert.assertTrue( error.getType().equals("java.lang.Exception") );
+		
+		Assert.assertTrue( t1.removeError( error ) );
+		Assert.assertTrue( t1.getErrors().size() == 0 );
 		
 	}
 	
