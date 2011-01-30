@@ -44,6 +44,10 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
+ * Tests the TestLinkBuilderDescriptor class.
+ * 
+ * @see {@link TestLinkBuilderDescriptor}
+ * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
@@ -53,154 +57,173 @@ public class TestTestLinkBuilderDescriptor
 	@Test
 	public void testLinkBuilderDescriptor()
 	{
-		ServletContext ctx = new ServletContext()
+		
+		Hudson parent = null;
+		
+		try
 		{
-			
-			public void setAttribute( String name, Object object )
-			{
-			}
-			
-			public void removeAttribute( String name )
-			{
-			}
-			
-			public void log( String message, Throwable throwable )
-			{
-			}
-			
-			public void log( Exception exception, String msg )
-			{
-			}
-			
-			public void log( String msg )
+		
+			ServletContext ctx = new ServletContext()
 			{
 				
-			}
+				public void setAttribute( String name, Object object )
+				{
+				}
+				
+				public void removeAttribute( String name )
+				{
+				}
+				
+				public void log( String message, Throwable throwable )
+				{
+				}
+				
+				public void log( Exception exception, String msg )
+				{
+				}
+				
+				public void log( String msg )
+				{
+					
+				}
+				
+				public Enumeration<?> getServlets()
+				{
+					return null;
+				}
+				
+				public Enumeration<?> getServletNames()
+				{
+					return null;
+				}
+				
+				public String getServletContextName()
+				{
+					return null;
+				}
+				
+				public Servlet getServlet( String name ) throws ServletException
+				{
+					return null;
+				}
+				
+				public String getServerInfo()
+				{
+					return null;
+				}
+				
+				public Set<?> getResourcePaths( String path )
+				{
+					return null;
+				}
+				
+				public InputStream getResourceAsStream( String path )
+				{
+					return null;
+				}
+				
+				public URL getResource( String path ) throws MalformedURLException
+				{
+					return null;
+				}
+				
+				public RequestDispatcher getRequestDispatcher( String path )
+				{
+					return null;
+				}
+				
+				public String getRealPath( String path )
+				{
+					return null;
+				}
+				
+				public RequestDispatcher getNamedDispatcher( String name )
+				{
+					return null;
+				}
+				
+				public int getMinorVersion()
+				{
+					return 0;
+				}
+				
+				public String getMimeType( String file )
+				{
+					return null;
+				}
+				
+				public int getMajorVersion()
+				{
+					return 0;
+				}
+				
+				public Enumeration<?> getInitParameterNames()
+				{
+					return null;
+				}
+				
+				public String getInitParameter( String name )
+				{
+					return null;
+				}
+				
+				public ServletContext getContext( String uripath )
+				{
+					return this;
+				}
+				
+				public Enumeration<?> getAttributeNames()
+				{
+					return null;
+				}
+				
+				public Object getAttribute( String name )
+				{
+					return null;
+				}
+	
+				public String getContextPath()
+				{
+					return null;
+				}
+			};
 			
-			public Enumeration<?> getServlets()
-			{
-				return null;
-			}
-			
-			public Enumeration<?> getServletNames()
-			{
-				return null;
-			}
-			
-			public String getServletContextName()
-			{
-				return null;
-			}
-			
-			public Servlet getServlet( String name ) throws ServletException
-			{
-				return null;
-			}
-			
-			public String getServerInfo()
-			{
-				return null;
-			}
-			
-			public Set<?> getResourcePaths( String path )
-			{
-				return null;
-			}
-			
-			public InputStream getResourceAsStream( String path )
-			{
-				return null;
-			}
-			
-			public URL getResource( String path ) throws MalformedURLException
-			{
-				return null;
-			}
-			
-			public RequestDispatcher getRequestDispatcher( String path )
-			{
-				return null;
-			}
-			
-			public String getRealPath( String path )
-			{
-				return null;
-			}
-			
-			public RequestDispatcher getNamedDispatcher( String name )
-			{
-				return null;
-			}
-			
-			public int getMinorVersion()
-			{
-				return 0;
-			}
-			
-			public String getMimeType( String file )
-			{
-				return null;
-			}
-			
-			public int getMajorVersion()
-			{
-				return 0;
-			}
-			
-			public Enumeration<?> getInitParameterNames()
-			{
-				return null;
-			}
-			
-			public String getInitParameter( String name )
-			{
-				return null;
-			}
-			
-			public ServletContext getContext( String uripath )
-			{
-				return this;
-			}
-			
-			public Enumeration<?> getAttributeNames()
-			{
-				return null;
-			}
-			
-			public Object getAttribute( String name )
-			{
-				return null;
-			}
-		};
-		Hudson parent = null;
-		try
-		{
 			parent = new Hudson(new File("target"), ctx);
-		} catch (IOException e)
-		{
-			Assert.fail("Failed to create Hudson objects", e);
-		} catch (InterruptedException e)
-		{
-			Assert.fail("Failed to create Hudson objects", e);
-		} catch (ReactorException e)
-		{
-			Assert.fail("Failed to create Hudson objects", e);
+	
+			Assert.assertNotNull( parent );
+			
+			TestLinkBuilderDescriptor descriptor = new TestLinkBuilderDescriptor();
+			Assert.assertEquals( descriptor.getDisplayName(), "Invoke TestLink" );
+			
+			FormValidation formVal = descriptor.doCheckMandatory("Test");
+			Assert.assertNotNull( formVal );
+			
+			formVal = descriptor.doCheckMandatory(null);
+			Assert.assertNotNull( formVal );
+			Assert.assertNotNull( formVal.getMessage() );
+			
+			Assert.assertNotNull( descriptor.getInstallations() );
+			Assert.assertTrue( descriptor.getInstallations().length == 0 );
 		}
-		Assert.assertNotNull( parent );
-		
-		TestLinkBuilderDescriptor descriptor = new TestLinkBuilderDescriptor();
-		Assert.assertEquals( descriptor.getDisplayName(), "Invoke TestLink" );
-		
-		FormValidation formVal = descriptor.doCheckMandatory("Test");
-		Assert.assertNotNull( formVal );
-		
-		try
+		catch ( ReactorException e  )
 		{
-			parent.doQuietDown();
-		}
+			Assert.fail("Failed to created Hudson test instance.", e);
+		} 
 		catch (IOException e)
 		{
-			Assert.fail("Failed to put Hudson down.", e);
+			Assert.fail("Failed to created Hudson test instance.", e);
+		} 
+		catch (InterruptedException e)
+		{
+			Assert.fail("Failed to created Hudson test instance.", e);
+		}
+		finally
+		{
+			if ( parent != null )
+			{
+				parent.cleanUp();
+				parent = null;
+			}
 		}
 	}
 	

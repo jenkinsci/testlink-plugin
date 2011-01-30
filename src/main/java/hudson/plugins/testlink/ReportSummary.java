@@ -35,50 +35,59 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 1.0
  */
-public class ReportSummary {
+public class ReportSummary 
+{
 
+	/**
+	 * Hidden constructor.
+	 */
+	private ReportSummary()
+	{
+		super();
+	}
+	
 	/**
 	 * Creates Report Summary.
 	 * 
-	 * @param report TestLink Report
+	 * @param testLinkReport TestLink Report
 	 * @param previous Previous TestLink Report
 	 * @return Report Summary
 	 */
 	public static String createReportSummary(
-			TestLinkReport report,
+			TestLinkReport testLinkReport,
 			TestLinkReport previous) 
 	{
 		StringBuilder builder = new StringBuilder();
-		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildID(report.getBuild().getId())+"</b></p>");
-		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildName(report.getBuild().getName())+"</b></p>");
+		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildID(testLinkReport.getBuild().getId())+"</b></p>");
+		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildName(testLinkReport.getBuild().getName())+"</b></p>");
 		builder.append("<p><a href=\"" + TestLinkBuildAction.URL_NAME + "\">");
-        builder.append( Messages.ReportSummary_Summary_TotalOf( report.getTestsTotal() ) );
+        builder.append( Messages.ReportSummary_Summary_TotalOf( testLinkReport.getTestsTotal() ) );
         if(previous != null){
             printDifference(
-            		report.getTestsTotal(),
+            		testLinkReport.getTestsTotal(),
             		previous.getTestsTotal(), 
             		builder);
         }
-        builder.append( " " +  Messages.ReportSummary_Summary_Tests() );
+        builder.append( " " +  Messages.ReportSummary_Summary_Tests() ); // TBD: check if it is necessary
         builder.append("</a>");
-        builder.append( " " + Messages.ReportSummary_Summary_Where( report.getTestsPassed() ) );
+        builder.append( " " + Messages.ReportSummary_Summary_Where( testLinkReport.getTestsPassed() ) );
         if(previous != null){
             printDifference(
-            		report.getTestsPassed(), 
+            		testLinkReport.getTestsPassed(), 
             		previous.getTestsPassed(), 
             		builder);
         }
-        builder.append( " " + Messages.ReportSummary_Summary_TestsPassed( report.getTestsFailed() ) );
+        builder.append( " " + Messages.ReportSummary_Summary_TestsPassed( testLinkReport.getTestsFailed() ) );
         if(previous != null){
             printDifference(
-            		report.getTestsFailed(),
+            		testLinkReport.getTestsFailed(),
             		previous.getTestsFailed(),
             		builder);
         }
-        builder.append( " " + Messages.ReportSummary_Summary_TestsFailed(report.getTestsBlocked()) );
+        builder.append( " " + Messages.ReportSummary_Summary_TestsFailed(testLinkReport.getTestsBlocked()) );
         if(previous != null){
             printDifference(
-            		report.getTestsBlocked(),
+            		testLinkReport.getTestsBlocked(),
             		previous.getTestsBlocked(),
             		builder);
         }
@@ -141,19 +150,19 @@ public class ReportSummary {
 	 * 
 	 * @param current Current value
 	 * @param previous Previous value
-	 * @param builder StrinbBuilder that acts as a buffer
+	 * @param buffer StrinbBuilder that acts as a buffer
 	 */
-	private static void printDifference(int current, int previous, StringBuilder builder){
+	protected static void printDifference(int current, int previous, StringBuilder buffer){
 		int difference = current - previous;
         
 		if(difference > 0)
         {
-			builder.append(" (");
+			buffer.append(" (");
             
-			builder.append('+');
+			buffer.append('+');
 			
-			builder.append(difference);
-	        builder.append(")");
+			buffer.append(difference);
+	        buffer.append(")");
         }
         
     }

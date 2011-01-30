@@ -27,12 +27,19 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
+ * Tests the TestLinkBuilderInstallation class.
+ * 
+ * @see {@link TestLinkBuilderInstallation}
+ * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 28/01/2011
+ * @since 2.1
  */
 public class TestTestLinkBuilderInstallation
 {
 
+	/**
+	 * Tests with a TestLinkBuilderInstallation object.
+	 */
 	@Test
 	public void testInstallation()
 	{

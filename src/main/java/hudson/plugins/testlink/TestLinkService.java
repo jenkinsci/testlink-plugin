@@ -31,8 +31,6 @@ import hudson.plugins.testlink.util.TestLinkHelper;
 import java.net.MalformedURLException;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
-
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPIException;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
@@ -272,7 +270,7 @@ public class TestLinkService
 	 */
 	private void setCustomFields( TestCase testCase, String[] customFieldsNames ) 
 	{
-		if ( ArrayUtils.isNotEmpty( customFieldsNames ) )
+		if ( customFieldsNames != null && customFieldsNames.length > 0 )
 		{
 			for (String customFieldName : customFieldsNames )
 			{

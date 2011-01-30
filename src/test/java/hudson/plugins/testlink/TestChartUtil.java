@@ -54,13 +54,20 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
 
 /**
+ * Tests the ChartUtil class.
+ * 
+ * @see {@link ChartUtil}
+ * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
  */
 public class TestChartUtil
 {
 
-	@Test
+	/**
+	 * Tests the hidden constructor.
+	 */
+	@Test(description="Tests the hidden constructor.")
 	public void testConstructor()
 	{
 		try
@@ -77,7 +84,10 @@ public class TestChartUtil
 		}
 	}
 	
-	@Test(testName="Test Chart Util")
+	/**
+	 * Tests createXYDataset() and buildXYChart() methods.
+	 */
+	@Test(description="Tests createXYDataset() and buildXYChart() methods.")
 	public void testChartUtil()
 	{
 		TestProject project = new TestProject(
@@ -109,178 +119,190 @@ public class TestChartUtil
 		
 		TestLinkReport report = new TestLinkReport(build, plan, project);
 		
-		ServletContext ctx = new ServletContext()
+		Hudson parent = null;
+		
+		try
 		{
-			
-			public void setAttribute( String name, Object object )
-			{
-			}
-			
-			public void removeAttribute( String name )
-			{
-			}
-			
-			public void log( String message, Throwable throwable )
-			{
-			}
-			
-			public void log( Exception exception, String msg )
-			{
-			}
-			
-			public void log( String msg )
+		
+			ServletContext ctx = new ServletContext()
 			{
 				
-			}
+				public void setAttribute( String name, Object object )
+				{
+				}
+				
+				public void removeAttribute( String name )
+				{
+				}
+				
+				public void log( String message, Throwable throwable )
+				{
+				}
+				
+				public void log( Exception exception, String msg )
+				{
+				}
+				
+				public void log( String msg )
+				{
+					
+				}
+				
+				public Enumeration<?> getServlets()
+				{
+					return null;
+				}
+				
+				public Enumeration<?> getServletNames()
+				{
+					return null;
+				}
+				
+				public String getServletContextName()
+				{
+					return null;
+				}
+				
+				public Servlet getServlet( String name ) throws ServletException
+				{
+					return null;
+				}
+				
+				public String getServerInfo()
+				{
+					return null;
+				}
+				
+				public Set<?> getResourcePaths( String path )
+				{
+					return null;
+				}
+				
+				public InputStream getResourceAsStream( String path )
+				{
+					return null;
+				}
+				
+				public URL getResource( String path ) throws MalformedURLException
+				{
+					return null;
+				}
+				
+				public RequestDispatcher getRequestDispatcher( String path )
+				{
+					return null;
+				}
+				
+				public String getRealPath( String path )
+				{
+					return null;
+				}
+				
+				public RequestDispatcher getNamedDispatcher( String name )
+				{
+					return null;
+				}
+				
+				public int getMinorVersion()
+				{
+					return 0;
+				}
+				
+				public String getMimeType( String file )
+				{
+					return null;
+				}
+				
+				public int getMajorVersion()
+				{
+					return 0;
+				}
+				
+				public Enumeration<?> getInitParameterNames()
+				{
+					return null;
+				}
+				
+				public String getInitParameter( String name )
+				{
+					return null;
+				}
+				
+				public ServletContext getContext( String uripath )
+				{
+					return this;
+				}
+				
+				public Enumeration<?> getAttributeNames()
+				{
+					return null;
+				}
+				
+				public Object getAttribute( String name )
+				{
+					return null;
+				}
+	
+				public String getContextPath()
+				{
+					return null;
+				}
+			};
 			
-			public Enumeration<?> getServlets()
-			{
-				return null;
-			}
-			
-			public Enumeration<?> getServletNames()
-			{
-				return null;
-			}
-			
-			public String getServletContextName()
-			{
-				return null;
-			}
-			
-			public Servlet getServlet( String name ) throws ServletException
-			{
-				return null;
-			}
-			
-			public String getServerInfo()
-			{
-				return null;
-			}
-			
-			public Set<?> getResourcePaths( String path )
-			{
-				return null;
-			}
-			
-			public InputStream getResourceAsStream( String path )
-			{
-				return null;
-			}
-			
-			public URL getResource( String path ) throws MalformedURLException
-			{
-				return null;
-			}
-			
-			public RequestDispatcher getRequestDispatcher( String path )
-			{
-				return null;
-			}
-			
-			public String getRealPath( String path )
-			{
-				return null;
-			}
-			
-			public RequestDispatcher getNamedDispatcher( String name )
-			{
-				return null;
-			}
-			
-			public int getMinorVersion()
-			{
-				return 0;
-			}
-			
-			public String getMimeType( String file )
-			{
-				return null;
-			}
-			
-			public int getMajorVersion()
-			{
-				return 0;
-			}
-			
-			public Enumeration<?> getInitParameterNames()
-			{
-				return null;
-			}
-			
-			public String getInitParameter( String name )
-			{
-				return null;
-			}
-			
-			public ServletContext getContext( String uripath )
-			{
-				return this;
-			}
-			
-			public Enumeration<?> getAttributeNames()
-			{
-				return null;
-			}
-			
-			public Object getAttribute( String name )
-			{
-				return null;
-			}
-		};
-		Hudson parent = null;
-		try
-		{
 			parent = new Hudson(new File("target"), ctx);
-		} catch (IOException e)
-		{
-			Assert.fail("Failed to create Hudson objects", e);
-		} catch (InterruptedException e)
-		{
-			Assert.fail("Failed to create Hudson objects", e);
-		} catch (ReactorException e)
-		{
-			Assert.fail("Failed to create Hudson objects", e);
-		}
-		FreeStyleProject hudsonProject = new FreeStyleProject(parent, "My project");
-		FreeStyleBuild hudsonBuild1 = null;
-		FreeStyleBuild hudsonBuild2 = null;
-		
-		try
-		{
-			hudsonBuild1 = hudsonProject.createExecutable();
-			hudsonBuild1.number = 1;
 			
-			hudsonBuild2 = hudsonProject.createExecutable();
-			hudsonBuild2.number = 2;
+			FreeStyleProject hudsonProject = new FreeStyleProject(parent, "My project");
+			FreeStyleBuild hudsonBuild1 = null;
+			FreeStyleBuild hudsonBuild2 = null;
 			
-		} catch (IOException e)
-		{
-			Assert.fail("Failed to create Hudson objects", e);
-		}
-		
-		Assert.assertTrue( hudsonBuild2.getPreviousBuild().equals(hudsonBuild1));
-		
-		TestLinkResult result = new TestLinkResult(report, hudsonBuild1);
-		
-		TestLinkBuildAction action1 = new TestLinkBuildAction(hudsonBuild1, result);
-		hudsonBuild1.addAction(action1);
-		TestLinkBuildAction action2 = new TestLinkBuildAction(hudsonBuild2, result);
-		hudsonBuild2.addAction(action2);
-		
-		Assert.assertTrue( action2.getPreviousAction().equals(action1) );
-		
-		XYDataset dataset = ChartUtil.createXYDataset(action2);
-		JFreeChart chart = ChartUtil.buildXYChart(dataset);
-		Assert.assertNotNull( chart );
-		
-		try
-		{
-			parent.doQuietDown();
-		}
+			try
+			{
+				hudsonBuild1 = hudsonProject.createExecutable();
+				hudsonBuild1.number = 1;
+				
+				hudsonBuild2 = hudsonProject.createExecutable();
+				hudsonBuild2.number = 2;
+				
+			} catch (IOException e)
+			{
+				Assert.fail("Failed to create Hudson objects", e);
+			}
+			
+			Assert.assertTrue( hudsonBuild2.getPreviousBuild().equals(hudsonBuild1));
+			
+			TestLinkResult result = new TestLinkResult(report, hudsonBuild1);
+			
+			TestLinkBuildAction action1 = new TestLinkBuildAction(hudsonBuild1, result);
+			hudsonBuild1.addAction(action1);
+			TestLinkBuildAction action2 = new TestLinkBuildAction(hudsonBuild2, result);
+			hudsonBuild2.addAction(action2);
+			
+			Assert.assertTrue( action2.getPreviousAction().equals(action1) );
+			
+			XYDataset dataset = ChartUtil.createXYDataset(action2);
+			JFreeChart chart = ChartUtil.buildXYChart(dataset);
+			Assert.assertNotNull( chart );
+			
+		} 
 		catch (IOException e)
 		{
-			Assert.fail("Failed to put Hudson down.", e);
+			Assert.fail("Failed to created Hudson test instance:" + e.getMessage());
+		} 
+		catch (InterruptedException e)
+		{
+			Assert.fail("Failed to created Hudson test instance:" + e.getMessage());
+		} 
+		catch (ReactorException e)
+		{
+			Assert.fail("Failed to created Hudson test instance:" + e.getMessage());
+		} 
+		finally
+		{
+			if ( parent != null )
+			{
+				parent.cleanUp();
+				parent = null;
+			}
 		}
 	}	
 	

@@ -88,7 +88,7 @@ public class TestTemporaryExecutableScriptWriter
 	public void testExecutableScriptForUnix()
 	{
 		
-		File temporaryScript = new File( "test-output", "testExecutableScript.tmp");
+		File temporaryScript = new File( "target", "testExecutableScript.tmp");
 		try
 		{
 			Assert.assertTrue( temporaryScript.createNewFile() );

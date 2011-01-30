@@ -64,6 +64,8 @@ public class TestResultSeeker
 implements FileCallable<List<TestResult>>
 {
 
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * The TestLink Report object.
 	 */
