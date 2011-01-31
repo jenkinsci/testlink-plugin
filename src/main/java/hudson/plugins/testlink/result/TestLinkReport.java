@@ -93,7 +93,7 @@ implements Serializable
 	}
 
 	/**
-	 * @return
+	 * @return number of total tests
 	 */
 	public Integer getTestsTotal() 
 	{
@@ -112,7 +112,7 @@ implements Serializable
 	}
 
 	/**
-	 * @return
+	 * @return number of passed tests.
 	 */
 	public Integer getTestsPassed() 
 	{
@@ -128,7 +128,7 @@ implements Serializable
 	}
 
 	/**
-	 * @return
+	 * @return number of failed tests.
 	 */
 	public Integer getTestsFailed() 
 	{
@@ -144,7 +144,7 @@ implements Serializable
 	}
 
 	/**
-	 * @return
+	 * @return number of blocked tests.
 	 */
 	public Integer getTestsBlocked() 
 	{

@@ -68,7 +68,7 @@ public class ReportSummary
             		previous.getTestsTotal(), 
             		builder);
         }
-        builder.append( " " +  Messages.ReportSummary_Summary_Tests() ); // TBD: check if it is necessary
+        builder.append( " " +  Messages.ReportSummary_Summary_Tests() );
         builder.append("</a>");
         builder.append( " " + Messages.ReportSummary_Summary_Where( testLinkReport.getTestsPassed() ) );
         if(previous != null){
@@ -128,7 +128,6 @@ public class ReportSummary
         {
         	builder.append("<tr>\n");
         	
-        	// TBD: colors depending on status
         	builder.append("<td>"+tc.getId()+"</td>");
         	builder.append("<td>"+tc.getVersion()+"</td>");
         	builder.append("<td>"+tc.getName()+"</td>");

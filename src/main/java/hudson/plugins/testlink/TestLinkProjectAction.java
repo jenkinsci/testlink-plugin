@@ -142,15 +142,11 @@ public class TestLinkProjectAction extends Actionable implements
 	}
 
 	/**
-	 * Display the trend map. Delegates to the the associated
-	 * {@link ResultAction}.
+	 * Display the trend map. 
 	 * 
-	 * @param request
-	 *            Stapler request
-	 * @param response
-	 *            Stapler response
-	 * @throws IOException
-	 *             in case of an error
+	 * @param request Stapler request
+	 * @param response Stapler response
+	 * @throws IOException in case of an error
 	 */
 	public void doTrendMap( final StaplerRequest request,
 			final StaplerResponse response ) throws IOException
@@ -172,16 +168,14 @@ public class TestLinkProjectAction extends Actionable implements
 	}
 
 	/**
-	 * Display the trend graph. Delegates to the the associated
-	 * {@link ResultAction}.
+	 * Display the trend graph.
 	 * 
 	 * @param request
 	 *            Stapler request
 	 * @param response
 	 *            Stapler response
 	 * @throws IOException
-	 *             in case of an error in
-	 *             {@link ResultAction#doGraph(StaplerRequest, StaplerResponse, int)}
+	 *             in case of an error
 	 */
 	public void doTrend( final StaplerRequest request,
 			final StaplerResponse response ) throws IOException
@@ -204,7 +198,7 @@ public class TestLinkProjectAction extends Actionable implements
 
 	/**
 	 * Called from floatingBox.jelly to check if we have valid results.
-	 * @return
+	 * @return true if this project has valid results regarding testlink automated tests.
 	 */
 	public final boolean hasValidResults()
 	{

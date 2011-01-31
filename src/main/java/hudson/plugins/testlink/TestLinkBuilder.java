@@ -386,7 +386,6 @@ extends Builder
 	 * The information gathered is sufficient to execute a test command 
 	 * that runs automated tests.</p>
 	 * 
-	 * <p>After this step the output of the tests is parsed by {@link Parser_}</p>
 	 */
 	@Override
 	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher,
@@ -482,7 +481,7 @@ extends Builder
 			} 
 			else
 			{
-				final EnvVars buildEnvironmentVariables = this.buildEnvironmentVariables( automatedTestCase, listener, testLinkSvc.getTestProject(), testLinkSvc.getTestPlan(), testLinkSvc.getBuild() ); 
+				final EnvVars buildEnvironmentVariables = this.buildEnvironmentVariables( automatedTestCase, testLinkSvc.getTestProject(), testLinkSvc.getTestPlan(), testLinkSvc.getBuild(), listener ); 
 				buildEnvironmentVariables.putAll( build.getEnvironment( listener ) );
 				final Integer iterativeTestCommandExitCode = this.executeTestCommand( 
 						buildEnvironmentVariables, 
@@ -583,15 +582,16 @@ extends Builder
 	}
 	
 	/**
+	 * Creates EnvVars for a TestLink Test Case.
 	 * 
-	 * @param testCase
-	 * @param listener
-	 * @param testProject
-	 * @param testPlan
-	 * @param build
-	 * @return
+	 * @param testCase TestLink test Case
+	 * @param testProject TestLink Test Project
+	 * @param testPlan TestLink Test Plan
+	 * @param build TestLink Build
+	 * @param listener Hudson Build Listener
+	 * @return EnvVars (environment variables)
 	 */
-	protected EnvVars buildEnvironmentVariables( TestCase testCase, BuildListener listener, TestProject testProject, TestPlan testPlan, Build build ) 
+	protected EnvVars buildEnvironmentVariables( TestCase testCase, TestProject testProject, TestPlan testPlan, Build build, BuildListener listener ) 
 	{
 		// Build environment variables list
 		listener.getLogger().println(Messages.TestLinkBuilder_CreatingEnvVars());
@@ -605,12 +605,13 @@ extends Builder
 	}
 	
 	/**
+	 * Creates a Map (name, value) of environment variables for a TestLink Test Case.
 	 * 
-	 * @param testCase
-	 * @param testProject
-	 * @param testPlan
-	 * @param build
-	 * @return
+	 * @param testCase TestLink test Case.
+	 * @param testProject TestLink Test Project.
+	 * @param testPlan TestLink Test Plan.
+	 * @param build TestLink Build.
+	 * @return Map (name, value) of environment variables.
 	 */
 	protected Map<String, String> createTestLinkEnvironmentVariables( TestCase testCase, TestProject testProject, TestPlan testPlan, Build build ) 
 	{
@@ -656,7 +657,6 @@ extends Builder
 	 * Executes a test command for a given test case.
 	 * 
 	 * @param buildEnvironmentVariables Map of Environment Variables
-	 * @param testCase Test Case
 	 * @param hudsonBuild Hudson Build instance
 	 * @param launcher Hudson Build instance's launcher
 	 * @param listener Hudson Build instance's listener

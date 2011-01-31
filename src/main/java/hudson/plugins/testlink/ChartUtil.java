@@ -111,8 +111,8 @@ public class ChartUtil
 	/**
 	 * Creates the XY dataset required to create the CCM Trend graph.
 	 * 
-	 * @param lastAction
-	 * @return
+	 * @param lastAction last TestLinkBuildAction
+	 * @return XY Dataset
 	 */
 	public static final XYDataset createXYDataset( TestLinkBuildAction lastAction )
 	{

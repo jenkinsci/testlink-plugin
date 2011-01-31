@@ -25,7 +25,6 @@ package hudson.plugins.testlink.result;
 
 import hudson.FilePath.FileCallable;
 import hudson.model.BuildListener;
-import hudson.plugins.testlink.result.parser.Parser;
 import hudson.plugins.testlink.result.parser.junit.JUnitParser;
 import hudson.plugins.testlink.result.parser.junit.TestSuite;
 import hudson.plugins.testlink.result.parser.tap.TAPParser;
@@ -54,9 +53,6 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 /**
  * Seeks for Test Results using a Scanner and Parsers.
  * 
- * @see {@link Scanner}
- * @see {@link Parser}
- * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
@@ -78,8 +74,6 @@ implements FileCallable<List<TestResult>>
 	
 	/**
 	 * The ReportFilesPattern object.
-	 * 
-	 * @see {@link ReportFilesPatterns}
 	 */
 	private ReportFilesPatterns reportFilesPattern;
 	
@@ -113,8 +107,8 @@ implements FileCallable<List<TestResult>>
 	 * the key custom field name, the ReportFilesPattern object, 
 	 * the Hudson Build listener, the scanner and the parsers.
 	 * 
-	 * @param automatedTestCases The list of automated test cases.
-	 * @param keyCustomField The name of the Key Custom Field.
+	 * @param report TestLink report.
+	 * @param keyCustomFieldName The name of the Key Custom Field.
 	 * @param reportFilesPatterns The report files patterns.
 	 * @param listener The Hudson Build listener.
 	 */
@@ -139,6 +133,13 @@ implements FileCallable<List<TestResult>>
 		this.tapParser = new TAPParser();
 	}
 	
+	/**
+	 * Seeks test results in a given directory. It will seek for JUnit, TestNG 
+	 * and TAP test results.
+	 * 
+	 * @param directory directory to seek for test results.
+	 * @return list of test results.
+	 */
 	public List<TestResult> seekTestResults( File directory ) 
 	{
 		final List<TestResult> testResults = new LinkedList<TestResult>();
@@ -155,6 +156,15 @@ implements FileCallable<List<TestResult>>
 		{
 			listener.getLogger().println( Messages.TestLinkBuilder_FailedToOpenReportFile() );
 			ioe.printStackTrace( listener.getLogger() );
+		}
+		
+		if ( testResults.size() > 0 )
+		{
+			listener.getLogger().println( Messages.TestLinkBuilder_ShowFoundTestResults(testResults.size()) );
+		}
+		else
+		{
+			listener.getLogger().println( Messages.TestLinkBuilder_NoTestResultsFound() );
 		}
 		
 		return testResults;
@@ -203,19 +213,58 @@ implements FileCallable<List<TestResult>>
 								ExecutionStatus status = this.getJUnitExecutionStatus( testSuite );
 								testCase.setExecutionStatus( status );
 								TestResult testResult = new TestResult(testCase, report.getBuild(), report.getTestPlan());
+								String notes = this.getJUnitNotes( testSuite );
+								testResult.setNotes( notes );
 								results.add( testResult );
 								break;
 							}
 						}
 					}
 				}
-				
-				//listener.getLogger().println( Messages.TestLinkBuilder_ShowFoundTestResults(foundResults.length) );
-				//listener.getLogger().println( Messages.TestLinkBuilder_NoTestResultsFound() );
 			}
 		}
 	}
 	
+	/**
+	 * Retrieves notes about JUnit test result.
+	 * 
+	 * @param testSuite JUnit test suite
+	 * @return notes about JUnit test result.
+	 */
+	protected String getJUnitNotes( TestSuite testSuite )
+	{
+		StringBuilder notes = new StringBuilder();
+		
+		notes.append( "name: " );
+		notes.append( testSuite.getName()+ "\n" );
+		
+		notes.append( "hostname: " );
+		notes.append( testSuite.getHostname() + "\n" );
+		
+		notes.append( "tests: " );
+		notes.append( testSuite.getTests() + "\n" );
+		
+		notes.append( "errors: " );
+		notes.append( testSuite.getErrors() + "\n" );
+		
+		notes.append( "failures: " );
+		notes.append( testSuite.getFailures() + "\n" );
+		
+		notes.append( "time: " );
+		notes.append( testSuite.getTime()+ "\n" );
+		
+		notes.append( "timestamp: " );
+		notes.append( testSuite.getTimestamp()+ "\n" );
+		
+		notes.append( "system-out: " );
+		notes.append( testSuite.getSystemOut()+ "\n" );
+		
+		notes.append( "system-err: " );
+		notes.append( testSuite.getSystemErr()+ "\n" );
+		
+		return notes.toString();
+	}
+
 	/**
 	 * Retrieves a Execution Status from a JUnit TestSuite. If the TestSuite 
 	 * contains failures or errors it returns failed, otherwise it returns true. 
@@ -298,6 +347,8 @@ implements FileCallable<List<TestResult>>
 											ExecutionStatus status = this.getTestNGExecutionStatus( clazz );
 											testCase.setExecutionStatus( status );
 											TestResult testResult = new TestResult(testCase, report.getBuild(), report.getTestPlan());
+											String notes = this.getTestNGNotes( suite, clazz );
+											testResult.setNotes( notes );
 											results.add( testResult );
 											break;
 										}
@@ -307,13 +358,71 @@ implements FileCallable<List<TestResult>>
 						}
 					}
 				}
-				
-				//listener.getLogger().println( Messages.TestLinkBuilder_ShowFoundTestResults(foundResults.length) );
-				//listener.getLogger().println( Messages.TestLinkBuilder_NoTestResultsFound() );
 			}
 		}
 	}
 	
+	/**
+	 * Retrieves notes for TestNG suite and test class.
+	 * 
+	 * @param suite TestNG suite.
+	 * @param clazz TestNG test class.
+	 * @return notes for TestNG suite and test class.
+	 */
+	protected String getTestNGNotes( Suite suite, Class clazz )
+	{
+		StringBuilder notes = new StringBuilder();
+		
+		notes.append( "name: " );
+		notes.append( suite.getName() + "\n" );
+		
+		notes.append( "duration in ms: " );
+		notes.append( suite.getDurationMs() + "\n" );
+		
+		notes.append( "started at: " );
+		notes.append( suite.getStartedAt() + "\n" );
+		
+		notes.append( "finished at: " );
+		notes.append( suite.getFinishedAt() + "\n" );
+		
+		notes.append( "number of tests: " );
+		notes.append( suite.getTests().size() + "\n" );
+		
+		notes.append( "---------------\n" );
+		
+		notes.append( "class name: " );
+		notes.append( clazz.getName() + "\n" );
+		
+		notes.append( "number of methods: " );
+		notes.append( clazz.getTestMethods().size() + "\n" );
+		
+		for( TestMethod method : clazz.getTestMethods() )
+		{
+			notes.append( "  name: " );
+			notes.append( method.getName() + "\n" );
+			
+			notes.append( "  config?: " );
+			notes.append( method.getIsConfig() + "\n" );
+			
+			notes.append( "  signature: " );
+			notes.append( method.getSignature() + "\n" );
+			
+			notes.append( "  status: " );
+			notes.append( method.getStatus() + "\n" );
+			
+			notes.append( "  duration in ms: " );
+			notes.append( method.getDurationMs() + "\n" );
+			
+			notes.append( "  started at: " );
+			notes.append( method.getStartedAt() + "\n" );
+			
+			notes.append( "  finished at: " );
+			notes.append( method.getFinishedAt() + "\n" );
+		}
+		
+		return notes.toString();
+	}
+
 	/**
 	 * Retrieves the Execution Status for a TestNG test class. It is done 
 	 * iterating over all the class methods. If a method has the status 
@@ -384,6 +493,8 @@ implements FileCallable<List<TestResult>>
 							ExecutionStatus status = this.getTAPExecutionStatus( testSet );
 							testCase.setExecutionStatus( status );
 							TestResult testResult = new TestResult(testCase, report.getBuild(), report.getTestPlan());
+							String notes = this.getTapNotes( testSet );
+							testResult.setNotes( notes );
 							results.add( testResult );
 							break;
 						}
@@ -391,6 +502,21 @@ implements FileCallable<List<TestResult>>
 				}
 			}
 		}
+	}
+
+	/**
+	 * Retrieves notes for a TAP test set.
+	 * 
+	 * @param testSet TAP test set.
+	 * @return notes for a TAP test set.
+	 */
+	protected String getTapNotes( TestSet testSet )
+	{
+		StringBuilder notes = new StringBuilder();
+		
+		notes.append( testSet.toString() );
+		
+		return notes.toString();
 	}
 
 	/**
