@@ -42,10 +42,13 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import br.eti.kinoshita.tap4j.model.TestSet;
 import br.eti.kinoshita.tap4j.parser.ParserException;
+import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
@@ -215,6 +218,8 @@ implements FileCallable<List<TestResult>>
 								TestResult testResult = new TestResult(testCase, report.getBuild(), report.getTestPlan());
 								String notes = this.getJUnitNotes( testSuite );
 								testResult.setNotes( notes );
+								Attachment junitAttachment = this.getJUnitAttachment( testResult.getTestCase().getVersionId(), junitReportFile );
+								testResult.addAttachment( junitAttachment );
 								results.add( testResult );
 								break;
 							}
@@ -223,6 +228,38 @@ implements FileCallable<List<TestResult>>
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Retrieves a Execution Status from a JUnit TestSuite. If the TestSuite 
+	 * contains failures or errors it returns failed, otherwise it returns true. 
+	 * 
+	 * @param testSuite The JUnit TestSuite.
+	 * @return TestLink Execution Status.
+	 */
+	protected ExecutionStatus getJUnitExecutionStatus( TestSuite testSuite )
+	{
+		ExecutionStatus status = ExecutionStatus.PASSED;
+		String errors = testSuite.getErrors();
+		if ( StringUtils.isNotBlank( errors ) )
+		{
+			Long errorsNumber = Long.parseLong( errors );
+			if ( errorsNumber > 0 )
+			{
+				status = ExecutionStatus.FAILED;
+			}
+		}
+		String failures = testSuite.getFailures();
+		if ( status != ExecutionStatus.FAILED && StringUtils.isNotBlank( failures ) )
+		{
+			Long failuresNumber = Long.parseLong( failures );
+			if ( failuresNumber > 0 )
+			{
+				status = ExecutionStatus.FAILED;
+			}
+		}
+		
+		return status;
 	}
 	
 	/**
@@ -264,37 +301,28 @@ implements FileCallable<List<TestResult>>
 		
 		return notes.toString();
 	}
-
+	
 	/**
-	 * Retrieves a Execution Status from a JUnit TestSuite. If the TestSuite 
-	 * contains failures or errors it returns failed, otherwise it returns true. 
+	 * Retrieves the JUnit report file as attachment for TestLink.
 	 * 
-	 * @param testSuite The JUnit TestSuite.
-	 * @return TestLink Execution Status.
+	 * @param versionId TestLink Test Case version ID.
+	 * @param junitReportFile JUnit report file.
+	 * @return attachment for TestLink.
 	 */
-	protected ExecutionStatus getJUnitExecutionStatus( TestSuite testSuite )
+	protected Attachment getJUnitAttachment( Integer versionId,
+			File junitReportFile ) 
+	throws IOException
 	{
-		ExecutionStatus status = ExecutionStatus.PASSED;
-		String errors = testSuite.getErrors();
-		if ( StringUtils.isNotBlank( errors ) )
-		{
-			Long errorsNumber = Long.parseLong( errors );
-			if ( errorsNumber > 0 )
-			{
-				status = ExecutionStatus.FAILED;
-			}
-		}
-		String failures = testSuite.getFailures();
-		if ( status != ExecutionStatus.FAILED && StringUtils.isNotBlank( failures ) )
-		{
-			Long failuresNumber = Long.parseLong( failures );
-			if ( failuresNumber > 0 )
-			{
-				status = ExecutionStatus.FAILED;
-			}
-		}
+		Attachment attachment = new Attachment();
 		
-		return status;
+		String fileContent = this.getBase64FileContent(junitReportFile );
+		attachment.setContent( fileContent );
+		attachment.setDescription( "JUnit report file " + junitReportFile.getName() );
+		attachment.setFileName( junitReportFile.getName() );
+		attachment.setFileSize( junitReportFile.length() );
+		attachment.setTitle( junitReportFile.getName() );
+		
+		return attachment;
 	}
 
 	/**
@@ -536,6 +564,20 @@ implements FileCallable<List<TestResult>>
 		}
 		
 		return status;
+	}
+	
+	/**
+	 * Retrieves the file content encoded in Base64.
+	 * 
+	 * @param file file to read the content.
+	 * @return file content encoded in Base64.
+	 * @throws IOException 
+	 */
+	protected String getBase64FileContent( File file ) 
+	throws IOException
+	{
+		byte[] fileData = FileUtils.readFileToByteArray(file);
+		return Base64.encodeBase64String( fileData );
 	}
 
 	/* (non-Javadoc)
