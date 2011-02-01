@@ -481,17 +481,20 @@ extends Builder
 			} 
 			else
 			{
-				final EnvVars buildEnvironmentVariables = this.buildEnvironmentVariables( automatedTestCase, testLinkSvc.getTestProject(), testLinkSvc.getTestPlan(), testLinkSvc.getBuild(), listener ); 
-				buildEnvironmentVariables.putAll( build.getEnvironment( listener ) );
-				final Integer iterativeTestCommandExitCode = this.executeTestCommand( 
-						buildEnvironmentVariables, 
-						build, 
-						launcher, 
-						listener, 
-						iterativeTestCommand);
-				if ( iterativeTestCommandExitCode != 0 )
+				if ( StringUtils.isNotEmpty(iterativeTestCommand) )
 				{
-					this.failure = true;
+					final EnvVars buildEnvironmentVariables = this.buildEnvironmentVariables( automatedTestCase, testLinkSvc.getTestProject(), testLinkSvc.getTestPlan(), testLinkSvc.getBuild(), listener ); 
+					buildEnvironmentVariables.putAll( build.getEnvironment( listener ) );
+					final Integer iterativeTestCommandExitCode = this.executeTestCommand( 
+							buildEnvironmentVariables, 
+							build, 
+							launcher, 
+							listener, 
+							iterativeTestCommand);
+					if ( iterativeTestCommandExitCode != 0 )
+					{
+						this.failure = true;
+					}
 				}
 			}
 		}

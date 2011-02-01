@@ -39,13 +39,19 @@ import hudson.remoting.VirtualChannel;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
+import br.eti.kinoshita.tap4j.model.Plan;
 import br.eti.kinoshita.tap4j.model.TestSet;
 import br.eti.kinoshita.tap4j.parser.ParserException;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
@@ -216,10 +222,21 @@ implements FileCallable<List<TestResult>>
 								ExecutionStatus status = this.getJUnitExecutionStatus( testSuite );
 								testCase.setExecutionStatus( status );
 								TestResult testResult = new TestResult(testCase, report.getBuild(), report.getTestPlan());
+								
 								String notes = this.getJUnitNotes( testSuite );
+								
+								try
+								{
+									Attachment junitAttachment = this.getJUnitAttachment( testResult.getTestCase().getVersionId(), junitReportFile );
+									testResult.addAttachment( junitAttachment );
+								}
+								catch ( IOException ioe )
+								{
+									notes += "\n\nFailed to add JUnit attachment to this test case execution. Error message: " + ioe.getMessage();
+									ioe.printStackTrace( listener.getLogger() );
+								}
+								
 								testResult.setNotes( notes );
-								Attachment junitAttachment = this.getJUnitAttachment( testResult.getTestCase().getVersionId(), junitReportFile );
-								testResult.addAttachment( junitAttachment );
 								results.add( testResult );
 								break;
 							}
@@ -321,6 +338,7 @@ implements FileCallable<List<TestResult>>
 		attachment.setFileName( junitReportFile.getName() );
 		attachment.setFileSize( junitReportFile.length() );
 		attachment.setTitle( junitReportFile.getName() );
+		attachment.setFileType("text/xml");
 		
 		return attachment;
 	}
@@ -376,7 +394,20 @@ implements FileCallable<List<TestResult>>
 											testCase.setExecutionStatus( status );
 											TestResult testResult = new TestResult(testCase, report.getBuild(), report.getTestPlan());
 											String notes = this.getTestNGNotes( suite, clazz );
+											
+											try
+											{
+												Attachment testNGAttachment = this.getTestNGAttachment( testResult.getTestCase().getVersionId(), testNGReportFile );
+												testResult.addAttachment( testNGAttachment );
+											}
+											catch ( IOException ioe )
+											{
+												notes += "\n\nFailed to add TestNG attachment to this test case execution. Error message: " + ioe.getMessage();
+												ioe.printStackTrace( listener.getLogger() );
+											}
+											
 											testResult.setNotes( notes );
+											
 											results.add( testResult );
 											break;
 										}
@@ -475,6 +506,32 @@ implements FileCallable<List<TestResult>>
 		
 		return status;
 	}
+	
+	/**
+	 * Retrieves attachments for TestNG test cases.
+	 * 
+	 * @param versionId version ID of the TestLink test case.
+	 * @param testNGReportFile TestNG file.
+	 * @return attachments
+	 */
+	protected Attachment getTestNGAttachment( 
+		Integer versionId,
+		File testNGReportFile 
+	)
+	throws IOException
+	{
+		Attachment attachment = new Attachment();
+		
+		String fileContent = this.getBase64FileContent(testNGReportFile );
+		attachment.setContent( fileContent );
+		attachment.setDescription( "TestNG report file " + testNGReportFile.getName() );
+		attachment.setFileName( testNGReportFile.getName() );
+		attachment.setFileSize( testNGReportFile.length() );
+		attachment.setTitle( testNGReportFile.getName() );
+		attachment.setFileType("text/xml");
+		
+		return attachment;
+	}
 
 	/**
 	 * Seeks for TAP test results in a given directory.
@@ -518,10 +575,27 @@ implements FileCallable<List<TestResult>>
 							tapFileNameWithoutExtension.equals(customField.getValue())
 						)
 						{
-							ExecutionStatus status = this.getTAPExecutionStatus( testSet );
+							ExecutionStatus status = this.getTapExecutionStatus( testSet );
 							testCase.setExecutionStatus( status );
 							TestResult testResult = new TestResult(testCase, report.getBuild(), report.getTestPlan());
+							
 							String notes = this.getTapNotes( testSet );
+							
+							try
+							{
+								List<Attachment> tapAttachments = this.getTapAttachments( testResult.getTestCase().getVersionId(), tapReportFile, testSet );
+								
+								for( Attachment attachment : tapAttachments )
+								{
+									testResult.addAttachment( attachment );
+								}
+							}
+							catch ( IOException ioe )
+							{
+								notes += "\n\nFailed to add TAP attachments to this test case execution. Error message: " + ioe.getMessage();
+								ioe.printStackTrace( listener.getLogger() );
+							}
+							
 							testResult.setNotes( notes );
 							results.add( testResult );
 							break;
@@ -554,7 +628,7 @@ implements FileCallable<List<TestResult>>
 	 * @param testSet the TAP TestSet.
 	 * @return failed only when the test set contains at least one not ok statement, otherwise it will return passed.
 	 */
-	protected ExecutionStatus getTAPExecutionStatus( TestSet testSet )
+	protected ExecutionStatus getTapExecutionStatus( TestSet testSet )
 	{
 		ExecutionStatus status = ExecutionStatus.PASSED;
 		
@@ -566,6 +640,164 @@ implements FileCallable<List<TestResult>>
 		return status;
 	}
 	
+	/**
+	 * Retrieves list of TAP Attachments. Besides the TAP stream file itself, 
+	 * this method also adds all extension / Files to this list.
+	 * 
+	 * @param versionId TestLink TestCase version id.
+	 * @param tapReportFile TAP Report file.
+	 * @param testSet TAP Test Set.
+	 * @return TAP Attachments.
+	 */
+	protected List<Attachment> getTapAttachments( Integer versionId, File tapReportFile, TestSet testSet )
+	throws IOException
+	{
+		
+		List<Attachment> attachments = this.retrieveListOfTapAttachments( testSet );
+		
+		Attachment attachment = new Attachment();
+		
+		String fileContent = this.getBase64FileContent( tapReportFile );
+		attachment.setContent( fileContent );
+		attachment.setDescription( "TAP report file " + tapReportFile.getName() );
+		attachment.setFileName( tapReportFile.getName() );
+		attachment.setFileSize( tapReportFile.length() );
+		attachment.setTitle( tapReportFile.getName() );
+		attachment.setFileType("text/plan");
+		
+		attachments.add( attachment );
+		
+		return attachments;
+	}
+	
+	/**
+	 * Retrieves list of attachments from a TAP Test Set by 
+	 * using its YAMLish data.
+	 * 
+	 * @param testSet TAP Test Set.
+	 * @return List of attachments.
+	 * @throws IOException 
+	 */
+	protected List<Attachment> retrieveListOfTapAttachments( TestSet testSet ) throws IOException
+	{
+		List<Attachment> attachments = new ArrayList<Attachment>();
+		
+		Plan plan = testSet.getPlan();
+		Map<String, Object> diagnostic = plan.getDiagnostic();
+		
+		this.extractAttachments ( attachments, diagnostic );
+		
+		for ( br.eti.kinoshita.tap4j.model.TestResult testResult : testSet.getTestResults() )
+		{
+			this.extractAttachments(attachments, testResult.getDiagnostic());
+		}
+		
+		return attachments;
+	}
+
+	/**
+	 * Extracts attachments from a TAP diagnostic and adds into a list of 
+	 * attachments.
+	 * 
+	 * @param attachments List of attachments
+	 * @param diagnostic TAP diagnostic
+	 * @throws IOException 
+	 */
+	@SuppressWarnings("unchecked")
+	protected void extractAttachments( 
+		List<Attachment> attachments,
+		Map<String, Object> diagnostic 
+		) 
+	throws IOException
+	{
+		Object extensions = diagnostic.get( "extensions" );
+		if ( extensions != null && extensions instanceof Map<?, ?>)
+		{
+			Map<String, Object> extensionsMap = (Map<String, Object>)extensions;
+			Object files = extensionsMap.get("Files");
+			if ( files != null && files instanceof Map<?, ?>)
+			{
+				Map<String, Object> filesMap = (Map<String, Object>)files;
+				Set<Entry<String, Object>> filesMapEntrySet = filesMap.entrySet();
+				Iterator<Entry<String, Object>> iterator = filesMapEntrySet.iterator();
+				
+				while( iterator != null && iterator.hasNext() )
+				{
+					Entry<String, Object> filesMapEntry = iterator.next();
+					Object entryObject = filesMapEntry.getValue();
+					
+					if ( entryObject != null && entryObject instanceof Map<?, ?>)
+					{
+						Map<String, Object> entryObjectMap = (Map<String, Object>)entryObject;
+						
+						Object oFileContent = entryObjectMap.get("File-Content");
+						if ( oFileContent != null )
+						{
+							String fileContent = ""+oFileContent;
+							
+							Attachment attachment = new Attachment();
+							
+							attachment.setContent( fileContent );
+							
+							try
+							{
+								attachment.setFileSize( Long.parseLong( ""+entryObjectMap.get("File-Size") ) );
+							}
+							catch ( NumberFormatException nfe )
+							{}
+							
+							attachment.setFileName( ""+entryObjectMap.get("File-Name") );
+							attachment.setTitle( ""+entryObjectMap.get("File-Title") );
+							attachment.setDescription( ""+entryObjectMap.get("File-Description") );
+							attachment.setFileType( ""+entryObjectMap.get("File-Type") );
+							
+							attachments.add( attachment );
+							
+						}
+						else 
+						{
+							Object fileLocation = entryObjectMap.get("File-Location");
+							String fileLocationText = ""+fileLocation;
+							File file = new File( fileLocationText );
+							
+							if ( file.exists() )
+							{
+								Attachment attachment = new Attachment();
+								
+								Object oContent = entryObjectMap.get("File-Content");
+								if ( oContent != null )
+								{
+									attachment.setContent( ""+oContent );
+									try
+									{
+										attachment.setFileSize( Long.parseLong( ""+entryObjectMap.get("File-Size") ) );
+									}
+									catch ( NumberFormatException nfe )
+									{
+										attachment.setFileSize( file.length() );
+									}
+								}
+								else
+								{
+									String fileContent = this.getBase64FileContent( file );
+									attachment.setContent( fileContent );
+									attachment.setFileSize( file.length() );
+								}
+								
+								attachment.setFileName( ""+entryObjectMap.get("File-Name") );
+								attachment.setTitle( ""+entryObjectMap.get("File-Title") );
+								attachment.setDescription( ""+entryObjectMap.get("File-Description") );
+								attachment.setFileType( ""+entryObjectMap.get("File-Location") );
+								
+								attachments.add( attachment );
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * Retrieves the file content encoded in Base64.
 	 * 
