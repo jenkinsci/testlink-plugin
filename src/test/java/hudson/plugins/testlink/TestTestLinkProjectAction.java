@@ -27,7 +27,6 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Hudson;
 import hudson.plugins.testlink.result.TestLinkReport;
-import hudson.plugins.testlink.result.TestLinkResult;
 
 import java.io.File;
 import java.io.IOException;
