@@ -39,7 +39,6 @@ import hudson.plugins.testlink.executor.TemporaryExecutableScriptWriter;
 import hudson.plugins.testlink.model.TestLinkLatestRevisionInfo;
 import hudson.plugins.testlink.result.ReportFilesPatterns;
 import hudson.plugins.testlink.result.TestLinkReport;
-import hudson.plugins.testlink.result.TestLinkResult;
 import hudson.plugins.testlink.result.TestResult;
 import hudson.plugins.testlink.result.TestResultSeeker;
 import hudson.plugins.testlink.svn.SVNLatestRevisionService;
@@ -419,7 +418,7 @@ extends Builder
 			catch (SVNException e)
 			{
 				e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_SVNError(e.getMessage())) );
-				throw new AbortException();
+				throw new AbortException( Messages.TestLinkBuilder_SVNError(e.getMessage()) );
 			}
 		}
 		
@@ -444,7 +443,7 @@ extends Builder
 		try
 		{
 			automatedTestCases = 
-				testLinkSvc.findAutomatedTestCases( 
+				testLinkSvc.initializeTestLinkAndFindAutomatedTestCases( 
 					testProjectName, 
 					testPlanName, 
 					buildName, 
@@ -455,62 +454,32 @@ extends Builder
 		catch (TestLinkAPIException e)
 		{
 			e.printStackTrace( listener.fatalError(e.getMessage()) );
-			throw new AbortException( "Error communicating with TestLink. Check your TestLink set up. URL: [" + testLinkUrl +"]. DevKey: ["+testLinkDevKey+"]." );
+			throw new AbortException( Messages.TestLinkBuilder_TestLinkCommunicationError(testLinkUrl, testLinkDevKey) );
 		}
 		
 		// Execute single test command
-		listener.getLogger().println(Messages.TestLinkBuilder_ExecutingSingleTestCommand());
-		final EnvVars singleTestEnvironmentVariables = new EnvVars();
-		Integer singleTestCommandExitCode = this.executeTestCommand( 
-				singleTestEnvironmentVariables, 
-				build, 
-				launcher, 
-				listener, 
-				singleTestCommand);
-		if ( singleTestCommandExitCode != 0 )
-		{
-			this.failure = true;
-		}
+		this.executeSingleTestCommand( build, launcher, listener );
 		
-		if ( StringUtils.isNotBlank( iterativeTestCommand ) )
-		{
-			for ( TestCase automatedTestCase : automatedTestCases )
-			{
-				if ( this.failure  && this.transactional )
-				{
-					listener.getLogger().println(Messages.TestLinkBuilder_TransactionalError());
-					automatedTestCase.setExecutionStatus(ExecutionStatus.BLOCKED);
-				} 
-				else
-				{
-					final EnvVars buildEnvironmentVariables = this.buildEnvironmentVariables( automatedTestCase, testLinkSvc.getTestProject(), testLinkSvc.getTestPlan(), testLinkSvc.getBuild(), listener ); 
-					buildEnvironmentVariables.putAll( build.getEnvironment( listener ) );
-					final Integer iterativeTestCommandExitCode = this.executeTestCommand( 
-							buildEnvironmentVariables, 
-							build, 
-							launcher, 
-							listener, 
-							iterativeTestCommand);
-					if ( iterativeTestCommandExitCode != 0 )
-					{
-						this.failure = true;
-					}
-				}
-			}
-		}
-		else
-		{
-			
-		}
+		// Execute iterative test command
+		this.executeIterativeTestCommand( 
+			automatedTestCases, 
+			testLinkSvc.getTestProject(),
+			testLinkSvc.getTestPlan(), 
+			testLinkSvc.getBuild(), 
+			build, 
+			launcher, 
+			listener );
 		
 		// Create list of report files patterns for TAP, TestNG and JUnit.
 		final ReportFilesPatterns reportFilesPatterns = this.getReportPatterns();
 		
 		// Create report object
-		final TestLinkReport report = new TestLinkReport();
-		report.setBuild( testLinkSvc.getBuild() );
-		report.setTestPlan( testLinkSvc.getTestPlan() );
-		report.setTestProject( testLinkSvc.getTestProject() );
+		final TestLinkReport report = 
+			new TestLinkReport( 
+				testLinkSvc.getBuild(), 
+				testLinkSvc.getTestPlan(), 
+				testLinkSvc.getTestProject());
+		
 		for( TestCase testCase : automatedTestCases )
 		{
 			report.getTestCases().add ( testCase );
@@ -522,7 +491,6 @@ extends Builder
 		
 		// Create list of test results
 		final List<TestResult> testResults = build.getWorkspace().act(testResultSeeker);
-		
 		
 		// Add blocked tests to the test results list
 		for( TestCase testCase : automatedTestCases )
@@ -542,9 +510,10 @@ extends Builder
 		catch (TestLinkAPIException tlae) 
 		{
 			tlae.printStackTrace( listener.fatalError( Messages.TestLinkBuilder_FailedToUpdateTL(tlae.getMessage()) ) );
-			throw new AbortException ( tlae.getMessage() );
+			throw new AbortException ( Messages.TestLinkBuilder_FailedToUpdateTL(tlae.getMessage()) );
 		}
 		
+		// TBD: really necessary?
 		report.getTestCases().clear();
 		for( TestResult testResult : testResults)
 		{
@@ -568,7 +537,7 @@ extends Builder
 		String[] customFieldNamesArray = new String[0];
 		String customFields = this.getCustomFields();
 		
-		if( ! StringUtils.isEmpty( customFields ) )
+		if( StringUtils.isNotBlank( customFields ) )
 		{
 			StringTokenizer tokenizer = new StringTokenizer(customFields, ",");
 			if ( tokenizer.countTokens() > 0 )
@@ -586,6 +555,105 @@ extends Builder
 		}
 		
 		return customFieldNamesArray;
+	}
+	
+	/**
+	 * Executes single test command.
+	 * 
+	 * @param build Hudson Build.
+	 * @param launcher Hudson Launcher.
+	 * @param listener Hudson Build listener.
+	 */
+	protected void executeSingleTestCommand(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
+	{
+		if ( StringUtils.isNotBlank( singleTestCommand ) )
+		{
+			listener.getLogger().println(Messages.TestLinkBuilder_ExecutingSingleTestCommand());
+			final EnvVars singleTestEnvironmentVariables = new EnvVars();
+			Integer singleTestCommandExitCode = this.executeTestCommand( 
+					singleTestEnvironmentVariables, 
+					build, 
+					launcher, 
+					listener, 
+					singleTestCommand);
+			if ( singleTestCommandExitCode != 0 )
+			{
+				this.failure = true;
+			}
+		}
+		else
+		{
+			listener.getLogger().println( Messages.TestLinkBuilder_BlankSingleTestCommand() );
+		}
+	}
+	
+	/**
+	 * <p>Executes iterative test command. For each automated test case found in the 
+	 * array of automated test cases, this method executes the iterative command 
+	 * using Hudson objects.</p>
+	 * 
+	 * <p>The objects of the TestLink Java API are used to create the 
+	 * environment variables.</p>
+	 * 
+	 * @param automatedTestCases Array of automated test cases.
+	 * @param project TestLink project.
+	 * @param testPlan
+	 * @param build
+	 * @param hudsonBuild
+	 * @param launcher
+	 * @param listener
+	 */
+	protected void executeIterativeTestCommand( TestCase[] automatedTestCases, TestProject project, TestPlan testPlan, Build build, AbstractBuild<?, ?> hudsonBuild, Launcher launcher, BuildListener listener ) 
+	{
+		if ( StringUtils.isNotBlank( iterativeTestCommand ) )
+		{
+			for ( TestCase automatedTestCase : automatedTestCases )
+			{
+				if ( this.failure  && this.transactional )
+				{
+					listener.getLogger().println(Messages.TestLinkBuilder_TransactionalError());
+					automatedTestCase.setExecutionStatus(ExecutionStatus.BLOCKED);
+				} 
+				else
+				{
+					try
+					{
+						// Build environment variables
+						final EnvVars buildEnvironmentVariables = this.buildEnvironmentVariables( automatedTestCase, project, testPlan, build, listener ); 
+						buildEnvironmentVariables.putAll( hudsonBuild.getEnvironment( listener ) );
+						
+						listener.getLogger().println(Messages.TestLinkBuilder_ExecutingIterativeTestCommand());
+						
+						// Execute iterative test command
+						final Integer iterativeTestCommandExitCode = this.executeTestCommand( 
+								buildEnvironmentVariables, 
+								hudsonBuild, 
+								launcher, 
+								listener, 
+								iterativeTestCommand);
+						if ( iterativeTestCommandExitCode != 0 )
+						{
+							// Set the failure flag to true, for transactional executions
+							this.failure = true;
+						}
+					} 
+					catch (IOException e)
+					{
+						listener.getLogger().println( Messages.TestLinkBuilder_ErrorExecutingIterativeTestCommand() );
+						e.printStackTrace( listener.getLogger() );
+					} 
+					catch (InterruptedException e)
+					{
+						listener.getLogger().println( Messages.TestLinkBuilder_ErrorExecutingIterativeTestCommand() );
+						e.printStackTrace( listener.getLogger() );
+					}
+				}
+			}
+		}
+		else
+		{
+			listener.getLogger().println( Messages.TestLinkBuilder_BlankIterativeTestCommand() );
+		}
 	}
 	
 	/**
@@ -697,7 +765,6 @@ extends Builder
             ps.stdout( listener );
             ps.pwd( hudsonBuild.getModuleRoot() ); 
             
-            listener.getLogger().println(Messages.TestLinkBuilder_ExecutingIterativeTestCommand());
             //exitCode = ps.join();
             exitCode = launcher.launch( ps ).join();
 		}  

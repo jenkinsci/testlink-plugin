@@ -114,7 +114,7 @@ public class TestLinkService
 	 * @return array of Test Cases with Execution Type equals Automated
 	 * @throws TestLinkAPIException
 	 */
-	public TestCase[] findAutomatedTestCases( 
+	public TestCase[] initializeTestLinkAndFindAutomatedTestCases( 
 		String testProjectName, 
 		String testPlanName, 
 		String buildName, 
