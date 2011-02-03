@@ -455,7 +455,7 @@ extends Builder
 		catch (TestLinkAPIException e)
 		{
 			e.printStackTrace( listener.fatalError(e.getMessage()) );
-			throw new AbortException(e.getMessage());
+			throw new AbortException( "Error communicating with TestLink. Check your TestLink set up. URL: [" + testLinkUrl +"]. DevKey: ["+testLinkDevKey+"]." );
 		}
 		
 		// Execute single test command
@@ -472,16 +472,16 @@ extends Builder
 			this.failure = true;
 		}
 		
-		for ( TestCase automatedTestCase : automatedTestCases )
+		if ( StringUtils.isNotBlank( iterativeTestCommand ) )
 		{
-			if ( this.failure  && this.transactional )
+			for ( TestCase automatedTestCase : automatedTestCases )
 			{
-				listener.getLogger().println(Messages.TestLinkBuilder_TransactionalError());
-				automatedTestCase.setExecutionStatus(ExecutionStatus.BLOCKED);
-			} 
-			else
-			{
-				if ( StringUtils.isNotEmpty(iterativeTestCommand) )
+				if ( this.failure  && this.transactional )
+				{
+					listener.getLogger().println(Messages.TestLinkBuilder_TransactionalError());
+					automatedTestCase.setExecutionStatus(ExecutionStatus.BLOCKED);
+				} 
+				else
 				{
 					final EnvVars buildEnvironmentVariables = this.buildEnvironmentVariables( automatedTestCase, testLinkSvc.getTestProject(), testLinkSvc.getTestPlan(), testLinkSvc.getBuild(), listener ); 
 					buildEnvironmentVariables.putAll( build.getEnvironment( listener ) );
@@ -497,6 +497,10 @@ extends Builder
 					}
 				}
 			}
+		}
+		else
+		{
+			
 		}
 		
 		// Create list of report files patterns for TAP, TestNG and JUnit.
