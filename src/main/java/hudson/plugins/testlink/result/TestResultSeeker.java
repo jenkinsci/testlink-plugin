@@ -355,7 +355,7 @@ implements FileCallable<List<TestResult>>
 	{
 		String testNGIncludes = this.reportFilesPattern.getTestNGXmlReportFilesPattern();
 
-		if ( StringUtils.isNotEmpty ( testNGIncludes ) )
+		if ( StringUtils.isNotBlank( testNGIncludes ) )
 		{
 			String[] testNGReports = this.scanner.scan( directory, testNGIncludes, listener );
 			
