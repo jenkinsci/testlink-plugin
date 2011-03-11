@@ -48,6 +48,11 @@ implements Serializable
 	private StringBuilder tempVal;
 	
 	/**
+	 * Temporary string.
+	 */
+	private String tempSingleVal;
+	
+	/**
 	 * Test Suite.
 	 */
 	private TestSuite testSuite;
@@ -143,7 +148,8 @@ implements Serializable
 			int length)
 	throws SAXException 
 	{
-		tempVal.append( ch, start, length );
+		tempSingleVal = new String(ch, start, length);
+		tempVal.append( tempSingleVal );
 	}
 	
 	/* (non-Javadoc)
