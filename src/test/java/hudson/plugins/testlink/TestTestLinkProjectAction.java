@@ -233,7 +233,7 @@ public class TestTestLinkProjectAction
 		
 		Assert.assertEquals( action.getUrlName(), "testLinkResult" );
 		
-		Assert.assertFalse( action.hasValidResults() );
+		Assert.assertFalse( action.isDisplayGraph() );
 		
 		Assert.assertEquals( action.getSearchUrl(), "testLinkResult" );
 			
@@ -267,7 +267,7 @@ public class TestTestLinkProjectAction
 			Assert.fail("Failed to create Jenkins objects", e);
 		}
 		
-		Assert.assertFalse( action.hasValidResults() );
+		Assert.assertFalse( action.isDisplayGraph() );
 	}
 	
 }

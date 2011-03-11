@@ -23,18 +23,14 @@
  */
 package hudson.plugins.testlink;
 
-import hudson.model.ProminentProjectAction;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.model.Actionable;
-import hudson.plugins.testlink.util.Messages;
+import hudson.util.ChartUtil;
 import hudson.util.Graph;
 
 import java.io.IOException;
-import java.io.Serializable;
+import java.util.Calendar;
 
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.xy.XYDataset;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
@@ -42,99 +38,65 @@ import org.kohsuke.stapler.StaplerResponse;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 1.0
  */
-public class TestLinkProjectAction extends Actionable implements
-		ProminentProjectAction, Serializable
+public class TestLinkProjectAction 
+extends AbstractTestLinkAction
 {
 
 	private static final long serialVersionUID = 5600270062198355080L;
 	
-	public static final String ICON_FILE_NAME = "/plugin/testlink/icons/testlink-24.png";
-	public static final String URL_NAME = "testLinkResult";
-
-	public static final int CHART_WIDTH = 500;
-	public static final int CHART_HEIGHT = 200;
-
 	private AbstractProject<?, ?> project;
 
 	public TestLinkProjectAction(AbstractProject<?, ?> project)
 	{
 		this.project = project;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see hudson.model.Action#getDisplayName()
-	 */
-	public String getDisplayName()
-	{
-		return Messages.TestLinkProjectAction_DisplayName();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see hudson.model.Action#getIconFileName()
-	 */
-	public String getIconFileName()
-	{
-		return ICON_FILE_NAME;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see hudson.model.Action#getUrlName()
-	 */
-	public String getUrlName()
-	{
-		return URL_NAME;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see hudson.search.SearchItem#getSearchUrl()
-	 */
-	public String getSearchUrl()
-	{
-		return URL_NAME;
-	}
-
+	
 	/**
+	 * Checks if it should display graph.
 	 * 
-	 * Redirects the index page to the last result.
-	 * 
-	 * @param request
-	 *            Stapler request
-	 * @param response
-	 *            Stapler response
-	 * @throws IOException
-	 *             in case of an error
+	 * @return <code>true</code> if it should display graph and 
+	 * 		   <code>false</code> otherwise.
 	 */
-	public void doIndex( final StaplerRequest request,
-			final StaplerResponse response ) throws IOException
+	public final boolean isDisplayGraph()
 	{
-		AbstractBuild<?, ?> build = getLastFinishedBuild();
-		if (build != null)
+		Boolean displayGraph = Boolean.FALSE;
+		
+		if (project.getBuilds().size() > 0)
 		{
-			response.sendRedirect2(String.format("../%d/%s", build.getNumber(),
-					TestLinkBuildAction.URL_NAME));
+			displayGraph = Boolean.TRUE;
 		}
-	}
 
+		return displayGraph;
+	}
+	
 	/**
-	 * Returns the last finished build.
+	 * Returns the last build action.
 	 * 
-	 * @return the last finished build or <code>null</code> if there is no such
-	 *         build
+	 * @return the last build action or <code>null</code> if there is no such
+	 *         build action.
 	 */
-	private AbstractBuild<?, ?> getLastFinishedBuild()
+	public TestLinkBuildAction getLastBuildAction()
 	{
-		AbstractBuild<?, ?> lastBuild = project.getLastBuild();
+		AbstractBuild<?, ?> lastBuild = getLastBuildWithTestLink();
+		TestLinkBuildAction action = null;
+		if ( lastBuild != null )
+		{
+			action = lastBuild.getAction( TestLinkBuildAction.class );
+		}
+		return action;
+	}
+	
+	/**
+	 * Retrieves the last build with TestLink in the project.
+	 * 
+	 * @return Last build with TestLink in the project or <code>null</code>, 
+	 * 		   if there is no build with TestLink in the project.
+	 */
+	private AbstractBuild<?, ?> getLastBuildWithTestLink()
+	{
+		AbstractBuild<?, ?> lastBuild = (AbstractBuild<?, ?>) project.getLastBuild();
 		while (lastBuild != null
-				&& (lastBuild.isBuilding() || lastBuild
-						.getAction(TestLinkBuildAction.class) == null))
+				&& lastBuild.getAction(TestLinkBuildAction.class) == null)
 		{
 			lastBuild = lastBuild.getPreviousBuild();
 		}
@@ -142,33 +104,9 @@ public class TestLinkProjectAction extends Actionable implements
 	}
 
 	/**
-	 * Display the trend map. 
 	 * 
-	 * @param request Stapler request
-	 * @param response Stapler response
-	 * @throws IOException in case of an error
-	 */
-	public void doTrendMap( final StaplerRequest request,
-			final StaplerResponse response ) throws IOException
-	{
-		AbstractBuild<?, ?> lastBuild = this.getLastFinishedBuild();
-		TestLinkBuildAction lastAction = lastBuild
-				.getAction(TestLinkBuildAction.class);
-		XYDataset dataset = ChartUtil.createXYDataset(lastAction);
-		final JFreeChart chart = ChartUtil.buildXYChart(dataset);
-
-		new Graph(-1, CHART_WIDTH, CHART_HEIGHT)
-		{
-			protected JFreeChart createGraph()
-			{
-				return chart;
-			}
-		}.doMap(request, response);
-
-	}
-
-	/**
-	 * Display the trend graph.
+	 * Show CCM html report f the latest build. If no builds are associated 
+	 * with CCM , returns info page.
 	 * 
 	 * @param request
 	 *            Stapler request
@@ -177,41 +115,53 @@ public class TestLinkProjectAction extends Actionable implements
 	 * @throws IOException
 	 *             in case of an error
 	 */
-	public void doTrend( final StaplerRequest request,
-			final StaplerResponse response ) throws IOException
+	public void doIndex( 
+			final StaplerRequest request, 
+			final StaplerResponse response ) 
+	throws IOException
 	{
-		AbstractBuild<?, ?> lastBuild = this.getLastFinishedBuild();
-		TestLinkBuildAction lastAction = lastBuild
-				.getAction(TestLinkBuildAction.class);
-		XYDataset dataset = ChartUtil.createXYDataset(lastAction);
-		final JFreeChart chart = ChartUtil.buildXYChart(dataset);
-
-		new Graph(-1, CHART_WIDTH, CHART_HEIGHT)
+		AbstractBuild<?, ?> lastBuild = getLastBuildWithTestLink();
+		if (lastBuild == null)
 		{
-			protected JFreeChart createGraph()
-			{
-				return chart;
-			}
-		}.doPng(request, response);
-
+			response.sendRedirect2("nodata");
+		}
+		else 
+		{
+			int buildNumber = lastBuild.getNumber();
+			response.sendRedirect2( String.format("../%d/%s", buildNumber,
+					TestLinkBuildAction.URL_NAME) );
+		}
 	}
 
 	/**
-	 * Called from floatingBox.jelly to check if we have valid results.
-	 * @return true if this project has valid results regarding testlink automated tests.
+	 * Sets TestLink trend graph in the response.
+	 * 
+	 * @param request Request
+	 * @param response Response
+	 * @throws IOException
 	 */
-	public final boolean hasValidResults()
+	public void doGraph( StaplerRequest request, StaplerResponse response )
+			throws IOException
 	{
-		AbstractBuild<?, ?> build = getLastFinishedBuild();
-		if (build != null)
+		if (ChartUtil.awtProblemCause != null) 
 		{
-			TestLinkBuildAction resultAction = build.getAction(TestLinkBuildAction.class);
-			if (resultAction != null)
-			{
-				return resultAction.getPreviousResult() != null;
-			}
+			response.sendRedirect2(request.getContextPath() + "/images/headless.png");
+			return;
 		}
-		return false;
-	}
+		
+		Calendar t = project.getLastCompletedBuild().getTimestamp();
 
+		if ( request.checkIfModified(t, response) )
+		{
+			return;
+		}
+		
+		Graph g = new TestLinkGraph(
+				project.getLastBuild(), 
+				TestLinkGraphHelper.createDataSetForProject(this.project), 
+				"Number of testcases", 
+				"Build number");
+		g.doPng( request, response );
+	}
+	
 }
