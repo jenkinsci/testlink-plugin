@@ -22,28 +22,10 @@
  */
 package hudson.plugins.testlink;
 
-import hudson.model.Hudson;
 import hudson.plugins.testlink.model.TestLinkLatestRevisionInfo;
 import hudson.plugins.testlink.result.ReportFilesPatterns;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.Set;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-
-import org.jvnet.hudson.reactor.ReactorException;
-import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.jvnet.hudson.test.HudsonTestCase;
 
 /**
  * Tests TestLinkBuilder class.
@@ -51,234 +33,88 @@ import org.testng.annotations.Test;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-public class TestTestLinkBuilder
+public class TestTestLinkBuilder 
+extends HudsonTestCase
 {
 
-	private TestLinkBuilder builder;
-
-	private Hudson hudson = null;
+	private final TestLinkLatestRevisionInfo latestRevisionInfo = new TestLinkLatestRevisionInfo(
+			"", "", "");
 	
-	@BeforeClass
-	public void setUp()
+	private TestLinkBuilder builder = null;	
+	
+	public void setUp() 
+	throws Exception
 	{
-
-		try
-		{
-
-			ServletContext ctx = new ServletContext()
-			{
-
-				public void setAttribute( String name, Object object )
-				{
-				}
-
-				public void removeAttribute( String name )
-				{
-				}
-
-				public void log( String message, Throwable throwable )
-				{
-				}
-
-				public void log( Exception exception, String msg )
-				{
-				}
-
-				public void log( String msg )
-				{
-
-				}
-
-				public Enumeration<?> getServlets()
-				{
-					return null;
-				}
-
-				public Enumeration<?> getServletNames()
-				{
-					return null;
-				}
-
-				public String getServletContextName()
-				{
-					return null;
-				}
-
-				public Servlet getServlet( String name )
-						throws ServletException
-				{
-					return null;
-				}
-
-				public String getServerInfo()
-				{
-					return null;
-				}
-
-				public Set<?> getResourcePaths( String path )
-				{
-					return null;
-				}
-
-				public InputStream getResourceAsStream( String path )
-				{
-					return null;
-				}
-
-				public URL getResource( String path )
-						throws MalformedURLException
-				{
-					return null;
-				}
-
-				public RequestDispatcher getRequestDispatcher( String path )
-				{
-					return null;
-				}
-
-				public String getRealPath( String path )
-				{
-					return null;
-				}
-
-				public RequestDispatcher getNamedDispatcher( String name )
-				{
-					return null;
-				}
-
-				public int getMinorVersion()
-				{
-					return 0;
-				}
-
-				public String getMimeType( String file )
-				{
-					return null;
-				}
-
-				public int getMajorVersion()
-				{
-					return 0;
-				}
-
-				public Enumeration<?> getInitParameterNames()
-				{
-					return null;
-				}
-
-				public String getInitParameter( String name )
-				{
-					return null;
-				}
-
-				public ServletContext getContext( String uripath )
-				{
-					return this;
-				}
-
-				public Enumeration<?> getAttributeNames()
-				{
-					return null;
-				}
-
-				public Object getAttribute( String name )
-				{
-					return null;
-				}
-
-				@SuppressWarnings("unused")
-				public String getContextPath()
-				{
-					return null;
-				}
-			};
-
-			hudson = new Hudson(new File("target"), ctx);
-
-			TestLinkLatestRevisionInfo latestRevisionInfo = new TestLinkLatestRevisionInfo(
-					"", "", "");
-			builder = new TestLinkBuilder("No testlink", "No project",
-					"No plan", "No build", "class, time", "dir", "dir",
-					Boolean.FALSE, latestRevisionInfo, "class",
-					"**/TEST-*.xml", "**/testng-results.xml", "**/*.tap");
-		} 
-		catch (ReactorException e)
-		{
-			Assert.fail("Failed to created Hudson test instance.", e);
-		} 
-		catch (IOException e)
-		{
-			Assert.fail("Failed to created Hudson test instance.", e);
-		} 
-		catch (InterruptedException e)
-		{
-			Assert.fail("Failed to created Hudson test instance.", e);
-		} 
+		super.setUp();
+		
+		builder = new TestLinkBuilder("No testlink", "No project",
+				"No plan", "No build", "class, time", "dir", "dir",
+				Boolean.FALSE, latestRevisionInfo, "class",
+				"**/TEST-*.xml", "**/testng-results.xml", "**/*.tap");
 	}
-
+	
 	/**
 	 * Tests the ReportPatterns object.
 	 */
-	@Test(description = "Tests the ReportPatterns object.")
-	public void testReportPatterns()
+	public void testReportPatterns() 
+	throws Exception
 	{
 		ReportFilesPatterns reportPatterns = builder.getReportPatterns();
-		Assert.assertNotNull(reportPatterns);
-		Assert.assertEquals(reportPatterns.getJunitXmlReportFilesPattern(),
+		assertNotNull(reportPatterns);
+		assertEquals(reportPatterns.getJunitXmlReportFilesPattern(),
 				"**/TEST-*.xml");
-		Assert.assertEquals(reportPatterns.getTestNGXmlReportFilesPattern(),
+		assertEquals(reportPatterns.getTestNGXmlReportFilesPattern(),
 				"**/testng-results.xml");
-		Assert.assertEquals(reportPatterns.getTapStreamReportFilesPattern(),
+		assertEquals(reportPatterns.getTapStreamReportFilesPattern(),
 				"**/*.tap");
 	}
+	
 	/**
 	 * Tests the generated list of custom fields.
 	 */
-	@Test(description="Tests the generated list of custom fields.")
 	public void testListOfCustomFields()
 	{
 		String[] customFieldsNames = builder.getListOfCustomFieldsNames();
 		
-		Assert.assertNotNull( customFieldsNames );
-		Assert.assertTrue( customFieldsNames.length == 2 );
-		Assert.assertEquals( customFieldsNames[0], "class" );
-		Assert.assertEquals( customFieldsNames[1], "time" );
+		assertNotNull( customFieldsNames );
+		assertTrue( customFieldsNames.length == 2 );
+		assertEquals( customFieldsNames[0], "class" );
+		assertEquals( customFieldsNames[1], "time" );
 	}
 	
-	@Test(description="Null")
 	public void testNull()
 	{
 		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null, null);
 		
-		Assert.assertNotNull( builder );
+		assertNotNull( builder );
 		
-		Assert.assertNull( builder.getTestLinkName() );
+		assertNull( builder.getTestLinkName() );
 		
-		Assert.assertNull( builder.getTestProjectName() );
+		assertNull( builder.getTestProjectName() );
 		
-		Assert.assertNull( builder.getTestPlanName() );
+		assertNull( builder.getTestPlanName() );
 		
-		Assert.assertNull( builder.getBuildName() );
+		assertNull( builder.getBuildName() );
 		
-		Assert.assertNull( builder.getSingleTestCommand() );
+		assertNull( builder.getSingleTestCommand() );
 		
-		Assert.assertNull( builder.getIterativeTestCommand() );
+		assertNull( builder.getIterativeTestCommand() );
 		
-		Assert.assertNull( builder.getLatestRevisionInfo() );
+		assertNull( builder.getLatestRevisionInfo() );
 		
-		Assert.assertFalse( builder.getLatestRevisionEnabled() );
+		assertFalse( builder.getLatestRevisionEnabled() );
 		
-		Assert.assertNull( builder.getCustomFields() );
+		assertNull( builder.getCustomFields() );
 		
-		Assert.assertNull( builder.getTransactional() );
+		assertNull( builder.getTransactional() );
 		
-		Assert.assertNull( builder.getKeyCustomField() );
+		assertNull( builder.getKeyCustomField() );
 		
-		Assert.assertNull( builder.getJunitReportFilesPattern() );
+		assertNull( builder.getJunitReportFilesPattern() );
 		
-		Assert.assertNull( builder.getTestNGReportFilesPattern() );
+		assertNull( builder.getTestNGReportFilesPattern() );
 		
-		Assert.assertNull( builder.getTapReportFilesPattern() );
+		assertNull( builder.getTapReportFilesPattern() );
 		
 		TestLinkLatestRevisionInfo latestRevisionInfo = new TestLinkLatestRevisionInfo(
 				"", "", "");
@@ -292,61 +128,50 @@ public class TestTestLinkBuilder
 	/**
 	 * Tests getters methods.
 	 */
-	@Test(description="Tests getters methods.")
 	public void testGetters()
 	{
-		Assert.assertNotNull( hudson );
+		assertNotNull( hudson );
 		//FreeStyleProject project = new FreeStyleProject(hudson, "No project");
-		//Assert.assertNotNull ( (AbstractProject<?, ?>)builder.getProjectAction(project) );
+		//assertNotNull ( (AbstractProject<?, ?>)builder.getProjectAction(project) );
 		
-		Assert.assertNotNull( builder.getTestLinkName() );
-		Assert.assertEquals( builder.getTestLinkName(), "No testlink" );
+		assertNotNull( builder.getTestLinkName() );
+		assertEquals( builder.getTestLinkName(), "No testlink" );
 		
-		Assert.assertNotNull( builder.getTestProjectName() );
-		Assert.assertEquals( builder.getTestProjectName(), "No project" );
+		assertNotNull( builder.getTestProjectName() );
+		assertEquals( builder.getTestProjectName(), "No project" );
 		
-		Assert.assertNotNull( builder.getTestPlanName() );
-		Assert.assertEquals( builder.getTestPlanName(), "No plan" );
+		assertNotNull( builder.getTestPlanName() );
+		assertEquals( builder.getTestPlanName(), "No plan" );
 		
-		Assert.assertNotNull( builder.getBuildName() );
-		Assert.assertEquals( builder.getBuildName(), "No build" );
+		assertNotNull( builder.getBuildName() );
+		assertEquals( builder.getBuildName(), "No build" );
 		
-		Assert.assertNotNull( builder.getSingleTestCommand() );
-		Assert.assertEquals( builder.getSingleTestCommand() , "dir");
+		assertNotNull( builder.getSingleTestCommand() );
+		assertEquals( builder.getSingleTestCommand() , "dir");
 		
-		Assert.assertNotNull( builder.getIterativeTestCommand() );
-		Assert.assertEquals( builder.getIterativeTestCommand(), "dir" );
+		assertNotNull( builder.getIterativeTestCommand() );
+		assertEquals( builder.getIterativeTestCommand(), "dir" );
 		
-		Assert.assertNotNull( builder.getLatestRevisionInfo() );
+		assertNotNull( builder.getLatestRevisionInfo() );
 		
-		Assert.assertTrue( builder.getLatestRevisionEnabled() );
+		assertTrue( builder.getLatestRevisionEnabled() );
 		
-		Assert.assertNotNull( builder.getCustomFields() );
-		Assert.assertEquals( builder.getCustomFields(), "class, time" );
+		assertNotNull( builder.getCustomFields() );
+		assertEquals( builder.getCustomFields(), "class, time" );
 		
-		Assert.assertFalse( builder.getTransactional() );
+		assertFalse( builder.getTransactional() );
 		
-		Assert.assertNotNull( builder.getKeyCustomField() );
-		Assert.assertEquals( builder.getKeyCustomField(), "class" );
+		assertNotNull( builder.getKeyCustomField() );
+		assertEquals( builder.getKeyCustomField(), "class" );
 		
-		Assert.assertNotNull( builder.getJunitReportFilesPattern() );
-		Assert.assertEquals( builder.getJunitReportFilesPattern(), "**/TEST-*.xml" );
+		assertNotNull( builder.getJunitReportFilesPattern() );
+		assertEquals( builder.getJunitReportFilesPattern(), "**/TEST-*.xml" );
 		
-		Assert.assertNotNull( builder.getTestNGReportFilesPattern() );
-		Assert.assertEquals( builder.getTestNGReportFilesPattern(), "**/testng-results.xml" );
+		assertNotNull( builder.getTestNGReportFilesPattern() );
+		assertEquals( builder.getTestNGReportFilesPattern(), "**/testng-results.xml" );
 		
-		Assert.assertNotNull( builder.getTapReportFilesPattern() );
-		Assert.assertEquals( builder.getTapReportFilesPattern(), "**/*.tap" );
+		assertNotNull( builder.getTapReportFilesPattern() );
+		assertEquals( builder.getTapReportFilesPattern(), "**/*.tap" );
 	}
 
-	@AfterClass(alwaysRun=true)
-	public void tearDown()
-	{
-		if (hudson != null)
-		{
-			hudson.cleanUp();
-			hudson = null;
-		}
-	}
-	
 }

@@ -23,26 +23,19 @@
  */
 package hudson.plugins.testlink.result.parser.testng;
 
-import hudson.plugins.testlink.result.parser.testng.Class;
-import hudson.plugins.testlink.result.parser.testng.Suite;
-import hudson.plugins.testlink.result.parser.testng.Test;
-import hudson.plugins.testlink.result.parser.testng.TestMethod;
-import hudson.plugins.testlink.result.parser.testng.TestNGParser;
-
 import java.io.File;
 import java.net.URL;
 import java.util.List;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-
+import junit.framework.TestCase;
 import br.eti.kinoshita.tap4j.parser.ParserException;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
  */
-public class TestTestNGParser
+public class TestTestNGParser 
+extends TestCase
 {
 	
 	/**
@@ -53,16 +46,14 @@ public class TestTestNGParser
 	/**
 	 * Initializes the TestNG parser.
 	 */
-	@BeforeClass
 	public void setUp()
 	{
 		this.parser = new TestNGParser();
 	}
 	
-	@org.testng.annotations.Test(testName="Test TestNG Parser")
 	public void testTestNGParser()
 	{
-		Assert.assertEquals(this.parser.getName(), "TestNG");
+		assertEquals(this.parser.getName(), "TestNG");
 		
 		ClassLoader cl = TestTestNGParser.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/parser/testng/testng-results.xml");
@@ -75,59 +66,64 @@ public class TestTestNGParser
 		}
 		catch (ParserException e)
 		{
-			Assert.fail("Failed to parse testng file '"+file+"'.", e);
+			fail("Failed to parse testng file '"+file+"': " + e.getMessage());
 		}
 		
-		Assert.assertNotNull( suite );
+		assertNotNull( suite );
 		
-		Assert.assertTrue( suite.getName().equals("Command line suite") );
-		Assert.assertTrue( suite.getDurationMs().equals("0") );
-		Assert.assertTrue( suite.getStartedAt().equals("2010-11-17T13:31:41Z") );
-		Assert.assertTrue( suite.getFinishedAt().equals("2010-11-17T13:31:41Z") );
+		assertTrue( suite.getName().equals("Command line suite") );
+		assertTrue( suite.getDurationMs().equals("0") );
+		assertTrue( suite.getStartedAt().equals("2010-11-17T13:31:41Z") );
+		assertTrue( suite.getFinishedAt().equals("2010-11-17T13:31:41Z") );
 		
 		List<Test> tests = suite.getTests();
-		Assert.assertEquals( tests.size(), 1 );
+		assertEquals( tests.size(), 1 );
 		
 		Test test = tests.get(0);
-		Assert.assertTrue( test.getDurationMs().equals("0") );
-		Assert.assertTrue( test.getStartedAt().equals("2010-11-17T13:31:41Z") );
-		Assert.assertTrue( test.getFinishedAt().equals("2010-11-17T13:31:41Z") );
-		Assert.assertTrue( test.getName().equals("Command line test") );
+		assertTrue( test.getDurationMs().equals("0") );
+		assertTrue( test.getStartedAt().equals("2010-11-17T13:31:41Z") );
+		assertTrue( test.getFinishedAt().equals("2010-11-17T13:31:41Z") );
+		assertTrue( test.getName().equals("Command line test") );
 		
 		List<Class> classes = test.getClasses();
-		Assert.assertTrue( classes.size() == 1 );
+		assertTrue( classes.size() == 1 );
 		
 		Class clazz = classes.get( 0 );
-		Assert.assertNotNull( clazz );
+		assertNotNull( clazz );
 		
-		Assert.assertTrue( clazz.getName().equals("br.eti.kinoshita.Test1") );
+		assertTrue( clazz.getName().equals("br.eti.kinoshita.Test1") );
 		
 		List<TestMethod> testMethods = clazz.getTestMethods();
 		
-		Assert.assertTrue( testMethods.size() == 1 );
+		assertTrue( testMethods.size() == 1 );
 		
 		TestMethod testMethod = testMethods.get( 0 );
 		
-		Assert.assertNotNull( testMethod );
+		assertNotNull( testMethod );
 		
-		Assert.assertTrue( testMethod.getStatus().equals("PASS") );
-		Assert.assertTrue( testMethod.getSignature().equals("testVoid()") );
-		Assert.assertTrue( testMethod.getName().equals("testVoid") );
-		Assert.assertTrue( testMethod.getDurationMs().equals("0") );
-		Assert.assertTrue( testMethod.getStartedAt().equals("2010-11-17T13:31:41Z") );
-		Assert.assertTrue( testMethod.getFinishedAt().equals("2010-11-17T13:31:41Z") );
+		assertTrue( testMethod.getStatus().equals("PASS") );
+		assertTrue( testMethod.getSignature().equals("testVoid()") );
+		assertTrue( testMethod.getName().equals("testVoid") );
+		assertTrue( testMethod.getDurationMs().equals("0") );
+		assertTrue( testMethod.getStartedAt().equals("2010-11-17T13:31:41Z") );
+		assertTrue( testMethod.getFinishedAt().equals("2010-11-17T13:31:41Z") );
 		
 	}
 	
-	@org.testng.annotations.Test(description="Test with an invalid TestNG file", 
-			expectedExceptions=ParserException.class)
 	public void testInvalidTestNGFile()
 	{
 		ClassLoader cl = TestTestNGParser.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/parser/testng/testng-invalid-results.xml");
 		File file = new File( url.getFile() );
 		
-		this.parser.parse( file );
+		try
+		{
+			this.parser.parse( file );
+		}
+		catch (ParserException p) 
+		{
+			assertNotNull(p);
+		}
 		
 	}
 	

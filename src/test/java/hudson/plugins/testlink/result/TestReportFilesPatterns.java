@@ -23,53 +23,47 @@
  */
 package hudson.plugins.testlink.result;
 
-import hudson.plugins.testlink.result.ReportFilesPatterns;
-
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import junit.framework.TestCase;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
  */
-public class TestReportFilesPatterns
+public class TestReportFilesPatterns 
+extends TestCase
 {
 
 	private ReportFilesPatterns patterns;
 	
-	@BeforeClass
 	public void setUp()
 	{
 		this.patterns = new ReportFilesPatterns();
 	}
 	
-	@Test(testName="Test Getters and Setters")
 	public void testGettersAndSetters()
 	{
-		Assert.assertNull( patterns.getJunitXmlReportFilesPattern() );
+		assertNull( patterns.getJunitXmlReportFilesPattern() );
 		String junitXmlReportFilesPattern = "**/TEST-*.xml";
 		patterns.setJunitXmlReportFilesPattern( junitXmlReportFilesPattern );
-		Assert.assertNotNull( patterns.getJunitXmlReportFilesPattern() );
-		Assert.assertEquals( patterns.getJunitXmlReportFilesPattern(), junitXmlReportFilesPattern );
+		assertNotNull( patterns.getJunitXmlReportFilesPattern() );
+		assertEquals( patterns.getJunitXmlReportFilesPattern(), junitXmlReportFilesPattern );
 		
-		Assert.assertNull( patterns.getTestNGXmlReportFilesPattern() );
+		assertNull( patterns.getTestNGXmlReportFilesPattern() );
 		String testNgXmlReportFilesPattern = "**/testng-results.xml";
 		patterns.setTestNGXmlReportFilesPattern( testNgXmlReportFilesPattern );
-		Assert.assertNotNull( patterns.getTestNGXmlReportFilesPattern() );
-		Assert.assertEquals( patterns.getTestNGXmlReportFilesPattern(), testNgXmlReportFilesPattern );
+		assertNotNull( patterns.getTestNGXmlReportFilesPattern() );
+		assertEquals( patterns.getTestNGXmlReportFilesPattern(), testNgXmlReportFilesPattern );
 		
-		Assert.assertNull( patterns.getTapStreamReportFilesPattern() );
+		assertNull( patterns.getTapStreamReportFilesPattern() );
 		String tapReportFilesPattern = "**/*.tap";
 		patterns.setTapStreamReportFilesPattern( tapReportFilesPattern );
-		Assert.assertNotNull( patterns.getTapStreamReportFilesPattern() );
-		Assert.assertEquals( patterns.getTapStreamReportFilesPattern(), tapReportFilesPattern );		
+		assertNotNull( patterns.getTapStreamReportFilesPattern() );
+		assertEquals( patterns.getTapStreamReportFilesPattern(), tapReportFilesPattern );		
 	}
 	
-	@Test(testName="Test ReportFilesPatterns toString()")
 	public void testToString()
 	{
-		Assert.assertTrue( patterns.toString().startsWith( "TestReportDirectories [junitXmlReportFilesPattern=" ));
+		assertTrue( patterns.toString().startsWith( "TestReportDirectories [junitXmlReportFilesPattern=" ));
 	}
 	
 }

@@ -265,6 +265,12 @@
 			<version>1.9.1-0</version>
 			<type>jar</type>
 			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>testng</artifactId>
+					<groupId>org.testng</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -285,6 +291,12 @@
 			<artifactId>tap4j</artifactId>
 			<version>1.4.4</version>
 			<type>jar</type>
+			<exclusions>
+				<exclusion>
+					<artifactId>testng</artifactId>
+					<groupId>org.testng</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.yaml</groupId>
@@ -292,13 +304,6 @@
 			<version>1.7</version>
 			<type>jar</type>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>5.14.6</version>
-			<type>jar</type>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

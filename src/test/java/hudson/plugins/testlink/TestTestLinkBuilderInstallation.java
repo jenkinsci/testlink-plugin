@@ -23,8 +23,7 @@
  */
 package hudson.plugins.testlink;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import junit.framework.TestCase;
 
 /**
  * Tests the TestLinkBuilderInstallation class.
@@ -34,13 +33,13 @@ import org.testng.annotations.Test;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-public class TestTestLinkBuilderInstallation
+public class TestTestLinkBuilderInstallation 
+extends TestCase
 {
 
 	/**
 	 * Tests with a TestLinkBuilderInstallation object.
 	 */
-	@Test
 	public void testInstallation()
 	{
 		TestLinkBuilderInstallation inst = 
@@ -49,11 +48,11 @@ public class TestTestLinkBuilderInstallation
 					"http://localhost/testlink-1.9.1/lib/api/xml-rpc.php", 
 					"068848");
 		
-		Assert.assertNotNull( inst );
+		assertNotNull( inst );
 		
-		Assert.assertEquals( inst.getName(), "TestLink 1.9.1" );
-		Assert.assertEquals( inst.getUrl(), "http://localhost/testlink-1.9.1/lib/api/xml-rpc.php" );
-		Assert.assertEquals( inst.getDevKey(), "068848" );
+		assertEquals( inst.getName(), "TestLink 1.9.1" );
+		assertEquals( inst.getUrl(), "http://localhost/testlink-1.9.1/lib/api/xml-rpc.php" );
+		assertEquals( inst.getDevKey(), "068848" );
 	}
 	
 }

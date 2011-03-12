@@ -25,16 +25,16 @@ package hudson.plugins.testlink.svn;
 
 import java.net.MalformedURLException;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import junit.framework.TestCase;
+
 import org.tmatesoft.svn.core.SVNException;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
  */
-public class TestSVNLatestRevisionService
+public class TestSVNLatestRevisionService 
+extends TestCase
 {
 	
 	private static final String repoUrl = "https://tap4j.svn.sourceforge.net/svnroot/tap4j/";
@@ -42,7 +42,6 @@ public class TestSVNLatestRevisionService
 	private static final String password = "";
 	private SVNLatestRevisionService service;
 	
-	@BeforeClass
 	public void setUp()
 	{
 		try
@@ -51,14 +50,13 @@ public class TestSVNLatestRevisionService
 		} 
 		catch (MalformedURLException e)
 		{
-			Assert.fail("Bad SVN Url: " + repoUrl, e);
+			fail("Bad SVN Url: [" + repoUrl + "] : " + e.getMessage());
 		}
 	}
 	
-	@Test(testName="Test Get latest SVN Revision and SVN URL")
 	public void testGetLatestSVNRevisionAndSvnUrl()
 	{
-		Assert.assertNotNull( this.service.getRepositoryURL() );
+		assertNotNull( this.service.getRepositoryURL() );
 		
 		Long revision = Long.valueOf( -1 );
 		try
@@ -67,16 +65,15 @@ public class TestSVNLatestRevisionService
 		} 
 		catch (SVNException e)
 		{
-			Assert.fail("Failed to get latest revision: " + e.getMessage(), e);
+			fail("Failed to get latest revision: " + e.getMessage());
 		}
 		
-		Assert.assertNotNull( revision );
+		assertNotNull( revision );
 		
-		Assert.assertTrue( revision > 0 );
+		assertTrue( revision > 0 );
 		
 	}
 	
-	@Test(testName="Test Get latest revision with credentials")
 	public void testGetLatestRevisionWithCredentials()
 	{
 		try
@@ -85,7 +82,7 @@ public class TestSVNLatestRevisionService
 		}
 		catch (MalformedURLException e)
 		{
-			Assert.fail("Bad SVN Url: " + repoUrl, e);
+			fail("Bad SVN Url: [" + repoUrl + "] : " + e.getMessage());
 		}
 		
 		Long revision = Long.valueOf( -1 );
@@ -95,15 +92,14 @@ public class TestSVNLatestRevisionService
 		} 
 		catch (SVNException e)
 		{
-			Assert.fail("Failed to get latest revision: " + e.getMessage(), e);
+			fail("Failed to get latest revision: " + e.getMessage());
 		}
 		
-		Assert.assertNotNull( revision );
+		assertNotNull( revision );
 		
-		Assert.assertTrue( revision > 0 );
+		assertTrue( revision > 0 );
 	}
 	
-	@Test(testName="Test Get latest revision without credentials")
 	public void testGetLatestRevisionWithoutCredentials()
 	{
 		try
@@ -112,7 +108,7 @@ public class TestSVNLatestRevisionService
 		}
 		catch (MalformedURLException e)
 		{
-			Assert.fail("Bad SVN Url: " + repoUrl, e);
+			fail("Bad SVN Url: [" + repoUrl + "] : " + e.getMessage());
 		}
 		
 		Long revision = Long.valueOf( -1 );
@@ -122,12 +118,12 @@ public class TestSVNLatestRevisionService
 		} 
 		catch (SVNException e)
 		{
-			Assert.fail("Failed to get latest revision: " + e.getMessage(), e);
+			fail("Failed to get latest revision: " + e.getMessage() );
 		}
 		
-		Assert.assertNotNull( revision );
+		assertNotNull( revision );
 		
-		Assert.assertTrue( revision > 0 );
+		assertTrue( revision > 0 );
 	}
 
 }

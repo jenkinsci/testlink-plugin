@@ -28,10 +28,6 @@ import hudson.plugins.testlink.result.TestLinkReport;
 import java.lang.reflect.Constructor;
 import java.util.Locale;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionType;
@@ -47,13 +43,13 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-public class TestReportSummary
+public class TestReportSummary 
+extends junit.framework.TestCase
 {
 
 	/**
 	 * Prepares for the tests.
 	 */
-	@BeforeClass
 	public void setUp()
 	{
 		Locale.setDefault(new Locale("en", "US"));
@@ -62,7 +58,6 @@ public class TestReportSummary
 	/**
 	 * Tests the hidden constructor of the ReportSummary class.
 	 */
-	@Test(description="Tests the hidden constructor of the ReportSummary class.")
 	public void testConstructor()
 	{
 		try
@@ -71,33 +66,31 @@ public class TestReportSummary
 			c.setAccessible(true);
 			final Object o = c.newInstance((Object[]) null);
 
-			Assert.assertNotNull(o);
+			assertNotNull(o);
 		}
 		catch (Exception e)
 		{
-			Assert.fail("Failed to instantiate constructor: " + e.getMessage(), e);
+			fail("Failed to instantiate constructor: " + e.getMessage());
 		}
 	}
 	
 	/**
 	 * Tests printDifference() method.
 	 */
-	@Test(description="Tests the printDifference() method.")
 	public void testPrintDifference()
 	{
 		StringBuilder builder = new StringBuilder();
 		ReportSummary.printDifference(1, 0, builder);
-		Assert.assertEquals( builder.toString(), " (+1)" );
+		assertEquals( builder.toString(), " (+1)" );
 		
 		builder = new StringBuilder();
 		ReportSummary.printDifference(0, 1, builder);
-		Assert.assertEquals( builder.toString(), "" );
+		assertEquals( builder.toString(), "" );
 	}
 	
 	/**
 	 * Tests the createReportSummary() method with a previous TestLinkReport.
 	 */
-	@Test(description="Tests the createReportSummary() method with a previous TestLinkReport.")
 	public void testSummary()
 	{
 		Build build = new Build(1, 1, "My build", "Notes about my build");
@@ -118,14 +111,13 @@ public class TestReportSummary
 		report.addTestCase( testCase3 );
 		
 		String reportSummary = ReportSummary.createReportSummary(report, null);
-		Assert.assertNotNull(reportSummary);
-		Assert.assertEquals(reportSummary, "<p><b>TestLink Build ID: 1</b></p><p><b>TestLink Build Name: My build</b></p><p><a href=\"testLinkResult\">Total of 3 tests.</a> Where 1 tests passed, 1 tests failed and 1 tests were blocked.</p>");
+		assertNotNull(reportSummary);
+		assertEquals(reportSummary, "<p><b>TestLink Build ID: 1</b></p><p><b>TestLink Build Name: My build</b></p><p><a href=\"testLinkResult\">Total of 3 tests.</a> Where 1 tests passed, 1 tests failed and 1 tests were blocked.</p>");
 	}
 	
 	/**
 	 * Tests the createReportSummary() method with a previous TestLinkReport.
 	 */
-	@Test(description="Tests the createReportSummary() method with a previous TestLinkReport.")
 	public void testSummaryWithPrevious()
 	{
 		Build build = new Build(1, 1, "My build", "Notes about my build");
@@ -154,14 +146,13 @@ public class TestReportSummary
 		previous.addTestCase( testCase2 );
 		
 		String reportSummary = ReportSummary.createReportSummary(report, previous);
-		Assert.assertNotNull(reportSummary);
-		Assert.assertEquals(reportSummary, "<p><b>TestLink Build ID: 1</b></p><p><b>TestLink Build Name: My build</b></p><p><a href=\"testLinkResult\">Total of 3 (+1) tests.</a> Where 1 tests passed, 1 tests failed and 1 (+1) tests were blocked.</p>");
+		assertNotNull(reportSummary);
+		assertEquals(reportSummary, "<p><b>TestLink Build ID: 1</b></p><p><b>TestLink Build Name: My build</b></p><p><a href=\"testLinkResult\">Total of 3 (+1) tests.</a> Where 1 tests passed, 1 tests failed and 1 (+1) tests were blocked.</p>");
 	}
 	
 	/**
 	 * Tests the createReportSummaryDetails() method.
 	 */
-	@Test(description="Tests the createReportSummaryDetails() method.")
 	public void testSummaryDetails()
 	{
 		Build build = new Build(1, 1, "My build", "Notes about my build");
@@ -190,7 +181,7 @@ public class TestReportSummary
 		previous.addTestCase( testCase2 );
 		
 		String reportSummaryDetails = ReportSummary.createReportSummaryDetails(report, previous);
-		Assert.assertNotNull(reportSummaryDetails);
+		assertNotNull(reportSummaryDetails);
 		
 		String expectedDetails = ""+
 		"<p>List of test cases and execution result status</p><table border=\"1\">\n" +
@@ -206,7 +197,7 @@ public class TestReportSummary
 "</tr>\n" +
 "</table>";
 		
-		Assert.assertEquals(reportSummaryDetails, expectedDetails);
+		assertEquals(reportSummaryDetails, expectedDetails);
 	}
 	
 }

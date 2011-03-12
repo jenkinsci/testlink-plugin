@@ -23,8 +23,7 @@
  */
 package hudson.plugins.testlink.util;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import junit.framework.TestCase;
 
 /**
  * Tests the ParserException.
@@ -34,33 +33,33 @@ import org.testng.annotations.Test;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
  */
-public class TestParserException
+public class TestParserException 
+extends TestCase
 {
 
 	private ParserException exception;
 	
-	@Test(testName="Test Parser Exception")
 	public void testTestLinkPluginException()
 	{
 		this.exception = new ParserException();
 		
-		Assert.assertNotNull( this.exception );
+		assertNotNull( this.exception );
 		
 		this.exception = new ParserException("Lamen");
 		
-		Assert.assertNotNull( this.exception );
-		Assert.assertEquals( this.exception.getMessage(), "Lamen" );
+		assertNotNull( this.exception );
+		assertEquals( this.exception.getMessage(), "Lamen" );
 		
 		this.exception = new ParserException( new NullPointerException() );
 		
-		Assert.assertNotNull( this.exception );
-		Assert.assertNotNull( this.exception.getCause() );
+		assertNotNull( this.exception );
+		assertNotNull( this.exception.getCause() );
 		
 		this.exception = new ParserException("Lamen", new NullPointerException() );
 		
-		Assert.assertNotNull( this.exception );
-		Assert.assertNotNull( this.exception.getCause() );
-		Assert.assertEquals( this.exception.getMessage(), "Lamen" );
+		assertNotNull( this.exception );
+		assertNotNull( this.exception.getCause() );
+		assertEquals( this.exception.getMessage(), "Lamen" );
 	}
 	
 }

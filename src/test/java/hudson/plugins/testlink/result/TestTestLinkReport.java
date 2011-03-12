@@ -23,13 +23,6 @@
  */
 package hudson.plugins.testlink.result;
 
-import hudson.plugins.testlink.result.TestLinkReport;
-
-import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
@@ -40,7 +33,8 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
  */
-public class TestTestLinkReport
+public class TestTestLinkReport 
+extends junit.framework.TestCase
 {
 
 	private TestLinkReport report;
@@ -49,7 +43,6 @@ public class TestTestLinkReport
 	private TestPlan plan;
 	private TestProject project;
 	
-	@BeforeClass
 	public void setUp()
 	{
 		this.report = new TestLinkReport();
@@ -60,95 +53,91 @@ public class TestTestLinkReport
 		project = new TestProject();
 		project.setId( 100 );
 		
-		Assert.assertNotNull ( this.report.getTestCases() );
-		Assert.assertTrue( this.report.getTestCases().size() == 0 );
+		assertNotNull ( this.report.getTestCases() );
+		assertTrue( this.report.getTestCases().size() == 0 );
 	}
 	
-	@Test(testName="Test Getters and Setters")
 	public void testTesLinkReportGettersAndSetters()
 	{
-		Assert.assertNull ( this.report.getBuild() );
+		assertNull ( this.report.getBuild() );
 		this.report.setBuild ( this.build );
-		Assert.assertNotNull( this.report.getBuild() );
-		Assert.assertTrue( this.report.getBuild().getId() == 100 );
+		assertNotNull( this.report.getBuild() );
+		assertTrue( this.report.getBuild().getId() == 100 );
 		
-		Assert.assertNull( this.report.getTestPlan());
+		assertNull( this.report.getTestPlan());
 		this.report.setTestPlan( this.plan );
-		Assert.assertNotNull( this.report.getTestPlan() );
-		Assert.assertTrue( this.report.getTestPlan().getId() == 100 );
+		assertNotNull( this.report.getTestPlan() );
+		assertTrue( this.report.getTestPlan().getId() == 100 );
 		
-		Assert.assertNull( this.report.getTestProject() );
+		assertNull( this.report.getTestProject() );
 		this.report.setTestProject( this.project );
-		Assert.assertNotNull( this.report.getTestProject() );
-		Assert.assertTrue( this.report.getTestProject().getId() == 100 );
+		assertNotNull( this.report.getTestProject() );
+		assertTrue( this.report.getTestProject().getId() == 100 );
 	}
 	
-	@Test(testName ="Test Report numbers")
 	public void testReportNumbers()
 	{
-		Assert.assertTrue( report.getTestsBlocked() == 0 );
-		Assert.assertTrue( report.getTestsFailed() == 0 );
-		Assert.assertTrue( report.getTestsPassed() == 0 );
-		Assert.assertTrue( report.getTestsTotal() == 0 );
+		assertTrue( report.getTestsBlocked() == 0 );
+		assertTrue( report.getTestsFailed() == 0 );
+		assertTrue( report.getTestsPassed() == 0 );
+		assertTrue( report.getTestsTotal() == 0 );
 		
 		TestCase testCase = new TestCase();
 		testCase.setExecutionStatus( ExecutionStatus.BLOCKED );
 		report.getTestCases().add( testCase );
 		
-		Assert.assertTrue( report.getTestsBlocked() == 1 );
-		Assert.assertTrue( report.getTestsFailed() == 0 );
-		Assert.assertTrue( report.getTestsPassed() == 0 );
-		Assert.assertTrue( report.getTestsTotal() == 1 );
+		assertTrue( report.getTestsBlocked() == 1 );
+		assertTrue( report.getTestsFailed() == 0 );
+		assertTrue( report.getTestsPassed() == 0 );
+		assertTrue( report.getTestsTotal() == 1 );
 		
 		testCase = new TestCase();
 		testCase.setExecutionStatus( ExecutionStatus.FAILED );
 		report.getTestCases().add( testCase );
 		
-		Assert.assertTrue( report.getTestsBlocked() == 1 );
-		Assert.assertTrue( report.getTestsFailed() == 1 );
-		Assert.assertTrue( report.getTestsPassed() == 0 );
-		Assert.assertTrue( report.getTestsTotal() == 2 );
+		assertTrue( report.getTestsBlocked() == 1 );
+		assertTrue( report.getTestsFailed() == 1 );
+		assertTrue( report.getTestsPassed() == 0 );
+		assertTrue( report.getTestsTotal() == 2 );
 		
 		testCase = new TestCase();
 		testCase.setExecutionStatus( ExecutionStatus.PASSED );
 		report.getTestCases().add( testCase );
 		
-		Assert.assertTrue( report.getTestsBlocked() == 1 );
-		Assert.assertTrue( report.getTestsFailed() == 1 );
-		Assert.assertTrue( report.getTestsPassed() == 1 );
-		Assert.assertTrue( report.getTestsTotal() == 3 );
+		assertTrue( report.getTestsBlocked() == 1 );
+		assertTrue( report.getTestsFailed() == 1 );
+		assertTrue( report.getTestsPassed() == 1 );
+		assertTrue( report.getTestsTotal() == 3 );
 		
 		testCase = new TestCase();
 		testCase.setExecutionStatus( ExecutionStatus.NOT_RUN);
 		report.getTestCases().add( testCase );
 		
-		Assert.assertTrue( report.getTestsBlocked() == 1 );
-		Assert.assertTrue( report.getTestsFailed() == 1 );
-		Assert.assertTrue( report.getTestsPassed() == 1 );
-		Assert.assertTrue( report.getTestsTotal() == 4 );
+		assertTrue( report.getTestsBlocked() == 1 );
+		assertTrue( report.getTestsFailed() == 1 );
+		assertTrue( report.getTestsPassed() == 1 );
+		assertTrue( report.getTestsTotal() == 4 );
 		
 		testCase = new TestCase();
 		testCase.setExecutionStatus( ExecutionStatus.PASSED);
 		report.getTestCases().add( testCase );
 		
-		Assert.assertTrue( report.getTestsBlocked() == 1 );
-		Assert.assertTrue( report.getTestsFailed() == 1 );
-		Assert.assertTrue( report.getTestsPassed() == 2 );
-		Assert.assertTrue( report.getTestsTotal() == 5 );
+		assertTrue( report.getTestsBlocked() == 1 );
+		assertTrue( report.getTestsFailed() == 1 );
+		assertTrue( report.getTestsPassed() == 2 );
+		assertTrue( report.getTestsTotal() == 5 );
 	}
 	
-	@Test(testName="Test toString()")
 	public void testToString()
 	{
-		Assert.assertTrue( report.toString().startsWith("TestLinkReport [build=") );
+		assertTrue( report.toString().startsWith("TestLinkReport [build=") );
 	}
 	
-	@AfterClass
 	public void tearDown()
 	{
 		this.report = new TestLinkReport(build, plan, project);
-		Assert.assertNotNull( report.getBuild() );
-		Assert.assertNotNull( report.getTestPlan() );
-		Assert.assertNotNull( report.getTestProject() );
+		assertNotNull( report.getBuild() );
+		assertNotNull( report.getTestPlan() );
+		assertNotNull( report.getTestProject() );
 	}
 }

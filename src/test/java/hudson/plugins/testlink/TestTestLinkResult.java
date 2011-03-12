@@ -23,12 +23,10 @@
  */
 package hudson.plugins.testlink;
 
+import junit.framework.TestCase;
 import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.TestLinkResult;
 import hudson.plugins.testlink.result.TestLinkReport;
-
-import org.testng.Assert;
-import org.testng.annotations.Test;
 
 /**
  * Tests the TestLinkResult object.
@@ -38,21 +36,21 @@ import org.testng.annotations.Test;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-public class TestTestLinkResult
+public class TestTestLinkResult 
+extends TestCase
 {
 
-	@Test
 	public void testTestLinkResult()
 	{
 		TestLinkReport report = new TestLinkReport();
 		AbstractBuild<?, ?> build = null;
 		TestLinkResult tlr = new TestLinkResult(report, build);
 		
-		Assert.assertNotNull( tlr );
+		assertNotNull( tlr );
 		
-		Assert.assertNull( tlr.getOwner() );
+		assertNull( tlr.getOwner() );
 		
-		Assert.assertNotNull( tlr.getReport() );
+		assertNotNull( tlr.getReport() );
 	}
 	
 }

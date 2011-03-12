@@ -23,8 +23,8 @@
  */
 package hudson.plugins.testlink.util;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import junit.framework.TestCase;
+
 
 /**
  * Tests the TestLinkPluginException.
@@ -34,33 +34,33 @@ import org.testng.annotations.Test;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
  */
-public class TestTestLinkPluginException
+public class TestTestLinkPluginException 
+extends TestCase
 {
 
 	private TestLinkPluginException exception;
 	
-	@Test(testName="Test TestLink Plug-in Exception")
 	public void testTestLinkPluginException()
 	{
 		this.exception = new TestLinkPluginException();
 		
-		Assert.assertNotNull( this.exception );
+		assertNotNull( this.exception );
 		
 		this.exception = new TestLinkPluginException("Lamen");
 		
-		Assert.assertNotNull( this.exception );
-		Assert.assertEquals( this.exception.getMessage(), "Lamen" );
+		assertNotNull( this.exception );
+		assertEquals( this.exception.getMessage(), "Lamen" );
 		
 		this.exception = new TestLinkPluginException( new NullPointerException() );
 		
-		Assert.assertNotNull( this.exception );
-		Assert.assertNotNull( this.exception.getCause() );
+		assertNotNull( this.exception );
+		assertNotNull( this.exception.getCause() );
 		
 		this.exception = new TestLinkPluginException("Lamen", new NullPointerException() );
 		
-		Assert.assertNotNull( this.exception );
-		Assert.assertNotNull( this.exception.getCause() );
-		Assert.assertEquals( this.exception.getMessage(), "Lamen" );
+		assertNotNull( this.exception );
+		assertNotNull( this.exception.getCause() );
+		assertEquals( this.exception.getMessage(), "Lamen" );
 	}
 	
 }

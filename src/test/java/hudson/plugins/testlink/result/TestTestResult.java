@@ -23,12 +23,6 @@
  */
 package hudson.plugins.testlink.result;
 
-import hudson.plugins.testlink.result.TestResult;
-
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
@@ -39,6 +33,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
  * @since 2.0
  */
 public class TestTestResult 
+extends junit.framework.TestCase
 {
 
 	protected TestCase testCase;
@@ -47,7 +42,6 @@ public class TestTestResult
 	
 	protected TestResult testResult;
 	
-	@BeforeClass
 	protected void setUp()
 	{
 		testCase = new TestCase();
@@ -59,86 +53,80 @@ public class TestTestResult
 		testResult = new TestResult(testCase, build, testPlan);
 	}
 	
-	@Test(testName="Test TestResult TestCase")
 	public void testTestResultTestCase()
 	{
-		Assert.assertNotNull( testResult.getTestCase() );
+		assertNotNull( testResult.getTestCase() );
 		
-		Assert.assertTrue( testResult.getTestCase().getId() == 100 );
+		assertTrue( testResult.getTestCase().getId() == 100 );
 		
 		TestCase testCase2 = new TestCase();
 		testCase2.setId( 101 );
 		testResult.setTestCase( testCase2 );
 		
-		Assert.assertTrue( testResult.getTestCase().getId() == 101 );
+		assertTrue( testResult.getTestCase().getId() == 101 );
 	}
 	
-	@Test(testName="Test TestResult Build")
 	public void testTestResultBuild()
 	{
-		Assert.assertNotNull( testResult.getBuild() );
+		assertNotNull( testResult.getBuild() );
 		
-		Assert.assertTrue( testResult.getBuild().getId() == 100 );
+		assertTrue( testResult.getBuild().getId() == 100 );
 		
 		Build build2 = new Build();
 		build2.setId( 101 );
 		testResult.setBuild( build2 );
 		
-		Assert.assertTrue( testResult.getBuild().getId() == 101 );
+		assertTrue( testResult.getBuild().getId() == 101 );
 		
 	}
 	
-	@Test(testName="Test TestResult TestPlan")
 	public void testTestResultTestPlan()
 	{
-		Assert.assertNotNull( testResult.getTestPlan() );
+		assertNotNull( testResult.getTestPlan() );
 		
-		Assert.assertTrue( testResult.getTestPlan().getId() == 100 );
+		assertTrue( testResult.getTestPlan().getId() == 100 );
 		
 		TestPlan testPlan2 = new TestPlan();
 		testPlan2.setId( 101 );
 		testResult.setTestPlan( testPlan2 );
 		
-		Assert.assertTrue( testResult.getTestPlan().getId() == 101 );
+		assertTrue( testResult.getTestPlan().getId() == 101 );
 	}
 	
-	@Test(testName="Test TestResult notes")
 	public void testTestResultNotes()
 	{
-		Assert.assertNull( this.testResult.getNotes() );
+		assertNull( this.testResult.getNotes() );
 		
 		String newNotes = "Home sweet home";
 		this.testResult.setNotes( newNotes );
 		
-		Assert.assertNotNull( this.testResult.getNotes() );
+		assertNotNull( this.testResult.getNotes() );
 	}
 	
-	@Test(testName="Test TestResult Attachments")
 	public void testTestResultAttachments()
 	{
-		Assert.assertNotNull( testResult.getAttachments() );
+		assertNotNull( testResult.getAttachments() );
 		
-		Assert.assertEquals ( testResult.getAttachments().size(), 0 );
+		assertEquals ( testResult.getAttachments().size(), 0 );
 		
 		Attachment attachment = new Attachment();
 		testResult.getAttachments().add( attachment );
 		
-		Assert.assertEquals( testResult.getAttachments().size(), 1 );
+		assertEquals( testResult.getAttachments().size(), 1 );
 		
 		attachment = new Attachment();
 		testResult.addAttachment( attachment );
 		
-		Assert.assertEquals( testResult.getAttachments().size(), 2 );
+		assertEquals( testResult.getAttachments().size(), 2 );
 	}
 	
-	@Test(testName="Test TestResult toString() method")
 	public void testTestResultToString()
 	{
 		String toStringResult = testResult.toString();
 		
-		Assert.assertNotNull( toStringResult );
+		assertNotNull( toStringResult );
 		
-		Assert.assertTrue( toStringResult.startsWith("TestResult [testCase=") );
+		assertTrue( toStringResult.startsWith("TestResult [testCase=") );
 	}
 	
 }

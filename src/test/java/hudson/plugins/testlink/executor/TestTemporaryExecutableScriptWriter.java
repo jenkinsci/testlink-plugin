@@ -26,9 +26,9 @@ package hudson.plugins.testlink.executor;
 import java.io.File;
 import java.io.IOException;
 
+import junit.framework.TestCase;
+
 import org.apache.commons.io.FileUtils;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 
 /**
  * Tests the temporary executable script writer.
@@ -36,21 +36,21 @@ import org.testng.annotations.Test;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-public class TestTemporaryExecutableScriptWriter
+public class TestTemporaryExecutableScriptWriter 
+extends TestCase
 {
 	
-	@Test
 	public void testExecutableScriptForWindows()
 	{
 		
 		File temporaryScript = new File( "target", "testExecutableScript.tmp");
 		try
 		{
-			Assert.assertTrue( temporaryScript.createNewFile() );
+			assertTrue( temporaryScript.createNewFile() );
 		} 
 		catch (Exception e1)
 		{
-			Assert.fail("Failed to create temporary script file '"+temporaryScript+"'", e1);
+			fail("Failed to create temporary script file '"+temporaryScript+"': " + e1.getMessage());
 		}
 		
 		TemporaryExecutableScriptWriter writer = 
@@ -60,13 +60,13 @@ public class TestTemporaryExecutableScriptWriter
 					"dir");
 		try
 		{
-			Assert.assertTrue( writer.invoke(null, null) );
+			assertTrue( writer.invoke(null, null) );
 		} catch (IOException e)
 		{
-			Assert.fail("Failed to write test command to test script", e);
+			fail("Failed to write test command to test script: " + e.getMessage());
 		} catch (InterruptedException e)
 		{
-			Assert.fail("Failed to write test command to test script", e);
+			fail("Failed to write test command to test script: " + e.getMessage());
 		}
 		finally
 		{
@@ -78,24 +78,23 @@ public class TestTemporaryExecutableScriptWriter
 				} 
 				catch (IOException e)
 				{
-					Assert.fail("Failed to write test command to test script", e);
+					fail("Failed to write test command to test script: " + e.getMessage());
 				}
 			}
 		}
 	}
 	
-	@Test
 	public void testExecutableScriptForUnix()
 	{
 		
 		File temporaryScript = new File( "target", "testExecutableScript.tmp");
 		try
 		{
-			Assert.assertTrue( temporaryScript.createNewFile() );
+			assertTrue( temporaryScript.createNewFile() );
 		} 
 		catch (Exception e1)
 		{
-			Assert.fail("Failed to create temporary script file '"+temporaryScript+"'", e1);
+			fail("Failed to create temporary script file '"+temporaryScript+"': " + e1.getMessage());
 		}
 		
 		TemporaryExecutableScriptWriter writer = 
@@ -105,13 +104,13 @@ public class TestTemporaryExecutableScriptWriter
 					"ls");
 		try
 		{
-			Assert.assertTrue( writer.invoke(null, null) );
+			assertTrue( writer.invoke(null, null) );
 		} catch (IOException e)
 		{
-			Assert.fail("Failed to write test command to test script", e);
+			fail("Failed to write test command to test script: " + e.getMessage());
 		} catch (InterruptedException e)
 		{
-			Assert.fail("Failed to write test command to test script", e);
+			fail("Failed to write test command to test script: " + e.getMessage());
 		}
 		finally
 		{
@@ -123,7 +122,7 @@ public class TestTemporaryExecutableScriptWriter
 				} 
 				catch (IOException e)
 				{
-					Assert.fail("Failed to write test command to test script", e);
+					fail("Failed to write test command to test script: " + e.getMessage());
 				}
 			}
 		}

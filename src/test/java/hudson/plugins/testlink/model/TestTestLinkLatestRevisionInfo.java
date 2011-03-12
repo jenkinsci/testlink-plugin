@@ -23,16 +23,15 @@
  */
 package hudson.plugins.testlink.model;
 
+import junit.framework.TestCase;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
  */
 public class TestTestLinkLatestRevisionInfo 
+extends TestCase
 {
 
 	private TestLinkLatestRevisionInfo latestRevisionInfo;
@@ -41,23 +40,21 @@ public class TestTestLinkLatestRevisionInfo
 	private static final String SVN_USER = "user";
 	private static final String SVN_PASS = "pass";
 	
-	@BeforeClass
 	public void setUp()
 	{
 		this.latestRevisionInfo = 
 			new TestLinkLatestRevisionInfo( SVN_URL, SVN_USER, SVN_PASS );
 	}
 	
-	@Test(testName="Test getters and setters")
 	public void testGetLatestRevisionInfo()
 	{
 		String url = this.latestRevisionInfo.getSvnUrl();
 		String user = this.latestRevisionInfo.getSvnUser();
 		String pass = this.latestRevisionInfo.getSvnPassword();
 		
-		Assert.assertEquals( SVN_URL, url );
-		Assert.assertEquals( SVN_USER, user );
-		Assert.assertEquals( SVN_PASS, pass );
+		assertEquals( SVN_URL, url );
+		assertEquals( SVN_USER, user );
+		assertEquals( SVN_PASS, pass );
 	}
 	
 }

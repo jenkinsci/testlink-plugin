@@ -23,25 +23,9 @@
  */
 package hudson.plugins.testlink;
 
-import hudson.model.Hudson;
 import hudson.util.FormValidation;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.Set;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-
-import org.jvnet.hudson.reactor.ReactorException;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.jvnet.hudson.test.HudsonTestCase;
 
 /**
  * Tests the TestLinkBuilderDescriptor class.
@@ -51,180 +35,24 @@ import org.testng.annotations.Test;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-public class TestTestLinkBuilderDescriptor
+public class TestTestLinkBuilderDescriptor 
+extends HudsonTestCase
 {
 
-	@Test
 	public void testLinkBuilderDescriptor()
 	{
+		TestLinkBuilderDescriptor descriptor = new TestLinkBuilderDescriptor();
+		assertEquals( descriptor.getDisplayName(), "Invoke TestLink" );
 		
-		Hudson parent = null;
+		FormValidation formVal = descriptor.doCheckMandatory("Test");
+		assertNotNull( formVal );
 		
-		try
-		{
+		formVal = descriptor.doCheckMandatory(null);
+		assertNotNull( formVal );
+		assertNotNull( formVal.getMessage() );
 		
-			ServletContext ctx = new ServletContext()
-			{
-				
-				public void setAttribute( String name, Object object )
-				{
-				}
-				
-				public void removeAttribute( String name )
-				{
-				}
-				
-				public void log( String message, Throwable throwable )
-				{
-				}
-				
-				public void log( Exception exception, String msg )
-				{
-				}
-				
-				public void log( String msg )
-				{
-					
-				}
-				
-				public Enumeration<?> getServlets()
-				{
-					return null;
-				}
-				
-				public Enumeration<?> getServletNames()
-				{
-					return null;
-				}
-				
-				public String getServletContextName()
-				{
-					return null;
-				}
-				
-				public Servlet getServlet( String name ) throws ServletException
-				{
-					return null;
-				}
-				
-				public String getServerInfo()
-				{
-					return null;
-				}
-				
-				public Set<?> getResourcePaths( String path )
-				{
-					return null;
-				}
-				
-				public InputStream getResourceAsStream( String path )
-				{
-					return null;
-				}
-				
-				public URL getResource( String path ) throws MalformedURLException
-				{
-					return null;
-				}
-				
-				public RequestDispatcher getRequestDispatcher( String path )
-				{
-					return null;
-				}
-				
-				public String getRealPath( String path )
-				{
-					return null;
-				}
-				
-				public RequestDispatcher getNamedDispatcher( String name )
-				{
-					return null;
-				}
-				
-				public int getMinorVersion()
-				{
-					return 0;
-				}
-				
-				public String getMimeType( String file )
-				{
-					return null;
-				}
-				
-				public int getMajorVersion()
-				{
-					return 0;
-				}
-				
-				public Enumeration<?> getInitParameterNames()
-				{
-					return null;
-				}
-				
-				public String getInitParameter( String name )
-				{
-					return null;
-				}
-				
-				public ServletContext getContext( String uripath )
-				{
-					return this;
-				}
-				
-				public Enumeration<?> getAttributeNames()
-				{
-					return null;
-				}
-				
-				public Object getAttribute( String name )
-				{
-					return null;
-				}
-	
-				public String getContextPath()
-				{
-					return null;
-				}
-			};
-			
-			parent = new Hudson(new File("target"), ctx);
-	
-			Assert.assertNotNull( parent );
-			
-			TestLinkBuilderDescriptor descriptor = new TestLinkBuilderDescriptor();
-			Assert.assertEquals( descriptor.getDisplayName(), "Invoke TestLink" );
-			
-			FormValidation formVal = descriptor.doCheckMandatory("Test");
-			Assert.assertNotNull( formVal );
-			
-			formVal = descriptor.doCheckMandatory(null);
-			Assert.assertNotNull( formVal );
-			Assert.assertNotNull( formVal.getMessage() );
-			
-			Assert.assertNotNull( descriptor.getInstallations() );
-			Assert.assertTrue( descriptor.getInstallations().length == 0 );
-		}
-		catch ( ReactorException e  )
-		{
-			Assert.fail("Failed to created Hudson test instance.", e);
-		} 
-		catch (IOException e)
-		{
-			Assert.fail("Failed to created Hudson test instance.", e);
-		} 
-		catch (InterruptedException e)
-		{
-			Assert.fail("Failed to created Hudson test instance.", e);
-		}
-		finally
-		{
-			if ( parent != null )
-			{
-				parent.cleanUp();
-				parent = null;
-			}
-		}
+		assertNotNull( descriptor.getInstallations() );
+		assertTrue( descriptor.getInstallations().length == 0 );
 	}
 	
 }

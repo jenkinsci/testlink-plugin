@@ -32,10 +32,6 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
@@ -46,7 +42,8 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-public class TestTestResultSeekerTestNG
+public class TestTestResultSeekerTestNG 
+extends junit.framework.TestCase
 {
 	
 	private TestResultSeeker seeker;
@@ -57,7 +54,6 @@ public class TestTestResultSeekerTestNG
 	
 	private ReportFilesPatterns reportFilesPatterns;
 	
-	@BeforeMethod
 	public void setUp()
 	{
 		this.report = new TestLinkReport();
@@ -67,7 +63,6 @@ public class TestTestResultSeekerTestNG
 			new TestResultSeeker(report, KEY_CUSTOM_FIELD, reportFilesPatterns, listener);
 	}
 
-	@Test
 	public void testTestResultSeekerTestNGOne()
 	{
 		TestCase tc = new TestCase();
@@ -82,12 +77,11 @@ public class TestTestResultSeekerTestNG
 		File testNGDir = new File( url.getFile() );
 		this.reportFilesPatterns.setTestNGXmlReportFilesPattern("testng*.xml");
 		List<TestResult> found = seeker.seekTestResults(testNGDir);
-		Assert.assertNotNull( found );
-		Assert.assertTrue( found.size() == 1 );
-		Assert.assertTrue( found.get(0).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
+		assertNotNull( found );
+		assertTrue( found.size() == 1 );
+		assertTrue( found.get(0).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
 	}
 	
-	@Test
 	public void testTestResultSeekerTestNGTwo()
 	{
 		TestCase tc = new TestCase();
@@ -104,17 +98,17 @@ public class TestTestResultSeekerTestNG
 		tc.getCustomFields().add(cf);
 		this.report.addTestCase(tc);
 		
-		Assert.assertTrue( this.report.getTestCases().size() == 2 );
+		assertTrue( this.report.getTestCases().size() == 2 );
 		
 		ClassLoader cl = TestTestResultSeekerTestNG.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/");
 		File testNGDir = new File( url.getFile() );
 		this.reportFilesPatterns.setTestNGXmlReportFilesPattern("testng*.xml");
 		List<TestResult> found = seeker.seekTestResults(testNGDir);
-		Assert.assertNotNull( found );
-		Assert.assertTrue( found.size() == 2 );
-		Assert.assertTrue( found.get(0).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
-		Assert.assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );
+		assertNotNull( found );
+		assertTrue( found.size() == 2 );
+		assertTrue( found.get(0).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
+		assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );
 	}
 	
 }

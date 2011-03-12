@@ -27,18 +27,17 @@ import hudson.plugins.testlink.result.parser.tap.TAPParser;
 
 import java.io.File;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
 import br.eti.kinoshita.tap4j.parser.ParserException;
+
+import junit.framework.TestCase;
 
 /**
  *
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-public class TestParseFileNotFound
+public class TestParseFileNotFound 
+extends TestCase
 {
 	
 	/**
@@ -49,17 +48,23 @@ public class TestParseFileNotFound
 	/**
 	 * Initializes the TAP Parser.
 	 */
-	@BeforeClass
 	public void setUp()
 	{
 		this.parser = new TAPParser();
 	}
 	
-	@Test(expectedExceptions=ParserException.class)
 	public void testParseFileNotFound()
 	{
-		Assert.assertEquals(this.parser.getName(), "TAP");
-		this.parser.parse( new File("test.non.existent.file") );
+		assertEquals(this.parser.getName(), "TAP");
+		try
+		{
+			this.parser.parse( new File("test.non.existent.file") );
+			fail("Not supposed to get here.");
+		}
+		catch (ParserException p) 
+		{
+			assertNotNull(p);
+		}
 	}
 
 }

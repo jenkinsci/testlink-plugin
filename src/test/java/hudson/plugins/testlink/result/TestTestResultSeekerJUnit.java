@@ -32,10 +32,6 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
@@ -46,7 +42,8 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-public class TestTestResultSeekerJUnit
+public class TestTestResultSeekerJUnit 
+extends junit.framework.TestCase
 {
 	
 	private TestResultSeeker seeker;
@@ -57,7 +54,6 @@ public class TestTestResultSeekerJUnit
 	
 	private ReportFilesPatterns reportFilesPatterns;
 	
-	@BeforeMethod
 	public void setUp()
 	{
 		this.report = new TestLinkReport();
@@ -67,7 +63,6 @@ public class TestTestResultSeekerJUnit
 			new TestResultSeeker(report, KEY_CUSTOM_FIELD, reportFilesPatterns, listener);
 	}
 
-	@Test
 	public void testTestResultSeekerJUnitOne()
 	{
 		TestCase tc = new TestCase();
@@ -82,12 +77,11 @@ public class TestTestResultSeekerJUnit
 		File junitDir = new File( url.getFile() );
 		this.reportFilesPatterns.setJunitXmlReportFilesPattern("TEST-*.xml");
 		List<TestResult> found = seeker.seekTestResults(junitDir);
-		Assert.assertNotNull( found );
-		Assert.assertTrue( found.size() == 1 );
-		Assert.assertTrue( found.get(0).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
+		assertNotNull( found );
+		assertTrue( found.size() == 1 );
+		assertTrue( found.get(0).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
 	}
 	
-	@Test
 	public void testTestResultSeekerJUnitTwo()
 	{
 		TestCase tc = new TestCase();
@@ -104,17 +98,17 @@ public class TestTestResultSeekerJUnit
 		tc.getCustomFields().add(cf);
 		this.report.addTestCase(tc);
 		
-		Assert.assertTrue( this.report.getTestCases().size() == 2 );
+		assertTrue( this.report.getTestCases().size() == 2 );
 		
 		ClassLoader cl = TestTestResultSeekerJUnit.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/");
 		File junitDir = new File( url.getFile() );
 		this.reportFilesPatterns.setJunitXmlReportFilesPattern("TEST-*.xml");
 		List<TestResult> found = seeker.seekTestResults(junitDir);
-		Assert.assertNotNull( found );
-		Assert.assertTrue( found.size() == 2 );
-		Assert.assertTrue( found.get(0).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
-		Assert.assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );
+		assertNotNull( found );
+		assertTrue( found.size() == 2 );
+		assertTrue( found.get(0).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
+		assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );
 	}
 	
 }

@@ -30,9 +30,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+import junit.framework.TestCase;
+
 import org.codehaus.plexus.util.StringOutputStream;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 /**
  * Tests the file scanner.
@@ -40,10 +41,10 @@ import org.testng.annotations.Test;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-public class TestScanner
+public class TestScanner 
+extends TestCase
 {
 	
-	@Test
 	public void testScanner()
 	{
 		Scanner scanner = new Scanner();
@@ -58,12 +59,12 @@ public class TestScanner
 		try
 		{
 			String[] files = scanner.scan(directory, "*.class", listener);
-			Assert.assertTrue( files.length == 1 );
+			assertTrue( files.length == 1 );
 			
-			Assert.assertTrue( files[0].contains("TestScanner.class") );
+			assertTrue( files[0].contains("TestScanner.class") );
 		} catch (IOException e)
 		{
-			Assert.fail( "Failed to scan directory: " + directory, e );
+			fail( "Failed to scan directory: " + directory + ".: " + e.getMessage() );
 		}
 		
 	}
@@ -83,15 +84,14 @@ public class TestScanner
 		try
 		{
 			String[] files = scanner.scan(directory, null, listener);
-			Assert.assertTrue( files.length == 0 );
+			assertTrue( files.length == 0 );
 		} catch (IOException e)
 		{
-			Assert.fail( "Failed to scan directory: " + directory, e );
+			fail( "Failed to scan directory: [" + directory + "] : " + e.getMessage());
 		}
 		
 	}
 	
-	@Test(expectedExceptions=IOException.class)
 	public void testScannerUsingAFileInsteadOfDirectory() 
 	throws IOException
 	{
@@ -104,7 +104,14 @@ public class TestScanner
 		StringOutputStream sos = new StringOutputStream();
 		BuildListener listener = new StreamBuildListener(sos);
 		
-		scanner.scan(directory, "*.class", listener);
+		try
+		{
+			scanner.scan(directory, "*.class", listener);
+		}
+		catch (IOException p) 
+		{
+			assertNotNull(p);
+		}
 		
 	}
 

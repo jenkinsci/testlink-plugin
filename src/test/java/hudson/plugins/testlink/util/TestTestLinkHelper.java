@@ -26,23 +26,20 @@ package hudson.plugins.testlink.util;
 import java.lang.reflect.Constructor;
 import java.util.Locale;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
+import junit.framework.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 
 /**
  *
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  */
-public class TestTestLinkHelper
+public class TestTestLinkHelper 
+extends TestCase
 {
 
 	/**
 	 * Defines the Locale to US
 	 */
-	@BeforeClass
 	public void setUp()
 	{
 		Locale.setDefault(new Locale("en", "US"));
@@ -53,53 +50,51 @@ public class TestTestLinkHelper
 			c.setAccessible(true);
 			final Object o = c.newInstance((Object[]) null);
 
-			Assert.assertNotNull(o);
+			assertNotNull(o);
 		}
 		catch (Exception e)
 		{
-			Assert.fail("Failed to instantiate constructor: " + e.getMessage(), e);
+			fail("Failed to instantiate constructor: " + e.getMessage());
 		}
 	}
 	
-	@Test
 	public void testExecutionStatusText()
 	{
 		ExecutionStatus status = ExecutionStatus.PASSED;
 		String text = TestLinkHelper.getExecutionStatusText(status); 
-		Assert.assertTrue( text.equals("Passed") );
+		assertTrue( text.equals("Passed") );
 			
 		status = ExecutionStatus.FAILED;
 		text = TestLinkHelper.getExecutionStatusText(status); 
-		Assert.assertTrue( text.equals("Failed") );
+		assertTrue( text.equals("Failed") );
 		
 		status = ExecutionStatus.NOT_RUN;
 		text = TestLinkHelper.getExecutionStatusText(status); 
-		Assert.assertTrue( text.equals("Not Run") );
+		assertTrue( text.equals("Not Run") );
 		
 		status = ExecutionStatus.BLOCKED;
 		text = TestLinkHelper.getExecutionStatusText(status); 
-		Assert.assertTrue( text.equals("Blocked") );
+		assertTrue( text.equals("Blocked") );
 		
 	}
 	
-	@Test
 	public void testColoredExecutionStatusText()
 	{
 		ExecutionStatus status = ExecutionStatus.PASSED;
 		String text = TestLinkHelper.getExecutionStatusTextColored(status); 
-		Assert.assertTrue( text.equals("<span style='color: green'>Passed</span>") );
+		assertTrue( text.equals("<span style='color: green'>Passed</span>") );
 			
 		status = ExecutionStatus.FAILED;
 		text = TestLinkHelper.getExecutionStatusTextColored(status); 
-		Assert.assertTrue( text.equals("<span style='color: red'>Failed</span>") );
+		assertTrue( text.equals("<span style='color: red'>Failed</span>") );
 		
 		status = ExecutionStatus.NOT_RUN;
 		text = TestLinkHelper.getExecutionStatusTextColored(status); 
-		Assert.assertTrue( text.equals("<span style='color: gray'>Not Run</span>") );
+		assertTrue( text.equals("<span style='color: gray'>Not Run</span>") );
 		
 		status = ExecutionStatus.BLOCKED;
 		text = TestLinkHelper.getExecutionStatusTextColored(status); 
-		Assert.assertTrue( text.equals("<span style='color: yellow'>Blocked</span>") );
+		assertTrue( text.equals("<span style='color: yellow'>Blocked</span>") );
 	}
 	
 }
