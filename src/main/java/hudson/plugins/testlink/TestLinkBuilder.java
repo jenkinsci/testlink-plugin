@@ -401,6 +401,8 @@ extends Builder
 			throw new AbortException( Messages.TestLinkBuilder_InvalidTLAPI() );
 		}
 		
+		listener.getLogger().println ( Messages.TestLinkBuilder_UsedTLURL( installation.getUrl()) );
+		
 		// SVN revision information for Build.
 		if ( this.getLatestRevisionEnabled() )
 		{

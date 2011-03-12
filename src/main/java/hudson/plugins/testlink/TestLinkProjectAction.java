@@ -25,6 +25,7 @@ package hudson.plugins.testlink;
 
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.plugins.testlink.util.Messages;
 import hudson.util.ChartUtil;
 import hudson.util.Graph;
 
@@ -159,8 +160,8 @@ extends AbstractTestLinkAction
 		Graph g = new TestLinkGraph(
 				project.getLastBuild(), 
 				TestLinkGraphHelper.createDataSetForProject(this.project), 
-				"Number of testcases", 
-				"Build number");
+				Messages.ChartUtil_NumberOfTestCases(),
+				Messages.ChartUtil_BuildNumber());
 		g.doPng( request, response );
 	}
 	
