@@ -46,7 +46,7 @@ public class TestTestResultSeekerTAP
 extends junit.framework.TestCase
 {
 	
-	private TestResultSeeker seeker;
+	private _TestResultSeeker seeker;
 	
 	private TestLinkReport report;
 	
@@ -60,7 +60,7 @@ extends junit.framework.TestCase
 		this.reportFilesPatterns = new ReportFilesPatterns();
 		BuildListener listener = new StreamBuildListener(new PrintStream(System.out), Charset.defaultCharset());
 		this.seeker = 
-			new TestResultSeeker(report, KEY_CUSTOM_FIELD, reportFilesPatterns, listener);
+			new _TestResultSeeker(report, KEY_CUSTOM_FIELD, reportFilesPatterns, listener);
 	}
 
 	public void testTestResultSeekerTAPOne()

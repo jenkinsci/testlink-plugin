@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Test Suite" failures="2" errors="0" tests="3">
+<testcase classname="com.test.qa.A" name="A" />
+<testcase classname="com.test.qa.B" name="B">
+<failure type="junit.framework.AssertionFailedError" message="null">junit....</failure>
+</testcase>
+<testcase classname="com.test.qa.C" name="C" />
+</testsuite>

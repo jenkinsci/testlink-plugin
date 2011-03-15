@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/hudson~svn/!svn/ver/38537/trunk/hudson/plugins/testlink/src/test/resources/hudson/plugins/testlink/result/parser/junit/issue8683
+END
+TEST-invalid.xml
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/hudson~svn/!svn/ver/38537/trunk/hudson/plugins/testlink/src/test/resources/hudson/plugins/testlink/result/parser/junit/issue8683/TEST-invalid.xml
+END
+TEST-valid.xml
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/hudson~svn/!svn/ver/38537/trunk/hudson/plugins/testlink/src/test/resources/hudson/plugins/testlink/result/parser/junit/issue8683/TEST-valid.xml
+END

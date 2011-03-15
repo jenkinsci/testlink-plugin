@@ -23,6 +23,8 @@
  */
 package hudson.plugins.testlink.result.parser;
 
+import hudson.plugins.testlink.util.ParserException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -34,8 +36,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import br.eti.kinoshita.tap4j.parser.ParserException;
-
 /**
  * An abstract parser.
  *
@@ -45,6 +45,8 @@ import br.eti.kinoshita.tap4j.parser.ParserException;
 public abstract class Parser<T> 
 implements Serializable
 {
+
+	private static final long serialVersionUID = -5589493877839837838L;
 
 	/**
 	 * Retrives the name of the parser.

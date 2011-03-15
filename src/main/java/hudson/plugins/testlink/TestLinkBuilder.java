@@ -40,7 +40,8 @@ import hudson.plugins.testlink.model.TestLinkLatestRevisionInfo;
 import hudson.plugins.testlink.result.ReportFilesPatterns;
 import hudson.plugins.testlink.result.TestLinkReport;
 import hudson.plugins.testlink.result.TestResult;
-import hudson.plugins.testlink.result.TestResultSeeker;
+import hudson.plugins.testlink.result.TestResultSeekerException;
+import hudson.plugins.testlink.result._TestResultSeeker;
 import hudson.plugins.testlink.svn.SVNLatestRevisionService;
 import hudson.plugins.testlink.util.Messages;
 import hudson.tasks.Builder;
@@ -488,11 +489,21 @@ extends Builder
 		}
 		
 		// The object that searches for test results
-		final TestResultSeeker testResultSeeker = 
-			new TestResultSeeker(report, this.keyCustomField, reportFilesPatterns, listener);
+		final _TestResultSeeker testResultSeeker = 
+			new _TestResultSeeker(report, this.keyCustomField, reportFilesPatterns, listener);
 		
 		// Create list of test results
-		final List<TestResult> testResults = build.getWorkspace().act(testResultSeeker);
+		List<TestResult> testResults = null;
+		
+		try
+		{
+			testResults = build.getWorkspace().act(testResultSeeker);
+		}
+		catch ( TestResultSeekerException trse )
+		{
+			listener.getLogger().println( "An error occured while trying to retrieve the test results: " + trse.getMessage() );
+			trse.printStackTrace( listener.fatalError( trse.getMessage() ) );
+		}
 		
 		// Add blocked tests to the test results list
 		for( TestCase testCase : automatedTestCases )

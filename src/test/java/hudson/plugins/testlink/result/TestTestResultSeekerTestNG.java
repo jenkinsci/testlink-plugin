@@ -46,21 +46,18 @@ public class TestTestResultSeekerTestNG
 extends junit.framework.TestCase
 {
 	
-	private TestResultSeeker seeker;
+	private TestNGTestResultSeeker seeker;
 	
 	private TestLinkReport report;
 	
 	private final static String KEY_CUSTOM_FIELD = "testCustomField";
 	
-	private ReportFilesPatterns reportFilesPatterns;
-	
 	public void setUp()
 	{
 		this.report = new TestLinkReport();
-		this.reportFilesPatterns = new ReportFilesPatterns();
 		BuildListener listener = new StreamBuildListener(new PrintStream(System.out), Charset.defaultCharset());
 		this.seeker = 
-			new TestResultSeeker(report, KEY_CUSTOM_FIELD, reportFilesPatterns, listener);
+			new TestNGTestResultSeeker(report, KEY_CUSTOM_FIELD, listener);
 	}
 
 	public void testTestResultSeekerTestNGOne()
@@ -75,8 +72,7 @@ extends junit.framework.TestCase
 		ClassLoader cl = TestTestResultSeekerTestNG.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/");
 		File testNGDir = new File( url.getFile() );
-		this.reportFilesPatterns.setTestNGXmlReportFilesPattern("testng*.xml");
-		List<TestResult> found = seeker.seekTestResults(testNGDir);
+		List<TestResult> found = seeker.seek( testNGDir, "testng*.xml" );
 		assertNotNull( found );
 		assertTrue( found.size() == 1 );
 		assertTrue( found.get(0).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
@@ -103,8 +99,7 @@ extends junit.framework.TestCase
 		ClassLoader cl = TestTestResultSeekerTestNG.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/");
 		File testNGDir = new File( url.getFile() );
-		this.reportFilesPatterns.setTestNGXmlReportFilesPattern("testng*.xml");
-		List<TestResult> found = seeker.seekTestResults(testNGDir);
+		List<TestResult> found = seeker.seek(testNGDir, "testng*.xml" );
 		assertNotNull( found );
 		assertTrue( found.size() == 2 );
 		assertTrue( found.get(0).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );

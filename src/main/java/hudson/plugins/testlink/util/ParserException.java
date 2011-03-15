@@ -28,7 +28,7 @@ package hudson.plugins.testlink.util;
  * @since 2.0
  */
 public class ParserException 
-extends Exception 
+extends RuntimeException 
 {
 
 	private static final long serialVersionUID = 1360623334007156711L;
