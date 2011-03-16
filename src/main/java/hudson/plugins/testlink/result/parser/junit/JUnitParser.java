@@ -51,6 +51,8 @@ public class JUnitParser
 extends Parser<TestSuite>
 {
 
+	private static final long serialVersionUID = -7796590517576772260L;
+	
 	/**
 	 * The JUnit XML Handler.
 	 */

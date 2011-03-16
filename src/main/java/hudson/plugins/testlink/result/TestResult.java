@@ -40,6 +40,8 @@ public class TestResult
 implements Serializable
 {
 
+	private static final long serialVersionUID = -3580223939886620157L;
+	
 	private TestCase testCase;
 	private Build build;
 	private TestPlan testPlan;

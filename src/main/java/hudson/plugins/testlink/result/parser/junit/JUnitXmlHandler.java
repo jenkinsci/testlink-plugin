@@ -177,13 +177,19 @@ implements Serializable
 		}
 		else if ( "failure".equals(qName) )
 		{
-			failure.setText( tempVal.toString() );
-			testCase.addFailure( failure );
+			if ( testCase != null )
+			{
+				failure.setText( tempVal.toString() );
+				testCase.addFailure( failure );
+			}
 		}
 		else if ( "error".equals(qName) )
 		{
-			error.setText( tempVal.toString() );
-			testCase.addError( error );
+			if ( testCase != null )
+			{
+				error.setText( tempVal.toString() );
+				testCase.addError( error );
+			}
 		}
 		else if ( "system-out".equals(qName) )
 		{

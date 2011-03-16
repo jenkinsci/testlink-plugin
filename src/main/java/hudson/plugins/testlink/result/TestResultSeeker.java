@@ -43,6 +43,8 @@ public abstract class TestResultSeeker
 implements Serializable
 {
 
+	private static final long serialVersionUID = 6476036912489515690L;
+	
 	protected final TestLinkReport report;
 	protected final String keyCustomFieldName;
 	protected final BuildListener listener;

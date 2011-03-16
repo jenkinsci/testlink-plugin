@@ -46,6 +46,8 @@ public class TestNGParser
 extends Parser<Suite>
 {
 
+	private static final long serialVersionUID = -7538241225523763422L;
+	
 	/**
 	 * The TestNG XML Handler.
 	 */

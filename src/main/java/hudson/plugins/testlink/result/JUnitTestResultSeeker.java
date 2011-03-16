@@ -52,6 +52,8 @@ public class JUnitTestResultSeeker
 extends TestResultSeeker
 {
 	
+	private static final long serialVersionUID = -4334626130548695227L;
+	
 	protected final JUnitParser parser = new JUnitParser();
 	
 	/**
@@ -191,7 +193,7 @@ extends TestResultSeeker
 		final List<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
 			this.report.getTestCases();
 		
-		listener.getLogger().println( "Looking for a TestLink Automated Test Case custom field with value equals ["+junitTestCaseClassName+"]." );
+		listener.getLogger().println( "Looking for TestLink Automated Test Case custom field ["+keyCustomFieldName+"] with value equals ["+junitTestCaseClassName+"]." );
 		
 		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : testLinkTestCases )
 		{

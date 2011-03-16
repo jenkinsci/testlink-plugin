@@ -56,6 +56,8 @@ public class TAPTestResultSeeker
 extends TestResultSeeker
 {
 
+	private static final long serialVersionUID = 7863500426827985381L;
+	
 	protected final TAPParser parser = new TAPParser();
 	
 	/**
@@ -168,7 +170,7 @@ extends TestResultSeeker
 			tapFileNameWithoutExtension = tapFileNameWithoutExtension.substring(0, tapFileNameWithoutExtension.lastIndexOf('.'));
 		}
 		
-		listener.getLogger().println( "Looking for a TestLink Automated Test Case custom field with value equals ["+tapFileNameWithoutExtension+"]." );
+		listener.getLogger().println( "Looking for TestLink Automated Test Case custom field ["+keyCustomFieldName+"] with value equals ["+tapFileNameWithoutExtension+"]." );
 		
 		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : this.report.getTestCases() )
 		{
