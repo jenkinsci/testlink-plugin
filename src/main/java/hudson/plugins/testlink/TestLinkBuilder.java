@@ -437,9 +437,18 @@ extends Builder
 		}
 		catch (MalformedURLException mue) 
 		{
-			final String message = Messages.TestLinkBuilder_InvalidTLURL( testLinkUrl);
-			listener.fatalError( message );
-			throw new AbortException( message );
+			throw new AbortException( Messages.TestLinkBuilder_InvalidTLURL( testLinkUrl) );
+		}
+		
+		try
+		{
+			// TBD: put it in the API
+			listener.getLogger().println( "Checking Dev Key ["+testLinkDevKey+"]." );
+			testLinkSvc.getApi().checkDevKey(testLinkDevKey);
+		} 
+		catch (TestLinkAPIException e)
+		{
+			throw new AbortException( "Invalid Dev Key ["+testLinkDevKey+"]." );
 		}
 		
 		TestCase[] automatedTestCases = null;
