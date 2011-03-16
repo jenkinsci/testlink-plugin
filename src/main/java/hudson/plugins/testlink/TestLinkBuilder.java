@@ -41,7 +41,7 @@ import hudson.plugins.testlink.result.ReportFilesPatterns;
 import hudson.plugins.testlink.result.TestLinkReport;
 import hudson.plugins.testlink.result.TestResult;
 import hudson.plugins.testlink.result.TestResultSeekerException;
-import hudson.plugins.testlink.result._TestResultSeeker;
+import hudson.plugins.testlink.result.TestResultsCallable;
 import hudson.plugins.testlink.svn.SVNLatestRevisionService;
 import hudson.plugins.testlink.util.Messages;
 import hudson.tasks.Builder;
@@ -489,14 +489,17 @@ extends Builder
 		}
 		
 		// The object that searches for test results
-		final _TestResultSeeker testResultSeeker = 
-			new _TestResultSeeker(report, this.keyCustomField, reportFilesPatterns, listener);
+		final TestResultsCallable testResultSeeker = 
+			new TestResultsCallable(report, this.keyCustomField, reportFilesPatterns, listener);
 		
 		// Create list of test results
 		List<TestResult> testResults = null;
 		
 		try
 		{
+			listener.getLogger().println( "Looking for the Test Results for TestLink Automated Test Cases." );
+			listener.getLogger().println();
+			
 			testResults = build.getWorkspace().act(testResultSeeker);
 		}
 		catch ( TestResultSeekerException trse )
@@ -581,7 +584,8 @@ extends Builder
 	{
 		if ( StringUtils.isNotBlank( singleTestCommand ) )
 		{
-			listener.getLogger().println(Messages.TestLinkBuilder_ExecutingSingleTestCommand());
+			// TBD: listener.getLogger().println(Messages.TestLinkBuilder_ExecutingSingleTestCommand());
+			listener.getLogger().println( "Executing single test command: ["+this.singleTestCommand+"]." );
 			final EnvVars singleTestEnvironmentVariables = new EnvVars();
 			Integer singleTestCommandExitCode = this.executeTestCommand( 
 					singleTestEnvironmentVariables, 
@@ -598,6 +602,8 @@ extends Builder
 		{
 			listener.getLogger().println( Messages.TestLinkBuilder_BlankSingleTestCommand() );
 		}
+		
+		listener.getLogger().println();
 	}
 	
 	/**
@@ -635,7 +641,8 @@ extends Builder
 						final EnvVars buildEnvironmentVariables = this.buildEnvironmentVariables( automatedTestCase, project, testPlan, build, listener ); 
 						buildEnvironmentVariables.putAll( hudsonBuild.getEnvironment( listener ) );
 						
-						listener.getLogger().println(Messages.TestLinkBuilder_ExecutingIterativeTestCommand());
+						// TBD: listener.getLogger().println(Messages.TestLinkBuilder_ExecutingIterativeTestCommand());
+						listener.getLogger().println( "Executing iterative test command: ["+this.iterativeTestCommand+"]." );
 						
 						// Execute iterative test command
 						final Integer iterativeTestCommandExitCode = this.executeTestCommand( 
@@ -667,6 +674,8 @@ extends Builder
 		{
 			listener.getLogger().println( Messages.TestLinkBuilder_BlankIterativeTestCommand() );
 		}
+		
+		listener.getLogger().println();
 	}
 	
 	/**

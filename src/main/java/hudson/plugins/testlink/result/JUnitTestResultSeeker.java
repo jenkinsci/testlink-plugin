@@ -90,7 +90,7 @@ extends TestResultSeeker
 				
 				String[] junitReports = scanner.scan(directory, includePattern, listener);
 				
-				listener.getLogger().println( "Found ["+junitReports.length+"] JUnit reports." );
+				listener.getLogger().println( "Found ["+junitReports.length+"] JUnit report(s)." );
 				
 				this.doJunitReports( directory, junitReports, results );
 			} 
@@ -175,6 +175,8 @@ extends TestResultSeeker
 			{
 				listener.getLogger().println( "Could not find TestLink Automated Test Case result in JUnit test case ["+junitTestCase.getName()+"]." );
 			}
+			
+			listener.getLogger().println();
 		}
 	}
 
@@ -197,6 +199,10 @@ extends TestResultSeeker
 		
 		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : testLinkTestCases )
 		{
+			listener.getLogger().println( "Processing TestLink Test Case ["+testLinkTestCase.getName()+"]." );
+			
+			listener.getLogger().println( "List of Custom Fields in this TestLink Test Case: ["+testLinkTestCase.getCustomFields()+"]." );
+			
 			final List<CustomField> customFields = testLinkTestCase.getCustomFields();
 			
 			for( CustomField customField : customFields )

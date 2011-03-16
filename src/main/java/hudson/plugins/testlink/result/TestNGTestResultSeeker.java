@@ -91,7 +91,7 @@ extends TestResultSeeker
 				
 				String[] testNGReports = scanner.scan(directory, includePattern, listener);
 				
-				listener.getLogger().println( "Found ["+testNGReports.length+"] TestNG reports." );
+				listener.getLogger().println( "Found ["+testNGReports.length+"] TestNG report(s)." );
 				
 				this.doTestNGReports( directory, testNGReports, results );
 			} 

@@ -94,7 +94,7 @@ extends TestResultSeeker
 				
 				String[] tapReports = scanner.scan(directory, includePattern, listener);
 				
-				listener.getLogger().println( "Found ["+tapReports.length+"] TAP reports." );
+				listener.getLogger().println( "Found ["+tapReports.length+"] TAP report(s)." );
 				
 				this.doTAPReports( directory, tapReports, results );
 			} 

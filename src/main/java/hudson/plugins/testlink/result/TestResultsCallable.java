@@ -37,12 +37,12 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 
 /**
- * Seeks for Test Results using a Scanner and Parsers.
+ * Seeks for Test Results using a Test Result Seekers.
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-public class _TestResultSeeker 
+public class TestResultsCallable 
 implements FileCallable<List<TestResult>>
 {
 
@@ -83,7 +83,7 @@ implements FileCallable<List<TestResult>>
 	 * @param reportFilesPatterns The report files patterns.
 	 * @param listener The Hudson Build listener.
 	 */
-	public _TestResultSeeker( 
+	public TestResultsCallable( 
 		TestLinkReport report, 
 		String keyCustomFieldName, 
 		ReportFilesPatterns reportFilesPatterns, 

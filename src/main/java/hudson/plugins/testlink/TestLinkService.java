@@ -127,8 +127,16 @@ public class TestLinkService
 		listener.getLogger().println( Messages.TestLinkBuilder_Finder_RetrievingDetails() );
 		this.retrieveTestLinkData( testProjectName, testPlanName, buildName, buildNotes );
 		
+		listener.getLogger().println( "Using TestLink Test Project: ["+this.testProject.getName()+"], ID: ["+this.testProject.getId()+"]." );
+		listener.getLogger().println( "Using TestLink Test Plan: ["+this.testPlan.getName()+"], ID: ["+this.testPlan.getId()+"]." );
+		listener.getLogger().println( "Using TestLink Build: ["+this.build.getName()+"], ID: ["+this.build.getId()+"]." );
+		
+		listener.getLogger().println();
+		
 		listener.getLogger().println( Messages.TestLinkBuilder_Finder_RetrievingListOfAutomatedTestCases() );
 		final TestCase[] testCases = this.retrieveAutomatedTestCases( this.testPlan.getId() );			
+		
+		listener.getLogger().println( "Found ["+testCases.length+"] TestLink Automated Test Cases." );
 		
 		this.setProjectIDAndCustomFields( testCases, customFieldsNames );
 		
@@ -251,6 +259,10 @@ public class TestLinkService
 	 */
 	private void setProjectIDAndCustomFields( TestCase[] testCases, String[] customFieldsNames )
 	{
+		if ( testCases.length > 0 )
+		{
+			listener.getLogger().println();
+		}
 		for ( TestCase testCase : testCases ) 
 		{
 			listener.getLogger().println( Messages.TestLinkBuilder_Finder_FoundAutomatedTestCase( testCase ) );			
@@ -259,6 +271,8 @@ public class TestLinkService
 			// Retrieve list of custom fields for TC
 			listener.getLogger().println( Messages.TestLinkBuilder_Finder_RetrievingListOfCustomFields() );
 			this.setCustomFields( testCase, customFieldsNames );
+			
+			listener.getLogger().println();
 		}
 	}
 	
