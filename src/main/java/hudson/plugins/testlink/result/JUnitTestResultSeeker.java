@@ -81,6 +81,7 @@ extends TestResultSeeker
 		if ( StringUtils.isBlank(includePattern) ) // skip JUnit
 		{
 			listener.getLogger().println( "Empty JUnit include pattern. Skipping JUnit test results." );
+			listener.getLogger().println();
 		}
 		else
 		{
@@ -91,12 +92,13 @@ extends TestResultSeeker
 				String[] junitReports = scanner.scan(directory, includePattern, listener);
 				
 				listener.getLogger().println( "Found ["+junitReports.length+"] JUnit report(s)." );
+				listener.getLogger().println();
 				
 				this.doJunitReports( directory, junitReports, results );
 			} 
 			catch (IOException e)
 			{
-				throw new TestResultSeekerException( "IO Error scanning for include pattern ["+includePattern+"]: " + e.getMessage(), e );
+				throw new TestResultSeekerException( "IO Error scanning for include pattern ["+includePattern+"] " + e.getMessage(), e );
 			}
 			catch( Throwable t ) 
 			{
@@ -124,6 +126,7 @@ extends TestResultSeeker
 		for ( int i = 0 ; i < junitReports.length ; ++i )
 		{
 			listener.getLogger().println( "Parsing ["+junitReports[i]+"]." );
+			listener.getLogger().println();
 			
 			File junitFile = new File(directory, junitReports[i]);
 			
@@ -137,6 +140,7 @@ extends TestResultSeeker
 			{
 				listener.getLogger().println( "Failed to parse JUnit report ["+junitFile+"]: " + e.getMessage() );
 				e.printStackTrace( listener.getLogger() );
+				listener.getLogger().println();
 			}
 		}
 	}
@@ -157,6 +161,7 @@ extends TestResultSeeker
 		List<TestResult> testResults ) 
 	{
 		listener.getLogger().println( "Inspecting JUnit test suite ["+junitSuite.getName()+"]. This suite contains ["+junitSuite.getTestCases().size()+"] test cases, ["+junitSuite.getFailures()+"] failures and ["+junitSuite.getErrors()+"] errors." );
+		listener.getLogger().println();
 		
 		final List<TestCase> junitTestCases = junitSuite.getTestCases();
 		
@@ -168,12 +173,13 @@ extends TestResultSeeker
 			
 			if ( testResult != null )
 			{
-				listener.getLogger().println( "Found TestLink Automated Test Case result in JUnit test case ["+junitTestCase.getName()+"]. Status: ["+testResult.getTestCase().getExecutionStatus().toString()+"]." );
+				br.eti.kinoshita.testlinkjavaapi.model.TestCase tc = testResult.getTestCase();
+				listener.getLogger().println( "Found Test Result for TestLink Test Case ["+tc.getName()+"], ID ["+tc.getId()+"] in JUnit test case ["+junitTestCase.getName()+"], class ["+junitTestCase.getClassName()+"]. Status ["+testResult.getTestCase().getExecutionStatus().toString()+"]." );
 				testResults.add( testResult );
 			}
 			else
 			{
-				listener.getLogger().println( "Could not find TestLink Automated Test Case result in JUnit test case ["+junitTestCase.getName()+"]." );
+				listener.getLogger().println( "Could not find TestLink Automated Test Case result in JUnit test case ["+junitTestCase.getName()+"], class ["+junitTestCase.getClassName()+"]." );
 			}
 			
 			listener.getLogger().println();
@@ -195,15 +201,15 @@ extends TestResultSeeker
 		final List<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
 			this.report.getTestCases();
 		
-		listener.getLogger().println( "Looking for TestLink Automated Test Case custom field ["+keyCustomFieldName+"] with value equals ["+junitTestCaseClassName+"]." );
+		listener.getLogger().println( "Looking for TestLink Test Case custom field ["+keyCustomFieldName+"] with value equals ["+junitTestCaseClassName+"]." );
 		
 		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : testLinkTestCases )
 		{
-			listener.getLogger().println( "Processing TestLink Test Case ["+testLinkTestCase.getName()+"]." );
-			
-			listener.getLogger().println( "List of Custom Fields in this TestLink Test Case: ["+testLinkTestCase.getCustomFields()+"]." );
+			listener.getLogger().println( "Processing TestLink Test Case ["+testLinkTestCase.getName()+"], ID ["+testLinkTestCase.getId()+"]." );
 			
 			final List<CustomField> customFields = testLinkTestCase.getCustomFields();
+			
+			listener.getLogger().println( "List of Custom Fields in this TestLink Test Case ["+customFields+"]." );
 			
 			for( CustomField customField : customFields )
 			{
@@ -227,12 +233,16 @@ extends TestResultSeeker
 					{
 						notes += "\n\nFailed to add JUnit attachment to this test case execution. Error message: " + ioe.getMessage();
 						ioe.printStackTrace( listener.getLogger() );
+						listener.getLogger().println();
 					}
 					
 					testResult.setNotes( notes );
 					return testResult;
 				} // endif
 			} //end for custom fields
+			
+			listener.getLogger().println();
+			
 		} // end for testlink test cases
 		
 		return null;

@@ -28,7 +28,7 @@ import hudson.plugins.testlink.result.TestResult;
 import hudson.plugins.testlink.util.Messages;
 import hudson.plugins.testlink.util.TestLinkHelper;
 
-import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
@@ -91,10 +91,8 @@ public class TestLinkService
 	 * @param url TestLink URL (usually something like http://localhost/testlink/lib/api/xml-rpc.php
 	 * @param devKey the developer key 
 	 * @param listener the Hudson Build listener
-	 * @throws MalformedURLException if the URL is invalid
 	 */
-	public TestLinkService( String url, String devKey, BuildListener listener ) 
-	throws MalformedURLException
+	public TestLinkService( URL url, String devKey, BuildListener listener ) 
 	{
 		this.api = new TestLinkAPI( url, devKey );
 		
@@ -157,11 +155,13 @@ public class TestLinkService
 		if ( testResults.size() > 0 )
 		{
 			listener.getLogger().println( Messages.TestLinkBuilder_Update_AutomatedTestCases( testResults.size() ) );
+			
 			// Update TestLink Test Status
 			for( TestResult testResult : testResults )
 			{
 				TestCase testCase = testResult.getTestCase();
 				listener.getLogger().println( Messages.TestLinkBuilder_Update_AutomatedTestCase(testCase.getName(), TestLinkHelper.getExecutionStatusText( testCase.getExecutionStatus() )) );
+				
 				// Update Test Case status
 				ReportTCResultResponse reportTCResultResponse = api.reportTCResult(
 						testCase.getId(), 
@@ -196,6 +196,8 @@ public class TestLinkService
 		{
 			listener.getLogger().println(Messages.TestLinkBuilder_Update_Skipped());
 		}
+		
+		listener.getLogger().println();
 	}
 	
 	/**
