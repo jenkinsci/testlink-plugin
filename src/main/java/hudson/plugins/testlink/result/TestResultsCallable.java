@@ -128,6 +128,7 @@ implements FileCallable<List<TestResult>>
 		{
 			listener.getLogger().println( Messages.TestLinkBuilder_NoTestResultsFound() );
 		}
+		listener.getLogger().println();
 		
 		return testResults;
 	}

@@ -42,6 +42,7 @@ import org.apache.commons.lang.StringUtils;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
+import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**
  * This class is responsible 
@@ -82,6 +83,7 @@ extends TestResultSeeker
 		if ( StringUtils.isBlank(includePattern) ) // skip TestNG
 		{
 			listener.getLogger().println( "Empty TestNG include pattern. Skipping TestNG test results." );
+			listener.getLogger().println();
 		}
 		else
 		{
@@ -92,6 +94,7 @@ extends TestResultSeeker
 				String[] testNGReports = scanner.scan(directory, includePattern, listener);
 				
 				listener.getLogger().println( "Found ["+testNGReports.length+"] TestNG report(s)." );
+				listener.getLogger().println();
 				
 				this.doTestNGReports( directory, testNGReports, results );
 			} 
@@ -125,6 +128,7 @@ extends TestResultSeeker
 		for ( int i = 0 ; i < testNGReports.length ; ++i )
 		{
 			listener.getLogger().println( "Parsing ["+testNGReports[i]+"]." );
+			listener.getLogger().println();
 			
 			File testNGFile = new File(directory, testNGReports[i]);
 			
@@ -138,6 +142,7 @@ extends TestResultSeeker
 			{
 				listener.getLogger().println( "Failed to parse TestNG report ["+testNGFile+"]: " + e.getMessage() );
 				e.printStackTrace( listener.getLogger() );
+				listener.getLogger().println();
 			}
 		}
 	}
@@ -158,6 +163,7 @@ extends TestResultSeeker
 		List<TestResult> testResults ) 
 	{
 		listener.getLogger().println( "Inspecting TestNG suite ["+testNGSuite.getName()+"]. This suite contains ["+testNGSuite.getTests()+"] tests." );
+		listener.getLogger().println();
 		
 		final List<Test> testNGTests = testNGSuite.getTests();
 		
@@ -176,13 +182,16 @@ extends TestResultSeeker
 				
 				if ( testResult != null )
 				{
-					listener.getLogger().println( "Found TestLink Automated Test Case result in TestNG test ["+testNGTest.getName()+"], class ["+clazz.getName()+"]. Status: ["+testResult.getTestCase().getExecutionStatus().toString()+"]." );
+					TestCase tc = testResult.getTestCase();
+					listener.getLogger().println( "Found Test Result for TestLink Test Case ["+tc.getName()+"], ID ["+tc.getId()+"] in TestNG test ["+testNGTest.getName()+"], class ["+clazz.getName()+"]. Status ["+testResult.getTestCase().getExecutionStatus().toString()+"]." );
 					testResults.add( testResult );
 				}
 				else
 				{
 					listener.getLogger().println( "Could not find test TestLink Automated Test Case result in TestNG test ["+testNGTest.getName()+"], class ["+clazz.getName()+"]." );
 				}
+				
+				listener.getLogger().println();
 			}
 			
 		}
@@ -204,11 +213,15 @@ extends TestResultSeeker
 		final List<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
 			this.report.getTestCases();
 		
-		listener.getLogger().println( "Looking for TestLink Automated Test Case custom field ["+keyCustomFieldName+"] with value equals ["+testNGTestClassName+"]." );
+		listener.getLogger().println( "Looking for TestLink Test Case custom field ["+keyCustomFieldName+"] with value equals ["+testNGTestClassName+"]." );
 		
 		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : testLinkTestCases )
 		{
+			listener.getLogger().println( "Processing TestLink Test Case ["+testLinkTestCase.getName()+"], ID ["+testLinkTestCase.getId()+"]." );
+			
 			final List<CustomField> customFields = testLinkTestCase.getCustomFields();
+			
+			listener.getLogger().println( "List of Custom Fields in this TestLink Test Case ["+customFields+"]." );
 			
 			for( CustomField customField : customFields )
 			{
@@ -238,6 +251,9 @@ extends TestResultSeeker
 					return testResult;
 				} // endif
 			} //end for custom fields
+			
+			listener.getLogger().println();
+			
 		} // end for testlink test cases
 		
 		return null;

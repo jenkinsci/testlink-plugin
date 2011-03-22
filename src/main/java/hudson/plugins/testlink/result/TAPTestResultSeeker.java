@@ -85,6 +85,7 @@ extends TestResultSeeker
 		if ( StringUtils.isBlank(includePattern) ) // skip TAP
 		{
 			listener.getLogger().println( "Empty TAP include pattern. Skipping TAP test results." );
+			listener.getLogger().println();
 		}
 		else
 		{
@@ -95,6 +96,7 @@ extends TestResultSeeker
 				String[] tapReports = scanner.scan(directory, includePattern, listener);
 				
 				listener.getLogger().println( "Found ["+tapReports.length+"] TAP report(s)." );
+				listener.getLogger().println();
 				
 				this.doTAPReports( directory, tapReports, results );
 			} 
@@ -128,6 +130,7 @@ extends TestResultSeeker
 		for ( int i = 0 ; i < tapReports.length ; ++i )
 		{
 			listener.getLogger().println( "Parsing ["+tapReports[i]+"]." );
+			listener.getLogger().println();
 			
 			File tapFile = new File(directory, tapReports[i]);
 			
@@ -141,6 +144,7 @@ extends TestResultSeeker
 			{
 				listener.getLogger().println( "Failed to parse TAP report ["+tapFile+"]: " + e.getMessage() );
 				e.printStackTrace( listener.getLogger() );
+				listener.getLogger().println();
 			}
 		}
 	}
@@ -161,6 +165,7 @@ extends TestResultSeeker
 		List<TestResult> testResults ) 
 	{
 		listener.getLogger().println( "Inspecting TAP test set. This test set contains ["+tapTestSet.getNumberOfTestResults()+"] test results." );
+		listener.getLogger().println();
 		
 		String tapFileNameWithoutExtension = tapFile.getName();
 		
@@ -170,10 +175,41 @@ extends TestResultSeeker
 			tapFileNameWithoutExtension = tapFileNameWithoutExtension.substring(0, tapFileNameWithoutExtension.lastIndexOf('.'));
 		}
 		
-		listener.getLogger().println( "Looking for TestLink Automated Test Case custom field ["+keyCustomFieldName+"] with value equals ["+tapFileNameWithoutExtension+"]." );
+		final TestResult testResult = this.doFindTestResult( tapFileNameWithoutExtension, tapTestSet, tapFile );
+		
+		if ( testResult != null )
+		{
+			br.eti.kinoshita.testlinkjavaapi.model.TestCase tc = testResult.getTestCase();
+			listener.getLogger().println( "Found Test Result for TestLink Test Case ["+tc.getName()+"], ID ["+tc.getId()+"] in TAP File ["+tapFile.toString()+"]. Status ["+testResult.getTestCase().getExecutionStatus().toString()+"]." );
+			testResults.add( testResult );
+		}
+		else
+		{
+			listener.getLogger().println( "Could not find TestLink Automated Test Case result in TAP File ["+tapFile.toString()+"]." );
+		}
+		
+		listener.getLogger().println();
+		
+	}
+	
+	/**
+	 * @param tapFileNameWithoutExtension TAP File Name without extension.
+	 * @param tapTestSet TAP Test Set.
+	 * @param tapFile TAP File for attachments.
+	 * @return Test Result.
+	 */
+	protected TestResult doFindTestResult( 
+		String tapFileNameWithoutExtension,
+		TestSet tapTestSet, 
+		File tapFile )
+	{
+		listener.getLogger().println( "Looking for Test Result with Key Custom Field ["+keyCustomFieldName+"] with value equals ["+tapFileNameWithoutExtension+"]." );
 		
 		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : this.report.getTestCases() )
 		{
+			listener.getLogger().println( "Processing TestLink Test Case ["+testLinkTestCase.getName()+"], ID ["+testLinkTestCase.getId()+"]." );
+			
+			listener.getLogger().println( "List of Custom Fields in this TestLink Test Case ["+testLinkTestCase.getCustomFields()+"]." );
 			
 			final List<CustomField> customFields = testLinkTestCase.getCustomFields();
 			
@@ -211,12 +247,14 @@ extends TestResultSeeker
 					}
 					
 					testResult.setNotes( notes );
-					testResults.add( testResult );
+					return testResult;
 				}
 			}
 		}
+		
+		return null;
 	}
-	
+
 	/**
 	 * Retrieves notes for a TAP test set.
 	 * 

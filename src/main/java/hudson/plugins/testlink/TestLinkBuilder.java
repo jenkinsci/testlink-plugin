@@ -49,6 +49,7 @@ import hudson.util.ArgumentListBuilder;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -141,6 +142,9 @@ extends Builder
 	 */
 	private final Boolean transactional;
 	
+	/**
+	 * Name of the Key Custom Field.
+	 */
 	private final String keyCustomField;
 	
 	/**
@@ -392,9 +396,9 @@ extends Builder
 			BuildListener listener ) 
 	throws InterruptedException, IOException
 	{
-		
 		// TestLink installation.
 		listener.getLogger().println( Messages.TestLinkBuilder_PreparingTLAPI() );
+		
 		TestLinkBuilderInstallation installation = 
 			DESCRIPTOR.getInstallationByTestLinkName(this.testLinkName);
 		if ( installation == null )
@@ -403,11 +407,13 @@ extends Builder
 		}
 		
 		listener.getLogger().println ( Messages.TestLinkBuilder_UsedTLURL( installation.getUrl()) );
+		listener.getLogger().println();
 		
 		// SVN revision information for Build.
 		if ( this.getLatestRevisionEnabled() )
 		{
 			listener.getLogger().println( Messages.TestLinkBuilder_UsingSVNRevision() );
+			
 			SVNLatestRevisionService svn = new SVNLatestRevisionService(
 					this.latestRevisionInfo.getSvnUrl(), 
 					this.latestRevisionInfo.getSvnUser(),
@@ -417,10 +423,12 @@ extends Builder
 				Long latestRevision = svn.getLatestRevision();
 				this.buildName = Long.toString( latestRevision );
 				listener.getLogger().println( Messages.TestLinkBuilder_ShowLatestRevision(this.latestRevisionInfo.getSvnUrl(), latestRevision) );
+				listener.getLogger().println();
 			} 
 			catch (SVNException e)
 			{
 				e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_SVNError(e.getMessage())) );
+				listener.getLogger().println();
 				throw new AbortException( Messages.TestLinkBuilder_SVNError(e.getMessage()) );
 			}
 		}
@@ -430,25 +438,15 @@ extends Builder
 		final String testLinkUrl = installation.getUrl();
 		final String testLinkDevKey = installation.getDevKey();
 		
-		TestLinkService testLinkSvc = null;
+		final TestLinkService testLinkSvc;
 		try
 		{
-			testLinkSvc = new TestLinkService( testLinkUrl, testLinkDevKey, listener );
+			URL url = new URL( testLinkUrl );
+			testLinkSvc = new TestLinkService( url, testLinkDevKey, listener );
 		}
 		catch (MalformedURLException mue) 
 		{
 			throw new AbortException( Messages.TestLinkBuilder_InvalidTLURL( testLinkUrl) );
-		}
-		
-		try
-		{
-			// TBD: put it in the API
-			listener.getLogger().println( "Checking Dev Key ["+testLinkDevKey+"]." );
-			testLinkSvc.getApi().checkDevKey(testLinkDevKey);
-		} 
-		catch (TestLinkAPIException e)
-		{
-			throw new AbortException( "Invalid Dev Key ["+testLinkDevKey+"]." );
 		}
 		
 		TestCase[] automatedTestCases = null;
@@ -506,7 +504,7 @@ extends Builder
 		
 		try
 		{
-			listener.getLogger().println( "Looking for the Test Results for TestLink Automated Test Cases." );
+			listener.getLogger().println( "Looking for the Test Results of TestLink Test Cases." );
 			listener.getLogger().println();
 			
 			testResults = build.getWorkspace().act(testResultSeeker);
@@ -515,6 +513,7 @@ extends Builder
 		{
 			listener.getLogger().println( "An error occured while trying to retrieve the test results: " + trse.getMessage() );
 			trse.printStackTrace( listener.fatalError( trse.getMessage() ) );
+			listener.getLogger().println();
 		}
 		
 		// Add blocked tests to the test results list
@@ -595,6 +594,7 @@ extends Builder
 		{
 			// TBD: listener.getLogger().println(Messages.TestLinkBuilder_ExecutingSingleTestCommand());
 			listener.getLogger().println( "Executing single test command: ["+this.singleTestCommand+"]." );
+			listener.getLogger().println();
 			final EnvVars singleTestEnvironmentVariables = new EnvVars();
 			Integer singleTestCommandExitCode = this.executeTestCommand( 
 					singleTestEnvironmentVariables, 
@@ -640,6 +640,8 @@ extends Builder
 				if ( this.failure  && this.transactional )
 				{
 					listener.getLogger().println(Messages.TestLinkBuilder_TransactionalError());
+					listener.getLogger().println();
+					
 					automatedTestCase.setExecutionStatus(ExecutionStatus.BLOCKED);
 				} 
 				else
@@ -652,6 +654,7 @@ extends Builder
 						
 						// TBD: listener.getLogger().println(Messages.TestLinkBuilder_ExecutingIterativeTestCommand());
 						listener.getLogger().println( "Executing iterative test command: ["+this.iterativeTestCommand+"]." );
+						listener.getLogger().println();
 						
 						// Execute iterative test command
 						final Integer iterativeTestCommandExitCode = this.executeTestCommand( 
@@ -670,11 +673,13 @@ extends Builder
 					{
 						listener.getLogger().println( Messages.TestLinkBuilder_ErrorExecutingIterativeTestCommand() );
 						e.printStackTrace( listener.getLogger() );
+						listener.getLogger().println();
 					} 
 					catch (InterruptedException e)
 					{
 						listener.getLogger().println( Messages.TestLinkBuilder_ErrorExecutingIterativeTestCommand() );
 						e.printStackTrace( listener.getLogger() );
+						listener.getLogger().println();
 					}
 				}
 			}
@@ -682,9 +687,9 @@ extends Builder
 		else
 		{
 			listener.getLogger().println( Messages.TestLinkBuilder_BlankIterativeTestCommand() );
+			listener.getLogger().println();
 		}
 		
-		listener.getLogger().println();
 	}
 	
 	/**
@@ -705,7 +710,8 @@ extends Builder
 
 		// Merge with build environment variables list
 		listener.getLogger().println(Messages.TestLinkBuilder_MergingEnvVars());
-
+		listener.getLogger().println();
+		
 		final EnvVars buildEnvironment = new EnvVars( testLinkEnvironmentVariables );
 		return buildEnvironment;
 	}
