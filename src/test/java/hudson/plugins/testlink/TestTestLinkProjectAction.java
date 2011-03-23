@@ -70,7 +70,7 @@ extends HudsonTestCase
 	
 		assertNotNull( action );
 		
-		assertEquals( action.getDisplayName(), "TestLink Results" );
+		assertEquals( action.getDisplayName(), "TestLink results" );
 		
 		assertEquals( action.getIconFileName(), "/plugin/testlink/icons/testlink-24.png" );
 		

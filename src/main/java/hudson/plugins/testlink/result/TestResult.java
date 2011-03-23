@@ -47,6 +47,7 @@ implements Serializable
 	private TestPlan testPlan;
 	private List<Attachment> attachments;
 	private String notes;
+	private String platform = null;
 	
 	public TestResult(
 		TestCase testCase, 
@@ -109,6 +110,16 @@ implements Serializable
 	public void setNotes( String notes )
 	{
 		this.notes = notes;
+	}
+	
+	public String getPlatform()
+	{
+		return this.platform;
+	}
+	
+	public void setPlatform( String platform )
+	{
+		this.platform = platform;
 	}
 
 	@Override

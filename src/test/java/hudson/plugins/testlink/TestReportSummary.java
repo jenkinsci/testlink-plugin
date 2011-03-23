@@ -102,9 +102,9 @@ extends junit.framework.TestCase
 		report.setTestPlan(plan);
 		report.setTestProject(project);
 		
-		TestCase testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, 1, 1, false, null, 1, 1, null, null, ExecutionStatus.PASSED );
-		TestCase testCase2 = new TestCase(1, "tc1", 2, 2, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, 2, 2, false, null, 2, 2, null, null, ExecutionStatus.FAILED );
-		TestCase testCase3 = new TestCase(1, "tc1", 3, 3, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, 3, 3, false, null, 3, 3, null, null, ExecutionStatus.BLOCKED );
+		TestCase testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 1, 1, false, null, 1, 1, null, null, ExecutionStatus.PASSED );
+		TestCase testCase2 = new TestCase(1, "tc1", 2, 2, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 2, 2, false, null, 2, 2, null, null, ExecutionStatus.FAILED );
+		TestCase testCase3 = new TestCase(1, "tc1", 3, 3, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 3, 3, false, null, 3, 3, null, null, ExecutionStatus.BLOCKED );
 		
 		report.addTestCase( testCase1 );
 		report.addTestCase( testCase2 );
@@ -112,7 +112,7 @@ extends junit.framework.TestCase
 		
 		String reportSummary = ReportSummary.createReportSummary(report, null);
 		assertNotNull(reportSummary);
-		assertEquals(reportSummary, "<p><b>TestLink Build ID: 1</b></p><p><b>TestLink Build Name: My build</b></p><p><a href=\"testLinkResult\">Total of 3 tests.</a> Where 1 tests passed, 1 tests failed and 1 tests were blocked.</p>");
+		assertEquals(reportSummary, "<p><b>TestLink build ID: 1</b></p><p><b>TestLink build name: My build</b></p><p><a href=\"testLinkResult\">Total of 3 tests.</a> Where 1 tests passed, 1 tests failed and 1 tests were blocked.</p>");
 	}
 	
 	/**
@@ -129,9 +129,9 @@ extends junit.framework.TestCase
 		report.setTestPlan(plan);
 		report.setTestProject(project);
 		
-		TestCase testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, 1, 1, false, null, 1, 1, null, null, ExecutionStatus.PASSED );
-		TestCase testCase2 = new TestCase(1, "tc1", 2, 2, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, 2, 2, false, null, 2, 2, null, null, ExecutionStatus.FAILED );
-		TestCase testCase3 = new TestCase(1, "tc1", 3, 3, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, 3, 3, false, null, 3, 3, null, null, ExecutionStatus.BLOCKED );
+		TestCase testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 1, 1, false, null, 1, 1, null, null, ExecutionStatus.PASSED );
+		TestCase testCase2 = new TestCase(1, "tc1", 2, 2, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 2, 2, false, null, 2, 2, null, null, ExecutionStatus.FAILED );
+		TestCase testCase3 = new TestCase(1, "tc1", 3, 3, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 3, 3, false, null, 3, 3, null, null, ExecutionStatus.BLOCKED );
 		
 		report.addTestCase( testCase1 );
 		report.addTestCase( testCase2 );
@@ -147,7 +147,7 @@ extends junit.framework.TestCase
 		
 		String reportSummary = ReportSummary.createReportSummary(report, previous);
 		assertNotNull(reportSummary);
-		assertEquals(reportSummary, "<p><b>TestLink Build ID: 1</b></p><p><b>TestLink Build Name: My build</b></p><p><a href=\"testLinkResult\">Total of 3 (+1) tests.</a> Where 1 tests passed, 1 tests failed and 1 (+1) tests were blocked.</p>");
+		assertEquals(reportSummary, "<p><b>TestLink build ID: 1</b></p><p><b>TestLink build name: My build</b></p><p><a href=\"testLinkResult\">Total of 3 (+1) tests.</a> Where 1 tests passed, 1 tests failed and 1 (+1) tests were blocked.</p>");
 	}
 	
 	/**
@@ -164,9 +164,9 @@ extends junit.framework.TestCase
 		report.setTestPlan(plan);
 		report.setTestProject(project);
 		
-		TestCase testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, 1, 1, false, null, 1, 1, null, null, ExecutionStatus.PASSED );
-		TestCase testCase2 = new TestCase(1, "tc1", 2, 2, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, 2, 2, false, null, 2, 2, null, null, ExecutionStatus.FAILED );
-		TestCase testCase3 = new TestCase(1, "tc1", 3, 3, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, 3, 3, false, null, 3, 3, null, null, ExecutionStatus.BLOCKED );
+		TestCase testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 1, 1, false, null, 1, 1, null, null, ExecutionStatus.PASSED );
+		TestCase testCase2 = new TestCase(1, "tc1", 2, 2, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 2, 2, false, null, 2, 2, null, null, ExecutionStatus.FAILED );
+		TestCase testCase3 = new TestCase(1, "tc1", 3, 3, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 3, 3, false, null, 3, 3, null, null, ExecutionStatus.BLOCKED );
 		
 		report.addTestCase( testCase1 );
 		report.addTestCase( testCase2 );
@@ -185,7 +185,7 @@ extends junit.framework.TestCase
 		
 		String expectedDetails = ""+
 		"<p>List of test cases and execution result status</p><table border=\"1\">\n" +
-"<tr><th>Test case ID</th><th>Version</th><th>Name</th><th>Test Project ID</th><th>Execution Status</th></tr>\n" +
+"<tr><th>Test case ID</th><th>Version</th><th>Name</th><th>Test project ID</th><th>Execution status</th></tr>\n" +
 "<tr>\n" +
 "<td>1</td><td>1</td><td>tc1</td><td>1</td><td><span style='color: green'>Passed</span></td>\n" +
 "</tr>\n" +

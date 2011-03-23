@@ -43,6 +43,7 @@ import hudson.plugins.testlink.result.TestResult;
 import hudson.plugins.testlink.result.TestResultSeekerException;
 import hudson.plugins.testlink.result.TestResultsCallable;
 import hudson.plugins.testlink.svn.SVNLatestRevisionService;
+import hudson.plugins.testlink.util.ExecutionOrderComparator;
 import hudson.plugins.testlink.util.Messages;
 import hudson.tasks.Builder;
 import hudson.util.ArgumentListBuilder;
@@ -50,6 +51,7 @@ import hudson.util.ArgumentListBuilder;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -179,7 +181,7 @@ extends Builder
 	private static final String TESTLINK_TESTPROJECT_NAME_ENVVAR = "TESTLINK_TESTPROJECT_NAME";
 
 	private static final String TEMPORARY_FILE_PREFIX = "testlink_temporary_";
-		
+	
 	/**
 	 * The default note that TestLink plug-in adds to the Build if this is  
 	 * created by the plug-in. It does not updates the Build Note if it is 
@@ -457,7 +459,7 @@ extends Builder
 					testProjectName, 
 					testPlanName, 
 					buildName, 
-					"Build created with Hudson", 
+					Messages.TestLinkBuilder_Build_Notes(), 
 					customFieldsNames
 				);
 		} 
@@ -466,6 +468,10 @@ extends Builder
 			e.printStackTrace( listener.fatalError(e.getMessage()) );
 			throw new AbortException( Messages.TestLinkBuilder_TestLinkCommunicationError(testLinkUrl, testLinkDevKey) );
 		}
+		
+		listener.getLogger().println( Messages.TestLinkBuilder_SortingTestCases() );
+		final ExecutionOrderComparator executionOrderComparator = new ExecutionOrderComparator();
+		Arrays.sort( automatedTestCases, executionOrderComparator );
 		
 		// Execute single test command
 		this.executeSingleTestCommand( build, launcher, listener );
@@ -504,14 +510,14 @@ extends Builder
 		
 		try
 		{
-			listener.getLogger().println( "Looking for the Test Results of TestLink Test Cases." );
+			listener.getLogger().println( Messages.Results_LookingForTestResults() );
 			listener.getLogger().println();
 			
 			testResults = build.getWorkspace().act(testResultSeeker);
 		}
 		catch ( TestResultSeekerException trse )
 		{
-			listener.getLogger().println( "An error occured while trying to retrieve the test results: " + trse.getMessage() );
+			listener.getLogger().println( Messages.Results_ErrorToLookForTestResults( trse.getMessage() ) );
 			trse.printStackTrace( listener.fatalError( trse.getMessage() ) );
 			listener.getLogger().println();
 		}
@@ -592,8 +598,7 @@ extends Builder
 	{
 		if ( StringUtils.isNotBlank( singleTestCommand ) )
 		{
-			// TBD: listener.getLogger().println(Messages.TestLinkBuilder_ExecutingSingleTestCommand());
-			listener.getLogger().println( "Executing single test command: ["+this.singleTestCommand+"]." );
+			listener.getLogger().println( Messages.TestLinkBuilder_ExecutingSingleTestCommand( this.singleTestCommand ) );
 			listener.getLogger().println();
 			final EnvVars singleTestEnvironmentVariables = new EnvVars();
 			Integer singleTestCommandExitCode = this.executeTestCommand( 
@@ -653,7 +658,7 @@ extends Builder
 						buildEnvironmentVariables.putAll( hudsonBuild.getEnvironment( listener ) );
 						
 						// TBD: listener.getLogger().println(Messages.TestLinkBuilder_ExecutingIterativeTestCommand());
-						listener.getLogger().println( "Executing iterative test command: ["+this.iterativeTestCommand+"]." );
+						listener.getLogger().println( Messages.TestLinkBuilder_ExecutingIterativeTestCommand( this.iterativeTestCommand ) );
 						listener.getLogger().println();
 						
 						// Execute iterative test command
