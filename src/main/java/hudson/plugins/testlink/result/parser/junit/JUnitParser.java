@@ -28,6 +28,7 @@ import hudson.plugins.testlink.util.Messages;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -128,6 +129,20 @@ extends Parser<TestSuite>
 		{
 			foundFailures 	+= 	testCase.getFailures().size();
 			foundErrors 	+= 	testCase.getErrors().size();
+		}
+		
+		final Iterator<Error> suiteErrorsIterator = suite.getErrorsList().iterator();
+		while ( suiteErrorsIterator.hasNext() )
+		{
+			suiteErrorsIterator.next();
+			foundErrors 	+= 1;
+		}
+		
+		final Iterator<Failure> suiteFailuresIterator = suite.getFailuresList().iterator();
+		while ( suiteFailuresIterator.hasNext() )
+		{
+			suiteFailuresIterator.next();
+			foundFailures 	+= 1;
 		}
 		
 		if ( foundFailures != failures )

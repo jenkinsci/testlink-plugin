@@ -30,6 +30,7 @@ import hudson.plugins.testlink.result.parser.testng.Test;
 import hudson.plugins.testlink.result.parser.testng.TestMethod;
 import hudson.plugins.testlink.result.parser.testng.TestNGParser;
 import hudson.plugins.testlink.result.scanner.Scanner;
+import hudson.plugins.testlink.util.Messages;
 import hudson.plugins.testlink.util.ParserException;
 
 import java.io.File;
@@ -82,7 +83,7 @@ extends TestResultSeeker
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip TestNG
 		{
-			listener.getLogger().println( "Empty TestNG include pattern. Skipping TestNG test results." );
+			listener.getLogger().println( Messages.Results_TestNG_NoPattern() );
 			listener.getLogger().println();
 		}
 		else
@@ -93,18 +94,18 @@ extends TestResultSeeker
 				
 				String[] testNGReports = scanner.scan(directory, includePattern, listener);
 				
-				listener.getLogger().println( "Found ["+testNGReports.length+"] TestNG report(s)." );
+				listener.getLogger().println( Messages.Results_TestNG_NumberOfReportsFound( testNGReports.length ) );
 				listener.getLogger().println();
 				
 				this.doTestNGReports( directory, testNGReports, results );
 			} 
 			catch (IOException e)
 			{
-				throw new TestResultSeekerException( "IO Error scanning for include pattern ["+includePattern+"]: " + e.getMessage(), e );
+				throw new TestResultSeekerException( Messages.Results_TestNG_IOException( includePattern, e.getMessage() ), e );
 			}
 			catch( Throwable t ) 
 			{
-				throw new TestResultSeekerException( "Unkown internal error. Please, open an issue in Jenkins JIRA with the complete stack trace.", t );
+				throw new TestResultSeekerException( Messages.Results_TestNG_UnkownInternalError(), t );
 			}
 		}
 		
@@ -127,7 +128,7 @@ extends TestResultSeeker
 		
 		for ( int i = 0 ; i < testNGReports.length ; ++i )
 		{
-			listener.getLogger().println( "Parsing ["+testNGReports[i]+"]." );
+			listener.getLogger().println( Messages.Results_TestNG_Parsing( testNGReports[i] ) );
 			listener.getLogger().println();
 			
 			File testNGFile = new File(directory, testNGReports[i]);
@@ -140,7 +141,7 @@ extends TestResultSeeker
 			}
 			catch ( ParserException e )
 			{
-				listener.getLogger().println( "Failed to parse TestNG report ["+testNGFile+"]: " + e.getMessage() );
+				listener.getLogger().println( Messages.Results_TestNG_ParsingFail( testNGFile, e.getMessage() ) );
 				e.printStackTrace( listener.getLogger() );
 				listener.getLogger().println();
 			}
@@ -162,7 +163,7 @@ extends TestResultSeeker
 		File testNGFile, 
 		List<TestResult> testResults ) 
 	{
-		listener.getLogger().println( "Inspecting TestNG suite ["+testNGSuite.getName()+"]. This suite contains ["+testNGSuite.getTests()+"] tests." );
+		listener.getLogger().println( Messages.Results_TestNG_VerifyingTestNGTestSuite( testNGSuite.getName(), testNGSuite.getTests().size() ) );
 		listener.getLogger().println();
 		
 		final List<Test> testNGTests = testNGSuite.getTests();
@@ -172,27 +173,27 @@ extends TestResultSeeker
 			final List<hudson.plugins.testlink.result.parser.testng.Class> classes = 
 				testNGTest.getClasses();
 			
-			listener.getLogger().println( "Processing TestNG test ["+testNGTest.getName()+"]. This test contains ["+classes.size()+"] test classes." );
+			listener.getLogger().println( Messages.Results_TestNG_VerifyingTestNGTest( testNGTest.getName(), classes.size() ));
 			
 			for ( hudson.plugins.testlink.result.parser.testng.Class clazz : classes )
 			{
-				listener.getLogger().println( "Processing TestNG test class ["+clazz.getName() +"].");
+				listener.getLogger().println( Messages.Results_TestNG_VerifyingTestNGTestClass( clazz.getName() ) );
 				
 				final TestResult testResult = this.doFindTestResult( testNGSuite, clazz, testNGFile );
 				
 				if ( testResult != null )
 				{
 					TestCase tc = testResult.getTestCase();
-					listener.getLogger().println( "Found Test Result for TestLink Test Case ["+tc.getName()+"], ID ["+tc.getId()+"] in TestNG test ["+testNGTest.getName()+"], class ["+clazz.getName()+"]. Status ["+testResult.getTestCase().getExecutionStatus().toString()+"]." );
+					listener.getLogger().println( Messages.Results_TestNG_TestResultsFound( tc.getName(), tc.getId(), testNGTest.getName(), clazz.getName(), testResult.getTestCase().getExecutionStatus().toString() ) );
 					testResults.add( testResult );
 				}
 				else
 				{
-					listener.getLogger().println( "Could not find test TestLink Automated Test Case result in TestNG test ["+testNGTest.getName()+"], class ["+clazz.getName()+"]." );
+					listener.getLogger().println( Messages.Results_TestNG_NoTestResultFound( testNGFile.toString(), testNGTest.getName(), clazz.getName() ) );
 				}
-				
-				listener.getLogger().println();
 			}
+			
+			listener.getLogger().println();
 			
 		}
 	}
@@ -213,15 +214,15 @@ extends TestResultSeeker
 		final List<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
 			this.report.getTestCases();
 		
-		listener.getLogger().println( "Looking for TestLink Test Case custom field ["+keyCustomFieldName+"] with value equals ["+testNGTestClassName+"]." );
+		listener.getLogger().println( Messages.Results_TestNG_LookingForTestResults( keyCustomFieldName, testNGTestClassName ) );
 		
 		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : testLinkTestCases )
 		{
-			listener.getLogger().println( "Processing TestLink Test Case ["+testLinkTestCase.getName()+"], ID ["+testLinkTestCase.getId()+"]." );
+			listener.getLogger().println( Messages.Results_TestNG_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
 			
 			final List<CustomField> customFields = testLinkTestCase.getCustomFields();
 			
-			listener.getLogger().println( "List of Custom Fields in this TestLink Test Case ["+customFields+"]." );
+			listener.getLogger().println( Messages.Results_TestNG_ListOfCustomFields( customFields ) );
 			
 			for( CustomField customField : customFields )
 			{
@@ -243,7 +244,7 @@ extends TestResultSeeker
 					}
 					catch ( IOException ioe )
 					{
-						notes += "\n\nFailed to add TestNG attachment to this test case execution. Error message: " + ioe.getMessage();
+						notes += Messages.Results_TestNG_AddAttachmentsFail( ioe.getMessage() );
 						ioe.printStackTrace( listener.getLogger() );
 					}
 					
@@ -362,7 +363,7 @@ extends TestResultSeeker
 		
 		String fileContent = this.getBase64FileContent(testNGReportFile );
 		attachment.setContent( fileContent );
-		attachment.setDescription( "TestNG report file " + testNGReportFile.getName() );
+		attachment.setDescription( Messages.Results_TestNG_AttachmentDescription( testNGReportFile.getName() ) );
 		attachment.setFileName( testNGReportFile.getName() );
 		attachment.setFileSize( testNGReportFile.length() );
 		attachment.setTitle( testNGReportFile.getName() );

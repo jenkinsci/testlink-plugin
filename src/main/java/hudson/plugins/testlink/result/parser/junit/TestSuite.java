@@ -90,6 +90,16 @@ implements Serializable
 	private String systemErr;
 	
 	/**
+	 * List of errors.
+	 */
+	private List<Error> errorsList;
+	
+	/**
+	 * List of failures.
+	 */
+	private List<Failure> failuresList;
+	
+	/**
 	 * Default constructor. Initializes the list of <testcase> tags.
 	 */
 	public TestSuite() 
@@ -97,6 +107,10 @@ implements Serializable
 		super();
 		
 		testCases = new LinkedList<TestCase>();
+		
+		errorsList = new LinkedList<Error>();
+		
+		failuresList = new LinkedList<Failure>();
 	}
 
 	/**
@@ -309,6 +323,66 @@ implements Serializable
 	public boolean removeTestCase( TestCase testCase )
 	{
 		return this.testCases.remove( testCase );
+	}
+	
+	/**
+	 * Adds an error into the <error> list.
+	 * 
+	 * @param error the error.
+	 * @return true if added successfully, otherwise false.
+	 */
+	public boolean addError( Error error )
+	{
+		return this.errorsList.add( error );
+	}
+	
+	/**
+	 * Removes an error from the list of <error> tags.
+	 * 
+	 * @param error the error.
+	 * @return true if added successfully, otherwise false.
+	 */
+	public boolean removeError( Error error )
+	{
+		return this.errorsList.remove( error );
+	}
+	
+	/**
+	 * Adds a failure into the <failure> list.
+	 * 
+	 * @param failure the failure.
+	 * @return true if added successfully, otherwise false.
+	 */
+	public boolean addFailure( Failure failure )
+	{
+		return this.failuresList.add( failure );
+	}
+	
+	/**
+	 * Removes a failure from the list of <failure> tags.
+	 * 
+	 * @param failure the failure.
+	 * @return true if added successfully, otherwise false.
+	 */
+	public boolean removeFailure( Failure failure )
+	{
+		return this.failuresList.remove( failure );
+	}
+	
+	/**
+	 * @return List of <error>.
+	 */
+	public List<Error> getErrorsList()
+	{
+		return this.errorsList;
+	}
+	
+	/**
+	 * @return List of <failure>.
+	 */
+	public List<Failure> getFailuresList()
+	{
+		return this.failuresList;
 	}
 	
 }

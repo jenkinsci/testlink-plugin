@@ -28,6 +28,7 @@ import hudson.plugins.testlink.result.parser.junit.JUnitParser;
 import hudson.plugins.testlink.result.parser.junit.TestCase;
 import hudson.plugins.testlink.result.parser.junit.TestSuite;
 import hudson.plugins.testlink.result.scanner.Scanner;
+import hudson.plugins.testlink.util.Messages;
 import hudson.plugins.testlink.util.ParserException;
 
 import java.io.File;
@@ -80,7 +81,7 @@ extends TestResultSeeker
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip JUnit
 		{
-			listener.getLogger().println( "Empty JUnit include pattern. Skipping JUnit test results." );
+			listener.getLogger().println( Messages.Results_JUnit_NoPattern() );
 			listener.getLogger().println();
 		}
 		else
@@ -91,18 +92,18 @@ extends TestResultSeeker
 				
 				String[] junitReports = scanner.scan(directory, includePattern, listener);
 				
-				listener.getLogger().println( "Found ["+junitReports.length+"] JUnit report(s)." );
+				listener.getLogger().println( Messages.Results_JUnit_NumberOfReportsFound(junitReports.length ) );
 				listener.getLogger().println();
 				
 				this.doJunitReports( directory, junitReports, results );
 			} 
 			catch (IOException e)
 			{
-				throw new TestResultSeekerException( "IO Error scanning for include pattern ["+includePattern+"] " + e.getMessage(), e );
+				throw new TestResultSeekerException( Messages.Results_JUnit_IOException( includePattern, e.getMessage() ), e );
 			}
 			catch( Throwable t ) 
 			{
-				throw new TestResultSeekerException( "Unkown internal error. Please, open an issue in Jenkins JIRA with the complete stack trace.", t );
+				throw new TestResultSeekerException( Messages.Results_JUnit_UnkownInternalError(), t );
 			}
 		}
 		
@@ -125,7 +126,7 @@ extends TestResultSeeker
 		
 		for ( int i = 0 ; i < junitReports.length ; ++i )
 		{
-			listener.getLogger().println( "Parsing ["+junitReports[i]+"]." );
+			listener.getLogger().println( Messages.Results_JUnit_Parsing( junitReports[i] ) );
 			listener.getLogger().println();
 			
 			File junitFile = new File(directory, junitReports[i]);
@@ -138,7 +139,7 @@ extends TestResultSeeker
 			}
 			catch ( ParserException e )
 			{
-				listener.getLogger().println( "Failed to parse JUnit report ["+junitFile+"]: " + e.getMessage() );
+				listener.getLogger().println( Messages.Results_JUnit_ParsingFail(junitFile, e.getMessage() ) );
 				e.printStackTrace( listener.getLogger() );
 				listener.getLogger().println();
 			}
@@ -160,26 +161,26 @@ extends TestResultSeeker
 		File junitFile, 
 		List<TestResult> testResults ) 
 	{
-		listener.getLogger().println( "Inspecting JUnit test suite ["+junitSuite.getName()+"]. This suite contains ["+junitSuite.getTestCases().size()+"] test cases, ["+junitSuite.getFailures()+"] failures and ["+junitSuite.getErrors()+"] errors." );
+		listener.getLogger().println( Messages.Results_JUnit_VerifyingJUnitSuite(junitSuite.getName(), junitSuite.getTestCases().size(), junitSuite.getFailures(), junitSuite.getErrors() ) );
 		listener.getLogger().println();
 		
 		final List<TestCase> junitTestCases = junitSuite.getTestCases();
 		
 		for( TestCase junitTestCase : junitTestCases )
 		{
-			listener.getLogger().println( "Processing JUnit test ["+junitTestCase.getName()+"]." );
+			listener.getLogger().println( Messages.Results_JUnit_VerifyingJUnitTest( junitTestCase.getName() ) );
 			
 			final TestResult testResult = this.doFindTestResult( junitTestCase, junitFile );
 			
 			if ( testResult != null )
 			{
 				br.eti.kinoshita.testlinkjavaapi.model.TestCase tc = testResult.getTestCase();
-				listener.getLogger().println( "Found Test Result for TestLink Test Case ["+tc.getName()+"], ID ["+tc.getId()+"] in JUnit test case ["+junitTestCase.getName()+"], class ["+junitTestCase.getClassName()+"]. Status ["+testResult.getTestCase().getExecutionStatus().toString()+"]." );
+				listener.getLogger().println( Messages.Results_JUnit_TestResultsFound( tc.getName(), tc.getId(), junitTestCase.getName(), junitTestCase.getClassName(), testResult.getTestCase().getExecutionStatus().toString() ) );
 				testResults.add( testResult );
 			}
 			else
 			{
-				listener.getLogger().println( "Could not find TestLink Automated Test Case result in JUnit test case ["+junitTestCase.getName()+"], class ["+junitTestCase.getClassName()+"]." );
+				listener.getLogger().println( Messages.Results_JUnit_NoTestResultFound( junitFile.toString(), junitTestCase.getName(), junitTestCase.getClassName() ) );
 			}
 			
 			listener.getLogger().println();
@@ -201,15 +202,15 @@ extends TestResultSeeker
 		final List<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
 			this.report.getTestCases();
 		
-		listener.getLogger().println( "Looking for TestLink Test Case custom field ["+keyCustomFieldName+"] with value equals ["+junitTestCaseClassName+"]." );
+		listener.getLogger().println( Messages.Results_JUnit_LookingForTestResults( keyCustomFieldName, junitTestCaseClassName ) );
 		
 		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : testLinkTestCases )
 		{
-			listener.getLogger().println( "Processing TestLink Test Case ["+testLinkTestCase.getName()+"], ID ["+testLinkTestCase.getId()+"]." );
+			listener.getLogger().println( Messages.Results_JUnit_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
 			
 			final List<CustomField> customFields = testLinkTestCase.getCustomFields();
 			
-			listener.getLogger().println( "List of Custom Fields in this TestLink Test Case ["+customFields+"]." );
+			listener.getLogger().println( Messages.Results_JUnit_ListOfCustomFields( customFields ) );
 			
 			for( CustomField customField : customFields )
 			{
@@ -231,9 +232,8 @@ extends TestResultSeeker
 					}
 					catch ( IOException ioe )
 					{
-						notes += "\n\nFailed to add JUnit attachment to this test case execution. Error message: " + ioe.getMessage();
+						notes += Messages.Results_JUnit_AddAttachmentsFail( ioe.getMessage() );
 						ioe.printStackTrace( listener.getLogger() );
-						listener.getLogger().println();
 					}
 					
 					testResult.setNotes( notes );
@@ -307,7 +307,7 @@ extends TestResultSeeker
 		
 		String fileContent = this.getBase64FileContent(junitReportFile );
 		attachment.setContent( fileContent );
-		attachment.setDescription( "JUnit report file " + junitReportFile.getName() );
+		attachment.setDescription( Messages.Results_JUnit_AttachmentDescription( junitReportFile.getName() ) );
 		attachment.setFileName( junitReportFile.getName() );
 		attachment.setFileSize( junitReportFile.length() );
 		attachment.setTitle( junitReportFile.getName() );

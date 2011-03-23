@@ -182,6 +182,10 @@ implements Serializable
 				failure.setText( tempVal.toString() );
 				testCase.addFailure( failure );
 			}
+			else
+			{
+				testSuite.addFailure( failure );
+			}
 		}
 		else if ( "error".equals(qName) )
 		{
@@ -189,6 +193,10 @@ implements Serializable
 			{
 				error.setText( tempVal.toString() );
 				testCase.addError( error );
+			}
+			else
+			{
+				testSuite.addError( error );
 			}
 		}
 		else if ( "system-out".equals(qName) )

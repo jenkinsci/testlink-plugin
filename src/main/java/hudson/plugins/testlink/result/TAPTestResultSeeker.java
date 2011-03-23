@@ -26,6 +26,7 @@ package hudson.plugins.testlink.result;
 import hudson.model.BuildListener;
 import hudson.plugins.testlink.result.parser.tap.TAPParser;
 import hudson.plugins.testlink.result.scanner.Scanner;
+import hudson.plugins.testlink.util.Messages;
 import hudson.plugins.testlink.util.ParserException;
 
 import java.io.File;
@@ -84,7 +85,7 @@ extends TestResultSeeker
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip TAP
 		{
-			listener.getLogger().println( "Empty TAP include pattern. Skipping TAP test results." );
+			listener.getLogger().println( Messages.Results_TAP_NoPattern() );
 			listener.getLogger().println();
 		}
 		else
@@ -95,18 +96,18 @@ extends TestResultSeeker
 				
 				String[] tapReports = scanner.scan(directory, includePattern, listener);
 				
-				listener.getLogger().println( "Found ["+tapReports.length+"] TAP report(s)." );
+				listener.getLogger().println( Messages.Results_TAP_NumberOfReportsFound( tapReports.length ) );
 				listener.getLogger().println();
 				
 				this.doTAPReports( directory, tapReports, results );
 			} 
 			catch (IOException e)
 			{
-				throw new TestResultSeekerException( "IO Error scanning for include pattern ["+includePattern+"]: " + e.getMessage(), e );
+				throw new TestResultSeekerException( Messages.Results_TAP_IOException( includePattern, e.getMessage() ), e );
 			}
 			catch( Throwable t ) 
 			{
-				throw new TestResultSeekerException( "Unkown internal error. Please, open an issue in Jenkins JIRA with the complete stack trace.", t );
+				throw new TestResultSeekerException( Messages.Results_TAP_UnkownInternalError(), t );
 			}
 		}
 		
@@ -129,7 +130,7 @@ extends TestResultSeeker
 		
 		for ( int i = 0 ; i < tapReports.length ; ++i )
 		{
-			listener.getLogger().println( "Parsing ["+tapReports[i]+"]." );
+			listener.getLogger().println( Messages.Results_TAP_Parsing( tapReports[i] ) );
 			listener.getLogger().println();
 			
 			File tapFile = new File(directory, tapReports[i]);
@@ -142,7 +143,7 @@ extends TestResultSeeker
 			}
 			catch ( ParserException e )
 			{
-				listener.getLogger().println( "Failed to parse TAP report ["+tapFile+"]: " + e.getMessage() );
+				listener.getLogger().println( Messages.Results_TAP_ParsingFail( tapFile, e.getMessage() ) );
 				e.printStackTrace( listener.getLogger() );
 				listener.getLogger().println();
 			}
@@ -164,7 +165,7 @@ extends TestResultSeeker
 		File tapFile, 
 		List<TestResult> testResults ) 
 	{
-		listener.getLogger().println( "Inspecting TAP test set. This test set contains ["+tapTestSet.getNumberOfTestResults()+"] test results." );
+		listener.getLogger().println( Messages.Results_TAP_VerifyingTapSet( tapTestSet.getNumberOfTestResults() ) );
 		listener.getLogger().println();
 		
 		String tapFileNameWithoutExtension = tapFile.getName();
@@ -180,12 +181,12 @@ extends TestResultSeeker
 		if ( testResult != null )
 		{
 			br.eti.kinoshita.testlinkjavaapi.model.TestCase tc = testResult.getTestCase();
-			listener.getLogger().println( "Found Test Result for TestLink Test Case ["+tc.getName()+"], ID ["+tc.getId()+"] in TAP File ["+tapFile.toString()+"]. Status ["+testResult.getTestCase().getExecutionStatus().toString()+"]." );
+			listener.getLogger().println( Messages.Results_TAP_TestResultsFound( tc.getName(), tc.getId(), tapFile.toString(), testResult.getTestCase().getExecutionStatus().toString() ) );
 			testResults.add( testResult );
 		}
 		else
 		{
-			listener.getLogger().println( "Could not find TestLink Automated Test Case result in TAP File ["+tapFile.toString()+"]." );
+			listener.getLogger().println( Messages.Results_TAP_NoTestResultFound( tapFile.toString() ) );
 		}
 		
 		listener.getLogger().println();
@@ -203,22 +204,22 @@ extends TestResultSeeker
 		TestSet tapTestSet, 
 		File tapFile )
 	{
-		listener.getLogger().println( "Looking for Test Result with Key Custom Field ["+keyCustomFieldName+"] with value equals ["+tapFileNameWithoutExtension+"]." );
+		listener.getLogger().println( Messages.Results_TAP_LookingForTestResults( keyCustomFieldName, tapFileNameWithoutExtension ) );
 		
 		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : this.report.getTestCases() )
 		{
-			listener.getLogger().println( "Processing TestLink Test Case ["+testLinkTestCase.getName()+"], ID ["+testLinkTestCase.getId()+"]." );
-			
-			listener.getLogger().println( "List of Custom Fields in this TestLink Test Case ["+testLinkTestCase.getCustomFields()+"]." );
+			listener.getLogger().println( Messages.Results_TAP_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
 			
 			final List<CustomField> customFields = testLinkTestCase.getCustomFields();
+			
+			listener.getLogger().println( Messages.Results_TAP_ListOfCustomFields( customFields ) );
 			
 			// For each automated test case
 			for ( CustomField customField : customFields )
 			{
 				
 				final String customFieldValue = customField.getValue();
-				Boolean isKeyCustomField = customField.getName().equals(keyCustomFieldName);
+				Boolean isKeyCustomField = customField.getName().equals( keyCustomFieldName );
 				
 				// We search for the key custom field
 				// If the key custom field value is equal to the 
@@ -242,7 +243,7 @@ extends TestResultSeeker
 					}
 					catch ( IOException ioe )
 					{
-						notes += "\n\nFailed to add TAP attachments to this test case execution. Error message: " + ioe.getMessage();
+						notes += Messages.Results_TAP_AddAttachmentsFail( ioe.getMessage() );
 						ioe.printStackTrace( listener.getLogger() );
 					}
 					
@@ -308,7 +309,7 @@ extends TestResultSeeker
 		
 		String fileContent = this.getBase64FileContent( tapReportFile );
 		attachment.setContent( fileContent );
-		attachment.setDescription( "TAP report file " + tapReportFile.getName() );
+		attachment.setDescription( Messages.Results_TAP_AttachmentDescription( tapReportFile.getName() ) );
 		attachment.setFileName( tapReportFile.getName() );
 		attachment.setFileSize( tapReportFile.length() );
 		attachment.setTitle( tapReportFile.getName() );
