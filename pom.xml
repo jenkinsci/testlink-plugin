@@ -262,7 +262,7 @@
 		<dependency>
 			<groupId>br.eti.kinoshita</groupId>
 			<artifactId>testlink-java-api</artifactId>
-			<version>1.9.2-1</version>
+			<version>1.9.2-2</version>
 			<type>jar</type>
 			<exclusions>
 				<exclusion>
