@@ -7,7 +7,6 @@
 		<version>1.388</version>
 		<relativePath>../pom.xml</relativePath><!-- which version of Jenkins is 
 			this plugin built against? -->
-	
 	</parent>
 
 	<inceptionYear>2010-2011 the CCM plug-in team</inceptionYear>
@@ -20,9 +19,24 @@
 	
 	<url>http://wiki.jenkins-ci.org/display/JENKINS/TestLink+Plugin</url>
 
+	<organization>
+		<name>Jenkins</name>
+		<url>http://www.jenkins-ci.org</url>
+	</organization>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+
+	<issueManagement>
+		<system>JIRA</system>
+		<url>http://issues.jenkins-ci.org/browse/JENKINS/component/15754</url>
+	</issueManagement>
+
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>http://ci.jenkins-ci.org/view/Plugins/job/plugins_testlink</url>
+	</ciManagement>
 
 	<distributionManagement>
 		<repository>
@@ -49,6 +63,15 @@
 			<roles>
 				<role>Developer</role>
 			</roles>
+		</developer>
+		<developer>
+			<email>ftoumikian@april.org</email>
+            <id>floreal</id>
+            <name>Floreal Toumikian</name>
+            <timezone>+1</timezone>
+            <roles>
+                <role>developer</role>
+            </roles>
 		</developer>
 	</developers>
 
