@@ -130,4 +130,39 @@ implements Serializable
 				+ ", notes=" + notes + "]";
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals( Object obj )
+	{
+		boolean equals = false;
+		if ( obj != null && obj instanceof TestResult )
+		{
+			TestResult testResult = ((TestResult)obj);
+			TestCase tc = testResult.getTestCase();
+			TestCase thisTc = this.getTestCase();
+			if ( tc!=null && thisTc != null )
+			{
+				equals = tc.getId() == thisTc.getId();
+			}
+		}
+		return equals;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode()
+	{
+		int id = 0;
+		TestCase thisTc = this.getTestCase();
+		if ( thisTc != null )
+		{
+			id = thisTc.getId();
+		}
+		return id;
+	}
+	
 }
