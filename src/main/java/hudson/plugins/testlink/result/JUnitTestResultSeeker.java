@@ -33,8 +33,10 @@ import hudson.plugins.testlink.util.ParserException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -58,6 +60,11 @@ extends TestResultSeeker
 	protected final JUnitParser parser = new JUnitParser();
 	
 	/**
+	 * Guards a list of JUnit test classes that one or more methods failed.
+	 */
+	protected Set<String> failedClasses = new HashSet<String>();
+	
+	/**
 	 * Constructor.
 	 * 
 	 * @param report TestLink Report.
@@ -73,11 +80,11 @@ extends TestResultSeeker
 	/* (non-Javadoc)
 	 * @see hudson.plugins.testlink.result.TestResultSeeker#seek(java.io.File, java.lang.String, hudson.plugins.testlink.result.TestLinkReport, hudson.model.BuildListener)
 	 */
-	public List<TestResult> seek( File directory, String includePattern ) 
+	public Set<TestResult> seek( File directory, String includePattern ) 
 	throws TestResultSeekerException
 	{
 		
-		final List<TestResult> results = new ArrayList<TestResult>();
+		final Set<TestResult> results = new HashSet<TestResult>();
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip JUnit
 		{
@@ -121,7 +128,7 @@ extends TestResultSeeker
 	protected void doJunitReports( 
 		File directory, 
 		String[] junitReports, 
-		List<TestResult> testResults)
+		Set<TestResult> testResults)
 	{
 		
 		for ( int i = 0 ; i < junitReports.length ; ++i )
@@ -145,7 +152,7 @@ extends TestResultSeeker
 			}
 		}
 	}
-
+	
 	/**
 	 * Inspects a JUnit test suite looking for test results for the automated 
 	 * test cases in TestLink. When it finds a test result, this test result 
@@ -159,7 +166,7 @@ extends TestResultSeeker
 	protected void doJunitSuite( 
 		TestSuite junitSuite, 
 		File junitFile, 
-		List<TestResult> testResults ) 
+		Set<TestResult> testResults ) 
 	{
 		listener.getLogger().println( Messages.Results_JUnit_VerifyingJUnitSuite(junitSuite.getName(), junitSuite.getTestCases().size(), junitSuite.getFailures(), junitSuite.getErrors() ) );
 		listener.getLogger().println();
@@ -170,13 +177,31 @@ extends TestResultSeeker
 		{
 			listener.getLogger().println( Messages.Results_JUnit_VerifyingJUnitTest( junitTestCase.getName() ) );
 			
-			final TestResult testResult = this.doFindTestResult( junitTestCase, junitFile );
+			TestResult testResult = this.doFindTestResult( junitTestCase, junitFile );
 			
 			if ( testResult != null )
 			{
+				
+				if ( failedClasses.contains(junitTestCase.getClassName() ) )
+				{
+					testResult.getTestCase().setExecutionStatus( ExecutionStatus.FAILED );
+					continue;
+				}
+
 				br.eti.kinoshita.testlinkjavaapi.model.TestCase tc = testResult.getTestCase();
 				listener.getLogger().println( Messages.Results_JUnit_TestResultsFound( tc.getName(), tc.getId(), junitTestCase.getName(), junitTestCase.getClassName(), testResult.getTestCase().getExecutionStatus().toString() ) );
+				if ( testResults.contains(testResult) )
+				{
+					testResults.remove( testResult );
+				}
+				
 				testResults.add( testResult );
+
+				if ( testResult.getTestCase().getExecutionStatus() == ExecutionStatus.FAILED )
+				{
+					failedClasses.add( junitTestCase.getClassName() );
+				}
+				
 			}
 			else
 			{
@@ -203,9 +228,10 @@ extends TestResultSeeker
 			this.report.getTestCases();
 		
 		listener.getLogger().println( Messages.Results_JUnit_LookingForTestResults( keyCustomFieldName, junitTestCaseClassName ) );
-		
-		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : testLinkTestCases )
+		Iterator<br.eti.kinoshita.testlinkjavaapi.model.TestCase> iter = testLinkTestCases.iterator();
+		for ( ; iter.hasNext() ; )
 		{
+			br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase = iter.next();
 			listener.getLogger().println( Messages.Results_JUnit_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
 			
 			final List<CustomField> customFields = testLinkTestCase.getCustomFields();

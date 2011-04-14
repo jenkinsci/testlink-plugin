@@ -30,7 +30,8 @@ import java.io.File;
 import java.io.PrintStream;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.List;
+import java.util.Iterator;
+import java.util.Set;
 
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
@@ -70,16 +71,17 @@ extends junit.framework.TestCase
 		cf.setName( KEY_CUSTOM_FIELD );
 		cf.setValue("br.eti.kinoshita.tap.SampleTest");
 		tc.getCustomFields().add(cf);
+		tc.setId(1);
 		this.report.getTestCases().add(tc);
 		
 		ClassLoader cl = TestTestResultSeekerTAP.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/");
 		File tapDir = new File( url.getFile() );
 		this.reportFilesPatterns.setTapStreamReportFilesPattern("*.tap");
-		List<TestResult> found = seeker.seekTestResults(tapDir);
+		Set<TestResult> found = seeker.seekTestResults(tapDir);
 		assertNotNull( found );
 		assertTrue( found.size() == 1 );
-		assertTrue( found.get(0).getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );
+		assertTrue( found.iterator().next().getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );
 	}
 	
 	public void testTestResultSeekerTAPThree()
@@ -89,6 +91,7 @@ extends junit.framework.TestCase
 		cf.setName( KEY_CUSTOM_FIELD );
 		cf.setValue("br.eti.kinoshita.tap.SampleTest2");
 		tc.getCustomFields().add(cf);
+		tc.setId(2);
 		this.report.addTestCase(tc);
 		
 		tc = new TestCase();
@@ -96,6 +99,7 @@ extends junit.framework.TestCase
 		cf.setName( KEY_CUSTOM_FIELD );
 		cf.setValue("br.eti.kinoshita.tap.SampleTest3");
 		tc.getCustomFields().add(cf);
+		tc.setId(3);
 		this.report.addTestCase(tc);
 		
 		assertTrue( this.report.getTestCases().size() == 2 );
@@ -104,11 +108,12 @@ extends junit.framework.TestCase
 		URL url = cl.getResource("hudson/plugins/testlink/result/");
 		File tapDir = new File( url.getFile() );
 		this.reportFilesPatterns.setTapStreamReportFilesPattern("*.tap");
-		List<TestResult> found = seeker.seekTestResults(tapDir);
+		Set<TestResult> found = seeker.seekTestResults(tapDir);
 		assertNotNull( found );
 		assertTrue( found.size() == 2 );
-		assertTrue( found.get(0).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
-		assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
+		Iterator<TestResult> iter = found.iterator();
+		assertTrue( iter.next().getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
+		assertTrue( iter.next().getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
 	}
 	
 }

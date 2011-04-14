@@ -30,7 +30,8 @@ import java.io.File;
 import java.io.PrintStream;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.List;
+import java.util.Iterator;
+import java.util.Set;
 
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
@@ -67,15 +68,16 @@ extends junit.framework.TestCase
 		cf.setName( KEY_CUSTOM_FIELD );
 		cf.setValue("br.eti.kinoshita.Test");
 		tc.getCustomFields().add(cf);
+		tc.setId(1);
 		this.report.getTestCases().add(tc);
 		
 		ClassLoader cl = TestTestResultSeekerJUnit.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/");
 		File junitDir = new File( url.getFile() );
-		List<TestResult> found = seeker.seek(junitDir, "TEST-*.xml");
+		Set<TestResult> found = seeker.seek(junitDir, "TEST-*.xml");
 		assertNotNull( found );
 		assertTrue( found.size() == 1 );
-		assertTrue( found.get(0).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
+		assertTrue( found.iterator().next().getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
 	}
 	
 	public void testTestResultSeekerJUnitTwo()
@@ -85,6 +87,7 @@ extends junit.framework.TestCase
 		cf.setName( KEY_CUSTOM_FIELD );
 		cf.setValue("br.eti.kinoshita.Test");
 		tc.getCustomFields().add(cf);
+		tc.setId(2);
 		this.report.addTestCase(tc);
 		
 		tc = new TestCase();
@@ -92,6 +95,7 @@ extends junit.framework.TestCase
 		cf.setName( KEY_CUSTOM_FIELD );
 		cf.setValue("br.eti.kinoshita.TestImmo");
 		tc.getCustomFields().add(cf);
+		tc.setId(3);
 		this.report.addTestCase(tc);
 		
 		assertTrue( this.report.getTestCases().size() == 2 );
@@ -99,11 +103,12 @@ extends junit.framework.TestCase
 		ClassLoader cl = TestTestResultSeekerJUnit.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/");
 		File junitDir = new File( url.getFile() );
-		List<TestResult> found = seeker.seek(junitDir, "TEST-*.xml");
+		Set<TestResult> found = seeker.seek(junitDir, "TEST-*.xml");
 		assertNotNull( found );
 		assertTrue( found.size() == 2 );
-		assertTrue( found.get(0).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
-		assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );
+		Iterator<TestResult> iter = found.iterator();
+		assertTrue( iter.next().getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
+		assertTrue( iter.next().getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );
 	}
 	
 }

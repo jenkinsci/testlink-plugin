@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite failures="1" time="0.016" errors="0" skipped="0" tests="3" name="br.eti.kinoshita.junit.SampleTest">
+  <properties>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="sun.boot.library.path" value="C:\opt\java\jdk1.6.0_24\jre\bin"/>
+    <property name="java.vm.version" value="19.1-b02"/>
+    <property name="java.vm.vendor" value="Sun Microsystems Inc."/>
+    <property name="java.vendor.url" value="http://java.sun.com/"/>
+    <property name="path.separator" value=";"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) Client VM"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="user.country" value="BR"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.os.patch.level" value="Service Pack 3"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="C:\dev\java\hudson_workspace\junit-tests"/>
+    <property name="java.runtime.version" value="1.6.0_24-b07"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"/>
+    <property name="basedir" value="C:\dev\java\hudson_workspace\junit-tests"/>
+    <property name="java.endorsed.dirs" value="C:\opt\java\jdk1.6.0_24\jre\lib\endorsed"/>
+    <property name="os.arch" value="x86"/>
+    <property name="surefire.real.class.path" value="C:\WINDOWS\TEMP\surefirebooter4949510142248799679.jar"/>
+    <property name="java.io.tmpdir" value="C:\WINDOWS\TEMP\"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc."/>
+    <property name="user.variant" value=""/>
+    <property name="os.name" value="Windows XP"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="C:\opt\java\jdk1.6.0_24\jre\bin;.;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\opt\java\jdk1.6.0_24/bin;C:\opt\java\jdk1.6.0_24\bin;C:\opt\java\apache-maven-2.2.1\\bin;C:\opt\perl\strawberry\perl\bin;C:\opt\xampp\mysql\bin;C:\Arquivos de programas\CollabNet\Subversion Client;C:\Arquivos de programas\GNU\GnuPG;C:\opt\java\jdk1.6.0_24\bin;C:\usr\local\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\Arquivos de programas\Intel\DMIX;C:\Arquivos de programas\Graphviz2.26.3\bin;C:\opt\git\cmd;C:\opt\git\bin;C:\opt\perl\strawberry\c\bin;C:\opt\perl\strawberry\perl\site\bin;C:\opt\perl\strawberry\perl\bin"/>
+    <property name="surefire.test.class.path" value="C:\dev\java\hudson_workspace\junit-tests\target\test-classes;C:\dev\java\hudson_workspace\junit-tests\target\classes;C:\opt\java\apache-maven-2.2.1\.m2\junit\junit\4.8.2\junit-4.8.2.jar;"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.class.version" value="50.0"/>
+    <property name="sun.management.compiler" value="HotSpot Client Compiler"/>
+    <property name="os.version" value="5.1"/>
+    <property name="user.home" value="C:\WINDOWS\system32\config\systemprofile"/>
+    <property name="user.timezone" value=""/>
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob"/>
+    <property name="java.specification.version" value="1.6"/>
+    <property name="file.encoding" value="Cp1252"/>
+    <property name="user.name" value="SYSTEM"/>
+    <property name="java.class.path" value="C:\dev\java\hudson_workspace\junit-tests\target\test-classes;C:\dev\java\hudson_workspace\junit-tests\target\classes;C:\opt\java\apache-maven-2.2.1\.m2\junit\junit\4.8.2\junit-4.8.2.jar;"/>
+    <property name="java.vm.specification.version" value="1.0"/>
+    <property name="sun.arch.data.model" value="32"/>
+    <property name="java.home" value="C:\opt\java\jdk1.6.0_24\jre"/>
+    <property name="java.specification.vendor" value="Sun Microsystems Inc."/>
+    <property name="user.language" value="pt"/>
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit"/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="java.version" value="1.6.0_24"/>
+    <property name="java.ext.dirs" value="C:\opt\java\jdk1.6.0_24\jre\lib\ext;C:\WINDOWS\Sun\Java\lib\ext"/>
+    <property name="sun.boot.class.path" value="C:\opt\java\jdk1.6.0_24\jre\lib\resources.jar;C:\opt\java\jdk1.6.0_24\jre\lib\rt.jar;C:\opt\java\jdk1.6.0_24\jre\lib\sunrsasign.jar;C:\opt\java\jdk1.6.0_24\jre\lib\jsse.jar;C:\opt\java\jdk1.6.0_24\jre\lib\jce.jar;C:\opt\java\jdk1.6.0_24\jre\lib\charsets.jar;C:\opt\java\jdk1.6.0_24\jre\lib\modules\jdk.boot.jar;C:\opt\java\jdk1.6.0_24\jre\classes"/>
+    <property name="java.vendor" value="Sun Microsystems Inc."/>
+    <property name="localRepository" value="C:\opt\java\apache-maven-2.2.1\.m2"/>
+    <property name="file.separator" value="\"/>
+    <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="sun.desktop" value="windows"/>
+    <property name="sun.cpu.isalist" value="pentium_pro+mmx pentium_pro pentium+mmx pentium i486 i386 i86"/>
+  </properties>
+  <testcase time="0" classname="br.eti.kinoshita.junit.SampleTest" name="testSomething"/>
+  <testcase time="0" classname="br.eti.kinoshita.junit.SampleTest" name="testSomething2">
+    <failure message="expected:&lt;true&gt; but was:&lt;false&gt;" type="junit.framework.AssertionFailedError">junit.framework.AssertionFailedError: expected:&lt;true&gt; but was:&lt;false&gt;
+	at junit.framework.Assert.fail(Assert.java:47)
+	at junit.framework.Assert.failNotEquals(Assert.java:283)
+	at junit.framework.Assert.assertEquals(Assert.java:64)
+	at junit.framework.Assert.assertEquals(Assert.java:143)
+	at junit.framework.Assert.assertEquals(Assert.java:149)
+	at br.eti.kinoshita.junit.SampleTest.testSomething2(SampleTest.java:43)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at junit.framework.TestCase.runTest(TestCase.java:168)
+	at junit.framework.TestCase.runBare(TestCase.java:134)
+	at junit.framework.TestResult$1.protect(TestResult.java:110)
+	at junit.framework.TestResult.runProtected(TestResult.java:128)
+	at junit.framework.TestResult.run(TestResult.java:113)
+	at junit.framework.TestCase.run(TestCase.java:124)
+	at junit.framework.TestSuite.runTest(TestSuite.java:243)
+	at junit.framework.TestSuite.run(TestSuite.java:238)
+	at org.junit.internal.runners.JUnit38ClassRunner.run(JUnit38ClassRunner.java:83)
+	at org.apache.maven.surefire.junit4.JUnit4TestSet.execute(JUnit4TestSet.java:62)
+	at org.apache.maven.surefire.suite.AbstractDirectoryTestSuite.executeTestSet(AbstractDirectoryTestSuite.java:140)
+	at org.apache.maven.surefire.suite.AbstractDirectoryTestSuite.execute(AbstractDirectoryTestSuite.java:127)
+	at org.apache.maven.surefire.Surefire.run(Surefire.java:177)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.apache.maven.surefire.booter.SurefireBooter.runSuitesInProcess(SurefireBooter.java:345)
+	at org.apache.maven.surefire.booter.SurefireBooter.main(SurefireBooter.java:1009)
+</failure>
+  </testcase>
+  <testcase time="0" classname="br.eti.kinoshita.junit.SampleTest" name="testSomething3"/>
+</testsuite>
