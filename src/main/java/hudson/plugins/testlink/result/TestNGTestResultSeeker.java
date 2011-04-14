@@ -35,8 +35,9 @@ import hudson.plugins.testlink.util.ParserException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -76,10 +77,10 @@ extends TestResultSeeker
 	 * @see hudson.plugins.testlink.result.TestResultSeeker#seek(java.io.File, java.lang.String)
 	 */
 	@Override
-	public List<TestResult> seek( File directory, String includePattern )
+	public Set<TestResult> seek( File directory, String includePattern )
 			throws TestResultSeekerException
 	{
-		final List<TestResult> results = new ArrayList<TestResult>();
+		final Set<TestResult> results = new HashSet<TestResult>();
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip TestNG
 		{
@@ -123,7 +124,7 @@ extends TestResultSeeker
 	protected void doTestNGReports( 
 		File directory, 
 		String[] testNGReports, 
-		List<TestResult> testResults)
+		Set<TestResult> testResults)
 	{
 		
 		for ( int i = 0 ; i < testNGReports.length ; ++i )
@@ -161,7 +162,7 @@ extends TestResultSeeker
 	protected void doTestNGSuite( 
 		Suite testNGSuite, 
 		File testNGFile, 
-		List<TestResult> testResults ) 
+		Set<TestResult> testResults ) 
 	{
 		listener.getLogger().println( Messages.Results_TestNG_VerifyingTestNGTestSuite( testNGSuite.getName(), testNGSuite.getTests().size() ) );
 		listener.getLogger().println();

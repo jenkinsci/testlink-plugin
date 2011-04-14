@@ -32,6 +32,7 @@ import hudson.plugins.testlink.util.ParserException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -78,10 +79,10 @@ extends TestResultSeeker
 	 * @see hudson.plugins.testlink.result.TestResultSeeker#seek(java.io.File, java.lang.String)
 	 */
 	@Override
-	public List<TestResult> seek( File directory, String includePattern )
+	public Set<TestResult> seek( File directory, String includePattern )
 			throws TestResultSeekerException
 	{
-		final List<TestResult> results = new ArrayList<TestResult>();
+		final Set<TestResult> results = new HashSet<TestResult>();
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip TAP
 		{
@@ -125,7 +126,7 @@ extends TestResultSeeker
 	protected void doTAPReports( 
 		File directory, 
 		String[] tapReports, 
-		List<TestResult> testResults)
+		Set<TestResult> testResults)
 	{
 		
 		for ( int i = 0 ; i < tapReports.length ; ++i )
@@ -163,7 +164,7 @@ extends TestResultSeeker
 	protected void doTAPTestSet( 
 		TestSet tapTestSet, 
 		File tapFile, 
-		List<TestResult> testResults ) 
+		Set<TestResult> testResults ) 
 	{
 		listener.getLogger().println( Messages.Results_TAP_VerifyingTapSet( tapTestSet.getNumberOfTestResults() ) );
 		listener.getLogger().println();

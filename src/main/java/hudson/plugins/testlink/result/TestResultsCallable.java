@@ -30,8 +30,8 @@ import hudson.remoting.VirtualChannel;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -43,7 +43,7 @@ import org.apache.commons.io.FileUtils;
  * @since 2.1
  */
 public class TestResultsCallable 
-implements FileCallable<List<TestResult>>
+implements FileCallable<Set<TestResult>>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -107,14 +107,14 @@ implements FileCallable<List<TestResult>>
 	 * @param directory directory to seek for test results.
 	 * @return list of test results.
 	 */
-	public List<TestResult> seekTestResults( File directory ) 
+	public Set<TestResult> seekTestResults( File directory ) 
 	throws TestResultSeekerException
 	{
-		final List<TestResult> testResults = new LinkedList<TestResult>();
+		final Set<TestResult> testResults = new LinkedHashSet<TestResult>();
 		
-		List<TestResult> junitResults = this.junitTestResultSeeker.seek(directory, this.reportFilesPattern.getJunitXmlReportFilesPattern());
-		List<TestResult> testNGResults = this.testNGTestResultSeeker.seek(directory, this.reportFilesPattern.getTestNGXmlReportFilesPattern());
-		List<TestResult> tapResults = this.tapTestResultSeeker.seek(directory, this.reportFilesPattern.getTapStreamReportFilesPattern());
+		Set<TestResult> junitResults = this.junitTestResultSeeker.seek(directory, this.reportFilesPattern.getJunitXmlReportFilesPattern());
+		Set<TestResult> testNGResults = this.testNGTestResultSeeker.seek(directory, this.reportFilesPattern.getTestNGXmlReportFilesPattern());
+		Set<TestResult> tapResults = this.tapTestResultSeeker.seek(directory, this.reportFilesPattern.getTapStreamReportFilesPattern());
 		
 		testResults.addAll(junitResults);
 		testResults.addAll(testNGResults);
@@ -150,7 +150,7 @@ implements FileCallable<List<TestResult>>
 	/* (non-Javadoc)
 	 * @see hudson.FilePath.FileCallable#invoke(java.io.File, hudson.remoting.VirtualChannel)
 	 */
-	public List<TestResult> invoke( File f, VirtualChannel channel )
+	public Set<TestResult> invoke( File f, VirtualChannel channel )
 			throws IOException, InterruptedException
 	{
 		return this.seekTestResults(f);

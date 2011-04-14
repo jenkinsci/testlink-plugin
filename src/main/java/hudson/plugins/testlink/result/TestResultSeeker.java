@@ -28,7 +28,7 @@ import hudson.model.BuildListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -76,7 +76,7 @@ implements Serializable
 	 * @param includePattern Include pattern
 	 * @throws TestResultSeekerException
 	 */
-	public abstract List<TestResult> seek( 
+	public abstract Set<TestResult> seek( 
 			File directory, 
 			String includePattern )
 	throws TestResultSeekerException;

@@ -29,7 +29,7 @@ import hudson.plugins.testlink.util.Messages;
 import hudson.plugins.testlink.util.TestLinkHelper;
 
 import java.net.URL;
-import java.util.List;
+import java.util.Set;
 
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPIException;
@@ -149,7 +149,7 @@ public class TestLinkService
 	 * @param testResults List of TestResults
 	 * @throws TestLinkAPIException
 	 */
-	public void updateTestCasesAndUploadAttachments( List<TestResult> testResults ) 
+	public void updateTestCasesAndUploadAttachments( Set<TestResult> testResults ) 
 	throws TestLinkAPIException
 	{
 		if ( testResults.size() > 0 )
