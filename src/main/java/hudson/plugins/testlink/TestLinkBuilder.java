@@ -27,15 +27,11 @@ import hudson.AbortException;
 import hudson.CopyOnWrite;
 import hudson.EnvVars;
 import hudson.Extension;
-import hudson.FilePath;
 import hudson.Launcher;
-import hudson.Launcher.ProcStarter;
-import hudson.Util;
 import hudson.model.Action;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.plugins.testlink.executor.TemporaryExecutableScriptWriter;
 import hudson.plugins.testlink.model.TestLinkLatestRevisionInfo;
 import hudson.plugins.testlink.result.ReportFilesPatterns;
 import hudson.plugins.testlink.result.TestLinkReport;
@@ -43,10 +39,12 @@ import hudson.plugins.testlink.result.TestResult;
 import hudson.plugins.testlink.result.TestResultSeekerException;
 import hudson.plugins.testlink.result.TestResultsCallable;
 import hudson.plugins.testlink.svn.SVNLatestRevisionService;
+import hudson.plugins.testlink.tasks.BatchFile;
+import hudson.plugins.testlink.tasks.CommandInterpreter;
+import hudson.plugins.testlink.tasks.Shell;
 import hudson.plugins.testlink.util.ExecutionOrderComparator;
 import hudson.plugins.testlink.util.Messages;
 import hudson.tasks.Builder;
-import hudson.util.ArgumentListBuilder;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -180,18 +178,6 @@ extends Builder
 	private static final String TESTLINK_BUILD_NAME_ENVVAR = "TESTLINK_BUILD_NAME";
 	private static final String TESTLINK_TESTPLAN_NAME_ENVVAR = "TESTLINK_TESTPLAN_NAME";
 	private static final String TESTLINK_TESTPROJECT_NAME_ENVVAR = "TESTLINK_TESTPROJECT_NAME";
-
-	private static final String TEMPORARY_FILE_PREFIX = "testlink_temporary_";
-	
-	/**
-	 * The default note that TestLink plug-in adds to the Build if this is  
-	 * created by the plug-in. It does not updates the Build Note if it is 
-	 * existing and created by someone else.
-	 */
-	//private static final String BUILD_NOTES = "Build created automatically with Hudson TestLink plug-in.";
-	private static final String WINDOWS_SCRIPT_EXTENSION = ".bat";
-	private static final String UNIX_SCRIPT_EXTENSION = ".sh";
-	private static final int READ_WRITE_PERMISSION = 0777;
 	
 	/**
 	 * The Descriptor of this Builder. It contains the TestLink installation.
@@ -601,14 +587,13 @@ extends Builder
 		{
 			listener.getLogger().println( Messages.TestLinkBuilder_ExecutingSingleTestCommand( this.singleTestCommand ) );
 			listener.getLogger().println();
-			final EnvVars singleTestEnvironmentVariables = new EnvVars();
-			Integer singleTestCommandExitCode = this.executeTestCommand( 
-					singleTestEnvironmentVariables, 
+			boolean success = this.executeTestCommand( 
 					build, 
 					launcher, 
 					listener, 
-					singleTestCommand);
-			if ( singleTestCommandExitCode != 0 )
+					singleTestCommand, 
+					null);
+			if ( ! success )
 			{
 				this.failure = true;
 			}
@@ -631,13 +616,13 @@ extends Builder
 	 * 
 	 * @param automatedTestCases Array of automated test cases.
 	 * @param project TestLink project.
-	 * @param testPlan
-	 * @param build
-	 * @param hudsonBuild
-	 * @param launcher
-	 * @param listener
+	 * @param testPlan TestLink Test Plan.
+	 * @param testLinkBuild TestLink Build.
+	 * @param build Jenkins Build.
+	 * @param launcher Jenkins Launcher.
+	 * @param listener Jenkins Listener.
 	 */
-	protected void executeIterativeTestCommand( TestCase[] automatedTestCases, TestProject project, TestPlan testPlan, Build build, AbstractBuild<?, ?> hudsonBuild, Launcher launcher, BuildListener listener ) 
+	protected void executeIterativeTestCommand( TestCase[] automatedTestCases, TestProject project, TestPlan testPlan, Build testLinkBuild, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener ) 
 	{
 		if ( StringUtils.isNotBlank( iterativeTestCommand ) )
 		{
@@ -652,40 +637,23 @@ extends Builder
 				} 
 				else
 				{
-					try
+					// Build environment variables
+					final EnvVars iterativeEnvVars = this.buildIterativeEnvVars( automatedTestCase, project, testPlan, testLinkBuild, listener ); 
+					
+					listener.getLogger().println( Messages.TestLinkBuilder_ExecutingIterativeTestCommand( this.iterativeTestCommand ) );
+					listener.getLogger().println();
+					
+					// Execute iterative test command
+					final boolean success = this.executeTestCommand( 
+							build, 
+							launcher, 
+							listener, 
+							iterativeTestCommand, 
+							iterativeEnvVars);
+					
+					if ( ! success )
 					{
-						// Build environment variables
-						final EnvVars buildEnvironmentVariables = this.buildEnvironmentVariables( automatedTestCase, project, testPlan, build, listener ); 
-						buildEnvironmentVariables.putAll( hudsonBuild.getEnvironment( listener ) );
-						
-						// TBD: listener.getLogger().println(Messages.TestLinkBuilder_ExecutingIterativeTestCommand());
-						listener.getLogger().println( Messages.TestLinkBuilder_ExecutingIterativeTestCommand( this.iterativeTestCommand ) );
-						listener.getLogger().println();
-						
-						// Execute iterative test command
-						final Integer iterativeTestCommandExitCode = this.executeTestCommand( 
-								buildEnvironmentVariables, 
-								hudsonBuild, 
-								launcher, 
-								listener, 
-								iterativeTestCommand);
-						if ( iterativeTestCommandExitCode != 0 )
-						{
-							// Set the failure flag to true, for transactional executions
-							this.failure = true;
-						}
-					} 
-					catch (IOException e)
-					{
-						listener.getLogger().println( Messages.TestLinkBuilder_ErrorExecutingIterativeTestCommand() );
-						e.printStackTrace( listener.getLogger() );
-						listener.getLogger().println();
-					} 
-					catch (InterruptedException e)
-					{
-						listener.getLogger().println( Messages.TestLinkBuilder_ErrorExecutingIterativeTestCommand() );
-						e.printStackTrace( listener.getLogger() );
-						listener.getLogger().println();
+						this.failure = true;
 					}
 				}
 			}
@@ -708,7 +676,7 @@ extends Builder
 	 * @param listener Hudson Build Listener
 	 * @return EnvVars (environment variables)
 	 */
-	protected EnvVars buildEnvironmentVariables( TestCase testCase, TestProject testProject, TestPlan testPlan, Build build, BuildListener listener ) 
+	protected EnvVars buildIterativeEnvVars( TestCase testCase, TestProject testProject, TestPlan testPlan, Build build, BuildListener listener ) 
 	{
 		// Build environment variables list
 		listener.getLogger().println(Messages.TestLinkBuilder_CreatingEnvVars());
@@ -774,117 +742,45 @@ extends Builder
 	/**
 	 * Executes a test command for a given test case.
 	 * 
-	 * @param buildEnvironmentVariables Map of Environment Variables
-	 * @param hudsonBuild Hudson Build instance
-	 * @param launcher Hudson Build instance's launcher
-	 * @param listener Hudson Build instance's listener
+	 * @param build Jenkins Build instance
+	 * @param launcher Jenkins Build instance's launcher
+	 * @param listener Jenkins Build instance's listener
 	 * @param command Command to execute
 	 * @return Integer representing the process exit code
 	 */
-	protected Integer executeTestCommand( 
-		EnvVars buildEnvironmentVariables,
-		AbstractBuild<?, ?> hudsonBuild, 
+	protected boolean executeTestCommand( 
+		AbstractBuild<?, ?> build, 
 		Launcher launcher, 
 		BuildListener listener, 
-		String command) 
+		String command, 
+		EnvVars envVars) 
 	{
 		
-		int exitCode = -1;
-
-		FilePath temporaryExecutableScript = null;
+		boolean r = false;
+		
+		CommandInterpreter cmd = null;
 		
 		try
 		{
-			temporaryExecutableScript = this.createTemporaryExecutableScript( hudsonBuild, launcher, command );
-			ArgumentListBuilder args = new ArgumentListBuilder();
-			args.add( temporaryExecutableScript.getRemote() );
-			if ( ! launcher.isUnix() )
+			if ( launcher.isUnix() )
 			{
-				args.add("&&","exit","%%ERRORLEVEL%%");
+				cmd = new Shell( command );
 			}
-            ProcStarter ps = launcher.launch();
-            ps.envs( buildEnvironmentVariables );
-            ps.cmds( args );
-            ps.stdout( listener );
-            ps.pwd( hudsonBuild.getModuleRoot() ); 
-            
-            //exitCode = ps.join();
-            exitCode = launcher.launch( ps ).join();
+			else
+			{
+				cmd = new BatchFile( command );
+			}
+			
+			r = cmd.execute( build, launcher, listener, envVars );
 		}  
-		catch (IOException e)
-        {
-            Util.displayIOException(e,listener);
-            e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_TestCommandError(e.getMessage())) );
-            failure = true;
-        } 
         catch (InterruptedException e) 
         {
         	e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_TestCommandError(e.getMessage())) );
-        	failure = true;
+        	r = false;
         } 
-        // Destroy temporary file.
-        finally 
-        {
-        	if ( temporaryExecutableScript != null )
-			{
-				try 
-				{
-					temporaryExecutableScript.delete();
-				} 
-				catch (IOException e)
-				{
-					e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_DeleteTempArchiveError(temporaryExecutableScript)) );
-				} 
-				catch (InterruptedException e) 
-				{
-					e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_DeleteTempArchiveError(temporaryExecutableScript)) );
-				}
-			}
-        }
+		
+		return r;
 
-		
-		return exitCode;
-
-	}
-	
-	/**
-	 * Creates a temporary executable script with the test command inside it
-	 * 
-	 * @param hudsonBuild
-	 * @param launcher
-	 * @param command
-	 * @return FilePath object referring to the temporary executable script.
-	 * @throws IOException
-	 * @throws InterruptedException
-	 */
-	protected FilePath createTemporaryExecutableScript( 
-			AbstractBuild<?, ?> hudsonBuild, 
-			Launcher launcher, 
-			String command ) 
-	throws IOException, InterruptedException
-	{
-		FilePath temporaryExecutableScript = null;
-		
-		String temporaryFileSuffix = WINDOWS_SCRIPT_EXTENSION; 
-		if ( launcher.isUnix() ) 
-		{
-			temporaryFileSuffix = UNIX_SCRIPT_EXTENSION; 
-		}
-		
-		temporaryExecutableScript = 
-			hudsonBuild.getWorkspace().createTempFile(TEMPORARY_FILE_PREFIX, temporaryFileSuffix);
-		//temporaryExecutableScript.chmod(READ_WRITE_PERMISSION); 
-		temporaryExecutableScript.chmod(READ_WRITE_PERMISSION);
-		
-		TemporaryExecutableScriptWriter scriptCreator = 
-			new TemporaryExecutableScriptWriter(
-					temporaryExecutableScript.getRemote(), 
-					launcher.isUnix(), 
-					command );
-		
-		hudsonBuild.getWorkspace().act( scriptCreator );
-		    	
-    	return temporaryExecutableScript;
 	}
 
 	/**

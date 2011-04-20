@@ -181,9 +181,8 @@ public class TestLinkService
 				for ( Attachment attachment : testResult.getAttachments() )
 				{
 					listener.getLogger().println( Messages.TestLinkBuilder_Upload_ExecutionAttachment(reportTCResultResponse.getExecutionId(), attachment.getFileName()) );
-					api.uploadAttachment(
+					api.uploadExecutionAttachment(
 							reportTCResultResponse.getExecutionId(), 
-							EXECUTIONS_TABLE, // TBD: replace with TestLinkTables enum value
 							attachment.getTitle(), 
 							attachment.getDescription(), 
 							attachment.getFileName(), 
