@@ -23,12 +23,14 @@
  */
 package hudson.plugins.testlink.tasks;
 
+import hudson.EnvVars;
+import hudson.FilePath;
+import hudson.Util;
+import hudson.model.BuildListener;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import hudson.FilePath;
-import hudson.Util;
 
 /**
  * Original class: https://github.com/jenkinsci/jenkins/blob/master/core/src/main/java/hudson/tasks/Shell.java
@@ -37,14 +39,21 @@ import hudson.Util;
  * @since 2.2.1
  */
 public class Shell 
-extends CommandInterpreter
+extends CommandInterpreter 
 {
 
-	public Shell( String command )
+	private static final long serialVersionUID = 1926502324642635847L;
+
+	/**
+	 * @param command Command.
+	 * @param envVars Environment Variables.
+	 * @param listener Jenkins build listener.
+	 */
+	public Shell(String command, EnvVars envVars, BuildListener listener)
 	{
-		super( fixCrLf( command ) );
+		super(command, envVars, listener);
 	}
-	
+
 	private static String fixCrLf( String s )
 	{
 		int idx;

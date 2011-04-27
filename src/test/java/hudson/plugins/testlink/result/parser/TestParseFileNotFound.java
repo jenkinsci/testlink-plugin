@@ -23,7 +23,7 @@
  */
 package hudson.plugins.testlink.result.parser;
 
-import hudson.plugins.testlink.result.parser.tap.TAPParser;
+import hudson.plugins.testlink.parser.tap.TAPParser;
 
 import java.io.File;
 

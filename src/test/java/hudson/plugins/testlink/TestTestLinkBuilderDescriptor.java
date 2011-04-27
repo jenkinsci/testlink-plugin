@@ -30,7 +30,7 @@ import org.jvnet.hudson.test.HudsonTestCase;
 /**
  * Tests the TestLinkBuilderDescriptor class.
  * 
- * @see {@link TestLinkBuilderDescriptor}
+ * @see {@link TestLinkDescriptor}
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
@@ -41,7 +41,7 @@ extends HudsonTestCase
 
 	public void testLinkBuilderDescriptor()
 	{
-		TestLinkBuilderDescriptor descriptor = new TestLinkBuilderDescriptor();
+		TestLinkDescriptor descriptor = new TestLinkDescriptor();
 		assertEquals( descriptor.getDisplayName(), "Invoke TestLink" );
 		
 		FormValidation formVal = descriptor.doCheckMandatory("Test");

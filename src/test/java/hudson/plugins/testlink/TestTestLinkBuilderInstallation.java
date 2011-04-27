@@ -28,7 +28,7 @@ import junit.framework.TestCase;
 /**
  * Tests the TestLinkBuilderInstallation class.
  * 
- * @see {@link TestLinkBuilderInstallation}
+ * @see {@link TestLinkInstallation}
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
@@ -42,8 +42,8 @@ extends TestCase
 	 */
 	public void testInstallation()
 	{
-		TestLinkBuilderInstallation inst = 
-			new TestLinkBuilderInstallation(
+		TestLinkInstallation inst = 
+			new TestLinkInstallation(
 					"TestLink 1.9.1", 
 					"http://localhost/testlink-1.9.1/lib/api/xml-rpc.php", 
 					"068848");

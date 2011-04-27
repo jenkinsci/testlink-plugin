@@ -74,7 +74,7 @@ extends junit.framework.TestCase
 		ClassLoader cl = TestTestResultSeekerTestNG.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/");
 		File testNGDir = new File( url.getFile() );
-		Set<TestResult> found = seeker.seek( testNGDir, "testng*.xml" );
+		Set<TestCaseWrapper> found = seeker.seek( testNGDir, "testng*.xml" );
 		assertNotNull( found );
 		assertTrue( found.size() == 1 );
 		assertTrue( found.iterator().next().getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
@@ -103,9 +103,9 @@ extends junit.framework.TestCase
 		ClassLoader cl = TestTestResultSeekerTestNG.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/");
 		File testNGDir = new File( url.getFile() );
-		Set<TestResult> found = seeker.seek(testNGDir, "testng*.xml" );
+		Set<TestCaseWrapper> found = seeker.seek(testNGDir, "testng*.xml" );
 		assertNotNull( found );
-		Iterator<TestResult> iter = found.iterator();
+		Iterator<TestCaseWrapper> iter = found.iterator();
 		assertTrue( found.size() == 2 );
 		assertTrue( iter.next().getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
 		assertTrue( iter.next().getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );

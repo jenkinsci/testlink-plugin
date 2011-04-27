@@ -134,14 +134,14 @@ implements Action, Serializable, StaplerProxy
 	 * @return Report summary
 	 */
 	public String getSummary(){
-        return ReportSummary.createReportSummary(result.getReport(), this.getPreviousReport());
+        return ResultsSummary.createReportSummary(result.getReport(), this.getPreviousReport());
     }
 	
 	/**
 	 * @return Detailed Report summary
 	 */
     public String getDetails(){
-        return ReportSummary.createReportSummaryDetails(result.getReport(), this.getPreviousReport());
+        return ResultsSummary.createReportSummaryDetails(result.getReport(), this.getPreviousReport());
     }
 	
 }

@@ -55,10 +55,12 @@ extends junit.framework.TestCase
 	
 	private ReportFilesPatterns reportFilesPatterns;
 	
+	private String tapReportFilesPattern = "*.tap";
+	
 	public void setUp()
 	{
 		this.report = new TestLinkReport();
-		this.reportFilesPatterns = new ReportFilesPatterns();
+		this.reportFilesPatterns = new ReportFilesPatterns(null, null, tapReportFilesPattern);
 		BuildListener listener = new StreamBuildListener(new PrintStream(System.out), Charset.defaultCharset());
 		this.seeker = 
 			new TestResultsCallable(report, KEY_CUSTOM_FIELD, reportFilesPatterns, listener);
@@ -77,8 +79,7 @@ extends junit.framework.TestCase
 		ClassLoader cl = TestTestResultSeekerTAP.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/");
 		File tapDir = new File( url.getFile() );
-		this.reportFilesPatterns.setTapStreamReportFilesPattern("*.tap");
-		Set<TestResult> found = seeker.seekTestResults(tapDir);
+		Set<TestCaseWrapper> found = seeker.seekTestResults(tapDir);
 		assertNotNull( found );
 		assertTrue( found.size() == 1 );
 		assertTrue( found.iterator().next().getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );
@@ -107,11 +108,10 @@ extends junit.framework.TestCase
 		ClassLoader cl = TestTestResultSeekerTAP.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/");
 		File tapDir = new File( url.getFile() );
-		this.reportFilesPatterns.setTapStreamReportFilesPattern("*.tap");
-		Set<TestResult> found = seeker.seekTestResults(tapDir);
+		Set<TestCaseWrapper> found = seeker.seekTestResults(tapDir);
 		assertNotNull( found );
 		assertTrue( found.size() == 2 );
-		Iterator<TestResult> iter = found.iterator();
+		Iterator<TestCaseWrapper> iter = found.iterator();
 		assertTrue( iter.next().getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
 		assertTrue( iter.next().getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
 	}

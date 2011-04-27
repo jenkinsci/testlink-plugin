@@ -35,35 +35,25 @@ extends TestCase
 
 	private ReportFilesPatterns patterns;
 	
+	private String junitXmlReportFilesPattern = "**/TEST-*.xml";
+	private String testNgXmlReportFilesPattern = "**/testng-results.xml";
+	private String tapReportFilesPattern = "**/*.tap";
+	
 	public void setUp()
 	{
-		this.patterns = new ReportFilesPatterns();
+		this.patterns = new ReportFilesPatterns(junitXmlReportFilesPattern, testNgXmlReportFilesPattern, tapReportFilesPattern);
 	}
 	
 	public void testGettersAndSetters()
 	{
-		assertNull( patterns.getJunitXmlReportFilesPattern() );
-		String junitXmlReportFilesPattern = "**/TEST-*.xml";
-		patterns.setJunitXmlReportFilesPattern( junitXmlReportFilesPattern );
 		assertNotNull( patterns.getJunitXmlReportFilesPattern() );
 		assertEquals( patterns.getJunitXmlReportFilesPattern(), junitXmlReportFilesPattern );
 		
-		assertNull( patterns.getTestNGXmlReportFilesPattern() );
-		String testNgXmlReportFilesPattern = "**/testng-results.xml";
-		patterns.setTestNGXmlReportFilesPattern( testNgXmlReportFilesPattern );
 		assertNotNull( patterns.getTestNGXmlReportFilesPattern() );
 		assertEquals( patterns.getTestNGXmlReportFilesPattern(), testNgXmlReportFilesPattern );
 		
-		assertNull( patterns.getTapStreamReportFilesPattern() );
-		String tapReportFilesPattern = "**/*.tap";
-		patterns.setTapStreamReportFilesPattern( tapReportFilesPattern );
 		assertNotNull( patterns.getTapStreamReportFilesPattern() );
 		assertEquals( patterns.getTapStreamReportFilesPattern(), tapReportFilesPattern );		
-	}
-	
-	public void testToString()
-	{
-		assertTrue( patterns.toString().startsWith( "TestReportDirectories [junitXmlReportFilesPattern=" ));
 	}
 	
 }

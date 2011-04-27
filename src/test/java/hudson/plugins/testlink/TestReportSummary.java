@@ -38,7 +38,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
 /**
  * Tests the ReportSummary class.
  *
- * @see {@link ReportSummary}
+ * @see {@link ResultsSummary}
  *
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
@@ -62,7 +62,7 @@ extends junit.framework.TestCase
 	{
 		try
 		{
-			final Constructor<?> c = ReportSummary.class.getDeclaredConstructors()[0];
+			final Constructor<?> c = ResultsSummary.class.getDeclaredConstructors()[0];
 			c.setAccessible(true);
 			final Object o = c.newInstance((Object[]) null);
 
@@ -80,11 +80,11 @@ extends junit.framework.TestCase
 	public void testPrintDifference()
 	{
 		StringBuilder builder = new StringBuilder();
-		ReportSummary.printDifference(1, 0, builder);
+		ResultsSummary.printDifference(1, 0, builder);
 		assertEquals( builder.toString(), " (+1)" );
 		
 		builder = new StringBuilder();
-		ReportSummary.printDifference(0, 1, builder);
+		ResultsSummary.printDifference(0, 1, builder);
 		assertEquals( builder.toString(), "" );
 	}
 	
@@ -110,7 +110,7 @@ extends junit.framework.TestCase
 		report.addTestCase( testCase2 );
 		report.addTestCase( testCase3 );
 		
-		String reportSummary = ReportSummary.createReportSummary(report, null);
+		String reportSummary = ResultsSummary.createReportSummary(report, null);
 		assertNotNull(reportSummary);
 		assertEquals(reportSummary, "<p><b>TestLink build ID: 1</b></p><p><b>TestLink build name: My build</b></p><p><a href=\"testLinkResult\">Total of 3 tests.</a> Where 1 tests passed, 1 tests failed and 1 tests were blocked.</p>");
 	}
@@ -145,7 +145,7 @@ extends junit.framework.TestCase
 		previous.addTestCase( testCase1 );
 		previous.addTestCase( testCase2 );
 		
-		String reportSummary = ReportSummary.createReportSummary(report, previous);
+		String reportSummary = ResultsSummary.createReportSummary(report, previous);
 		assertNotNull(reportSummary);
 		assertEquals(reportSummary, "<p><b>TestLink build ID: 1</b></p><p><b>TestLink build name: My build</b></p><p><a href=\"testLinkResult\">Total of 3 (+1) tests.</a> Where 1 tests passed, 1 tests failed and 1 (+1) tests were blocked.</p>");
 	}
@@ -180,7 +180,7 @@ extends junit.framework.TestCase
 		previous.addTestCase( testCase1 );
 		previous.addTestCase( testCase2 );
 		
-		String reportSummaryDetails = ReportSummary.createReportSummaryDetails(report, previous);
+		String reportSummaryDetails = ResultsSummary.createReportSummaryDetails(report, previous);
 		assertNotNull(reportSummaryDetails);
 		
 		String expectedDetails = ""+

@@ -43,7 +43,7 @@ import org.apache.commons.io.FileUtils;
  * @since 2.1
  */
 public class TestResultsCallable 
-implements FileCallable<Set<TestResult>>
+implements FileCallable<Set<TestCaseWrapper>>
 {
 
 	private static final long serialVersionUID = 1L;
@@ -107,14 +107,19 @@ implements FileCallable<Set<TestResult>>
 	 * @param directory directory to seek for test results.
 	 * @return list of test results.
 	 */
-	public Set<TestResult> seekTestResults( File directory ) 
+	public Set<TestCaseWrapper> seekTestResults( File directory ) 
 	throws TestResultSeekerException
 	{
-		final Set<TestResult> testResults = new LinkedHashSet<TestResult>();
+		if ( this.reportFilesPattern == null )
+		{
+			throw new TestResultSeekerException( "Internal error: null report files pattern. Please, fill a JIRA with this information." );
+		}
 		
-		Set<TestResult> junitResults = this.junitTestResultSeeker.seek(directory, this.reportFilesPattern.getJunitXmlReportFilesPattern());
-		Set<TestResult> testNGResults = this.testNGTestResultSeeker.seek(directory, this.reportFilesPattern.getTestNGXmlReportFilesPattern());
-		Set<TestResult> tapResults = this.tapTestResultSeeker.seek(directory, this.reportFilesPattern.getTapStreamReportFilesPattern());
+		final Set<TestCaseWrapper> testResults = new LinkedHashSet<TestCaseWrapper>();
+		
+		Set<TestCaseWrapper> junitResults = this.junitTestResultSeeker.seek(directory, this.reportFilesPattern.getJunitXmlReportFilesPattern());
+		Set<TestCaseWrapper> testNGResults = this.testNGTestResultSeeker.seek(directory, this.reportFilesPattern.getTestNGXmlReportFilesPattern());
+		Set<TestCaseWrapper> tapResults = this.tapTestResultSeeker.seek(directory, this.reportFilesPattern.getTapStreamReportFilesPattern());
 		
 		testResults.addAll(junitResults);
 		testResults.addAll(testNGResults);
@@ -128,6 +133,7 @@ implements FileCallable<Set<TestResult>>
 		{
 			listener.getLogger().println( Messages.TestLinkBuilder_NoTestResultsFound() );
 		}
+		
 		listener.getLogger().println();
 		
 		return testResults;
@@ -150,9 +156,12 @@ implements FileCallable<Set<TestResult>>
 	/* (non-Javadoc)
 	 * @see hudson.FilePath.FileCallable#invoke(java.io.File, hudson.remoting.VirtualChannel)
 	 */
-	public Set<TestResult> invoke( File f, VirtualChannel channel )
+	public Set<TestCaseWrapper> invoke( File f, VirtualChannel channel )
 			throws IOException, InterruptedException
 	{
+		listener.getLogger().println( Messages.Results_LookingForTestResults() );
+		listener.getLogger().println();
+		
 		return this.seekTestResults(f);
 	}
 	

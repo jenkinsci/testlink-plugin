@@ -24,12 +24,11 @@
 package hudson.plugins.testlink.result;
 
 import hudson.model.BuildListener;
-import hudson.plugins.testlink.result.parser.junit.JUnitParser;
-import hudson.plugins.testlink.result.parser.junit.TestCase;
-import hudson.plugins.testlink.result.parser.junit.TestSuite;
-import hudson.plugins.testlink.result.scanner.Scanner;
+import hudson.plugins.testlink.parser.ParserException;
+import hudson.plugins.testlink.parser.junit.JUnitParser;
+import hudson.plugins.testlink.parser.junit.TestCase;
+import hudson.plugins.testlink.parser.junit.TestSuite;
 import hudson.plugins.testlink.util.Messages;
-import hudson.plugins.testlink.util.ParserException;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,11 +79,11 @@ extends TestResultSeeker
 	/* (non-Javadoc)
 	 * @see hudson.plugins.testlink.result.TestResultSeeker#seek(java.io.File, java.lang.String, hudson.plugins.testlink.result.TestLinkReport, hudson.model.BuildListener)
 	 */
-	public Set<TestResult> seek( File directory, String includePattern ) 
+	public Set<TestCaseWrapper> seek( File directory, String includePattern ) 
 	throws TestResultSeekerException
 	{
 		
-		final Set<TestResult> results = new HashSet<TestResult>();
+		final Set<TestCaseWrapper> results = new HashSet<TestCaseWrapper>();
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip JUnit
 		{
@@ -95,9 +94,7 @@ extends TestResultSeeker
 		{
 			try
 			{
-				final Scanner scanner = new Scanner();
-				
-				String[] junitReports = scanner.scan(directory, includePattern, listener);
+				String[] junitReports = this.scan(directory, includePattern, listener);
 				
 				listener.getLogger().println( Messages.Results_JUnit_NumberOfReportsFound(junitReports.length ) );
 				listener.getLogger().println();
@@ -128,7 +125,7 @@ extends TestResultSeeker
 	protected void doJunitReports( 
 		File directory, 
 		String[] junitReports, 
-		Set<TestResult> testResults)
+		Set<TestCaseWrapper> testResults)
 	{
 		
 		for ( int i = 0 ; i < junitReports.length ; ++i )
@@ -166,7 +163,7 @@ extends TestResultSeeker
 	protected void doJunitSuite( 
 		TestSuite junitSuite, 
 		File junitFile, 
-		Set<TestResult> testResults ) 
+		Set<TestCaseWrapper> testResults ) 
 	{
 		listener.getLogger().println( Messages.Results_JUnit_VerifyingJUnitSuite(junitSuite.getName(), junitSuite.getTestCases().size(), junitSuite.getFailures(), junitSuite.getErrors() ) );
 		listener.getLogger().println();
@@ -177,7 +174,7 @@ extends TestResultSeeker
 		{
 			listener.getLogger().println( Messages.Results_JUnit_VerifyingJUnitTest( junitTestCase.getName() ) );
 			
-			TestResult testResult = this.doFindTestResult( junitTestCase, junitFile );
+			TestCaseWrapper testResult = this.doFindTestResult( junitTestCase, junitFile );
 			
 			if ( testResult != null )
 			{
@@ -220,7 +217,7 @@ extends TestResultSeeker
 	 * @param junitFile JUnit test file.
 	 * @return a Test Result or <code>null</code> if unable to find it.
 	 */
-	protected TestResult doFindTestResult( TestCase junitTestCase, File junitFile ) 
+	protected TestCaseWrapper doFindTestResult( TestCase junitTestCase, File junitFile ) 
 	{
 		final String junitTestCaseClassName = junitTestCase.getClassName();
 		
@@ -245,15 +242,15 @@ extends TestResultSeeker
 				
 				if ( isKeyCustomField && junitTestCaseClassName.equals( customFieldValue ) )
 				{
-					ExecutionStatus status = this.getJUnitExecutionStatus( junitTestCase );
+					final ExecutionStatus status = this.getJUnitExecutionStatus( junitTestCase );
 					testLinkTestCase.setExecutionStatus( status );
-					TestResult testResult = new TestResult(testLinkTestCase, report.getBuild(), report.getTestPlan());
+					final TestCaseWrapper testResult = new TestCaseWrapper( testLinkTestCase );
 					
 					String notes = this.getJUnitNotes( junitTestCase );
 					
 					try
 					{
-						Attachment junitAttachment = this.getJUnitAttachment( testResult.getTestCase().getVersionId(), junitFile );
+						final Attachment junitAttachment = this.getJUnitAttachment( testResult.getTestCase().getVersionId(), junitFile );
 						testResult.addAttachment( junitAttachment );
 					}
 					catch ( IOException ioe )
@@ -264,7 +261,9 @@ extends TestResultSeeker
 					
 					testResult.setNotes( notes );
 					return testResult;
+					
 				} // endif
+				
 			} //end for custom fields
 			
 			listener.getLogger().println();

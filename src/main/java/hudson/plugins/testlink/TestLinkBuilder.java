@@ -24,7 +24,6 @@
 package hudson.plugins.testlink;
 
 import hudson.AbortException;
-import hudson.CopyOnWrite;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
@@ -32,13 +31,11 @@ import hudson.model.Action;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.plugins.testlink.model.TestLinkLatestRevisionInfo;
 import hudson.plugins.testlink.result.ReportFilesPatterns;
+import hudson.plugins.testlink.result.TestCaseWrapper;
 import hudson.plugins.testlink.result.TestLinkReport;
-import hudson.plugins.testlink.result.TestResult;
 import hudson.plugins.testlink.result.TestResultSeekerException;
 import hudson.plugins.testlink.result.TestResultsCallable;
-import hudson.plugins.testlink.svn.SVNLatestRevisionService;
 import hudson.plugins.testlink.tasks.BatchFile;
 import hudson.plugins.testlink.tasks.CommandInterpreter;
 import hudson.plugins.testlink.tasks.Shell;
@@ -59,7 +56,6 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.tmatesoft.svn.core.SVNException;
 
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPIException;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
@@ -109,13 +105,6 @@ extends Builder
 	private String buildName;
 	
 	/**
-	 * Information related to the SVN that TestLink plug-in should use to 
-	 * retrieve the latest revision.
-	 */
-	@CopyOnWrite
-	private final TestLinkLatestRevisionInfo latestRevisionInfo;
-	
-	/**
 	 * Comma separated list of custom fields to download from TestLink.
 	 */
 	private final String customFields;
@@ -149,23 +138,21 @@ extends Builder
 	private final String keyCustomField;
 	
 	/**
-	 * JUnit XML reports directory.
+	 * Report files patterns.
 	 */
-	private final String junitReportFilesPattern;
-	
-	/**
-	 * TestNG XML reports directory.
-	 */
-	private final String testNGReportFilesPattern;
-	
-	/**
-	 * TAP Streams report directory.
-	 */
-	private final String tapReportFilesPattern;
+	private final ReportFilesPatterns reportFilesPatterns;
 	
 	/* --- Object properties --- */
 	
+	/**
+	 * Flag to check if any failure happened.
+	 */
 	private boolean failure = Boolean.FALSE;
+	
+	/**
+	 * Used to sort test cases marked as automated.
+	 */
+	private final ExecutionOrderComparator executionOrderComparator = new ExecutionOrderComparator();
 	
 	// Environment Variables names.
 	private static final String TESTLINK_TESTCASE_PREFIX = "TESTLINK_TESTCASE_";
@@ -183,7 +170,7 @@ extends Builder
 	 * The Descriptor of this Builder. It contains the TestLink installation.
 	 */
 	@Extension 
-	public static final TestLinkBuilderDescriptor DESCRIPTOR = new TestLinkBuilderDescriptor();
+	public static final TestLinkDescriptor DESCRIPTOR = new TestLinkDescriptor();
 
 	/**
 	 * This constructor is bound to a stapler request. All parameters here are 
@@ -196,11 +183,10 @@ extends Builder
 	 * @param customFields TestLink comma-separated list of Custom Fields.
 	 * @param iterativeTestCommand Test Command to execute for each Automated Test Case.
 	 * @param transactional Whether the build's execution is transactional or not.
-	 * @param latestRevisionInfo Information on SVN latest revision.
 	 * @param keyCustomField Automated Test Case key custom field. 
-	 * @param junitReportFilesPattern Pattern for JUnit report files.
-	 * @param testNGReportFilesPattern Pattern for TestNG report files.
-	 * @param tapReportFilesPattern Pattern for TAP report files.
+	 * @param junitXmlReportFilesPattern Pattern for JUnit report files.
+	 * @param testNGXmlReportFilesPattern Pattern for TestNG report files.
+	 * @param tapStreamReportFilesPattern Pattern for TAP report files.
 	 */
 	@DataBoundConstructor
 	public TestLinkBuilder(
@@ -212,26 +198,26 @@ extends Builder
 		String singleTestCommand, 
 		String iterativeTestCommand, 
 		Boolean transactional, 
-		TestLinkLatestRevisionInfo latestRevisionInfo, 
 		String keyCustomField, 
-		String junitReportFilesPattern, 		
-		String testNGReportFilesPattern, 
-		String tapReportFilesPattern
+		String junitXmlReportFilesPattern, 
+		String testNGXmlReportFilesPattern, 
+		String tapStreamReportFilesPattern
 	)
 	{
 		this.testLinkName = testLinkName;
 		this.testProjectName = testProjectName;
 		this.testPlanName = testPlanName;
 		this.buildName = buildName;
-		this.latestRevisionInfo = latestRevisionInfo;
 		this.customFields = customFields;
 		this.singleTestCommand = singleTestCommand;
 		this.iterativeTestCommand = iterativeTestCommand;
 		this.transactional = transactional;
 		this.keyCustomField = keyCustomField;
-		this.junitReportFilesPattern = junitReportFilesPattern;
-		this.testNGReportFilesPattern = testNGReportFilesPattern;
-		this.tapReportFilesPattern = tapReportFilesPattern;
+		
+		this.reportFilesPatterns = new ReportFilesPatterns(
+				junitXmlReportFilesPattern, 
+				testNGXmlReportFilesPattern, 
+				tapStreamReportFilesPattern);
 	}
 	
 	/* (non-Javadoc)
@@ -294,23 +280,6 @@ extends Builder
 	}
 	
 	/**
-	 * @return {@link TestLinkLatestRevisionInfo} 
-	 */
-	public TestLinkLatestRevisionInfo getLatestRevisionInfo()
-	{
-		return this.latestRevisionInfo;
-	}
-	
-	/**
-	 * @return True when the builder should use the latest revision of the 
-	 * system being tested as build name in TestLink. 
-	 */
-	public Boolean getLatestRevisionEnabled()
-	{
-		return this.latestRevisionInfo != null;
-	}
-	
-	/**
 	 * @return Comma separated list of custom fields
 	 */
 	public String getCustomFields()
@@ -331,47 +300,41 @@ extends Builder
 		return this.transactional;
 	}
 	
-	public String getKeyCustomField() {
+	/**
+	 * Retrieves key custom field.
+	 * 
+	 * @return Key custom field.
+	 */
+	public String getKeyCustomField() 
+	{
 		return keyCustomField;
 	}
 
 	/**
-	 * Returns test report directories (JUnit, TestNG, TAP, ...)
+	 * Returns report files patterns for JUnit, TestNG and TAP.
 	 * 
-	 * @return Test report directoriy
+	 * @return Report files patterns.
 	 */
-	public String getJunitReportFilesPattern() 
+	public ReportFilesPatterns getReportFilesPatterns() 
 	{
-		return junitReportFilesPattern;
+		return reportFilesPatterns;
 	}
 
-	/**
-	 * Returns test report directories (JUnit, TestNG, TAP, ...)
-	 * 
-	 * @return Test report directoriy
-	 */
-	public String getTestNGReportFilesPattern() 
+	public String getJunitXmlReportFilesPattern()
 	{
-		return testNGReportFilesPattern;
-	}
-
-	/**
-	 * Returns test report directories (JUnit, TestNG, TAP, ...)
-	 * 
-	 * @return Test report directoriy
-	 */
-	public String getTapReportFilesPattern() 
-	{
-		return tapReportFilesPattern;
+		return reportFilesPatterns.getJunitXmlReportFilesPattern();
 	}
 	
-//	@Override
-//	public Descriptor<Builder> getDescriptor()
-//	{
-//		return DESCRIPTOR;
-//	}
-	// http://hudson.361315.n4.nabble.com/Saving-plugin-issue-td2236932.html
-
+	public String getTestNGXmlReportFilesPattern()
+	{
+		return reportFilesPatterns.getTestNGXmlReportFilesPattern();
+	}
+	
+	public String getTapStreamReportFilesPattern()
+	{
+		return reportFilesPatterns.getTapStreamReportFilesPattern();
+	}
+	
 	/**
 	 * <p>Called when the job is executed.</p>
 	 * 
@@ -385,156 +348,80 @@ extends Builder
 			BuildListener listener ) 
 	throws InterruptedException, IOException
 	{
-		// TestLink installation.
-		listener.getLogger().println( Messages.TestLinkBuilder_PreparingTLAPI() );
+		final TestLinkHandler testLinkHandler = 
+			this.createTestLinkHandler( 
+				testProjectName, 
+				testPlanName,
+				buildName, 
+				Messages.TestLinkBuilder_Build_Notes(), 
+				listener 
+			);
 		
-		TestLinkBuilderInstallation installation = 
-			DESCRIPTOR.getInstallationByTestLinkName(this.testLinkName);
-		if ( installation == null )
-		{
-			throw new AbortException( Messages.TestLinkBuilder_InvalidTLAPI() );
-		}
+		final String[] customFieldsNames 	= createarrayOfCustomFieldsNames();
 		
-		listener.getLogger().println ( Messages.TestLinkBuilder_UsedTLURL( installation.getUrl()) );
-		listener.getLogger().println();
+		final TestCase[] automatedTestCases;
 		
-		// SVN revision information for Build.
-		if ( this.getLatestRevisionEnabled() )
-		{
-			listener.getLogger().println( Messages.TestLinkBuilder_UsingSVNRevision() );
-			
-			SVNLatestRevisionService svn = new SVNLatestRevisionService(
-					this.latestRevisionInfo.getSvnUrl(), 
-					this.latestRevisionInfo.getSvnUser(),
-					this.latestRevisionInfo.getSvnPassword());
-			try
-			{
-				Long latestRevision = svn.getLatestRevision();
-				this.buildName = Long.toString( latestRevision );
-				listener.getLogger().println( Messages.TestLinkBuilder_ShowLatestRevision(this.latestRevisionInfo.getSvnUrl(), latestRevision) );
-				listener.getLogger().println();
-			} 
-			catch (SVNException e)
-			{
-				e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_SVNError(e.getMessage())) );
-				listener.getLogger().println();
-				throw new AbortException( Messages.TestLinkBuilder_SVNError(e.getMessage()) );
-			}
-		}
-		
-		final String[] customFieldsNames = this.getListOfCustomFieldsNames();
-		
-		final String testLinkUrl = installation.getUrl();
-		final String testLinkDevKey = installation.getDevKey();
-		
-		final TestLinkService testLinkSvc;
 		try
 		{
-			URL url = new URL( testLinkUrl );
-			testLinkSvc = new TestLinkService( url, testLinkDevKey, listener );
-		}
-		catch (MalformedURLException mue) 
-		{
-			throw new AbortException( Messages.TestLinkBuilder_InvalidTLURL( testLinkUrl) );
-		}
-		
-		TestCase[] automatedTestCases = null;
-		try
-		{
-			automatedTestCases = 
-				testLinkSvc.initializeTestLinkAndFindAutomatedTestCases( 
-					testProjectName, 
-					testPlanName, 
-					buildName, 
-					Messages.TestLinkBuilder_Build_Notes(), 
-					customFieldsNames
-				);
+			automatedTestCases = testLinkHandler.retrieveAutomatedTestCasesWithCustomFields( customFieldsNames );
 		} 
 		catch (TestLinkAPIException e)
 		{
 			e.printStackTrace( listener.fatalError(e.getMessage()) );
-			throw new AbortException( Messages.TestLinkBuilder_TestLinkCommunicationError(testLinkUrl, testLinkDevKey) );
+			throw new AbortException( Messages.TestLinkBuilder_TestLinkCommunicationError() );
 		}
 		
-		listener.getLogger().println( Messages.TestLinkBuilder_SortingTestCases() );
-		final ExecutionOrderComparator executionOrderComparator = new ExecutionOrderComparator();
-		Arrays.sort( automatedTestCases, executionOrderComparator );
+		// Sorts test cases by each execution order (this info comes from TestLink)
+		this.sortAutomatedTestCases( automatedTestCases, listener );
 		
 		// Execute single test command
-		this.executeSingleTestCommand( build, launcher, listener );
+		this.executeSingleTestCommand( build, launcher.isUnix(), listener );
 		
-		// Execute iterative test command
+		// Execute iterative test command for each automated test case
 		this.executeIterativeTestCommand( 
 			automatedTestCases, 
-			testLinkSvc.getTestProject(),
-			testLinkSvc.getTestPlan(), 
-			testLinkSvc.getBuild(), 
+			testLinkHandler.getTestProject(),
+			testLinkHandler.getTestPlan(), 
+			testLinkHandler.getBuild(), 
 			build, 
-			launcher, 
+			launcher.isUnix(), 
 			listener );
 		
-		// Create list of report files patterns for TAP, TestNG and JUnit.
-		final ReportFilesPatterns reportFilesPatterns = this.getReportPatterns();
-		
-		// Create report object
-		final TestLinkReport report = 
-			new TestLinkReport( 
-				testLinkSvc.getBuild(), 
-				testLinkSvc.getTestPlan(), 
-				testLinkSvc.getTestProject());
-		
-		for( TestCase testCase : automatedTestCases )
-		{
-			report.getTestCases().add ( testCase );
-		}
+		// This report is used to generate the graphs and to store the list of 
+		// test cases with each found status.
+		final TestLinkReport report = this.createReport(
+				testLinkHandler.getBuild(), 
+				testLinkHandler.getTestPlan(), 
+				testLinkHandler.getTestProject(), 
+				automatedTestCases);
 		
 		// The object that searches for test results
 		final TestResultsCallable testResultSeeker = 
 			new TestResultsCallable(report, this.keyCustomField, reportFilesPatterns, listener);
+
+		final Set<TestCaseWrapper> wrappedTestCases;
 		
-		// Create list of test results
-		Set<TestResult> testResults = null;
-		
+		// Here we search for test results. The return if a wrapped Test Case that 
+		// contains attachments, platform and notes.
 		try
 		{
-			listener.getLogger().println( Messages.Results_LookingForTestResults() );
-			listener.getLogger().println();
-			
-			testResults = build.getWorkspace().act(testResultSeeker);
+			wrappedTestCases = build.getWorkspace().act( testResultSeeker );
 		}
 		catch ( TestResultSeekerException trse )
 		{
-			listener.getLogger().println( Messages.Results_ErrorToLookForTestResults( trse.getMessage() ) );
 			trse.printStackTrace( listener.fatalError( trse.getMessage() ) );
-			listener.getLogger().println();
-		}
-		
-		// Add blocked tests to the test results list
-		for( TestCase testCase : automatedTestCases )
-		{
-			if ( testCase.getExecutionStatus() == ExecutionStatus.BLOCKED )
-			{
-				TestResult blockedTestResult = new TestResult(testCase, testLinkSvc.getBuild(), testLinkSvc.getTestPlan());
-				testResults.add( blockedTestResult );
-			}
+			throw new AbortException(Messages.Results_ErrorToLookForTestResults( trse.getMessage() ));
 		}
 		
 		// Update TestLink with test results and uploads attachments
 		try 
 		{
-			testLinkSvc.updateTestCasesAndUploadAttachments( testResults );
+			testLinkHandler.updateTestCasesAndUploadAttachments( wrappedTestCases );
 		} 
 		catch (TestLinkAPIException tlae) 
 		{
 			tlae.printStackTrace( listener.fatalError( Messages.TestLinkBuilder_FailedToUpdateTL(tlae.getMessage()) ) );
 			throw new AbortException ( Messages.TestLinkBuilder_FailedToUpdateTL(tlae.getMessage()) );
-		}
-		
-		// TBD: really necessary?
-		report.getTestCases().clear();
-		for( TestResult testResult : testResults)
-		{
-			report.getTestCases().add ( testResult.getTestCase() );
 		}
 		
 		final TestLinkResult result = new TestLinkResult(report, build);
@@ -546,10 +433,46 @@ extends Builder
 		return Boolean.TRUE;
 	}
 	
-	/**
-	 * @return Array of custom fields names.
-	 */
-	protected String[] getListOfCustomFieldsNames()
+	protected TestLinkHandler createTestLinkHandler( 
+			String testProjectName, 
+			String testPlanName, 
+			String buildName, 
+			String buildNotes, 
+			BuildListener listener ) 
+	throws AbortException
+	{
+		final TestLinkHandler testLinkHandler;
+		
+		// TestLink installation.
+		listener.getLogger().println( Messages.TestLinkBuilder_PreparingTLAPI() );
+		
+		TestLinkInstallation installation = 
+			DESCRIPTOR.getInstallationByTestLinkName( this.testLinkName );
+		if ( installation == null )
+		{
+			throw new AbortException( Messages.TestLinkBuilder_InvalidTLAPI() );
+		}
+		
+		listener.getLogger().println ( Messages.TestLinkBuilder_UsedTLURL( installation.getUrl()) );
+		listener.getLogger().println();
+		
+		final String testLinkUrl = installation.getUrl();
+		final String testLinkDevKey = installation.getDevKey();
+		
+		try
+		{
+			final URL url = new URL( testLinkUrl );
+			testLinkHandler = new TestLinkHandler( url, testLinkDevKey, testProjectName, testPlanName, buildName, buildNotes, listener );
+		}
+		catch (MalformedURLException mue) 
+		{
+			throw new AbortException( Messages.TestLinkBuilder_InvalidTLURL( testLinkUrl) );
+		}
+		
+		return testLinkHandler;
+	}
+	
+	protected String[] createarrayOfCustomFieldsNames()
 	{
 		String[] customFieldNamesArray = new String[0];
 		String customFields = this.getCustomFields();
@@ -574,25 +497,37 @@ extends Builder
 		return customFieldNamesArray;
 	}
 	
+	protected void sortAutomatedTestCases( TestCase[] automatedTestCases, BuildListener listener )
+	{
+		listener.getLogger().println( Messages.TestLinkBuilder_SortingTestCases() );
+		Arrays.sort( automatedTestCases, this.executionOrderComparator );
+	}
+
 	/**
 	 * Executes single test command.
 	 * 
-	 * @param build Hudson Build.
-	 * @param launcher Hudson Launcher.
-	 * @param listener Hudson Build listener.
+	 * @param build Jenkins build.
+	 * @param isUnix Whether it is being built on Windows or nix
+	 * @param listener Jenkins build listener.
+	 * @throws IOException
+	 * @throws InterruptedException
 	 */
-	protected void executeSingleTestCommand(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
+	protected void executeSingleTestCommand(AbstractBuild<?, ?> build, boolean isUnix, BuildListener listener ) 
+	throws IOException, InterruptedException
 	{
 		if ( StringUtils.isNotBlank( singleTestCommand ) )
 		{
 			listener.getLogger().println( Messages.TestLinkBuilder_ExecutingSingleTestCommand( this.singleTestCommand ) );
 			listener.getLogger().println();
+			
+			EnvVars envVars = build.getEnvironment( listener );
+			
 			boolean success = this.executeTestCommand( 
 					build, 
-					launcher, 
+					isUnix, 
 					listener, 
 					singleTestCommand, 
-					null);
+					envVars);
 			if ( ! success )
 			{
 				this.failure = true;
@@ -619,10 +554,13 @@ extends Builder
 	 * @param testPlan TestLink Test Plan.
 	 * @param testLinkBuild TestLink Build.
 	 * @param build Jenkins Build.
-	 * @param launcher Jenkins Launcher.
+	 * @param isUnix Whether it is a Windows or a Unix environment.
 	 * @param listener Jenkins Listener.
+	 * @throws InterruptedException 
+	 * @throws IOException 
 	 */
-	protected void executeIterativeTestCommand( TestCase[] automatedTestCases, TestProject project, TestPlan testPlan, Build testLinkBuild, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener ) 
+	protected void executeIterativeTestCommand( TestCase[] automatedTestCases, TestProject project, TestPlan testPlan, Build testLinkBuild, AbstractBuild<?, ?> build, boolean isUnix, BuildListener listener ) 
+	throws IOException, InterruptedException 
 	{
 		if ( StringUtils.isNotBlank( iterativeTestCommand ) )
 		{
@@ -640,13 +578,15 @@ extends Builder
 					// Build environment variables
 					final EnvVars iterativeEnvVars = this.buildIterativeEnvVars( automatedTestCase, project, testPlan, testLinkBuild, listener ); 
 					
+					iterativeEnvVars.putAll( build.getEnvironment( listener ) );
+					
 					listener.getLogger().println( Messages.TestLinkBuilder_ExecutingIterativeTestCommand( this.iterativeTestCommand ) );
 					listener.getLogger().println();
 					
 					// Execute iterative test command
 					final boolean success = this.executeTestCommand( 
 							build, 
-							launcher, 
+							isUnix, 
 							listener, 
 							iterativeTestCommand, 
 							iterativeEnvVars);
@@ -664,6 +604,54 @@ extends Builder
 			listener.getLogger().println();
 		}
 		
+	}
+	
+	/**
+	 * Executes a test command for a given test case.
+	 * 
+	 * @param build Jenkins Build instance
+	 * @param isUnix Whether it is being built on Windows or nix
+	 * @param listener Jenkins Build instance's listener
+	 * @param command Command to execute
+	 * @return Integer representing the process exit code
+	 */
+	protected boolean executeTestCommand( 
+		AbstractBuild<?, ?> build, 
+		boolean isUnix,  
+		BuildListener listener, 
+		String command, 
+		EnvVars envVars) 
+	{
+		
+		boolean r = false;
+		
+		CommandInterpreter cmd = null;
+		
+		try
+		{
+			if ( isUnix )
+			{
+				cmd = new Shell( command, envVars, listener );
+			}
+			else
+			{
+				cmd = new BatchFile( command, envVars, listener );
+			}
+			
+			r = build.getWorkspace().act( cmd );
+		}  
+        catch (InterruptedException e) 
+        {
+        	e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_TestCommandError(e.getMessage())) );
+        	r = false;
+        } catch (IOException e)
+		{
+        	e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_TestCommandError(e.getMessage())) );
+        	r = false;
+		} 
+		
+		return r;
+
 	}
 	
 	/**
@@ -730,7 +718,7 @@ extends Builder
 	 * @param name The name of the custom field
 	 * @return Formatted name for a environment variable
 	 */
-	private String formatCustomFieldEnvironmentVariableName(String name) 
+	protected String formatCustomFieldEnvironmentVariableName(String name) 
 	{
 		name = name.toUpperCase(); // uppercase
 		name = name.trim(); // trim
@@ -740,64 +728,26 @@ extends Builder
 	}
 	
 	/**
-	 * Executes a test command for a given test case.
+	 * Creates the report for the build execution. 
 	 * 
-	 * @param build Jenkins Build instance
-	 * @param launcher Jenkins Build instance's launcher
-	 * @param listener Jenkins Build instance's listener
-	 * @param command Command to execute
-	 * @return Integer representing the process exit code
+	 * @param build TestLink build.
+	 * @param testPlan TestLink test plan. 
+	 * @param testProject TestLink test project.
+	 * @param automatedTestCases Array of TestLink automated test cases.
+	 * @return report.
 	 */
-	protected boolean executeTestCommand( 
-		AbstractBuild<?, ?> build, 
-		Launcher launcher, 
-		BuildListener listener, 
-		String command, 
-		EnvVars envVars) 
+	protected TestLinkReport createReport( Build build, TestPlan testPlan,
+			TestProject testProject, TestCase[] automatedTestCases )
 	{
+		final TestLinkReport report = new TestLinkReport( build, testPlan, testProject );
 		
-		boolean r = false;
-		
-		CommandInterpreter cmd = null;
-		
-		try
+		for( int i = 0 ; automatedTestCases != null && i < automatedTestCases.length ; ++i )
 		{
-			if ( launcher.isUnix() )
-			{
-				cmd = new Shell( command );
-			}
-			else
-			{
-				cmd = new BatchFile( command );
-			}
-			
-			r = cmd.execute( build, launcher, listener, envVars );
-		}  
-        catch (InterruptedException e) 
-        {
-        	e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_TestCommandError(e.getMessage())) );
-        	r = false;
-        } 
+			final TestCase testCase = automatedTestCases [ i ];
+			report.addTestCase ( testCase );
+		}
 		
-		return r;
-
-	}
-
-	/**
-	 * Retrieves the object that contains all the test report files patterns.
-	 * 
-	 * @return report files patterns object.
-	 * @see ReportFilesPatterns
-	 */
-	protected ReportFilesPatterns getReportPatterns()
-	{
-		final ReportFilesPatterns reportFilesPatterns = new ReportFilesPatterns();
-		
-		reportFilesPatterns.setJunitXmlReportFilesPattern( this.junitReportFilesPattern );
-		reportFilesPatterns.setTestNGXmlReportFilesPattern( this.testNGReportFilesPattern );
-		reportFilesPatterns.setTapStreamReportFilesPattern( this.tapReportFilesPattern );
-		
-		return reportFilesPatterns;
+		return report;
 	}
 	
 }

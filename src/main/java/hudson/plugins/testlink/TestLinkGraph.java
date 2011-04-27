@@ -86,8 +86,6 @@ extends Graph
 	 * @param categoryDataset Category data for graph.
 	 * @param yLabel Y label name.
 	 * @param xLabel X label name.
-	 * @param chartWidth Chart width in pixels.
-	 * @param chartHeight Chart height in pixels.
 	 */
 	public TestLinkGraph( 
 			AbstractBuild<?, ?> owner, 

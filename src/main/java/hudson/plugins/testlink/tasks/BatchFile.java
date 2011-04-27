@@ -23,7 +23,9 @@
  */
 package hudson.plugins.testlink.tasks;
 
+import hudson.EnvVars;
 import hudson.FilePath;
+import hudson.model.BuildListener;
 
 /**
  * Original class: https://github.com/jenkinsci/jenkins/blob/master/core/src/main/java/hudson/tasks/BatchFile.java#L48
@@ -32,14 +34,21 @@ import hudson.FilePath;
  * @since 2.2.1
  */
 public class BatchFile 
-extends CommandInterpreter
+extends CommandInterpreter 
 {
 
-	public BatchFile( String command )
+	private static final long serialVersionUID = -4461747703769527699L;
+
+	/**
+	 * @param command Command.
+	 * @param envVars Environment variables.
+	 * @param listener Jenkins build listener.
+	 */
+	public BatchFile(String command, EnvVars envVars, BuildListener listener)
 	{
-		super( command );
+		super(command,  envVars, listener);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see hudson.plugins.testlink.tasks.CommandInterpreter#buildCommandLine(hudson.FilePath)
 	 */

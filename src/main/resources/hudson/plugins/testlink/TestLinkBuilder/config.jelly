@@ -42,44 +42,21 @@
   </f:entry>
   
   <f:entry title="${%JUnitReportFilesPattern}" help="${rootURL}/../plugin/testlink/help-junitIncludePattern.html">
-	  <f:textbox name="TestLinkBuilder.junitReportFilesPattern" value="${instance.junitReportFilesPattern}" />
+	  <f:textbox name="TestLinkBuilder.junitXmlReportFilesPattern" value="${instance.junitXmlReportFilesPattern}" />
   </f:entry>
   
   <f:entry title="${%TestNGReportFilesPattern}" help="${rootURL}/../plugin/testlink/help-testNGIncludePattern.html">
-	  <f:textbox name="TestLinkBuilder.testNGReportFilesPattern" value="${instance.testNGReportFilesPattern}" />
+	  <f:textbox name="TestLinkBuilder.testNGXmlReportFilesPattern" value="${instance.testNGXmlReportFilesPattern}" />
   </f:entry>
   
   <f:entry title="${%TAPReportFilesPattern}" help="${rootURL}/../plugin/testlink/help-tapIncludePattern.html">
-	  <f:textbox name="TestLinkBuilder.tapReportFilesPattern" value="${instance.tapReportFilesPattern}" />
+	  <f:textbox name="TestLinkBuilder.tapStreamReportFilesPattern" value="${instance.tapStreamReportFilesPattern}" />
   </f:entry>
   
   <f:advanced>	  
 	  <f:entry title="${%Transactional}" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
 		  <f:checkbox name="TestLinkBuilder.transactional" value="${instance.transactional}" checked="${instance.transactional}" />
 	  </f:entry>
-	  
-	  <f:nested>
-	  	<f:entry title="${%SVNLatestRevision}" help="${rootURL}/../plugin/testlink/help-svn.html">
-		  <table>
-		    <f:optionalBlock name="TestLinkBuilder.latestRevisionInfo" title="" checked="${instance.latestRevisionEnabled}">
-		      <f:entry title="SVN url" >
-				  <f:textbox name="latestRevisionInfo.svnUrl" value="${instance.latestRevisionInfo.svnUrl}" />
-			  </f:entry>
-			  <f:entry title="SVN user">
-				  <f:textbox name="latestRevisionInfo.svnUser" value="${instance.latestRevisionInfo.svnUser}" />
-			  </f:entry>
-			  <f:entry title="SVN password">
-				  <f:password name="latestRevisionInfo.svnPassword" value="${instance.latestRevisionInfo.svnPassword}" />
-			  </f:entry>
-		    </f:optionalBlock>
-		  </table>
-		 </f:entry>
-	  </f:nested>
-	  
-	  <f:entry title="${%Debug}" help="${rootURL}/../plugin/testlink/help-debug.html">
-		  <f:checkbox name="TestLinkBuilder.debug" value="${instance.debug}" checked="${instance.debug}" />
-	  </f:entry>
-	  
   </f:advanced>
   
 </j:jelly>

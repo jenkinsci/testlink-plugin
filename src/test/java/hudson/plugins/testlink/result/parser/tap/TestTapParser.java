@@ -23,6 +23,8 @@
  */
 package hudson.plugins.testlink.result.parser.tap;
 
+import hudson.plugins.testlink.parser.tap.TAPParser;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URL;

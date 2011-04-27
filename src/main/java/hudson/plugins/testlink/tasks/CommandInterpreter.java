@@ -25,14 +25,15 @@ package hudson.plugins.testlink.tasks;
 
 import hudson.EnvVars;
 import hudson.FilePath;
+import hudson.FilePath.FileCallable;
 import hudson.Launcher;
 import hudson.Util;
 import hudson.model.BuildListener;
-import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.util.Messages;
+import hudson.remoting.VirtualChannel;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Original class: https://github.com/jenkinsci/jenkins/blob/master/core/src/main/java/hudson/tasks/CommandInterpreter.java
@@ -40,14 +41,21 @@ import java.util.Map;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.2.1
  */
-public abstract class CommandInterpreter
+public abstract class CommandInterpreter 
+implements FileCallable<Boolean>
 {
 	
-	protected final String command;
+	private static final long serialVersionUID = 8618440862720090679L;
 	
-	public CommandInterpreter( String command )
+	protected final String command;
+	private final EnvVars envVars;
+	private final BuildListener listener;
+	
+	public CommandInterpreter( String command, EnvVars envVars, BuildListener listener )
 	{
 		this.command = command;
+		this.envVars = envVars;
+		this.listener = listener;
 	}
 
 	public final String getCommand()
@@ -55,10 +63,10 @@ public abstract class CommandInterpreter
 		return command;
 	}
 	
-	public boolean execute( AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, EnvVars envVars )
+	public Boolean execute( File workspace )
 	throws InterruptedException
 	{
-		FilePath ws = build.getWorkspace();
+		FilePath ws = new FilePath( workspace );
 		FilePath script = null;
 		
 		try
@@ -77,25 +85,8 @@ public abstract class CommandInterpreter
 			int r;
 			try
 			{
-				// This will be used in the command execution
-				EnvVars buildEnvVars = build.getEnvironment( listener );
-				
-				// Add the build environment variables (BUILD_ID, ...)
-				for(Map.Entry<String, String> e : build.getBuildVariables().entrySet() )
-				{
-					buildEnvVars.put( e.getKey(), e.getValue() );
-				}
-				
-				// If not null, add TestLink envVars (TESTLINK_TESTCASE_CUSTOM...)
-				if ( envVars != null )
-				{
-					for(Map.Entry<String, String> e : envVars.entrySet() )
-					{
-						buildEnvVars.put( e.getKey(), e.getValue() );
-					}
-				}
-				
-				r = launcher.launch().cmds( buildCommandLine( script ) ).envs( buildEnvVars).stdout( listener ).pwd( ws ).join(); 
+				Launcher launcher = ws.createLauncher( listener );
+				r = launcher.launch().cmds( buildCommandLine( script ) ).envs( envVars ).stdout( listener ).pwd( ws ).join(); 
  			}
 			catch ( IOException e )
 			{
@@ -132,5 +123,14 @@ public abstract class CommandInterpreter
 	protected abstract String getContents();
 	
 	protected abstract String getFileExtension();
+	
+	/* (non-Javadoc)
+	 * @see hudson.FilePath.FileCallable#invoke(java.io.File, hudson.remoting.VirtualChannel)
+	 */
+	public Boolean invoke( File f, VirtualChannel channel ) throws IOException,
+			InterruptedException
+	{
+		return this.execute( f );
+	}
 	
 }

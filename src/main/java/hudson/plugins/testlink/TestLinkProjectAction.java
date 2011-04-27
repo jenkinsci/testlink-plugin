@@ -40,7 +40,7 @@ import org.kohsuke.stapler.StaplerResponse;
  * @since 1.0
  */
 public class TestLinkProjectAction 
-extends AbstractTestLinkAction
+extends AbstractTestLinkProjectAction
 {
 
 	private static final long serialVersionUID = 5600270062198355080L;

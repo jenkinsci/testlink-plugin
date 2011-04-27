@@ -23,7 +23,12 @@
  */
 package hudson.plugins.testlink.result.parser.junit;
 
-import hudson.plugins.testlink.util.ParserException;
+import hudson.plugins.testlink.parser.ParserException;
+import hudson.plugins.testlink.parser.junit.Error;
+import hudson.plugins.testlink.parser.junit.Failure;
+import hudson.plugins.testlink.parser.junit.JUnitParser;
+import hudson.plugins.testlink.parser.junit.TestCase;
+import hudson.plugins.testlink.parser.junit.TestSuite;
 
 import java.io.File;
 import java.net.URL;

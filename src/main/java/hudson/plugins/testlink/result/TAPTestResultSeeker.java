@@ -24,10 +24,9 @@
 package hudson.plugins.testlink.result;
 
 import hudson.model.BuildListener;
-import hudson.plugins.testlink.result.parser.tap.TAPParser;
-import hudson.plugins.testlink.result.scanner.Scanner;
+import hudson.plugins.testlink.parser.ParserException;
+import hudson.plugins.testlink.parser.tap.TAPParser;
 import hudson.plugins.testlink.util.Messages;
-import hudson.plugins.testlink.util.ParserException;
 
 import java.io.File;
 import java.io.IOException;
@@ -79,10 +78,10 @@ extends TestResultSeeker
 	 * @see hudson.plugins.testlink.result.TestResultSeeker#seek(java.io.File, java.lang.String)
 	 */
 	@Override
-	public Set<TestResult> seek( File directory, String includePattern )
+	public Set<TestCaseWrapper> seek( File directory, String includePattern )
 			throws TestResultSeekerException
 	{
-		final Set<TestResult> results = new HashSet<TestResult>();
+		final Set<TestCaseWrapper> results = new HashSet<TestCaseWrapper>();
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip TAP
 		{
@@ -93,9 +92,7 @@ extends TestResultSeeker
 		{
 			try
 			{
-				final Scanner scanner = new Scanner();
-				
-				String[] tapReports = scanner.scan(directory, includePattern, listener);
+				String[] tapReports = this.scan(directory, includePattern, listener);
 				
 				listener.getLogger().println( Messages.Results_TAP_NumberOfReportsFound( tapReports.length ) );
 				listener.getLogger().println();
@@ -126,7 +123,7 @@ extends TestResultSeeker
 	protected void doTAPReports( 
 		File directory, 
 		String[] tapReports, 
-		Set<TestResult> testResults)
+		Set<TestCaseWrapper> testResults)
 	{
 		
 		for ( int i = 0 ; i < tapReports.length ; ++i )
@@ -164,7 +161,7 @@ extends TestResultSeeker
 	protected void doTAPTestSet( 
 		TestSet tapTestSet, 
 		File tapFile, 
-		Set<TestResult> testResults ) 
+		Set<TestCaseWrapper> testResults ) 
 	{
 		listener.getLogger().println( Messages.Results_TAP_VerifyingTapSet( tapTestSet.getNumberOfTestResults() ) );
 		listener.getLogger().println();
@@ -177,7 +174,7 @@ extends TestResultSeeker
 			tapFileNameWithoutExtension = tapFileNameWithoutExtension.substring(0, tapFileNameWithoutExtension.lastIndexOf('.'));
 		}
 		
-		final TestResult testResult = this.doFindTestResult( tapFileNameWithoutExtension, tapTestSet, tapFile );
+		final TestCaseWrapper testResult = this.doFindTestResult( tapFileNameWithoutExtension, tapTestSet, tapFile );
 		
 		if ( testResult != null )
 		{
@@ -200,7 +197,7 @@ extends TestResultSeeker
 	 * @param tapFile TAP File for attachments.
 	 * @return Test Result.
 	 */
-	protected TestResult doFindTestResult( 
+	protected TestCaseWrapper doFindTestResult( 
 		String tapFileNameWithoutExtension,
 		TestSet tapTestSet, 
 		File tapFile )
@@ -227,9 +224,9 @@ extends TestResultSeeker
 				// test suite name, then we have a Test Result to update
 				if ( isKeyCustomField && tapFileNameWithoutExtension.equals(customFieldValue) )
 				{
-					ExecutionStatus status = this.getTapExecutionStatus( tapTestSet );
+					final ExecutionStatus status = this.getTapExecutionStatus( tapTestSet );
 					testLinkTestCase.setExecutionStatus( status );
-					TestResult testResult = new TestResult(testLinkTestCase, report.getBuild(), report.getTestPlan());
+					final TestCaseWrapper testResult = new TestCaseWrapper( testLinkTestCase );
 					
 					String notes = this.getTapNotes( tapTestSet );
 					

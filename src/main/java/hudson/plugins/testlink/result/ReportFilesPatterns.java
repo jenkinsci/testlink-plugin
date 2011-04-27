@@ -33,66 +33,47 @@ public class ReportFilesPatterns
 implements Serializable
 {
 
-	private static final long serialVersionUID = -2825703684677458681L;
+	private static final long serialVersionUID = -1546548797599894951L;
 
 	/**
 	 * JUnit XML report files pattern.
 	 */
-	private String junitXmlReportFilesPattern;
+	private final String junitXmlReportFilesPattern;
 	
 	/**
 	 * TestNG XML report files pattern.
 	 */
-	private String testNGXmlReportFilesPattern;
+	private final String testNGXmlReportFilesPattern;
 	
 	/**
 	 * TAP Streams report files pattern.
 	 */
-	private String tapStreamReportFilesPattern;
+	private final String tapStreamReportFilesPattern;
 	
-	public ReportFilesPatterns() 
+	public ReportFilesPatterns( 
+			String junitXmlReportFilesPattern, 
+			String testNGXmlReportFilesPattern, 
+			String tapStreamReportFilesPattern ) 
 	{
 		super();
+		this.junitXmlReportFilesPattern = junitXmlReportFilesPattern;
+		this.testNGXmlReportFilesPattern = testNGXmlReportFilesPattern;
+		this.tapStreamReportFilesPattern = tapStreamReportFilesPattern;
 	}
 
 	public String getJunitXmlReportFilesPattern()
 	{
-		return junitXmlReportFilesPattern;
-	}
-
-	public void setJunitXmlReportFilesPattern( String junitXmlReportFilesPattern )
-	{
-		this.junitXmlReportFilesPattern = junitXmlReportFilesPattern;
+		return this.junitXmlReportFilesPattern;
 	}
 
 	public String getTestNGXmlReportFilesPattern()
 	{
-		return testNGXmlReportFilesPattern;
-	}
-
-	public void setTestNGXmlReportFilesPattern( String testNGXmlReportFilesPattern )
-	{
-		this.testNGXmlReportFilesPattern = testNGXmlReportFilesPattern;
+		return this.testNGXmlReportFilesPattern;
 	}
 
 	public String getTapStreamReportFilesPattern()
 	{
-		return tapStreamReportFilesPattern;
+		return this.tapStreamReportFilesPattern;
 	}
 
-	public void setTapStreamReportFilesPattern( String tapStreamReportFilesPattern )
-	{
-		this.tapStreamReportFilesPattern = tapStreamReportFilesPattern;
-	}
-
-	@Override
-	public String toString()
-	{
-		return "TestReportDirectories [junitXmlReportFilesPattern="
-				+ junitXmlReportFilesPattern + ", testNGXmlReportFilesPattern="
-				+ testNGXmlReportFilesPattern
-				+ ", tapStreamReportFilesPattern="
-				+ tapStreamReportFilesPattern + "]";
-	}
-	
 }

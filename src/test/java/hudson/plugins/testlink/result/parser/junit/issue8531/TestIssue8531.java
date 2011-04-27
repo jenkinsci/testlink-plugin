@@ -23,9 +23,9 @@
  */
 package hudson.plugins.testlink.result.parser.junit.issue8531;
 
-import hudson.plugins.testlink.result.parser.junit.JUnitParser;
-import hudson.plugins.testlink.result.parser.junit.TestCase;
-import hudson.plugins.testlink.result.parser.junit.TestSuite;
+import hudson.plugins.testlink.parser.junit.JUnitParser;
+import hudson.plugins.testlink.parser.junit.TestCase;
+import hudson.plugins.testlink.parser.junit.TestSuite;
 
 import java.io.File;
 import java.net.URL;

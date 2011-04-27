@@ -22,7 +22,6 @@
  */
 package hudson.plugins.testlink;
 
-import hudson.plugins.testlink.model.TestLinkLatestRevisionInfo;
 import hudson.plugins.testlink.result.ReportFilesPatterns;
 
 import org.jvnet.hudson.test.HudsonTestCase;
@@ -37,10 +36,11 @@ public class TestTestLinkBuilder
 extends HudsonTestCase
 {
 
-	private final TestLinkLatestRevisionInfo latestRevisionInfo = new TestLinkLatestRevisionInfo(
-			"", "", "");
-	
 	private TestLinkBuilder builder = null;	
+	
+	private String junitXmlReportFilesPattern = "**/TEST-*.xml";
+	private String testNgXmlReportFilesPattern = "**/testng-results.xml";
+	private String tapReportFilesPattern = "**/*.tap";
 	
 	public void setUp() 
 	throws Exception
@@ -49,8 +49,10 @@ extends HudsonTestCase
 		
 		builder = new TestLinkBuilder("No testlink", "No project",
 				"No plan", "No build", "class, time", "dir", "dir",
-				Boolean.FALSE, latestRevisionInfo, "class",
-				"**/TEST-*.xml", "**/testng-results.xml", "**/*.tap");
+				Boolean.FALSE, "class",
+				junitXmlReportFilesPattern,
+				testNgXmlReportFilesPattern, 
+				tapReportFilesPattern) ;
 	}
 	
 	/**
@@ -59,7 +61,7 @@ extends HudsonTestCase
 	public void testReportPatterns() 
 	throws Exception
 	{
-		ReportFilesPatterns reportPatterns = builder.getReportPatterns();
+		ReportFilesPatterns reportPatterns = builder.getReportFilesPatterns();
 		assertNotNull(reportPatterns);
 		assertEquals(reportPatterns.getJunitXmlReportFilesPattern(),
 				"**/TEST-*.xml");
@@ -74,7 +76,7 @@ extends HudsonTestCase
 	 */
 	public void testListOfCustomFields()
 	{
-		String[] customFieldsNames = builder.getListOfCustomFieldsNames();
+		String[] customFieldsNames = builder.createarrayOfCustomFieldsNames();
 		
 		assertNotNull( customFieldsNames );
 		assertTrue( customFieldsNames.length == 2 );
@@ -84,7 +86,7 @@ extends HudsonTestCase
 	
 	public void testNull()
 	{
-		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null, null);
+		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null );
 		
 		assertNotNull( builder );
 		
@@ -100,29 +102,18 @@ extends HudsonTestCase
 		
 		assertNull( builder.getIterativeTestCommand() );
 		
-		assertNull( builder.getLatestRevisionInfo() );
-		
-		assertFalse( builder.getLatestRevisionEnabled() );
-		
 		assertNull( builder.getCustomFields() );
 		
 		assertNull( builder.getTransactional() );
 		
 		assertNull( builder.getKeyCustomField() );
 		
-		assertNull( builder.getJunitReportFilesPattern() );
-		
-		assertNull( builder.getTestNGReportFilesPattern() );
-		
-		assertNull( builder.getTapReportFilesPattern() );
-		
-		TestLinkLatestRevisionInfo latestRevisionInfo = new TestLinkLatestRevisionInfo(
-				"", "", "");
+		// assertNull( builder.getReportFilesPatterns() );
 		
 		builder = new TestLinkBuilder("No testlink", "No project",
 				"No plan", "No build", "class, time", "dir", "dir",
-				Boolean.FALSE, latestRevisionInfo, "class",
-				"**/TEST-*.xml", "**/testng-results.xml", "**/*.tap");
+				Boolean.FALSE, "class",
+				junitXmlReportFilesPattern, testNgXmlReportFilesPattern, tapReportFilesPattern );
 	}
 	
 	/**
@@ -152,10 +143,6 @@ extends HudsonTestCase
 		assertNotNull( builder.getIterativeTestCommand() );
 		assertEquals( builder.getIterativeTestCommand(), "dir" );
 		
-		assertNotNull( builder.getLatestRevisionInfo() );
-		
-		assertTrue( builder.getLatestRevisionEnabled() );
-		
 		assertNotNull( builder.getCustomFields() );
 		assertEquals( builder.getCustomFields(), "class, time" );
 		
@@ -164,14 +151,14 @@ extends HudsonTestCase
 		assertNotNull( builder.getKeyCustomField() );
 		assertEquals( builder.getKeyCustomField(), "class" );
 		
-		assertNotNull( builder.getJunitReportFilesPattern() );
-		assertEquals( builder.getJunitReportFilesPattern(), "**/TEST-*.xml" );
+		assertNotNull( builder.getReportFilesPatterns().getJunitXmlReportFilesPattern());
+		assertEquals( builder.getReportFilesPatterns().getJunitXmlReportFilesPattern(), "**/TEST-*.xml" );
 		
-		assertNotNull( builder.getTestNGReportFilesPattern() );
-		assertEquals( builder.getTestNGReportFilesPattern(), "**/testng-results.xml" );
+		assertNotNull( builder.getReportFilesPatterns().getTestNGXmlReportFilesPattern() );
+		assertEquals( builder.getReportFilesPatterns().getTestNGXmlReportFilesPattern(), "**/testng-results.xml" );
 		
-		assertNotNull( builder.getTapReportFilesPattern() );
-		assertEquals( builder.getTapReportFilesPattern(), "**/*.tap" );
+		assertNotNull( builder.getReportFilesPatterns().getTapStreamReportFilesPattern() );
+		assertEquals( builder.getReportFilesPatterns().getTapStreamReportFilesPattern(), "**/*.tap" );
 	}
 
 }

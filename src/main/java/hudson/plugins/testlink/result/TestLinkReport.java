@@ -55,7 +55,8 @@ implements Serializable
 	}
 
 	public TestLinkReport(Build build, TestPlan testPlan,
-			TestProject testProject) {
+			TestProject testProject) 
+	{
 		super();
 		this.build = build;
 		this.testPlan = testPlan;
@@ -64,31 +65,38 @@ implements Serializable
 		this.testCases = new ArrayList<TestCase>();
 	}
 	
-	public Build getBuild() {
+	public Build getBuild() 
+	{
 		return build;
 	}
 
-	public void setBuild(Build build) {
+	public void setBuild(Build build) 
+	{
 		this.build = build;
 	}
 
-	public TestPlan getTestPlan() {
+	public TestPlan getTestPlan() 
+	{
 		return testPlan;
 	}
 
-	public void setTestPlan(TestPlan testPlan) {
+	public void setTestPlan(TestPlan testPlan) 
+	{
 		this.testPlan = testPlan;
 	}
 
-	public TestProject getTestProject() {
+	public TestProject getTestProject()
+	{
 		return testProject;
 	}
 
-	public void setTestProject(TestProject testProject) {
+	public void setTestProject(TestProject testProject) 
+	{
 		this.testProject = testProject;
 	}
 
-	public List<TestCase> getTestCases() {
+	public List<TestCase> getTestCases()
+	{
 		return testCases;
 	}
 

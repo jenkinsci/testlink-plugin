@@ -23,7 +23,9 @@
  */
 package hudson.plugins.testlink.result;
 
+import hudson.Util;
 import hudson.model.BuildListener;
+import hudson.plugins.testlink.util.Messages;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +34,9 @@ import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.types.FileSet;
 
 /**
  * Seeks for Test Results.
@@ -76,7 +81,7 @@ implements Serializable
 	 * @param includePattern Include pattern
 	 * @throws TestResultSeekerException
 	 */
-	public abstract Set<TestResult> seek( 
+	public abstract Set<TestCaseWrapper> seek( 
 			File directory, 
 			String includePattern )
 	throws TestResultSeekerException;
@@ -93,6 +98,47 @@ implements Serializable
 	{
 		byte[] fileData = FileUtils.readFileToByteArray(file);
 		return Base64.encodeBase64String( fileData );
+	}
+	
+	/**
+	 * Scans a directory for files matching the includes pattern.
+	 * 
+	 * @param directory the directory to scan.
+	 * @param includes the includes pattern.
+	 * @param listener Hudson Build listener.
+	 * @return array of strings of paths for files that match the includes pattern in the directory.
+	 * @throws IOException
+	 */
+	protected String[] scan( 
+		final File directory, 
+		final String includes, 
+		final BuildListener listener 
+	) 
+	throws IOException
+	{
+		
+		String[] fileNames = new String[0];
+		
+		if ( StringUtils.isNotBlank( includes ) )
+		{
+			FileSet fs = null;
+			
+			try
+			{
+				fs = Util.createFileSet( directory, includes );
+				
+				DirectoryScanner ds = fs.getDirectoryScanner();
+				fileNames = ds.getIncludedFiles();
+			}
+			catch ( Exception e ) // TBD: find out which exception is thrown
+			{
+				e.printStackTrace( listener.getLogger() );
+				throw new IOException( Messages.TestLinkBuilder_Scanner_FailedToOpenBaseDirectory(e.getMessage()), e );
+			}
+		}
+		
+		return fileNames;
+		
 	}
 	
 }

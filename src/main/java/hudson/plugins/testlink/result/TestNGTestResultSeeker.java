@@ -24,14 +24,13 @@
 package hudson.plugins.testlink.result;
 
 import hudson.model.BuildListener;
-import hudson.plugins.testlink.result.parser.testng.Class;
-import hudson.plugins.testlink.result.parser.testng.Suite;
-import hudson.plugins.testlink.result.parser.testng.Test;
-import hudson.plugins.testlink.result.parser.testng.TestMethod;
-import hudson.plugins.testlink.result.parser.testng.TestNGParser;
-import hudson.plugins.testlink.result.scanner.Scanner;
+import hudson.plugins.testlink.parser.ParserException;
+import hudson.plugins.testlink.parser.testng.Class;
+import hudson.plugins.testlink.parser.testng.Suite;
+import hudson.plugins.testlink.parser.testng.Test;
+import hudson.plugins.testlink.parser.testng.TestMethod;
+import hudson.plugins.testlink.parser.testng.TestNGParser;
 import hudson.plugins.testlink.util.Messages;
-import hudson.plugins.testlink.util.ParserException;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,10 +76,10 @@ extends TestResultSeeker
 	 * @see hudson.plugins.testlink.result.TestResultSeeker#seek(java.io.File, java.lang.String)
 	 */
 	@Override
-	public Set<TestResult> seek( File directory, String includePattern )
+	public Set<TestCaseWrapper> seek( File directory, String includePattern )
 			throws TestResultSeekerException
 	{
-		final Set<TestResult> results = new HashSet<TestResult>();
+		final Set<TestCaseWrapper> results = new HashSet<TestCaseWrapper>();
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip TestNG
 		{
@@ -91,9 +90,7 @@ extends TestResultSeeker
 		{
 			try
 			{
-				final Scanner scanner = new Scanner();
-				
-				String[] testNGReports = scanner.scan(directory, includePattern, listener);
+				String[] testNGReports = this.scan(directory, includePattern, listener);
 				
 				listener.getLogger().println( Messages.Results_TestNG_NumberOfReportsFound( testNGReports.length ) );
 				listener.getLogger().println();
@@ -124,7 +121,7 @@ extends TestResultSeeker
 	protected void doTestNGReports( 
 		File directory, 
 		String[] testNGReports, 
-		Set<TestResult> testResults)
+		Set<TestCaseWrapper> testResults)
 	{
 		
 		for ( int i = 0 ; i < testNGReports.length ; ++i )
@@ -162,7 +159,7 @@ extends TestResultSeeker
 	protected void doTestNGSuite( 
 		Suite testNGSuite, 
 		File testNGFile, 
-		Set<TestResult> testResults ) 
+		Set<TestCaseWrapper> testResults ) 
 	{
 		listener.getLogger().println( Messages.Results_TestNG_VerifyingTestNGTestSuite( testNGSuite.getName(), testNGSuite.getTests().size() ) );
 		listener.getLogger().println();
@@ -171,16 +168,16 @@ extends TestResultSeeker
 		
 		for( Test testNGTest : testNGTests )
 		{
-			final List<hudson.plugins.testlink.result.parser.testng.Class> classes = 
+			final List<hudson.plugins.testlink.parser.testng.Class> classes = 
 				testNGTest.getClasses();
 			
 			listener.getLogger().println( Messages.Results_TestNG_VerifyingTestNGTest( testNGTest.getName(), classes.size() ));
 			
-			for ( hudson.plugins.testlink.result.parser.testng.Class clazz : classes )
+			for ( hudson.plugins.testlink.parser.testng.Class clazz : classes )
 			{
 				listener.getLogger().println( Messages.Results_TestNG_VerifyingTestNGTestClass( clazz.getName() ) );
 				
-				final TestResult testResult = this.doFindTestResult( testNGSuite, clazz, testNGFile );
+				final TestCaseWrapper testResult = this.doFindTestResult( testNGSuite, clazz, testNGFile );
 				
 				if ( testResult != null )
 				{
@@ -208,7 +205,7 @@ extends TestResultSeeker
 	 * @param testNGFile TestNG test file.
 	 * @return a Test Result or <code>null</code> if unable to find it.
 	 */
-	protected TestResult doFindTestResult( Suite testNGSuite, Class clazz, File testNGFile )
+	protected TestCaseWrapper doFindTestResult( Suite testNGSuite, Class clazz, File testNGFile )
 	{
 		final String testNGTestClassName = clazz.getName();
 		
@@ -232,9 +229,9 @@ extends TestResultSeeker
 				
 				if ( isKeyCustomField && testNGTestClassName.equals( customFieldValue ) )
 				{
-					ExecutionStatus status = this.getTestNGExecutionStatus( clazz );
+					final ExecutionStatus status = this.getTestNGExecutionStatus( clazz );
 					testLinkTestCase.setExecutionStatus( status );
-					TestResult testResult = new TestResult(testLinkTestCase, report.getBuild(), report.getTestPlan());
+					final TestCaseWrapper testResult = new TestCaseWrapper(testLinkTestCase );
 					
 					String notes = this.getTestNGNotes( testNGSuite, clazz );
 					

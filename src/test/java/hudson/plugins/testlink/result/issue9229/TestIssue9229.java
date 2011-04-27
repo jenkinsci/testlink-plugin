@@ -27,7 +27,7 @@ import hudson.model.BuildListener;
 import hudson.model.StreamBuildListener;
 import hudson.plugins.testlink.result.JUnitTestResultSeeker;
 import hudson.plugins.testlink.result.TestLinkReport;
-import hudson.plugins.testlink.result.TestResult;
+import hudson.plugins.testlink.result.TestCaseWrapper;
 import hudson.plugins.testlink.result.TestTestResultSeekerJUnit;
 
 import java.io.File;
@@ -76,7 +76,7 @@ extends junit.framework.TestCase
 		ClassLoader cl = TestTestResultSeekerJUnit.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/issue9229/");
 		File junitDir = new File( url.getFile() );
-		Set<TestResult> found = seeker.seek(junitDir, "TEST-*.xml");
+		Set<TestCaseWrapper> found = seeker.seek(junitDir, "TEST-*.xml");
 		assertNotNull( found );
 		assertTrue( found.size() == 1 );
 		

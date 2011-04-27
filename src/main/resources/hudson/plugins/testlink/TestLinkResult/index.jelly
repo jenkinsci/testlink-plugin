@@ -8,15 +8,31 @@
 			<h1>${%TestLinkResults}</h1>
 
 	        <!--st:include page="/tabview/main.jelly" /-->
+	        <table>
+	        <tr>
+	        <td>${%BuildId}: </td><td><b>${it.report.build.id}</b></td>
+	        </tr>
 	        
-	        <p>${%BuildId}: <b>${it.report.build.id}</b></p>
-	        <p>${%BuildName}: <b>${it.report.build.name}</b></p>
+	        <tr>
+	        <td>${%BuildName}: </td><td><b>${it.report.build.name}</b></td>
+	        </tr>
 	        
-	        <p>${%Passed}: <b>${it.report.testsPassed}</b></p>
-	        <p>${%Failed}: <b>${it.report.testsFailed}</b></p>
-	        <p>${%Blocked}: <b>${it.report.testsBlocked}</b></p>
-	        <p>${%Total}: <b>${it.report.testsTotal}</b></p>
-
+	        <tr>
+	        <td>${%Passed}: </td><td><b>${it.report.testsPassed}</b></td>
+	        </tr>
+	        
+	        <tr>
+	        <td>${%Failed}: </td><td><b>${it.report.testsFailed}</b></td>
+	        </tr>
+	        
+	        <tr>
+	        <td>${%Blocked}: </td><td><b>${it.report.testsBlocked}</b></td>
+	        </tr>
+	        
+	        <tr>
+	        <td>${%Total}: </td><td><b>${it.report.testsTotal}</b></td>
+	        </tr>
+			</table>
 		</l:main-panel>
 	</l:layout>
 </j:jelly>
