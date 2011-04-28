@@ -1,4 +1,25 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+  <st:header name="Content-Type" value="text/html;charset=UTF-8" />
+
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/yahoo-min.js"></script> 
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/dom-min.js"></script> 
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/event-min.js"></script> 
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/animation-min.js"></script> 
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/datasource-min.js"></script> 
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/autocomplete-min.js"></script> 
+	
+  <!-- 
+  	Auto complete code copied from: 
+  	http://developer.yahoo.com/yui/examples/autocomplete/ac_basic_array.html
+   -->
+  <style type="text/css">
+#keyCustomFieldAutoComplete {
+    /*width:15em;/* /* set width here or else widget will expand to fit its container */
+    padding-bottom:2em;
+}
+  </style>
+  
 	<!--
 		This script defines the view on the project builders section for TestLink Builder.
 	-->
@@ -26,7 +47,7 @@
   </f:entry>
   
   <f:entry title="${%CustomFields}" help="${rootURL}/../plugin/testlink/help-customFields.html">
-	  <f:textbox name="TestLinkBuilder.customFields" value="${instance.customFields}" />
+	  <f:textbox id="customFields" name="TestLinkBuilder.customFields" value="${instance.customFields}" />
   </f:entry>
   
   <f:entry title="${%SingleTestCommand}" help="${rootURL}/../plugin/testlink/help-singleTestCommand.html">
@@ -36,10 +57,56 @@
   <f:entry title="${%IterativeTestCommand}" help="${rootURL}/../plugin/testlink/help-iterativeTestCommand.html">
 	  <f:textarea name="TestLinkBuilder.iterativeTestCommand" value="${instance.iterativeTestCommand}" />
   </f:entry>
-  
+
   <f:entry title="${%KeyCustomField}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
-	  <f:textbox name="TestLinkBuilder.keyCustomField" value="${instance.keyCustomField}" />
+  	<div id="keyCustomFieldAutoComplete">
+	  <f:textbox id="keyCustomField" name="TestLinkBuilder.keyCustomField" value="${instance.keyCustomField}" />
+	  <div id="keyCustomFieldContainer"></div> 
+	</div>
   </f:entry>
+  
+<script type="text/javascript">
+<![CDATA[
+var getArrayOfCustomFields = function( sQuery )
+{
+	var sCustomFields = "";
+	var sCustomFieldsElement = document.getElementById('customFields');
+	if ( ! YAHOO.lang.isNull( sCustomFieldsElement ) )
+	{
+		sCustomFields = sCustomFieldsElement.value;
+	}
+	var aCustomFields = [];
+	if ( YAHOO.lang.isString( sCustomFields ) && YAHOO.lang.trim( sCustomFields ) != '' )
+	{
+		aCustomFields = sCustomFields.split( ',' );
+	}
+	return aCustomFields;
+}
+
+YAHOO.example.autocomplete = function() {
+	var oConfigs = {
+        prehighlightClassName: "yui-ac-prehighlight",
+        queryDelay: 0,
+        minQueryLength: 0,
+        animVert: .01,
+    };
+    // Use a LocalDataSource
+    var oDS = new YAHOO.util.FunctionDataSource(getArrayOfCustomFields);
+    // Optional to define fields for single-dimensional array
+    oDS.responseSchema = {fields : ["state"]};
+
+    // Instantiate the AutoComplete
+    var oAC = new YAHOO.widget.AutoComplete("keyCustomField", "keyCustomFieldContainer", oDS, oConfigs);
+    oAC.prehighlightClassName = "yui-ac-prehighlight";
+    oAC.useShadow = true;
+    
+    return {
+        oDS: oDS,
+        oAC: oAC
+    };
+}();
+]]>
+</script>
   
   <f:entry title="${%JUnitReportFilesPattern}" help="${rootURL}/../plugin/testlink/help-junitIncludePattern.html">
 	  <f:textbox name="TestLinkBuilder.junitXmlReportFilesPattern" value="${instance.junitXmlReportFilesPattern}" />

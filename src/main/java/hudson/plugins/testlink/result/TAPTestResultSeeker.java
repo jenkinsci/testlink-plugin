@@ -202,7 +202,9 @@ extends TestResultSeeker
 		TestSet tapTestSet, 
 		File tapFile )
 	{
+		listener.getLogger().println();
 		listener.getLogger().println( Messages.Results_TAP_LookingForTestResults( keyCustomFieldName, tapFileNameWithoutExtension ) );
+		listener.getLogger().println();
 		
 		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : this.report.getTestCases() )
 		{
@@ -224,29 +226,34 @@ extends TestResultSeeker
 				// test suite name, then we have a Test Result to update
 				if ( isKeyCustomField && tapFileNameWithoutExtension.equals(customFieldValue) )
 				{
-					final ExecutionStatus status = this.getTapExecutionStatus( tapTestSet );
-					testLinkTestCase.setExecutionStatus( status );
-					final TestCaseWrapper testResult = new TestCaseWrapper( testLinkTestCase );
 					
-					String notes = this.getTapNotes( tapTestSet );
-					
-					try
+					if ( ExecutionStatus.BLOCKED != testLinkTestCase.getExecutionStatus() )
 					{
-						List<Attachment> tapAttachments = this.getTapAttachments( testResult.getTestCase().getVersionId(), tapFile, tapTestSet );
+						final ExecutionStatus status = this.getTapExecutionStatus( tapTestSet );
+						testLinkTestCase.setExecutionStatus( status );
+						final TestCaseWrapper testResult = new TestCaseWrapper( testLinkTestCase );
 						
-						for( Attachment attachment : tapAttachments )
+						String notes = this.getTapNotes( tapTestSet );
+						
+						try
 						{
-							testResult.addAttachment( attachment );
+							List<Attachment> tapAttachments = this.getTapAttachments( testResult.getTestCase().getVersionId(), tapFile, tapTestSet );
+							
+							for( Attachment attachment : tapAttachments )
+							{
+								testResult.addAttachment( attachment );
+							}
 						}
-					}
-					catch ( IOException ioe )
-					{
-						notes += Messages.Results_TAP_AddAttachmentsFail( ioe.getMessage() );
-						ioe.printStackTrace( listener.getLogger() );
+						catch ( IOException ioe )
+						{
+							notes += Messages.Results_TAP_AddAttachmentsFail( ioe.getMessage() );
+							ioe.printStackTrace( listener.getLogger() );
+						}
+						
+						testResult.setNotes( notes );
+						return testResult;
 					}
 					
-					testResult.setNotes( notes );
-					return testResult;
 				}
 			}
 		}

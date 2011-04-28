@@ -38,6 +38,7 @@ import br.eti.kinoshita.testlinkjavaapi.TestLinkAPIException;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
+import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionType;
 import br.eti.kinoshita.testlinkjavaapi.model.ReportTCResultResponse;
 import br.eti.kinoshita.testlinkjavaapi.model.ResponseDetails;
@@ -253,7 +254,7 @@ public class TestLinkHandler
 		
 		listener.getLogger().println( "Found ["+testCases.length+"] TestLink Automated Test Cases." );
 		
-		this.setProjectIDAndCustomFields( testCases, customFieldsNames );
+		this.setProjectIDExecutionStatusAndCustomFields( testCases, customFieldsNames );
 		
 		return testCases;
 	}
@@ -264,7 +265,7 @@ public class TestLinkHandler
 	 * @param testCases Array of TestLink test cases.
 	 * @param customFieldsNames Array of custom fields names.
 	 */
-	private void setProjectIDAndCustomFields( TestCase[] testCases, String[] customFieldsNames )
+	private void setProjectIDExecutionStatusAndCustomFields( TestCase[] testCases, String[] customFieldsNames )
 	{
 		if ( testCases.length > 0 )
 		{
@@ -274,6 +275,8 @@ public class TestLinkHandler
 		{
 			listener.getLogger().println( Messages.TestLinkBuilder_Finder_FoundAutomatedTestCase( testCase ) );			
 			testCase.setTestProjectId( this.testProject.getId() );
+			
+			testCase.setExecutionStatus( ExecutionStatus.NOT_RUN );
 			
 			// Retrieve list of custom fields for TC
 			listener.getLogger().println( Messages.TestLinkBuilder_Finder_RetrievingListOfCustomFields() );

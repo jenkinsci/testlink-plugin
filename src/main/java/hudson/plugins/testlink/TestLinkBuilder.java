@@ -147,7 +147,7 @@ extends Builder
 	/**
 	 * Flag to check if any failure happened.
 	 */
-	private boolean failure = Boolean.FALSE;
+	private boolean failure = false;
 	
 	/**
 	 * Used to sort test cases marked as automated.
@@ -348,6 +348,9 @@ extends Builder
 			BuildListener listener ) 
 	throws InterruptedException, IOException
 	{
+		
+		this.failure = false;
+		
 		final TestLinkHandler testLinkHandler = 
 			this.createTestLinkHandler( 
 				testProjectName, 
@@ -412,6 +415,8 @@ extends Builder
 			trse.printStackTrace( listener.fatalError( trse.getMessage() ) );
 			throw new AbortException(Messages.Results_ErrorToLookForTestResults( trse.getMessage() ));
 		}
+		
+		this.verifyBlockedTestCases( report.getTestCases(), wrappedTestCases );
 		
 		// Update TestLink with test results and uploads attachments
 		try 
@@ -748,6 +753,26 @@ extends Builder
 		}
 		
 		return report;
+	}
+	
+	/**
+	 * Verifies if there are any test cases that were marked as BLOCKED during 
+	 * transactional execution of tests.
+	 * 
+	 * @param testCases List of test cases
+	 * @param wrappedTestCases Set of wrapped test cases
+	 */
+	protected void verifyBlockedTestCases( List<TestCase> testCases, Set<TestCaseWrapper> wrappedTestCases )
+	{
+		for( TestCase testCase : testCases )
+		{
+			if ( testCase.getExecutionStatus() == ExecutionStatus.BLOCKED )
+			{
+				TestCaseWrapper blockedTestWrapper = new TestCaseWrapper(testCase);
+				blockedTestWrapper.setNotes( Messages.TestLinkBuilder_TransactionalExecutionFailedNotes() );
+				wrappedTestCases.add(blockedTestWrapper);
+			}
+		}
 	}
 	
 }

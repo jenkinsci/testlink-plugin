@@ -224,7 +224,10 @@ extends TestResultSeeker
 		final List<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
 			this.report.getTestCases();
 		
+		listener.getLogger().println();
 		listener.getLogger().println( Messages.Results_JUnit_LookingForTestResults( keyCustomFieldName, junitTestCaseClassName ) );
+		listener.getLogger().println();
+		
 		Iterator<br.eti.kinoshita.testlinkjavaapi.model.TestCase> iter = testLinkTestCases.iterator();
 		for ( ; iter.hasNext() ; )
 		{
@@ -242,25 +245,29 @@ extends TestResultSeeker
 				
 				if ( isKeyCustomField && junitTestCaseClassName.equals( customFieldValue ) )
 				{
-					final ExecutionStatus status = this.getJUnitExecutionStatus( junitTestCase );
-					testLinkTestCase.setExecutionStatus( status );
-					final TestCaseWrapper testResult = new TestCaseWrapper( testLinkTestCase );
 					
-					String notes = this.getJUnitNotes( junitTestCase );
-					
-					try
+					if ( ExecutionStatus.BLOCKED != testLinkTestCase.getExecutionStatus() )
 					{
-						final Attachment junitAttachment = this.getJUnitAttachment( testResult.getTestCase().getVersionId(), junitFile );
-						testResult.addAttachment( junitAttachment );
+						final ExecutionStatus status = this.getJUnitExecutionStatus( junitTestCase );
+						testLinkTestCase.setExecutionStatus( status );
+						final TestCaseWrapper testResult = new TestCaseWrapper( testLinkTestCase );
+						
+						String notes = this.getJUnitNotes( junitTestCase );
+						
+						try
+						{
+							final Attachment junitAttachment = this.getJUnitAttachment( testResult.getTestCase().getVersionId(), junitFile );
+							testResult.addAttachment( junitAttachment );
+						}
+						catch ( IOException ioe )
+						{
+							notes += Messages.Results_JUnit_AddAttachmentsFail( ioe.getMessage() );
+							ioe.printStackTrace( listener.getLogger() );
+						}
+						
+						testResult.setNotes( notes );
+						return testResult;
 					}
-					catch ( IOException ioe )
-					{
-						notes += Messages.Results_JUnit_AddAttachmentsFail( ioe.getMessage() );
-						ioe.printStackTrace( listener.getLogger() );
-					}
-					
-					testResult.setNotes( notes );
-					return testResult;
 					
 				} // endif
 				

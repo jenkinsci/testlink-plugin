@@ -212,7 +212,9 @@ extends TestResultSeeker
 		final List<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
 			this.report.getTestCases();
 		
+		listener.getLogger().println();
 		listener.getLogger().println( Messages.Results_TestNG_LookingForTestResults( keyCustomFieldName, testNGTestClassName ) );
+		listener.getLogger().println();
 		
 		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : testLinkTestCases )
 		{
@@ -229,25 +231,29 @@ extends TestResultSeeker
 				
 				if ( isKeyCustomField && testNGTestClassName.equals( customFieldValue ) )
 				{
-					final ExecutionStatus status = this.getTestNGExecutionStatus( clazz );
-					testLinkTestCase.setExecutionStatus( status );
-					final TestCaseWrapper testResult = new TestCaseWrapper(testLinkTestCase );
 					
-					String notes = this.getTestNGNotes( testNGSuite, clazz );
-					
-					try
+					if ( ExecutionStatus.BLOCKED != testLinkTestCase.getExecutionStatus() )
 					{
-						Attachment testNGAttachment = this.getTestNGAttachment( testResult.getTestCase().getVersionId(), testNGFile );
-						testResult.addAttachment( testNGAttachment );
+						final ExecutionStatus status = this.getTestNGExecutionStatus( clazz );
+						testLinkTestCase.setExecutionStatus( status );
+						final TestCaseWrapper testResult = new TestCaseWrapper(testLinkTestCase );
+						
+						String notes = this.getTestNGNotes( testNGSuite, clazz );
+						
+						try
+						{
+							Attachment testNGAttachment = this.getTestNGAttachment( testResult.getTestCase().getVersionId(), testNGFile );
+							testResult.addAttachment( testNGAttachment );
+						}
+						catch ( IOException ioe )
+						{
+							notes += Messages.Results_TestNG_AddAttachmentsFail( ioe.getMessage() );
+							ioe.printStackTrace( listener.getLogger() );
+						}
+						
+						testResult.setNotes( notes );
+						return testResult;
 					}
-					catch ( IOException ioe )
-					{
-						notes += Messages.Results_TestNG_AddAttachmentsFail( ioe.getMessage() );
-						ioe.printStackTrace( listener.getLogger() );
-					}
-					
-					testResult.setNotes( notes );
-					return testResult;
 				} // endif
 			} //end for custom fields
 			
