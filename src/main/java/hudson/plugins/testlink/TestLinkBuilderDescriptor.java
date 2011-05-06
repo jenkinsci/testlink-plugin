@@ -38,7 +38,7 @@ import org.kohsuke.stapler.StaplerRequest;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 1.0
  */
-public class TestLinkDescriptor 
+public class TestLinkBuilderDescriptor 
 extends Descriptor<Builder>
 {
 
@@ -48,7 +48,7 @@ extends Descriptor<Builder>
 	private volatile TestLinkInstallation[] installations = 
 		new TestLinkInstallation[0];
 	
-	public TestLinkDescriptor()
+	public TestLinkBuilderDescriptor()
 	{
 		super(TestLinkBuilder.class);
 		load();

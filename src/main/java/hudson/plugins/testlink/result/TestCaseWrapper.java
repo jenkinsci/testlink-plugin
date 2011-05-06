@@ -24,7 +24,7 @@
 package hudson.plugins.testlink.result;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
@@ -47,7 +47,7 @@ public class TestCaseWrapper implements Serializable
 	public TestCaseWrapper(TestCase testCase)
 	{
 		this.testCase = testCase;
-		this.attachments = new ArrayList<Attachment>();
+		this.attachments = new LinkedList<Attachment>();
 	}
 
 	public void addAttachment( Attachment attachment )

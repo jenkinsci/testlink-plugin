@@ -24,6 +24,7 @@
 package hudson.plugins.testlink.parser.junit;
 
 import hudson.plugins.testlink.parser.Parser;
+import hudson.plugins.testlink.parser.ParserException;
 import hudson.plugins.testlink.util.Messages;
 
 import java.io.IOException;
@@ -37,8 +38,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
-
-import br.eti.kinoshita.tap4j.parser.ParserException;
 
 /**
  * JUnit Parser. Returns a TestSuite.

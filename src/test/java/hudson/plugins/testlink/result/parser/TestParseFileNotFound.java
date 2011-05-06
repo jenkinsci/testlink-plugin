@@ -23,11 +23,10 @@
  */
 package hudson.plugins.testlink.result.parser;
 
+import hudson.plugins.testlink.parser.ParserException;
 import hudson.plugins.testlink.parser.tap.TAPParser;
 
 import java.io.File;
-
-import br.eti.kinoshita.tap4j.parser.ParserException;
 
 import junit.framework.TestCase;
 

@@ -170,7 +170,7 @@ extends Builder
 	 * The Descriptor of this Builder. It contains the TestLink installation.
 	 */
 	@Extension 
-	public static final TestLinkDescriptor DESCRIPTOR = new TestLinkDescriptor();
+	public static final TestLinkBuilderDescriptor DESCRIPTOR = new TestLinkBuilderDescriptor();
 
 	/**
 	 * This constructor is bound to a stapler request. All parameters here are 
@@ -451,7 +451,7 @@ extends Builder
 		// TestLink installation.
 		listener.getLogger().println( Messages.TestLinkBuilder_PreparingTLAPI() );
 		
-		TestLinkInstallation installation = 
+		final TestLinkInstallation installation = 
 			DESCRIPTOR.getInstallationByTestLinkName( this.testLinkName );
 		if ( installation == null )
 		{
@@ -460,6 +460,8 @@ extends Builder
 		
 		listener.getLogger().println ( Messages.TestLinkBuilder_UsedTLURL( installation.getUrl()) );
 		listener.getLogger().println();
+		
+		this.setTestLinkJavaAPIProperties( installation.getTestLinkJavaAPIProperties(), listener );
 		
 		final String testLinkUrl = installation.getUrl();
 		final String testLinkDevKey = installation.getDevKey();
@@ -477,6 +479,86 @@ extends Builder
 		return testLinkHandler;
 	}
 	
+	/**
+	 * <p>Defines TestLink Java API Properties. Following is the list of available 
+	 * properties.</p>
+	 * 
+	 * <ul>
+	 *  	<li>xmlrpc.basicEncoding</li>
+ 	 *  	<li>xmlrpc.basicPassword</li>
+ 	 *  	<li>xmlrpc.basicUsername</li>
+ 	 *  	<li>xmlrpc.connectionTimeout</li>
+ 	 *  	<li>xmlrpc.contentLengthOptional</li>
+ 	 *  	<li>xmlrpc.enabledForExceptions</li>
+ 	 *  	<li>xmlrpc.encoding</li>
+ 	 *  	<li>xmlrpc.gzipCompression</li>
+ 	 *  	<li>xmlrpc.gzipRequesting</li>
+ 	 *  	<li>xmlrpc.replyTimeout</li>
+ 	 *  	<li>xmlrpc.userAgent</li>
+	 * </ul>
+	 * 
+	 * @param testLinkJavaAPIProperties
+	 * @param listener Jenkins Build listener
+	 */
+	private void setTestLinkJavaAPIProperties( String testLinkJavaAPIProperties, BuildListener listener )
+	{
+		if ( StringUtils.isNotBlank( testLinkJavaAPIProperties ) )
+		{
+			final StringTokenizer tokenizer = new StringTokenizer( testLinkJavaAPIProperties, "," );
+			
+			if ( tokenizer.countTokens() > 0 )
+			{
+				while ( tokenizer.hasMoreTokens() )
+				{
+					String systemProperty = tokenizer.nextToken();
+					this.maybeAddSystemProperty( systemProperty, listener );
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Maybe adds a system property if it is in format <key>=<value>.
+	 * 
+	 * @param systemProperty System property entry in format <key>=<value>.
+	 * @param listener Jenkins Build listener
+	 */
+	private void maybeAddSystemProperty( String systemProperty, BuildListener listener )
+	{
+		final StringTokenizer tokenizer = new StringTokenizer( systemProperty, "=:");
+		if ( tokenizer.countTokens() == 2 )
+		{
+			final String key 	= tokenizer.nextToken();
+			final String value	= tokenizer.nextToken();
+			
+			if ( StringUtils.isNotBlank( key ) && StringUtils.isNotBlank( value ) )
+			{
+				if ( key.contains("basicPassword"))
+				{
+					listener.getLogger().println( Messages.TestLinkBuilder_SettingSystemProperty(key, "********") );
+				}
+				else
+				{
+					listener.getLogger().println( Messages.TestLinkBuilder_SettingSystemProperty(key, value) );
+				}
+				try
+				{
+					System.setProperty(key, value);
+				} 
+				catch ( SecurityException se )
+				{
+					se.printStackTrace();
+				}
+			
+			}
+		}
+	}
+
+	/**
+	 * Creates array of custom fields names using the Job configuration data.
+	 * 
+	 * @return Array of custom fields names.
+	 */
 	protected String[] createarrayOfCustomFieldsNames()
 	{
 		String[] customFieldNamesArray = new String[0];

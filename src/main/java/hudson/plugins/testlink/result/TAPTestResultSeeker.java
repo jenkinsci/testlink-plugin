@@ -30,18 +30,18 @@ import hudson.plugins.testlink.util.Messages;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
+import org.tap4j.model.Plan;
+import org.tap4j.model.TestSet;
 
-import br.eti.kinoshita.tap4j.model.Plan;
-import br.eti.kinoshita.tap4j.model.TestSet;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
@@ -335,14 +335,14 @@ extends TestResultSeeker
 	 */
 	protected List<Attachment> retrieveListOfTapAttachments( TestSet testSet ) throws IOException
 	{
-		List<Attachment> attachments = new ArrayList<Attachment>();
+		List<Attachment> attachments = new LinkedList<Attachment>();
 		
 		Plan plan = testSet.getPlan();
 		Map<String, Object> diagnostic = plan.getDiagnostic();
 		
 		this.extractAttachments ( attachments, diagnostic );
 		
-		for ( br.eti.kinoshita.tap4j.model.TestResult testResult : testSet.getTestResults() )
+		for ( org.tap4j.model.TestResult testResult : testSet.getTestResults() )
 		{
 			this.extractAttachments(attachments, testResult.getDiagnostic());
 		}

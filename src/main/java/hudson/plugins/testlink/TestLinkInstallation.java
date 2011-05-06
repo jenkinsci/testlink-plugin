@@ -54,16 +54,23 @@ implements Serializable
 	 */
 	private String devKey;
 	
+	/**
+	 * TestLink Java API properties
+	 */
+	private String testLinkJavaAPIProperties;
+	
 	@DataBoundConstructor
 	public TestLinkInstallation(
 		String name, 
 		String url, 
-		String devKey
+		String devKey, 
+		String testLinkJavaAPIProperties
 	)
 	{
 		this.name = name;
 		this.url = url;
 		this.devKey = devKey;
+		this.testLinkJavaAPIProperties = testLinkJavaAPIProperties;
 	}
 	
 	public String getName()
@@ -79,6 +86,11 @@ implements Serializable
 	public String getDevKey()
 	{
 		return this.devKey;
+	}
+
+	public String getTestLinkJavaAPIProperties()
+	{
+		return testLinkJavaAPIProperties;
 	}
 	
 }

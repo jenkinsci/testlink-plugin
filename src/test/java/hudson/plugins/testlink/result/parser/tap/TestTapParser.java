@@ -23,6 +23,7 @@
  */
 package hudson.plugins.testlink.result.parser.tap;
 
+import hudson.plugins.testlink.parser.ParserException;
 import hudson.plugins.testlink.parser.tap.TAPParser;
 
 import java.io.ByteArrayInputStream;
@@ -32,10 +33,8 @@ import java.net.URL;
 import junit.framework.TestCase;
 
 import org.apache.commons.lang.NotImplementedException;
-
-import br.eti.kinoshita.tap4j.model.TestSet;
-import br.eti.kinoshita.tap4j.parser.ParserException;
-import br.eti.kinoshita.tap4j.util.StatusValues;
+import org.tap4j.model.TestSet;
+import org.tap4j.util.StatusValues;
 
 /**
  * Tests the TAP Parser.

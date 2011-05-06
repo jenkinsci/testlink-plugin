@@ -150,19 +150,26 @@ extends AbstractTestLinkProjectAction
 			return;
 		}
 		
-		Calendar t = project.getLastCompletedBuild().getTimestamp();
-
-		if ( request.checkIfModified(t, response) )
-		{
-			return;
-		}
+		AbstractBuild<?, ?> lastCompletedBuild = project.getLastCompletedBuild();
 		
-		Graph g = new TestLinkGraph(
-				project.getLastBuild(), 
-				TestLinkGraphHelper.createDataSetForProject(this.project), 
-				Messages.ChartUtil_NumberOfTestCases(),
-				Messages.ChartUtil_BuildNumber());
-		g.doPng( request, response );
+		if ( lastCompletedBuild != null )
+		{
+		
+			Calendar t = lastCompletedBuild.getTimestamp();
+	
+			if ( request.checkIfModified(t, response) )
+			{
+				return;
+			}
+			
+			Graph g = new TestLinkGraph(
+					project.getLastBuild(), 
+					TestLinkGraphHelper.createDataSetForProject(this.project), 
+					Messages.ChartUtil_NumberOfTestCases(),
+					Messages.ChartUtil_BuildNumber());
+			g.doPng( request, response );
+		
+		}
 	}
 	
 }

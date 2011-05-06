@@ -24,17 +24,16 @@
 package hudson.plugins.testlink.parser.tap;
 
 import hudson.plugins.testlink.parser.Parser;
+import hudson.plugins.testlink.parser.ParserException;
 
 import java.io.File;
 import java.io.InputStream;
 
 import org.apache.commons.lang.NotImplementedException;
-
-import br.eti.kinoshita.tap4j.consumer.TapConsumer;
-import br.eti.kinoshita.tap4j.consumer.TapConsumerException;
-import br.eti.kinoshita.tap4j.consumer.TapConsumerFactory;
-import br.eti.kinoshita.tap4j.model.TestSet;
-import br.eti.kinoshita.tap4j.parser.ParserException;
+import org.tap4j.consumer.TapConsumer;
+import org.tap4j.consumer.TapConsumerException;
+import org.tap4j.consumer.TapConsumerFactory;
+import org.tap4j.model.TestSet;
 
 /**
  * The TAP Parser.

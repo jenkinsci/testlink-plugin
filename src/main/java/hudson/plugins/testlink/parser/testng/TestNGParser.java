@@ -24,6 +24,7 @@
 package hudson.plugins.testlink.parser.testng;
 
 import hudson.plugins.testlink.parser.Parser;
+import hudson.plugins.testlink.parser.ParserException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,8 +36,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
-
-import br.eti.kinoshita.tap4j.parser.ParserException;
 
 /**
  *

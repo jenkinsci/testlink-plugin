@@ -46,7 +46,7 @@ extends TestCase
 			new TestLinkInstallation(
 					"TestLink 1.9.1", 
 					"http://localhost/testlink-1.9.1/lib/api/xml-rpc.php", 
-					"068848");
+					"068848", "");
 		
 		assertNotNull( inst );
 		
