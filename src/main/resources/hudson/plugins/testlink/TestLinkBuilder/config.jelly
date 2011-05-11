@@ -1,71 +1,12 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
-  <st:header name="Content-Type" value="text/html;charset=UTF-8" />
-
-<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/yahoo-min.js"></script> 
-<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/dom-min.js"></script> 
-<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/event-min.js"></script> 
-<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/animation-min.js"></script> 
-<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/datasource-min.js"></script> 
-<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/autocomplete-min.js"></script> 
-	
-<script type="text/javascript">
-<![CDATA[
-var getArrayOfCustomFields = function( sQuery )
-{
-	var sCustomFields = "";
-	var sCustomFieldsElement = document.getElementById('customFields');
-	if ( ! YAHOO.lang.isNull( sCustomFieldsElement ) )
-	{
-		sCustomFields = sCustomFieldsElement.value;
-	}
-	var aCustomFields = [];
-	if ( YAHOO.lang.isString( sCustomFields ) && YAHOO.lang.trim( sCustomFields ) != '' )
-	{
-		aCustomFields = sCustomFields.split( ',' );
-	}
-	return aCustomFields;
-}
-
-YAHOO.example.autocomplete = function() {
-	var oConfigs = {
-        prehighlightClassName: "yui-ac-prehighlight",
-        queryDelay: 0,
-        minQueryLength: 0,
-        animVert: .01,
-    };
-    // Use a LocalDataSource
-    var oDS = new YAHOO.util.FunctionDataSource(getArrayOfCustomFields);
-    // Optional to define fields for single-dimensional array
-    oDS.responseSchema = {fields : ["state"]};
-
-    // Instantiate the AutoComplete
-    var oAC = new YAHOO.widget.AutoComplete("keyCustomField", "keyCustomFieldContainer", oDS, oConfigs);
-    oAC.prehighlightClassName = "yui-ac-prehighlight";
-    oAC.useShadow = true;
-    
-    return {
-        oDS: oDS,
-        oAC: oAC
-    };
-}();
-]]>
-</script>
+<st:header name="Content-Type" value="text/html;charset=UTF-8" />
 
 <!-- 
 	Auto complete code copied from: 
 	http://developer.yahoo.com/yui/examples/autocomplete/ac_basic_array.html
  -->
-<style type="text/css">
-#keyCustomFieldAutoComplete {
-    /*width:15em;/* /* set width here or else widget will expand to fit its container */
-    padding-bottom:2em;
-}
-</style>
   
-	<!--
-		This script defines the view on the project builders section for TestLink Builder.
-	-->
   <f:entry title="${%TestLinkVersion}" help="${rootURL}/../plugin/testlink/help-testlinkVersion.html">
   	<select class="setting-input" name="TestLinkBuilder.testLinkName">
       <option>(Default)</option>

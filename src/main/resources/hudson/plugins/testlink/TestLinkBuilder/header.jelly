@@ -1,0 +1,61 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+
+<style type="text/css">
+#keyCustomFieldAutoComplete {
+    /*width:15em;/* /* set width here or else widget will expand to fit its container */
+    padding-bottom:2em;
+}
+</style>
+
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/yahoo-min.js"></script> 
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/dom-min.js"></script> 
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/event-min.js"></script> 
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/animation-min.js"></script> 
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/datasource-min.js"></script> 
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/autocomplete-min.js"></script> 
+<script type="text/javascript">
+<![CDATA[
+var getArrayOfCustomFields = function( sQuery )
+{
+	var sCustomFields = "";
+	var sCustomFieldsElement = document.getElementById('customFields');
+	if ( ! YAHOO.lang.isNull( sCustomFieldsElement ) )
+	{
+		sCustomFields = sCustomFieldsElement.value;
+	}
+	var aCustomFields = [];
+	if ( YAHOO.lang.isString( sCustomFields ) && YAHOO.lang.trim( sCustomFields ) != '' )
+	{
+		aCustomFields = sCustomFields.split( ',' );
+	}
+	return aCustomFields;
+}
+
+try
+{
+	YAHOO.testlink.autocomplete = function() {
+	// Use a LocalDataSource
+    var oDS = new YAHOO.util.FunctionDataSource(getArrayOfCustomFields);
+    // Optional to define fields for single-dimensional array
+    oDS.responseSchema = {fields : ["customField"]};
+
+	var oConfigs = {
+        prehighlightClassName: "yui-ac-prehighlight",
+        queryDelay: 0,
+        minQueryLength: 0,
+        animVert: .01, 
+        useShadow: true
+    };
+    // Instantiate the AutoComplete
+    var oAC = new YAHOO.widget.AutoComplete("keyCustomField", "keyCustomFieldContainer", oDS, oConfigs);
+    
+    return {
+        oDS: oDS,
+        oAC: oAC
+    };
+}();
+} catch ( err )
+{}
+]]>
+</script>
+</j:jelly>
