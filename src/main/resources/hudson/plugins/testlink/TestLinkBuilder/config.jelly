@@ -2,6 +2,54 @@
 
 <st:header name="Content-Type" value="text/html;charset=UTF-8" />
 
+<link rel="stylesheet" media="screen" href="${rootURL}/plugin/testlink/css/testlink.css" charset="utf-8" />
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/yahoo-min.js" /> 
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/dom-min.js" /> 
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/event-min.js" /> 
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/animation-min.js" /> 
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/datasource-min.js" /> 
+<script type="text/javascript" src="${rootURL}/plugin/testlink/yui/autocomplete-min.js" />  
+<script type="text/javascript">
+YAHOO.plugins.autocomplete = function() {
+	// Use a LocalDataSource
+    var oDS = new YAHOO.util.FunctionDataSource(function( sQuery ) {
+    	var sCustomFields = "";
+		var sCustomFieldsElement = document.getElementById('customFields');
+		if ( ! YAHOO.lang.isNull( sCustomFieldsElement ) )
+		{
+			sCustomFields = sCustomFieldsElement.value;
+		}
+		var aCustomFields = [];
+		if ( YAHOO.lang.isString( sCustomFields ) )
+		{
+			if ( YAHOO.lang.trim( sCustomFields ) != '' )
+			{
+				aCustomFields = sCustomFields.split( ',' );
+			}
+		}
+		return aCustomFields;
+    });
+    // Optional to define fields for single-dimensional array
+    oDS.responseSchema = {fields : ["customField"]};
+
+	var oConfigs = {
+        prehighlightClassName: "yui-ac-prehighlight",
+        queryDelay: 0,
+        minQueryLength: 0,
+        animVert: .01, 
+        useShadow: true
+    };
+    // Instantiate the AutoComplete
+    var oAC = new YAHOO.widget.AutoComplete("keyCustomField", "keyCustomFieldContainer", oDS, oConfigs);
+    
+    return {
+        oDS: oDS,
+        oAC: oAC
+    };
+}();
+
+</script>
+
 <!-- 
 	Auto complete code copied from: 
 	http://developer.yahoo.com/yui/examples/autocomplete/ac_basic_array.html
