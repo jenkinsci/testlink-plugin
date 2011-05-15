@@ -83,8 +83,9 @@ extends junit.framework.TestCase
 		assertTrue( report.getTestsTotal() == 0 );
 		
 		TestCase testCase = new TestCase();
+		testCase.setId( 1 );
 		testCase.setExecutionStatus( ExecutionStatus.BLOCKED );
-		report.getTestCases().add( testCase );
+		report.getTestCases().put( testCase.getId(), testCase );
 		
 		assertTrue( report.getTestsBlocked() == 1 );
 		assertTrue( report.getTestsFailed() == 0 );
@@ -92,8 +93,9 @@ extends junit.framework.TestCase
 		assertTrue( report.getTestsTotal() == 1 );
 		
 		testCase = new TestCase();
+		testCase.setId( 2 );
 		testCase.setExecutionStatus( ExecutionStatus.FAILED );
-		report.getTestCases().add( testCase );
+		report.getTestCases().put( testCase.getId(), testCase );
 		
 		assertTrue( report.getTestsBlocked() == 1 );
 		assertTrue( report.getTestsFailed() == 1 );
@@ -101,8 +103,9 @@ extends junit.framework.TestCase
 		assertTrue( report.getTestsTotal() == 2 );
 		
 		testCase = new TestCase();
+		testCase.setId( 3 );
 		testCase.setExecutionStatus( ExecutionStatus.PASSED );
-		report.getTestCases().add( testCase );
+		report.getTestCases().put( testCase.getId(), testCase );
 		
 		assertTrue( report.getTestsBlocked() == 1 );
 		assertTrue( report.getTestsFailed() == 1 );
@@ -110,8 +113,9 @@ extends junit.framework.TestCase
 		assertTrue( report.getTestsTotal() == 3 );
 		
 		testCase = new TestCase();
+		testCase.setId( 4 );
 		testCase.setExecutionStatus( ExecutionStatus.NOT_RUN);
-		report.getTestCases().add( testCase );
+		report.getTestCases().put( testCase.getId(), testCase );
 		
 		assertTrue( report.getTestsBlocked() == 1 );
 		assertTrue( report.getTestsFailed() == 1 );
@@ -119,8 +123,9 @@ extends junit.framework.TestCase
 		assertTrue( report.getTestsTotal() == 4 );
 		
 		testCase = new TestCase();
+		testCase.setId( 5 );
 		testCase.setExecutionStatus( ExecutionStatus.PASSED);
-		report.getTestCases().add( testCase );
+		report.getTestCases().put( testCase.getId(), testCase );
 		
 		assertTrue( report.getTestsBlocked() == 1 );
 		assertTrue( report.getTestsFailed() == 1 );

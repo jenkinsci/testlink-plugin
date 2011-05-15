@@ -32,6 +32,7 @@ import hudson.plugins.testlink.util.Messages;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -226,8 +227,8 @@ extends TestResultSeeker
 			throw new ParserException(Messages.Results_JUnit_MissingJUnitTestClassName());
 		}
 		
-		final List<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
-			this.report.getTestCases();
+		final Collection<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
+			this.report.getTestCases().values();
 		
 		listener.getLogger().println();
 		listener.getLogger().println( Messages.Results_JUnit_LookingForTestResults( keyCustomFieldName, junitTestCaseClassName ) );

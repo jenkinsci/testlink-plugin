@@ -124,7 +124,7 @@ public class ResultsSummary
 		builder.append(Messages.ReportSummary_Details_ExecutionStatus());
 		builder.append("</th></tr>\n");
 		
-        for(TestCase tc: report.getTestCases() )
+        for(TestCase tc: report.getTestCases().values() )
         {
         	builder.append("<tr>\n");
         	

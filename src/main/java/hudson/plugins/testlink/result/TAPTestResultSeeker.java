@@ -206,7 +206,7 @@ extends TestResultSeeker
 		listener.getLogger().println( Messages.Results_TAP_LookingForTestResults( keyCustomFieldName, tapFileNameWithoutExtension ) );
 		listener.getLogger().println();
 		
-		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : this.report.getTestCases() )
+		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : this.report.getTestCases().values() )
 		{
 			listener.getLogger().println( Messages.Results_TAP_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
 			

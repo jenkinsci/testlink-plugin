@@ -26,8 +26,8 @@ package hudson.plugins.testlink.result.issue9229;
 import hudson.model.BuildListener;
 import hudson.model.StreamBuildListener;
 import hudson.plugins.testlink.result.JUnitTestResultSeeker;
-import hudson.plugins.testlink.result.TestLinkReport;
 import hudson.plugins.testlink.result.TestCaseWrapper;
+import hudson.plugins.testlink.result.TestLinkReport;
 import hudson.plugins.testlink.result.TestTestResultSeekerJUnit;
 
 import java.io.File;
@@ -71,7 +71,7 @@ extends junit.framework.TestCase
 		tc.setId( 1 );
 		tc.setName( "TC for issue 9229" );
 		tc.getCustomFields().add(cf);
-		this.report.getTestCases().add(tc);
+		this.report.getTestCases().put(tc.getId(), tc);
 		
 		ClassLoader cl = TestTestResultSeekerJUnit.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/issue9229/");

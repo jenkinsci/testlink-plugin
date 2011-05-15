@@ -23,9 +23,12 @@
  */
 package hudson.plugins.testlink.result;
 
+import hudson.plugins.testlink.util.Messages;
+
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
@@ -47,11 +50,11 @@ implements Serializable
 	private TestPlan testPlan;
 	private TestProject testProject;
 	
-	private List<TestCase> testCases;
+	private Map<Integer, TestCase> testCases;
 	
 	public TestLinkReport()
 	{
-		this.testCases = new ArrayList<TestCase>();
+		this.testCases = new HashMap<Integer, TestCase>();
 	}
 
 	public TestLinkReport(Build build, TestPlan testPlan,
@@ -62,7 +65,7 @@ implements Serializable
 		this.testPlan = testPlan;
 		this.testProject = testProject;
 		
-		this.testCases = new ArrayList<TestCase>();
+		this.testCases = new HashMap<Integer, TestCase>();
 	}
 	
 	public Build getBuild() 
@@ -95,7 +98,7 @@ implements Serializable
 		this.testProject = testProject;
 	}
 
-	public List<TestCase> getTestCases()
+	public Map<Integer, TestCase> getTestCases()
 	{
 		return testCases;
 	}
@@ -112,11 +115,10 @@ implements Serializable
 	 * Adds a Test Case into the list of automated Test Cases.
 	 * 
 	 * @param testCase the Test Case.
-	 * @return true if added successfully, otherwise false.
 	 */
-	public boolean addTestCase(TestCase testCase)
+	public void addTestCase(TestCase testCase)
 	{
-		return this.testCases.add( testCase );
+		this.testCases.put( testCase.getId(), testCase );
 	}
 
 	/**
@@ -125,7 +127,7 @@ implements Serializable
 	public Integer getTestsPassed() 
 	{
 		int totalPassed = 0;
-		for(TestCase testCase : this.testCases )
+		for(TestCase testCase : this.testCases.values() )
 		{
 			if ( testCase.getExecutionStatus() == ExecutionStatus.PASSED )
 			{
@@ -141,7 +143,7 @@ implements Serializable
 	public Integer getTestsFailed() 
 	{
 		int totalFailed = 0;
-		for(TestCase testCase : this.testCases )
+		for(TestCase testCase : this.testCases.values() )
 		{
 			if ( testCase.getExecutionStatus() == ExecutionStatus.FAILED )
 			{
@@ -157,7 +159,7 @@ implements Serializable
 	public Integer getTestsBlocked() 
 	{
 		int totalBlocked = 0;
-		for(TestCase testCase : this.testCases )
+		for(TestCase testCase : this.testCases.values() )
 		{
 			if ( testCase.getExecutionStatus() == ExecutionStatus.BLOCKED )
 			{
@@ -167,12 +169,50 @@ implements Serializable
 		return totalBlocked;
 	}
 
+	/**
+	 * Verifies if there are any test cases that were marked as BLOCKED during 
+	 * transactional execution of tests.
+	 * 
+	 * @param wrappedTestCases Set of wrapped test cases
+	 */
+	public void verifyBlockedTestCases( Set<TestCaseWrapper> wrappedTestCases )
+	{
+		for( TestCase testCase : testCases.values() )
+		{
+			if ( testCase.getExecutionStatus() == ExecutionStatus.BLOCKED )
+			{
+				TestCaseWrapper blockedTestWrapper = new TestCaseWrapper(testCase);
+				blockedTestWrapper.setNotes( Messages.TestLinkBuilder_TransactionalExecutionFailedNotes() );
+				wrappedTestCases.add(blockedTestWrapper);
+			}
+		}
+	}
+	
+	/**
+	 * Update report test cases' status from a set of wrapped test cases.
+	 * 
+	 * @param wrappedTestCases set of wrapped test cases.
+	 */
+	public void updateReport( Set<TestCaseWrapper> wrappedTestCases )
+	{
+		for( TestCaseWrapper wrapper : wrappedTestCases )
+		{
+			final TestCase wrappedTestCase = wrapper.getTestCase();
+			final TestCase originalTestCase = this.testCases.get( wrappedTestCase.getId() );
+			
+			if ( originalTestCase != null )
+			{
+				originalTestCase.setExecutionStatus( wrappedTestCase.getExecutionStatus() );
+			}
+		}
+	}	
+	
 	@Override
 	public String toString()
 	{
 		return "TestLinkReport [build=" + build + ", testPlan=" + testPlan
 				+ ", testProject=" + testProject + ", testCases=" + testCases
 				+ "]";
-	}	
-	
+	}
+
 }

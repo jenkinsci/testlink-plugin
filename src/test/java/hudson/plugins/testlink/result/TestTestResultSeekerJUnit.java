@@ -67,9 +67,9 @@ extends junit.framework.TestCase
 		CustomField cf = new CustomField();
 		cf.setName( KEY_CUSTOM_FIELD );
 		cf.setValue("br.eti.kinoshita.Test");
-		tc.getCustomFields().add(cf);
+		tc.getCustomFields().add( cf );
 		tc.setId(1);
-		this.report.getTestCases().add(tc);
+		this.report.getTestCases().put( tc.getId(), tc );
 		
 		ClassLoader cl = TestTestResultSeekerJUnit.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/");

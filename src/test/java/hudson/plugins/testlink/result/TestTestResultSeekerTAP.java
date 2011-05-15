@@ -74,7 +74,7 @@ extends junit.framework.TestCase
 		cf.setValue("br.eti.kinoshita.tap.SampleTest");
 		tc.getCustomFields().add(cf);
 		tc.setId(1);
-		this.report.getTestCases().add(tc);
+		this.report.getTestCases().put( tc.getId(), tc );
 		
 		ClassLoader cl = TestTestResultSeekerTAP.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/");
