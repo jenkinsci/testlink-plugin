@@ -221,6 +221,11 @@ extends TestResultSeeker
 	{
 		final String junitTestCaseClassName = junitTestCase.getClassName();
 		
+		if ( StringUtils.isBlank( junitTestCaseClassName ) )
+		{
+			throw new ParserException(Messages.Results_JUnit_MissingJUnitTestClassName());
+		}
+		
 		final List<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
 			this.report.getTestCases();
 		
