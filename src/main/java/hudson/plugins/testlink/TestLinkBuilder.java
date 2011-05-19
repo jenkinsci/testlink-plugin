@@ -27,6 +27,7 @@ import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
+import hudson.Util;
 import hudson.model.Action;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
@@ -42,6 +43,7 @@ import hudson.plugins.testlink.tasks.Shell;
 import hudson.plugins.testlink.util.ExecutionOrderComparator;
 import hudson.plugins.testlink.util.Messages;
 import hudson.tasks.Builder;
+import hudson.util.VariableResolver;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -264,6 +266,19 @@ extends Builder
 	}
 	
 	/**
+	 * Expands build name job configuration property, replacing environment 
+	 * variables with Jenkins+System values.
+	 * 
+	 * @param variableResolver Jenkins Build Variable Resolver.
+	 * @param envVars Jenkins Build Environment Variables.
+	 * @return Expanded build name job configuration property.
+	 */
+	public String expandBuildName( VariableResolver<String> variableResolver, EnvVars envVars )
+	{
+		return Util.replaceMacro(envVars.expand(getBuildName()), variableResolver);
+	}
+	
+	/**
 	 * @return Single Test Command.
 	 */
 	public String getSingleTestCommand()
@@ -353,9 +368,9 @@ extends Builder
 		
 		final TestLinkHandler testLinkHandler = 
 			this.createTestLinkHandler( 
-				testProjectName, 
-				testPlanName,
-				buildName, 
+				getTestProjectName(), 
+				getTestPlanName(),
+				expandBuildName( build.getBuildVariableResolver(), build.getEnvironment(listener) ), 
 				Messages.TestLinkBuilder_Build_Notes(), 
 				listener 
 			);
