@@ -9,11 +9,11 @@
 			this plugin built against? -->
 	</parent>
 
-	<inceptionYear>2010-2011 the CCM plug-in team</inceptionYear>
+	<inceptionYear>2010-2011 the Jenkins TestLink plug-in team</inceptionYear>
 
 	<artifactId>testlink</artifactId>
 	<name>Jenkins TestLink Plugin</name>
-	<version>2.3.2-SNAPSHOT</version>
+	<version>2.4-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<description>This plug-in integrates Jenkins to TestLink</description>
 	
