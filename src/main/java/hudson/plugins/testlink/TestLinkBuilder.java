@@ -248,11 +248,37 @@ extends Builder
 	}
 	
 	/**
+	 * Expands test project name job configuration property, replacing environment 
+	 * variables with Jenkins+System values.
+	 * 
+	 * @param variableResolver Jenkins Build Variable Resolver.
+	 * @param envVars Jenkins Build Environment Variables.
+	 * @return Expanded test project name job configuration property.
+	 */
+	public String expandTestProjectName( VariableResolver<String> variableResolver, EnvVars envVars )
+	{
+		return Util.replaceMacro(envVars.expand(getTestProjectName()), variableResolver);
+	}
+	
+	/**
 	 * @return Test Plan Name
 	 */
 	public String getTestPlanName()
 	{
 		return this.testPlanName;
+	}
+	
+	/**
+	 * Expands test plan name job configuration property, replacing environment 
+	 * variables with Jenkins+System values.
+	 * 
+	 * @param variableResolver Jenkins Build Variable Resolver.
+	 * @param envVars Jenkins Build Environment Variables.
+	 * @return Expanded test plan name job configuration property.
+	 */
+	public String expandTestPlanName( VariableResolver<String> variableResolver, EnvVars envVars )
+	{
+		return Util.replaceMacro(envVars.expand(getTestPlanName()), variableResolver);
 	}
 	
 	/**
@@ -368,8 +394,8 @@ extends Builder
 		
 		final TestLinkHandler testLinkHandler = 
 			this.createTestLinkHandler( 
-				getTestProjectName(), 
-				getTestPlanName(),
+				expandTestProjectName( build.getBuildVariableResolver(), build.getEnvironment(listener) ), 
+				expandTestPlanName( build.getBuildVariableResolver(), build.getEnvironment(listener) ), 
 				expandBuildName( build.getBuildVariableResolver(), build.getEnvironment(listener) ), 
 				Messages.TestLinkBuilder_Build_Notes(), 
 				listener 
