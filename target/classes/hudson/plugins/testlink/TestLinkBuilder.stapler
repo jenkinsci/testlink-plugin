@@ -1,2 +1,0 @@
-#Wed Jun 08 22:16:31 BRT 2011
-constructor=testLinkName,testProjectName,testPlanName,buildName,customFields,singleTestCommand,iterativeTestCommand,keyCustomField,transactional,junitXmlReportFilesPattern,testNGXmlReportFilesPattern,tapStreamReportFilesPattern,beforeSingleTestCommand,afterSingleTestCommand,beforeIterativeTestCommand,afterIterativeTestCommand
