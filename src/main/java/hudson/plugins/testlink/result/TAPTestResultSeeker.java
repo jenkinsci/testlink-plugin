@@ -287,7 +287,11 @@ extends TestResultSeeker
 	{
 		ExecutionStatus status = ExecutionStatus.PASSED;
 		
-		if ( testSet.containsNotOk() )
+		if ( testSet.getPlan().getSkip() != null  )
+		{
+			status = ExecutionStatus.BLOCKED;
+		}		
+		else if ( testSet.containsNotOk() )
 		{
 			status = ExecutionStatus.FAILED;
 		}
