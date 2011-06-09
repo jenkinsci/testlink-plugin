@@ -28,6 +28,7 @@ import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.BuildListener;
+import hudson.model.Result;
 import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 import hudson.plugins.testlink.result.TestLinkReport;
@@ -198,6 +199,11 @@ extends AbstractTestLinkBuilder
 		report.verifyBlockedTestCases( wrappedTestCases );
 		
 		report.updateReport( wrappedTestCases );
+		
+		if ( report.getTestsFailed() > 0 )
+		{
+			build.setResult( Result.UNSTABLE );
+		}
 		
 		// Update TestLink with test results and uploads attachments
 		try 
