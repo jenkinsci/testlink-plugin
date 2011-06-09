@@ -4,3 +4,4 @@ work/
 .classpath
 target/
 inject-tests/
+*~
