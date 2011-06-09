@@ -56,6 +56,10 @@
 		  <f:checkbox name="TestLinkBuilder.transactional" value="${instance.transactional}" checked="${instance.transactional}" />
 	  </f:entry>
 	  
+	  <f:entry title="${%Failed tests mark build as failure}" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
+		  <f:checkbox name="TestLinkBuilder.failedTestsMarkBuildAsFailure" value="${instance.failedTestsMarkBuildAsFailure}" checked="${instance.failedTestsMarkBuildAsFailure}" />
+	  </f:entry>
+	  
 	  <f:entry title="${%Before single test command}" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
 		  <f:textarea name="TestLinkBuilder.beforeSingleTestCommand" value="${instance.beforeSingleTestCommand}" />
 	  </f:entry>

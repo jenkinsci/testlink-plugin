@@ -82,6 +82,7 @@ extends AbstractTestLinkBuilder
 		String iterativeTestCommand, 
 		String keyCustomField, 
 		Boolean transactional, 
+		Boolean failedTestsMarkBuildAsFailure, 
 		String junitXmlReportFilesPattern, 
 		String testNGXmlReportFilesPattern, 
 		String tapStreamReportFilesPattern, 
@@ -101,6 +102,7 @@ extends AbstractTestLinkBuilder
 			iterativeTestCommand, 
 			keyCustomField, 
 			transactional, 
+			failedTestsMarkBuildAsFailure, 
 			junitXmlReportFilesPattern, 
 			testNGXmlReportFilesPattern, 
 			tapStreamReportFilesPattern, 
@@ -200,10 +202,7 @@ extends AbstractTestLinkBuilder
 		
 		report.updateReport( wrappedTestCases );
 		
-		if ( report.getTestsFailed() > 0 )
-		{
-			build.setResult( Result.UNSTABLE );
-		}
+		this.updateBuildStatus( report.getTestsFailed(), build );
 		
 		// Update TestLink with test results and uploads attachments
 		try 
@@ -224,7 +223,7 @@ extends AbstractTestLinkBuilder
 		// end
 		return Boolean.TRUE;
 	}
-	
+
 	protected TestLinkHandler createTestLinkHandler( 
 			String testProjectName, 
 			String testPlanName, 

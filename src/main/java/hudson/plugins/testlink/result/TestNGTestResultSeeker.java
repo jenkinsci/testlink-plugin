@@ -136,6 +136,13 @@ extends TestResultSeeker
 			{
 				final Suite testNGSuite = parser.parse( testNGFile );
 				
+				final TestCaseWrapper testNGSuiteTestResult = this.doFindTestResult( testNGSuite, testNGFile );
+				
+				if ( testNGSuiteTestResult != null ) 
+				{
+					testResults.add ( testNGSuiteTestResult );
+				}
+				
 				this.doTestNGSuite( testNGSuite, testNGFile, testResults );
 			}
 			catch ( ParserException e )
@@ -198,6 +205,73 @@ extends TestResultSeeker
 	}
 	
 	/**
+	 * Tries to find the Test Result for a given TestNG test suite. This method 
+	 * utilizes the testNGFile to add it as an attachment to the test result.
+	 * 
+	 * @param testNGSuite TestNG Suite.
+	 * @param testNGFile TestNG test file.
+	 * @return a Test Result or <code>null</code> if unable to find it.
+	 */
+	protected TestCaseWrapper doFindTestResult( Suite testNGSuite, File testNGFile )
+	{
+		final String keyValue = testNGSuite.getName();
+		
+		final Collection<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
+			this.report.getTestCases().values();
+		
+		listener.getLogger().println();
+		listener.getLogger().println( Messages.Results_TestNG_LookingForTestResults( keyCustomFieldName, keyValue ) );
+		listener.getLogger().println();
+		
+		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : testLinkTestCases )
+		{
+			listener.getLogger().println( Messages.Results_TestNG_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
+			
+			final List<CustomField> customFields = testLinkTestCase.getCustomFields();
+			
+			listener.getLogger().println( Messages.Results_TestNG_ListOfCustomFields( customFields ) );
+			
+			for( CustomField customField : customFields )
+			{
+				final String customFieldValue = customField.getValue();
+				Boolean isKeyCustomField = customField.getName().equals(keyCustomFieldName);
+				
+				if ( isKeyCustomField && keyValue.equals( customFieldValue ) )
+				{
+					
+					if ( ExecutionStatus.BLOCKED != testLinkTestCase.getExecutionStatus() )
+					{
+						final ExecutionStatus status = this.getTestNGExecutionStatus( testNGSuite );
+						testLinkTestCase.setExecutionStatus( status );
+						final TestCaseWrapper testResult = new TestCaseWrapper(testLinkTestCase );
+						
+						String notes = this.getTestNGNotes( testNGSuite );
+						
+						try
+						{
+							Attachment testNGAttachment = this.getTestNGAttachment( testNGFile );
+							testResult.addAttachment( testNGAttachment );
+						}
+						catch ( IOException ioe )
+						{
+							notes += Messages.Results_TestNG_AddAttachmentsFail( ioe.getMessage() );
+							ioe.printStackTrace( listener.getLogger() );
+						}
+						
+						testResult.setNotes( notes );
+						return testResult;
+					}
+				} // endif
+			} //end for custom fields
+			
+			listener.getLogger().println();
+			
+		} // end for testlink test cases
+		
+		return null;
+	}
+	
+	/**
 	 * Tries to find the Test Result for a given TestNG test class. This method 
 	 * utilizes the testNGFile to add it as an attachment to the test result.
 	 * 
@@ -243,7 +317,7 @@ extends TestResultSeeker
 						
 						try
 						{
-							Attachment testNGAttachment = this.getTestNGAttachment( testResult.getTestCase().getVersionId(), testNGFile );
+							Attachment testNGAttachment = this.getTestNGAttachment( testNGFile );
 							testResult.addAttachment( testNGAttachment );
 						}
 						catch ( IOException ioe )
@@ -263,6 +337,34 @@ extends TestResultSeeker
 		} // end for testlink test cases
 		
 		return null;
+	}
+	
+	/**
+	 * Retrieves notes for TestNG suite.
+	 * 
+	 * @param suite TestNG suite.
+	 * @return notes for TestNG suite and test class.
+	 */
+	protected String getTestNGNotes( Suite suite )
+	{
+		StringBuilder notes = new StringBuilder();
+		
+		notes.append( "name: " );
+		notes.append( suite.getName() + "\n" );
+		
+		notes.append( "duration in ms: " );
+		notes.append( suite.getDurationMs() + "\n" );
+		
+		notes.append( "started at: " );
+		notes.append( suite.getStartedAt() + "\n" );
+		
+		notes.append( "finished at: " );
+		notes.append( suite.getFinishedAt() + "\n" );
+		
+		notes.append( "number of tests: " );
+		notes.append( suite.getTests().size() + "\n" );
+		
+		return notes.toString();
 	}
 	
 	/**
@@ -331,6 +433,37 @@ extends TestResultSeeker
 	 * iterating over all the class methods. If a method has the status 
 	 * FAIL, then we return the Execution Status failed, otherwise passed.
 	 * 
+	 * @param suite The TestNG Test suite.
+	 * @return passed if the TestNG Test suite contains no test classes with 
+	 * status equals FAIL, otherwise failed.
+	 */
+	protected ExecutionStatus getTestNGExecutionStatus( Suite suite )
+	{
+		ExecutionStatus status = ExecutionStatus.PASSED;
+		
+		for( Test test : suite.getTests() )
+		{
+			for( hudson.plugins.testlink.parser.testng.Class clazz : test.getClasses() )
+			{
+				for( TestMethod method : clazz.getTestMethods() )
+				{
+					if ( StringUtils.isNotBlank(method.getStatus()) && !method.getStatus().equals("PASS"))
+					{
+						status = ExecutionStatus.FAILED;
+						return status; // It's enough, one single failed is enough to invalidate a test suite
+					}
+				}
+			}
+		}
+		
+		return status;
+	}
+	
+	/**
+	 * Retrieves the Execution Status for a TestNG test class. It is done 
+	 * iterating over all the class methods. If a method has the status 
+	 * FAIL, then we return the Execution Status failed, otherwise passed.
+	 * 
 	 * @param clazz The TestNG Test class.
 	 * @return passed if the TestNG Test class contains no test methods with 
 	 * status equals FAIL, otherwise failed.
@@ -354,12 +487,10 @@ extends TestResultSeeker
 	/**
 	 * Retrieves attachments for TestNG test cases.
 	 * 
-	 * @param versionId version ID of the TestLink test case.
 	 * @param testNGReportFile TestNG file.
 	 * @return attachments
 	 */
 	protected Attachment getTestNGAttachment( 
-		Integer versionId,
 		File testNGReportFile 
 	)
 	throws IOException

@@ -27,6 +27,8 @@ import hudson.EnvVars;
 import hudson.Util;
 import hudson.model.Action;
 import hudson.model.BuildListener;
+import hudson.model.Result;
+import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.plugins.testlink.result.ReportFilesPatterns;
 import hudson.plugins.testlink.result.TestLinkReport;
@@ -117,6 +119,12 @@ extends Builder
 	 */
 	protected final Boolean transactional;
 	
+	/**
+	 * If the plug-in should mark the Build in Jenkins as failure if it 
+	 * contains failed tests.
+	 */
+	protected final Boolean failedTestsMarkBuildAsFailure;
+	
 	/*
 	 * Test life cycle commands. With these hooks you can execute command before 
 	 * the single test command, after the single test command, before the 
@@ -172,6 +180,7 @@ extends Builder
 	 * @param iterativeTestCommand Test Command to execute for each Automated Test Case.
 	 * @param keyCustomField Automated Test Case key custom field.
 	 * @param transactional Whether the build's execution is transactional or not.
+	 * @param failedTestsMarkBuildAsUnstable Whether failed tests mark the build as unstable or not.
 	 * @param junitXmlReportFilesPattern Pattern for JUnit report files.
 	 * @param testNGXmlReportFilesPattern Pattern for TestNG report files.
 	 * @param tapStreamReportFilesPattern Pattern for TAP report files.
@@ -190,6 +199,7 @@ extends Builder
 		String iterativeTestCommand, 
 		String keyCustomField, 
 		Boolean transactional, 
+		Boolean failedTestsMarkBuildAsUnstable, 
 		String junitXmlReportFilesPattern, 
 		String testNGXmlReportFilesPattern, 
 		String tapStreamReportFilesPattern, 
@@ -209,6 +219,7 @@ extends Builder
 		this.iterativeTestCommand = iterativeTestCommand;
 		this.keyCustomField = keyCustomField;
 		this.transactional = transactional;
+		this.failedTestsMarkBuildAsFailure = failedTestsMarkBuildAsUnstable;
 		
 		this.reportFilesPatterns = new ReportFilesPatterns(
 				junitXmlReportFilesPattern, 
@@ -332,6 +343,14 @@ extends Builder
 	}
 	
 	/**
+	 * @return the failedTestsMarkBuildAsUnstable
+	 */
+	public Boolean getFailedTestsMarkBuildAsFailure()
+	{
+		return failedTestsMarkBuildAsFailure;
+	}
+
+	/**
 	 * Retrieves key custom field.
 	 * 
 	 * @return Key custom field.
@@ -454,6 +473,29 @@ extends Builder
 		}
 		
 		return report;
+	}
+	
+
+	/**
+	 * Updates Build status as UNSTABLE if it contains failed tests. If the 
+	 * user checks the option failed tests mark build as failure, then it updates 
+	 * Build status as FAILURE.
+	 * 
+	 * @param build Build.
+	 */
+	protected void updateBuildStatus( int testFailures, AbstractBuild<?, ?> build )
+	{
+		if ( testFailures > 0 )
+		{
+			if ( this.failedTestsMarkBuildAsFailure != null && this.failedTestsMarkBuildAsFailure )
+			{
+				build.setResult( Result.FAILURE );
+			}
+			else
+			{
+				build.setResult( Result.UNSTABLE );
+			}
+		}
 	}
 	
 }

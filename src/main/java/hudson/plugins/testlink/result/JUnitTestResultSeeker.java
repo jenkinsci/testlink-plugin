@@ -140,6 +140,13 @@ extends TestResultSeeker
 			{
 				final TestSuite junitSuite = parser.parse( junitFile );
 				
+				final TestCaseWrapper junitSuiteTestResult = this.doFindTestResult( junitSuite, junitFile );
+				
+				if ( junitSuiteTestResult != null ) 
+				{
+					testResults.add ( junitSuiteTestResult );
+				}
+				
 				this.doJunitSuite( junitSuite, junitFile, testResults );
 			}
 			catch ( ParserException e )
@@ -209,7 +216,7 @@ extends TestResultSeeker
 			listener.getLogger().println();
 		}
 	}
-
+	
 	/**
 	 * Tries to find the Test Result for a given JUnit test. This method 
 	 * utilizes the junitFile to add it as an attachment to the test result.
@@ -218,20 +225,23 @@ extends TestResultSeeker
 	 * @param junitFile JUnit test file.
 	 * @return a Test Result or <code>null</code> if unable to find it.
 	 */
-	protected TestCaseWrapper doFindTestResult( TestCase junitTestCase, File junitFile ) 
+	protected TestCaseWrapper doFindTestResult( 
+			TestSuite junitSuite,
+			File junitFile )
 	{
-		final String junitTestCaseClassName = junitTestCase.getClassName();
+		final String keyValue = junitSuite.getName();
 		
-		if ( StringUtils.isBlank( junitTestCaseClassName ) )
+		if ( StringUtils.isBlank( keyValue ) )
 		{
-			throw new ParserException(Messages.Results_JUnit_MissingJUnitTestClassName());
+			//throw new ParserException(Messages.Results_JUnit_MissingJUnitTestClassName());
+			return null;
 		}
 		
 		final Collection<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
 			this.report.getTestCases().values();
 		
 		listener.getLogger().println();
-		listener.getLogger().println( Messages.Results_JUnit_LookingForTestResults( keyCustomFieldName, junitTestCaseClassName ) );
+		listener.getLogger().println( Messages.Results_JUnit_LookingForTestResults( keyCustomFieldName, keyValue ) );
 		listener.getLogger().println();
 		
 		Iterator<br.eti.kinoshita.testlinkjavaapi.model.TestCase> iter = testLinkTestCases.iterator();
@@ -249,20 +259,19 @@ extends TestResultSeeker
 				final String customFieldValue = customField.getValue();
 				Boolean isKeyCustomField = customField.getName().equals(keyCustomFieldName);
 				
-				if ( isKeyCustomField && junitTestCaseClassName.equals( customFieldValue ) )
+				if ( isKeyCustomField && keyValue.equals( customFieldValue ) )
 				{
-					
 					if ( ExecutionStatus.BLOCKED != testLinkTestCase.getExecutionStatus() )
 					{
-						final ExecutionStatus status = this.getJUnitExecutionStatus( junitTestCase );
+						final ExecutionStatus status = this.getJUnitExecutionStatus( junitSuite );
 						testLinkTestCase.setExecutionStatus( status );
 						final TestCaseWrapper testResult = new TestCaseWrapper( testLinkTestCase );
 						
-						String notes = this.getJUnitNotes( junitTestCase );
+						String notes = this.getJUnitNotes( junitSuite );
 						
 						try
 						{
-							final Attachment junitAttachment = this.getJUnitAttachment( testResult.getTestCase().getVersionId(), junitFile );
+							final Attachment junitAttachment = this.getJUnitAttachment( junitFile );
 							testResult.addAttachment( junitAttachment );
 						}
 						catch ( IOException ioe )
@@ -287,6 +296,119 @@ extends TestResultSeeker
 	}
 
 	/**
+	 * Tries to find the Test Result for a given JUnit test. This method 
+	 * utilizes the junitFile to add it as an attachment to the test result.
+	 * 
+	 * @param junitTestCase JUnit test.
+	 * @param junitFile JUnit test file.
+	 * @return a Test Result or <code>null</code> if unable to find it.
+	 */
+	protected TestCaseWrapper doFindTestResult( TestCase junitTestCase, File junitFile ) 
+	{
+		final String keyValue = this.getKeyValue( junitTestCase );
+		
+		if ( StringUtils.isBlank( keyValue ) )
+		{
+			//throw new ParserException(Messages.Results_JUnit_MissingJUnitTestClassName());
+			return null;
+		}
+		
+		final Collection<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
+			this.report.getTestCases().values();
+		
+		listener.getLogger().println();
+		listener.getLogger().println( Messages.Results_JUnit_LookingForTestResults( keyCustomFieldName, keyValue ) );
+		listener.getLogger().println();
+		
+		Iterator<br.eti.kinoshita.testlinkjavaapi.model.TestCase> iter = testLinkTestCases.iterator();
+		for ( ; iter.hasNext() ; )
+		{
+			br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase = iter.next();
+			listener.getLogger().println( Messages.Results_JUnit_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
+			
+			final List<CustomField> customFields = testLinkTestCase.getCustomFields();
+			
+			listener.getLogger().println( Messages.Results_JUnit_ListOfCustomFields( customFields ) );
+			
+			for( CustomField customField : customFields )
+			{
+				final String customFieldValue = customField.getValue();
+				Boolean isKeyCustomField = customField.getName().equals(keyCustomFieldName);
+				
+				if ( isKeyCustomField && keyValue.equals( customFieldValue ) )
+				{
+					
+					if ( ExecutionStatus.BLOCKED != testLinkTestCase.getExecutionStatus() )
+					{
+						final ExecutionStatus status = this.getJUnitExecutionStatus( junitTestCase );
+						testLinkTestCase.setExecutionStatus( status );
+						final TestCaseWrapper testResult = new TestCaseWrapper( testLinkTestCase );
+						
+						String notes = this.getJUnitNotes( junitTestCase );
+						
+						try
+						{
+							final Attachment junitAttachment = this.getJUnitAttachment( junitFile );
+							testResult.addAttachment( junitAttachment );
+						}
+						catch ( IOException ioe )
+						{
+							notes += Messages.Results_JUnit_AddAttachmentsFail( ioe.getMessage() );
+							ioe.printStackTrace( listener.getLogger() );
+						}
+						
+						testResult.setNotes( notes );
+						return testResult;
+					}
+					
+				} // endif
+				
+			} //end for custom fields
+			
+			listener.getLogger().println();
+			
+		} // end for testlink test cases
+		
+		return null;
+	}
+	
+	/**
+	 * Retrieves the key value for a JUnit test. First it tries to use the 
+	 * test class name. If it is <code>null</code>, then it returns the 
+	 * test name.
+	 * 
+	 * @param junitTestCase JUnit test.
+	 * @return Key value.
+	 */
+	protected String getKeyValue( TestCase junitTestCase )
+	{
+		String keyValue = junitTestCase.getClassName();
+		
+		if ( StringUtils.isBlank( keyValue ) )
+		{
+			keyValue = junitTestCase.getName();
+		}
+		
+		return keyValue;
+	}
+
+	/**
+	 * Retrieves the Execution Status of the JUnit suite.
+	 * 
+	 * @param testSuite JUnit suite.
+	 * @return the Execution Status of the JUnit suite.
+	 */
+	protected ExecutionStatus getJUnitExecutionStatus( TestSuite testSuite )
+	{
+		ExecutionStatus status = ExecutionStatus.FAILED;
+		if ( (testSuite.getFailures() + testSuite.getErrors()) <= 0 )
+		{
+			status = ExecutionStatus.PASSED;
+		}
+		return status;
+	}
+
+	/**
 	 * Retrieves the Execution Status of the JUnit test.
 	 * 
 	 * @param testCase JUnit test.
@@ -300,6 +422,46 @@ extends TestResultSeeker
 			status = ExecutionStatus.PASSED;
 		}
 		return status;
+	}
+	
+	/**
+	 * Retrieves the Notes about the JUnit suite.
+	 * 
+	 * @param testSuite JUnit test.
+	 * @return Notes about the JUnit suite.
+	 */
+	protected String getJUnitNotes( TestSuite testSuite )
+	{
+		StringBuilder notes = new StringBuilder();
+		
+		notes.append( "hostname: " );
+		notes.append( testSuite.getHostname() + "\n" );
+		
+		notes.append( "name: " );
+		notes.append( testSuite.getName() + "\n" );
+		
+		notes.append( "system err: " );
+		notes.append( testSuite.getSystemErr() + "\n" );
+		
+		notes.append( "system out: " );
+		notes.append( testSuite.getSystemOut() + "\n" );
+		
+		notes.append( "tests: " );
+		notes.append( testSuite.getTests()+ "\n" );
+		
+		notes.append( "time: " );
+		notes.append( testSuite.getTime()+ "\n" );
+		
+		notes.append( "timestamp: " );
+		notes.append( testSuite.getTimestamp() + "\n" );
+		
+		notes.append( "errors: " );
+		notes.append( testSuite.getErrors()+ "\n" );
+		
+		notes.append( "failures: " );
+		notes.append( testSuite.getFailures() + "\n" );
+		
+		return notes.toString();
 	}
 	
 	/**
@@ -333,12 +495,11 @@ extends TestResultSeeker
 	/**
 	 * Retrieves the JUnit report file as attachment for TestLink.
 	 * 
-	 * @param versionId TestLink Test Case version ID.
 	 * @param junitReportFile JUnit report file.
+	 * 
 	 * @return attachment for TestLink.
 	 */
-	protected Attachment getJUnitAttachment( Integer versionId,
-			File junitReportFile ) 
+	protected Attachment getJUnitAttachment( File junitReportFile ) 
 	throws IOException
 	{
 		Attachment attachment = new Attachment();
