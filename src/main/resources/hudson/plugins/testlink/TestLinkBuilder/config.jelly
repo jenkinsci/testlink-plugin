@@ -55,6 +55,22 @@
 	  <f:entry title="${%Transactional}" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
 		  <f:checkbox name="TestLinkBuilder.transactional" value="${instance.transactional}" checked="${instance.transactional}" />
 	  </f:entry>
+	  
+	  <f:entry title="${%Before single test command}" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
+		  <f:textarea name="TestLinkBuilder.beforeSingleTestCommand" value="${instance.beforeSingleTestCommand}" />
+	  </f:entry>
+	  
+	  <f:entry title="${%After single test command}" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
+		  <f:textarea name="TestLinkBuilder.afterSingleTestCommand" value="${instance.afterSingleTestCommand}" />
+	  </f:entry>
+	  
+	  <f:entry title="${%Before iterative test command}" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
+		  <f:textarea name="TestLinkBuilder.beforeIterativeTestCommand" value="${instance.beforeIterativeTestCommand}" />
+	  </f:entry>
+	  
+	  <f:entry title="${%After iterative test command}" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
+		  <f:textarea name="TestLinkBuilder.afterIterativeTestCommand" value="${instance.afterIterativeTestCommand}" />
+	  </f:entry>
   </f:advanced>
   
 </j:jelly>

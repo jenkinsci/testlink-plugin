@@ -57,8 +57,10 @@ implements Serializable
 		this.testCases = new HashMap<Integer, TestCase>();
 	}
 
-	public TestLinkReport(Build build, TestPlan testPlan,
-			TestProject testProject) 
+	public TestLinkReport(
+		Build build, 
+		TestPlan testPlan,
+		TestProject testProject) 
 	{
 		super();
 		this.build = build;

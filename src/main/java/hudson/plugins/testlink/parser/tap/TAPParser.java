@@ -45,6 +45,8 @@ public class TAPParser
 extends Parser<TestSet>
 {
 
+	private static final String NAME = "TAP";
+	
 	private static final long serialVersionUID = 5036738457730949105L;
 	
 	/**
@@ -62,6 +64,7 @@ extends Parser<TestSet>
 	public TestSet parse( InputStream inputStream ) 
 	throws ParserException
 	{
+		// TBD: i18n
 		throw new NotImplementedException( "TAP parser does not parse Input Streams, only files." );
 	}
 	
@@ -82,6 +85,7 @@ extends Parser<TestSet>
 		} 
 		catch ( TapConsumerException tce )
 		{
+			// TBD: i18n
 			throw new ParserException( "Failed to parse TAP file '"+file+"'.", tce );
 		}
 		
@@ -94,7 +98,7 @@ extends Parser<TestSet>
 	@Override
 	public String getName() 
 	{
-		return "TAP";
+		return NAME;
 	}
 
 }

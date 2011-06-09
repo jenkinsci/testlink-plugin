@@ -23,7 +23,23 @@
  */
 package hudson.plugins.testlink.util;
 
+import hudson.EnvVars;
+import hudson.model.BuildListener;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+
+import org.apache.commons.lang.StringUtils;
+
+import br.eti.kinoshita.testlinkjavaapi.model.Build;
+import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
+import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
+import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
+import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
 
 /**
  * Helper methods for TestLink.
@@ -34,6 +50,21 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 public final class TestLinkHelper 
 {
 	
+	// Environment Variables names.
+	private static final String TESTLINK_TESTCASE_PREFIX = "TESTLINK_TESTCASE_";
+	private static final String TESTLINK_TESTCASE_ID_ENVVAR = "TESTLINK_TESTCASE_ID";
+	private static final String TESTLINK_TESTCASE_NAME_ENVVAR = "TESTLINK_TESTCASE_NAME";
+	private static final String TESTLINK_TESTCASE_TESTSUITE_ID_ENVVAR = "TESTLINK_TESTCASE_TESTSUITEID";
+	private static final String TESTLINK_TESTCASE_TESTPROJECT_ID = "TESTLINK_TESTCASE_TESTPROJECTID";
+	private static final String TESTLINK_TESTCASE_AUTHOR_ENVVAR = "TESTLINK_TESTCASE_AUTHOR";
+	private static final String TESTLINK_TESTCASE_SUMMARY_ENVVAR = "TESTLINK_TESTCASE_SUMMARY";
+	private static final String TESTLINK_BUILD_NAME_ENVVAR = "TESTLINK_BUILD_NAME";
+	private static final String TESTLINK_TESTPLAN_NAME_ENVVAR = "TESTLINK_TESTPLAN_NAME";
+	private static final String TESTLINK_TESTPROJECT_NAME_ENVVAR = "TESTLINK_TESTPROJECT_NAME";
+	
+	// Used for HTTP basic auth
+	private static final String BASIC_HTTP_PASSWORD = "basicPassword";
+
 	/**
 	 * Default hidden constructor for a helper class.
 	 */
@@ -49,7 +80,7 @@ public final class TestLinkHelper
 	 * @param executionStatus the execution status.
 	 * @return the text.
 	 */
-	public static String getExecutionStatusText(ExecutionStatus executionStatus) 
+	public static String getExecutionStatusText( ExecutionStatus executionStatus ) 
 	{
 		String executionStatusText = Messages.TestLinkBuilder_ExecutionStatus_Undefined();
 		if ( executionStatus == ExecutionStatus.FAILED )
@@ -80,7 +111,7 @@ public final class TestLinkHelper
 	 * @param executionStatus the execution status.
 	 * @return the text wrapped in html tags that add color to the text.
 	 */
-	public static String getExecutionStatusTextColored(ExecutionStatus executionStatus) 
+	public static String getExecutionStatusTextColored( ExecutionStatus executionStatus ) 
 	{
 		String executionStatusTextColored = 
 			Messages.TestLinkBuilder_ExecutionStatus_Undefined();
@@ -101,6 +132,154 @@ public final class TestLinkHelper
 			executionStatusTextColored = "<span style='color: gray'>"+Messages.TestLinkBuilder_ExecutionStatus_NotRun()+"</span>";
 		}
 		return executionStatusTextColored;
+	}
+	
+	/**
+	 * <p>Defines TestLink Java API Properties. Following is the list of available 
+	 * properties.</p>
+	 * 
+	 * <ul>
+	 *  	<li>xmlrpc.basicEncoding</li>
+ 	 *  	<li>xmlrpc.basicPassword</li>
+ 	 *  	<li>xmlrpc.basicUsername</li>
+ 	 *  	<li>xmlrpc.connectionTimeout</li>
+ 	 *  	<li>xmlrpc.contentLengthOptional</li>
+ 	 *  	<li>xmlrpc.enabledForExceptions</li>
+ 	 *  	<li>xmlrpc.encoding</li>
+ 	 *  	<li>xmlrpc.gzipCompression</li>
+ 	 *  	<li>xmlrpc.gzipRequesting</li>
+ 	 *  	<li>xmlrpc.replyTimeout</li>
+ 	 *  	<li>xmlrpc.userAgent</li>
+	 * </ul>
+	 * 
+	 * @param testLinkJavaAPIProperties
+	 * @param listener Jenkins Build listener
+	 */
+	public static void setTestLinkJavaAPIProperties( String testLinkJavaAPIProperties, BuildListener listener )
+	{
+		if ( StringUtils.isNotBlank( testLinkJavaAPIProperties ) )
+		{
+			final StringTokenizer tokenizer = new StringTokenizer( testLinkJavaAPIProperties, "," );
+			
+			if ( tokenizer.countTokens() > 0 )
+			{
+				while ( tokenizer.hasMoreTokens() )
+				{
+					String systemProperty = tokenizer.nextToken();
+					maybeAddSystemProperty( systemProperty, listener );
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Maybe adds a system property if it is in format <key>=<value>.
+	 * 
+	 * @param systemProperty System property entry in format <key>=<value>.
+	 * @param listener Jenkins Build listener
+	 */
+	public static void maybeAddSystemProperty( String systemProperty, BuildListener listener )
+	{
+		final StringTokenizer tokenizer = new StringTokenizer( systemProperty, "=:");
+		if ( tokenizer.countTokens() == 2 )
+		{
+			final String key 	= tokenizer.nextToken();
+			final String value	= tokenizer.nextToken();
+			
+			if ( StringUtils.isNotBlank( key ) && StringUtils.isNotBlank( value ) )
+			{
+				if ( key.contains(BASIC_HTTP_PASSWORD))
+				{
+					listener.getLogger().println( Messages.TestLinkBuilder_SettingSystemProperty(key, "********") );
+				}
+				else
+				{
+					listener.getLogger().println( Messages.TestLinkBuilder_SettingSystemProperty(key, value) );
+				}
+				try
+				{
+					System.setProperty(key, value);
+				} 
+				catch ( SecurityException se )
+				{
+					se.printStackTrace( listener.getLogger() );
+				}
+			
+			}
+		}
+	}
+	
+	/**
+	 * Creates a Map (name, value) of environment variables for a TestLink Test Case.
+	 * 
+	 * @param testCase TestLink test Case.
+	 * @param testProject TestLink Test Project.
+	 * @param testPlan TestLink Test Plan.
+	 * @param build TestLink Build.
+	 * @return Map (name, value) of environment variables.
+	 */
+	public static Map<String, String> createTestLinkEnvironmentVariables( TestCase testCase, TestProject testProject, TestPlan testPlan, Build build ) 
+	{
+		Map<String, String> testLinkEnvVar = new HashMap<String, String>();
+		
+		testLinkEnvVar.put( TESTLINK_TESTCASE_ID_ENVVAR, ""+testCase.getId() );
+		testLinkEnvVar.put( TESTLINK_TESTCASE_NAME_ENVVAR, ""+testCase.getName() );
+		testLinkEnvVar.put( TESTLINK_TESTCASE_TESTSUITE_ID_ENVVAR, ""+testCase.getTestSuiteId() );
+		testLinkEnvVar.put( TESTLINK_TESTCASE_TESTPROJECT_ID, ""+testCase.getTestProjectId() );
+		testLinkEnvVar.put( TESTLINK_TESTCASE_AUTHOR_ENVVAR, ""+testCase.getAuthorLogin() );
+		testLinkEnvVar.put( TESTLINK_TESTCASE_SUMMARY_ENVVAR, testCase.getSummary() );
+		testLinkEnvVar.put( TESTLINK_BUILD_NAME_ENVVAR, build.getName() );
+		testLinkEnvVar.put( TESTLINK_TESTPLAN_NAME_ENVVAR, testPlan.getName() );
+		testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, testProject.getName() );
+		
+		List<CustomField> customFields = testCase.getCustomFields();
+		for (Iterator<CustomField> iterator = customFields.iterator(); iterator.hasNext();)
+		{
+			CustomField customField = iterator.next();
+			String customFieldEnvVarName = formatCustomFieldEnvironmentVariableName( customField.getName() );
+			testLinkEnvVar.put(customFieldEnvVarName , customField.getValue());
+		}
+		
+		return testLinkEnvVar;
+	}
+	
+	/**
+	 * Formats a custom field's name into an environment variable. 
+	 * 
+	 * @param name The name of the custom field
+	 * @return Formatted name for a environment variable
+	 */
+	public static String formatCustomFieldEnvironmentVariableName(String name) 
+	{
+		name = name.toUpperCase(); // uppercase
+		name = name.trim(); // trim
+		name = TESTLINK_TESTCASE_PREFIX + name; // add prefix
+		name = name.replaceAll( "\\s+", "_" ); // replace white spaces
+		return name;
+	}
+	
+	/**
+	 * Creates EnvVars for a TestLink Test Case.
+	 * 
+	 * @param testCase TestLink test Case
+	 * @param testProject TestLink Test Project
+	 * @param testPlan TestLink Test Plan
+	 * @param build TestLink Build
+	 * @param listener Hudson Build Listener
+	 * @return EnvVars (environment variables)
+	 */
+	public static EnvVars buildTestCaseEnvVars( TestCase testCase, TestProject testProject, TestPlan testPlan, Build build, BuildListener listener ) 
+	{
+		// Build environment variables list
+		listener.getLogger().println(Messages.TestLinkBuilder_CreatingEnvVars());
+		Map<String, String> testLinkEnvironmentVariables = TestLinkHelper.createTestLinkEnvironmentVariables( testCase, testProject, testPlan, build );
+
+		// Merge with build environment variables list
+		listener.getLogger().println(Messages.TestLinkBuilder_MergingEnvVars());
+		listener.getLogger().println();
+		
+		final EnvVars buildEnvironment = new EnvVars( testLinkEnvironmentVariables );
+		return buildEnvironment;
 	}
 	
 }

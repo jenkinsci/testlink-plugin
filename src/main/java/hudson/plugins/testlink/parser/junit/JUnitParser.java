@@ -51,6 +51,8 @@ public class JUnitParser
 extends Parser<TestSuite>
 {
 
+	private static final String NAME = "JUnit";
+
 	private static final long serialVersionUID = -7796590517576772260L;
 	
 	/**
@@ -162,7 +164,7 @@ extends Parser<TestSuite>
 	@Override
 	public String getName() 
 	{
-		return "JUnit";
+		return NAME;
 	}
 	
 }

@@ -40,26 +40,23 @@ extends DefaultHandler
 implements Serializable
 {
 
+	private static final String SUITE = "suite";
+	private static final String TEST_METHOD = "test-method";
+	private static final String CLAZZ = "class";
+	private static final String TEST = "test";
+	private static final String STATUS = "status";
+	private static final String SIGNATURE = "signature";
+	private static final String IS_CONFIG = "is-config";
+	private static final String NAME = "name";
+	private static final String STARTED_AT = "started-at";
+	private static final String FINISHED_AT = "finished-at";
+	private static final String DURATION_MS = "duration-ms";
+
 	private static final long serialVersionUID = -7393574325643071292L;
-	
-	/**
-	 * Suite.
-	 */
+
 	private Suite suite;
-	
-	/**
-	 * Test.
-	 */
 	private Test test;
-	
-	/**
-	 * Class.
-	 */
 	private Class clazz;
-	
-	/**
-	 * Test method.
-	 */
 	private TestMethod testMethod;
 	
 	/**
@@ -81,41 +78,41 @@ implements Serializable
 			Attributes attributes) 
 	throws SAXException 
 	{
-		if ( "suite".equals(qName) )
+		if ( SUITE.equals(qName) )
 		{
 			suite = new Suite();
 			
-			suite.setDurationMs( attributes.getValue("duration-ms") );
-			suite.setFinishedAt( attributes.getValue("finished-at") );
-			suite.setStartedAt( attributes.getValue("started-at") );
-			suite.setName( attributes.getValue("name") );
+			suite.setDurationMs( attributes.getValue( DURATION_MS ) );
+			suite.setFinishedAt( attributes.getValue( FINISHED_AT ) );
+			suite.setStartedAt( attributes.getValue(STARTED_AT) );
+			suite.setName( attributes.getValue( NAME ) );
 		} 
-		else if ( "test".equals( qName ) )
+		else if ( TEST.equals( qName ) )
 		{
 			test = new Test();
 			
-			test.setDurationMs( attributes.getValue("duration-ms") );
-			test.setFinishedAt( attributes.getValue("finished-at") );
-			test.setStartedAt( attributes.getValue("started-at") );
-			test.setName( attributes.getValue("name") );
+			test.setDurationMs( attributes.getValue( DURATION_MS ) );
+			test.setFinishedAt( attributes.getValue( FINISHED_AT ) );
+			test.setStartedAt( attributes.getValue( STARTED_AT ) );
+			test.setName( attributes.getValue( NAME ) );
 		}
-		else if ( "class".equals( qName ) ) 
+		else if ( CLAZZ.equals( qName ) ) 
 		{
 			clazz = new Class();
 			
-			clazz.setName( attributes.getValue("name") );
+			clazz.setName( attributes.getValue( NAME ) );
 		}
-		else if ( "test-method".equals( qName ) )
+		else if ( TEST_METHOD.equals( qName ) )
 		{
 			testMethod = new TestMethod();
 			
-			testMethod.setDurationMs( attributes.getValue("duration-ms") );
-			testMethod.setFinishedAt( attributes.getValue("finished-at") );
-			testMethod.setStartedAt( attributes.getValue("started-at") );
-			testMethod.setName( attributes.getValue("name") );
-			testMethod.setIsConfig( attributes.getValue("is-config") );
-			testMethod.setSignature( attributes.getValue("signature") );
-			testMethod.setStatus( attributes.getValue("status") );
+			testMethod.setDurationMs( attributes.getValue( DURATION_MS ) );
+			testMethod.setFinishedAt( attributes.getValue( FINISHED_AT ) );
+			testMethod.setStartedAt( attributes.getValue( STARTED_AT ) );
+			testMethod.setName( attributes.getValue( NAME ) );
+			testMethod.setIsConfig( attributes.getValue( IS_CONFIG ) );
+			testMethod.setSignature( attributes.getValue( SIGNATURE ) );
+			testMethod.setStatus( attributes.getValue( STATUS ) );
 		}
 	}
 	
@@ -128,15 +125,15 @@ implements Serializable
 			String qName )
 			throws SAXException
 	{
-		if ( "test".equals( qName ) )
+		if ( TEST.equals( qName ) )
 		{
 			suite.addTest( test );
 		}
-		else if ( "class".equals( qName ) ) 
+		else if ( CLAZZ.equals( qName ) ) 
 		{
 			test.addClass( clazz );
 		}
-		else if ( "test-method".equals( qName ) )
+		else if ( TEST_METHOD.equals( qName ) )
 		{
 			clazz.addTestMethod( testMethod );
 		}

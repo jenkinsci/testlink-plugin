@@ -45,6 +45,13 @@ public class TestNGParser
 extends Parser<Suite>
 {
 
+	/**
+	 * 
+	 */
+	private static final String APACHE_EXT_DTD = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+
+	private static final String NAME = "TestNG";
+
 	private static final long serialVersionUID = -7538241225523763422L;
 	
 	/**
@@ -71,7 +78,7 @@ extends Parser<Suite>
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		factory.setValidating(false);
 		try {
-            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            factory.setFeature(APACHE_EXT_DTD, false);
         } catch (ParserConfigurationException e) {
         } catch (SAXNotRecognizedException e) {
         } catch (SAXNotSupportedException e) {
@@ -108,7 +115,7 @@ extends Parser<Suite>
 	@Override
 	public String getName() 
 	{
-		return "TestNG";
+		return NAME;
 	}
 
 }

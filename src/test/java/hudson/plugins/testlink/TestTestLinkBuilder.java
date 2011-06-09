@@ -49,10 +49,14 @@ extends HudsonTestCase
 		
 		builder = new TestLinkBuilder("No testlink", "No project",
 				"No plan", "No build", "class, time", "dir", "dir",
-				Boolean.FALSE, "class",
+				"class", Boolean.FALSE, 
 				junitXmlReportFilesPattern,
 				testNgXmlReportFilesPattern, 
-				tapReportFilesPattern) ;
+				tapReportFilesPattern, 
+				null, 
+				null, 
+				null, 
+				null) ;
 	}
 	
 	/**
@@ -76,7 +80,7 @@ extends HudsonTestCase
 	 */
 	public void testListOfCustomFields()
 	{
-		String[] customFieldsNames = builder.createarrayOfCustomFieldsNames();
+		String[] customFieldsNames = builder.createArrayOfCustomFieldsNames();
 		
 		assertNotNull( customFieldsNames );
 		assertTrue( customFieldsNames.length == 2 );
@@ -86,7 +90,7 @@ extends HudsonTestCase
 	
 	public void testNull()
 	{
-		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null );
+		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null );
 		
 		assertNotNull( builder );
 		
@@ -112,8 +116,9 @@ extends HudsonTestCase
 		
 		builder = new TestLinkBuilder("No testlink", "No project",
 				"No plan", "No build", "class, time", "dir", "dir",
-				Boolean.FALSE, "class",
-				junitXmlReportFilesPattern, testNgXmlReportFilesPattern, tapReportFilesPattern );
+				"class", Boolean.FALSE, 
+				junitXmlReportFilesPattern, testNgXmlReportFilesPattern, tapReportFilesPattern, 
+				null, null, null, null );
 	}
 	
 	/**
