@@ -25,6 +25,7 @@ package hudson.plugins.testlink.parser.tap;
 
 import hudson.plugins.testlink.parser.Parser;
 import hudson.plugins.testlink.parser.ParserException;
+import hudson.plugins.testlink.util.Messages;
 
 import java.io.File;
 import java.io.InputStream;
@@ -64,8 +65,7 @@ extends Parser<TestSet>
 	public TestSet parse( InputStream inputStream ) 
 	throws ParserException
 	{
-		// TBD: i18n
-		throw new NotImplementedException( "TAP parser does not parse Input Streams, only files." );
+		throw new NotImplementedException( Messages.Results_TAP_TAPInputStreamError() );
 	}
 	
 	/* (non-Javadoc)
@@ -85,8 +85,7 @@ extends Parser<TestSet>
 		} 
 		catch ( TapConsumerException tce )
 		{
-			// TBD: i18n
-			throw new ParserException( "Failed to parse TAP file '"+file+"'.", tce );
+			throw new ParserException( Messages.Results_TAP_ParsingFail( file, tce ) );
 		}
 		
 		return testSet;
