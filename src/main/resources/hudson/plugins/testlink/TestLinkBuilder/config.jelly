@@ -68,6 +68,14 @@
 		  <f:textarea name="TestLinkBuilder.afterSingleTestCommand" value="${instance.afterSingleTestCommand}" />
 	  </f:entry>
 	  
+	  <f:entry title="${%Before iterating all test cases}" help="${rootURL}/../plugin/testlink/help-beforeIteratingAllTestCasesCommand.html">
+		  <f:textarea name="TestLinkBuilder.beforeIteratingAllTestCasesCommand" value="${instance.beforeIteratingAllTestCasesCommand}" />
+	  </f:entry>
+	  
+	  <f:entry title="${%After iterating all test cases}" help="${rootURL}/../plugin/testlink/help-afterIteratingAllTestCasesCommand.html">
+		  <f:textarea name="TestLinkBuilder.afterIteratingAllTestCasesCommand" value="${instance.afterIteratingAllTestCasesCommand}" />
+	  </f:entry>
+	  
 	  <f:entry title="${%Before iterative test command}" help="${rootURL}/../plugin/testlink/help-beforeIterativeTestCommand.html">
 		  <f:textarea name="TestLinkBuilder.beforeIterativeTestCommand" value="${instance.beforeIterativeTestCommand}" />
 	  </f:entry>
@@ -75,6 +83,7 @@
 	  <f:entry title="${%After iterative test command}" help="${rootURL}/../plugin/testlink/help-afterIterativeTestCommand.html">
 		  <f:textarea name="TestLinkBuilder.afterIterativeTestCommand" value="${instance.afterIterativeTestCommand}" />
 	  </f:entry>
+	  
   </f:advanced>
   
 </j:jelly>

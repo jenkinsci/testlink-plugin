@@ -28,7 +28,6 @@ import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.BuildListener;
-import hudson.model.Result;
 import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 import hudson.plugins.testlink.result.TestLinkReport;
@@ -88,6 +87,8 @@ extends AbstractTestLinkBuilder
 		String tapStreamReportFilesPattern, 
 		String beforeSingleTestCommand, 
 		String afterSingleTestCommand, 
+		String beforeIteratingAllTestCasesCommand, 
+		String afterIteratingAllTestCasesCommand, 
 		String beforeIterativeTestCommand, 
 		String afterIterativeTestCommand
 	)
@@ -108,6 +109,8 @@ extends AbstractTestLinkBuilder
 			tapStreamReportFilesPattern, 
 			beforeSingleTestCommand, 
 			afterSingleTestCommand, 
+			beforeIteratingAllTestCasesCommand, 
+			afterIteratingAllTestCasesCommand, 
 			beforeIterativeTestCommand, 
 			afterIterativeTestCommand
 		);
@@ -321,6 +324,21 @@ extends AbstractTestLinkBuilder
 	{
 		if ( StringUtils.isNotBlank( iterativeTestCommand ) )
 		{
+		
+			try
+			{
+				CommandExecutor.executeCommand( build, listener, isUnix, 
+					build.getEnvironment(listener), this.beforeIteratingAllTestCasesCommand);
+			}
+			catch (InterruptedException e) 
+	        {
+	        	e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_TestCommandError(e.getMessage())) );
+	        } 
+			catch (IOException e)
+			{
+	        	e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_TestCommandError(e.getMessage())) );
+			} 
+			
 			for ( TestCase automatedTestCase : automatedTestCases )
 			{
 				if ( this.failure  && this.transactional )
@@ -348,7 +366,22 @@ extends AbstractTestLinkBuilder
 					
 					this.failure = ! success;
 				}
+			} // #end for
+			
+			try
+			{
+				CommandExecutor.executeCommand( build, listener, isUnix, 
+					build.getEnvironment(listener), this.afterIteratingAllTestCasesCommand);
 			}
+			catch (InterruptedException e) 
+	        {
+	        	e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_TestCommandError(e.getMessage())) );
+	        } 
+			catch (IOException e)
+			{
+	        	e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_TestCommandError(e.getMessage())) );
+			} 
+			
 		}
 		else
 		{

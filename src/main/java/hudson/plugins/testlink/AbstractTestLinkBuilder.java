@@ -142,6 +142,16 @@ extends Builder
 	protected final String afterSingleTestCommand;
 	
 	/**
+	 * Command executed before iterating all test cases.
+	 */
+	protected final String beforeIteratingAllTestCasesCommand;
+	
+	/**
+	 * Command executed after iterating all test cases.
+	 */
+	protected final String afterIteratingAllTestCasesCommand;
+	
+	/**
 	 * Command executed before the iterative test command.
 	 */
 	protected final String beforeIterativeTestCommand;
@@ -186,6 +196,8 @@ extends Builder
 	 * @param tapStreamReportFilesPattern Pattern for TAP report files.
 	 * @param beforeSingleTestCommand Command executed before single test command.
 	 * @param afterSingleTestCommand Command executed after single test command.
+	 * @param beforeIteratingAllTestCasesCommand Command executed before iterating all test cases.
+	 * @param afterIteratingAllTestCasesCommand Command executed after iterating all test cases.
 	 * @param beforeIterativeTestCommand Command executed before iterative test command.
 	 * @param afterIterativeTestCommand Command executed after iterative test command.
 	 */
@@ -205,6 +217,8 @@ extends Builder
 		String tapStreamReportFilesPattern, 
 		String beforeSingleTestCommand, 
 		String afterSingleTestCommand, 
+		String beforeIteratingAllTestCasesCommand, 
+		String afterIteratingAllTestCasesCommand, 
 		String beforeIterativeTestCommand, 
 		String afterIterativeTestCommand
 	)
@@ -228,6 +242,8 @@ extends Builder
 		
 		this.beforeSingleTestCommand = beforeSingleTestCommand;
 		this.afterSingleTestCommand = afterSingleTestCommand;
+		this.beforeIteratingAllTestCasesCommand = beforeIteratingAllTestCasesCommand;
+		this.afterIteratingAllTestCasesCommand = afterIteratingAllTestCasesCommand;
 		this.beforeIterativeTestCommand = beforeIterativeTestCommand;
 		this.afterIterativeTestCommand = afterIterativeTestCommand;
 	}
@@ -395,6 +411,16 @@ extends Builder
 		return afterSingleTestCommand;
 	}
 
+	public String getBeforeIteratingAllTestCasesCommand()
+	{
+		return beforeIteratingAllTestCasesCommand;
+	}
+	
+	public String getAfterIteratingAllTestCasesCommand()
+	{
+		return afterIteratingAllTestCasesCommand;
+	}
+	
 	public String getBeforeIterativeTestCommand()
 	{
 		return beforeIterativeTestCommand;
