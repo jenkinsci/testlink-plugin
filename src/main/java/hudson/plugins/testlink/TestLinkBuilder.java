@@ -85,12 +85,8 @@ extends AbstractTestLinkBuilder
 		String junitXmlReportFilesPattern, 
 		String testNGXmlReportFilesPattern, 
 		String tapStreamReportFilesPattern, 
-		String beforeSingleTestCommand, 
-		String afterSingleTestCommand, 
 		String beforeIteratingAllTestCasesCommand, 
-		String afterIteratingAllTestCasesCommand, 
-		String beforeIterativeTestCommand, 
-		String afterIterativeTestCommand
+		String afterIteratingAllTestCasesCommand
 	)
 	{
 		super(
@@ -107,12 +103,8 @@ extends AbstractTestLinkBuilder
 			junitXmlReportFilesPattern, 
 			testNGXmlReportFilesPattern, 
 			tapStreamReportFilesPattern, 
-			beforeSingleTestCommand, 
-			afterSingleTestCommand, 
 			beforeIteratingAllTestCasesCommand, 
-			afterIteratingAllTestCasesCommand, 
-			beforeIterativeTestCommand, 
-			afterIterativeTestCommand
+			afterIteratingAllTestCasesCommand
 		);
 	}
 	
@@ -288,8 +280,7 @@ extends AbstractTestLinkBuilder
 			final EnvVars envVars = build.getEnvironment( listener );
 			
 			final boolean success = CommandExecutor.executeCommand(build, listener, 
-					isUnix, envVars, beforeSingleTestCommand, 
-					singleTestCommand, afterSingleTestCommand); 
+					isUnix, envVars, singleTestCommand); 
 			
 			this.failure = !success;
 		}
@@ -361,8 +352,7 @@ extends AbstractTestLinkBuilder
 					// Execute iterative test command with pre and post commands
 					final boolean success = CommandExecutor.executeCommand( build, 
 							listener, isUnix, iterativeEnvVars,
-							beforeIterativeTestCommand, iterativeTestCommand, 
-							afterIterativeTestCommand); 
+							iterativeTestCommand ); 
 					
 					this.failure = ! success;
 				}

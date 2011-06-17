@@ -132,16 +132,6 @@ extends Builder
 	 */
 	
 	/**
-	 * Command executed before the single test command.
-	 */
-	protected final String beforeSingleTestCommand;
-	
-	/**
-	 * Command executed after the single test command.
-	 */
-	protected final String afterSingleTestCommand;
-	
-	/**
 	 * Command executed before iterating all test cases.
 	 */
 	protected final String beforeIteratingAllTestCasesCommand;
@@ -150,16 +140,6 @@ extends Builder
 	 * Command executed after iterating all test cases.
 	 */
 	protected final String afterIteratingAllTestCasesCommand;
-	
-	/**
-	 * Command executed before the iterative test command.
-	 */
-	protected final String beforeIterativeTestCommand;
-	
-	/**
-	 * Command executed after the iterative test command.
-	 */
-	protected final String afterIterativeTestCommand;
 	
 	/**
 	 * Report files patterns.
@@ -194,12 +174,8 @@ extends Builder
 	 * @param junitXmlReportFilesPattern Pattern for JUnit report files.
 	 * @param testNGXmlReportFilesPattern Pattern for TestNG report files.
 	 * @param tapStreamReportFilesPattern Pattern for TAP report files.
-	 * @param beforeSingleTestCommand Command executed before single test command.
-	 * @param afterSingleTestCommand Command executed after single test command.
 	 * @param beforeIteratingAllTestCasesCommand Command executed before iterating all test cases.
 	 * @param afterIteratingAllTestCasesCommand Command executed after iterating all test cases.
-	 * @param beforeIterativeTestCommand Command executed before iterative test command.
-	 * @param afterIterativeTestCommand Command executed after iterative test command.
 	 */
 	public AbstractTestLinkBuilder(
 		String testLinkName, 
@@ -215,12 +191,8 @@ extends Builder
 		String junitXmlReportFilesPattern, 
 		String testNGXmlReportFilesPattern, 
 		String tapStreamReportFilesPattern, 
-		String beforeSingleTestCommand, 
-		String afterSingleTestCommand, 
 		String beforeIteratingAllTestCasesCommand, 
-		String afterIteratingAllTestCasesCommand, 
-		String beforeIterativeTestCommand, 
-		String afterIterativeTestCommand
+		String afterIteratingAllTestCasesCommand
 	)
 	{
 		super();
@@ -239,13 +211,9 @@ extends Builder
 				junitXmlReportFilesPattern, 
 				testNGXmlReportFilesPattern, 
 				tapStreamReportFilesPattern);
-		
-		this.beforeSingleTestCommand = beforeSingleTestCommand;
-		this.afterSingleTestCommand = afterSingleTestCommand;
+
 		this.beforeIteratingAllTestCasesCommand = beforeIteratingAllTestCasesCommand;
 		this.afterIteratingAllTestCasesCommand = afterIteratingAllTestCasesCommand;
-		this.beforeIterativeTestCommand = beforeIterativeTestCommand;
-		this.afterIterativeTestCommand = afterIterativeTestCommand;
 	}
 	
 	/**
@@ -400,16 +368,6 @@ extends Builder
 	{
 		return reportFilesPatterns.getTapStreamReportFilesPattern();
 	}
-	
-	public String getBeforeSingleTestCommand()
-	{
-		return beforeSingleTestCommand;
-	}
-
-	public String getAfterSingleTestCommand()
-	{
-		return afterSingleTestCommand;
-	}
 
 	public String getBeforeIteratingAllTestCasesCommand()
 	{
@@ -419,16 +377,6 @@ extends Builder
 	public String getAfterIteratingAllTestCasesCommand()
 	{
 		return afterIteratingAllTestCasesCommand;
-	}
-	
-	public String getBeforeIterativeTestCommand()
-	{
-		return beforeIterativeTestCommand;
-	}
-
-	public String getAfterIterativeTestCommand()
-	{
-		return afterIterativeTestCommand;
 	}
 
 	/* (non-Javadoc)

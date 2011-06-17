@@ -95,36 +95,4 @@ public class CommandExecutor
 		return r;
 	}
 	
-	/**
-	 * Executes a command with a pre-action and a post-action. Useful for 
-	 * executing actions before and after your test command.
-	 * 
-	 * @param beforeCommand pre-action.
-	 * @param command command.
-	 * @param afterCommand post-action.
-	 * @param isUnix whether it is a unix node or a windows one.
-	 * @param envVars environment variables.
-	 * 
-	 * @return <code>true</code> if all three commands were executed correctly, 
-	 * <code>false</code> otherwise.
-	 */
-	public static boolean executeCommand( 
-		AbstractBuild<?, ?> build, 
-		BuildListener listener,
-		boolean isUnix,
-		EnvVars envVars, 
-		String beforeCommand, 
-		String command, 
-		String afterCommand
-	)
-	{
-		boolean beforeCommandStatus = executeCommand( build, listener, isUnix, envVars, beforeCommand );
-		
-		boolean commandStatus = executeCommand( build, listener, isUnix, envVars, command );
-		
-		boolean afterCommandStatus = executeCommand( build, listener, isUnix, envVars, afterCommand );
-		
-		return beforeCommandStatus && commandStatus && afterCommandStatus;
-	}
-	
 }

@@ -54,10 +54,6 @@ extends HudsonTestCase
 				testNgXmlReportFilesPattern, 
 				tapReportFilesPattern, 
 				null, 
-				null, 
-				null, 
-				null, 
-				null, 
 				null) ;
 	}
 	
@@ -92,7 +88,7 @@ extends HudsonTestCase
 	
 	public void testNull()
 	{
-		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null );
+		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null );
 		
 		assertNotNull( builder );
 		
@@ -120,7 +116,7 @@ extends HudsonTestCase
 				"No plan", "No build", "class, time", "dir", "dir",
 				"class", Boolean.FALSE, Boolean.FALSE, 
 				junitXmlReportFilesPattern, testNgXmlReportFilesPattern, tapReportFilesPattern, 
-				null, null, null, null, null, null );
+				null, null );
 	}
 	
 	/**
