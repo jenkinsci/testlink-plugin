@@ -28,6 +28,7 @@ import hudson.plugins.testlink.result.parser.junit.issue8531.TestIssue8531;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -63,17 +64,19 @@ extends TestCase
 		URL url = cl.getResource("hudson/plugins/testlink/result/parser/junit/issue8683/TEST-valid.xml");
 		File junitFile = new File( url.getFile() );
 		
-		TestSuite testSuite = null;
+		List<TestSuite> testSuites = null;
 		try
 		{
-			testSuite = this.parser.parse( junitFile );
+			testSuites = this.parser.parse( junitFile );
 		} 
 		catch (Exception e)
 		{
 			Assert.fail("Failed to parse JUnit xml report '"+junitFile+"'.");
 		}
 		
-		Assert.assertNotNull( testSuite );
+		Assert.assertNotNull( testSuites );
+		
+		Assert.assertTrue( testSuites.size() > 0 );
 	}
 	
 	public void testJUnitParserIssue8683InvalidSuite() 

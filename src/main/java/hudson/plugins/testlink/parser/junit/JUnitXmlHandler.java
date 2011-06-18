@@ -24,6 +24,8 @@
 package hudson.plugins.testlink.parser.junit;
 
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.xml.sax.Attributes;
@@ -46,7 +48,12 @@ implements Serializable
 	/**
 	 * The temporary value of the body of a tag. (<tag>$body</tag>)
 	 */
-	private StringBuilder tempVal;
+	private StringBuilder tempVal = new StringBuilder();
+	
+	/**
+	 * List of Test Suites.
+	 */
+	private List<TestSuite> testSuites = new LinkedList<TestSuite>();
 	
 	/**
 	 * Test Suite.
@@ -171,7 +178,11 @@ implements Serializable
 			String qName )
 	throws SAXException
 	{
-		if ( "testcase".equals(qName) )
+		if ( "testsuite".equals(qName) )
+		{
+			testSuites.add( testSuite );
+		}
+		else if ( "testcase".equals(qName) )
 		{
 			testSuite.addTestCase( testCase );
 		}
@@ -210,13 +221,13 @@ implements Serializable
 	}
 	
 	/**
-	 * Retrieves the parsed Test Suite.
+	 * Retrieves a linked list with parsed Test Suites.
 	 * 
-	 * @return the parsed Test Suite or null if no Test Suite was found.
+	 * @return a linked list with parsed Test Suites. An empty list of no test suites were found.
 	 */
-	public TestSuite getSuite()
+	public List<TestSuite> getSuite()
 	{
-		return this.testSuite;
+		return this.testSuites;
 	}
 	
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<testsuites>
+  <testsuite errors="0" failures="0" hostname="mclient35" id="0" name="/data/tester/system_tests/qftest/demos/MST_DEMO_LOG_01/MST_DEMO_LOG_01_qft" package="" tests="3" time="8.859" timestamp="2011-06-15 08:18:42">
+    <properties>
+      <property name="relname" value=".../MST_DEMO_LOG_01.qft"/>
+      <property name="basedir" value=""/>
+      <property name="runid" value="110615081842"/>
+      <property name="execution-date" value="2011-06-15 08:18:42"/>
+      <property name="executed-by" value="mgeisth"/>
+      <property name="host" value="mclient35"/>
+      <property name="os-version" value="i386-Linux-2.6.32-27-generic"/>
+      <property name="java-version" value="1.6.0_23-b05"/>
+      <property name="qftest-version" value="3.4M2"/>
+    </properties>
+    <testcase name="UnitTest.Startup" time="6.513"/>
+    <testcase name="UnitTest.UT1" time="1.824"/>
+    <testcase name="UnitTest.Exit" time="0.511"/>
+    <system-out/>
+    <system-err/>
+  </testsuite>
+  <!-- took from issue 8683 test suite -->
+  <testsuite name="Test Suite" failures="1" errors="1" tests="3">
+	<testcase classname="com.test.qa.A" name="A" />
+	<testcase classname="com.test.qa.B" name="B">
+	<failure type="junit.framework.AssertionFailedError" message="null">junit....</failure>
+	</testcase>
+	<testcase classname="com.test.qa.C" name="C">
+	<error type="junit.framework.AssertionFailedError" message="null">junit....</error>
+	</testcase>
+  </testsuite>
+</testsuites>

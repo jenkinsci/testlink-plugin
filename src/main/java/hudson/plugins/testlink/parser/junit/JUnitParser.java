@@ -30,6 +30,7 @@ import hudson.plugins.testlink.util.Messages;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -48,7 +49,7 @@ import org.xml.sax.SAXNotSupportedException;
  * @since 2.0
  */
 public class JUnitParser 
-extends Parser<TestSuite>
+extends Parser<List<TestSuite>>
 {
 
 	private static final String NAME = "JUnit";
@@ -73,7 +74,7 @@ extends Parser<TestSuite>
 	 * @see hudson.plugins.testlink.parser.Parser#parse(java.io.InputStream)
 	 */
 	@Override
-	public TestSuite parse( InputStream inputStream ) 
+	public List<TestSuite> parse( InputStream inputStream ) 
 	throws ParserException
 	{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -105,11 +106,14 @@ extends Parser<TestSuite>
 			throw new ParserException( e );
 		}
         
-        TestSuite suite = this.handler.getSuite();
+        List<TestSuite> suites = this.handler.getSuite();
         
-        this.validateJUnitTestSuite( suite );
+        for ( TestSuite suite : suites )
+        {
+        	this.validateJUnitTestSuite( suite );
+        }
         
-        return suite;
+        return suites;
 	}
 
 	/**

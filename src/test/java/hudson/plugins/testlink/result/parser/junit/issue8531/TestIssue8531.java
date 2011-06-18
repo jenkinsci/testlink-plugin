@@ -29,6 +29,7 @@ import hudson.plugins.testlink.parser.junit.TestSuite;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 
 import org.jvnet.hudson.test.Bug;
 
@@ -64,32 +65,36 @@ extends junit.framework.TestCase
 		URL url = cl.getResource("hudson/plugins/testlink/result/parser/junit/issue8531/TEST-navigation_vers_les_massifs.xml");
 		File junitFile = new File( url.getFile() );
 		
-		TestSuite testSuite = null;
+		List<TestSuite> testSuites = null;
 		try
 		{
-			testSuite = this.parser.parse( junitFile );
+			testSuites = this.parser.parse( junitFile );
 		} 
 		catch (Exception e)
 		{
 			fail("Failed to parse JUnit xml report '"+junitFile+"': " + e.getMessage());
 		}
 		
-		assertNotNull( testSuite );
+		assertNotNull( testSuites );
 		
-		assertTrue( "Invalid number of test cases.", testSuite.getTestCases().size() == 2 );
+		assertEquals( testSuites.size(), 1 );
 		
-		assertTrue( testSuite.getTime().equals("63.296000") );
+		TestSuite suite = testSuites.get( 0 );
 		
-		assertTrue( "Invalid number of failures.", testSuite.getFailures().equals(0L) );
-		assertTrue( "Invalid number of errors.", testSuite.getErrors().equals(0L));
+		assertTrue( "Invalid number of test cases.", suite.getTestCases().size() == 2 );
 		
-		TestCase testCase1 = testSuite.getTestCases().get(0);
+		assertTrue( suite.getTime().equals("63.296000") );
+		
+		assertTrue( "Invalid number of failures.", suite.getFailures().equals(0L) );
+		assertTrue( "Invalid number of errors.", suite.getErrors().equals(0L));
+		
+		TestCase testCase1 = suite.getTestCases().get(0);
 		assertNotNull( testCase1 );
 		assertTrue( testCase1.getClassName().equals("Navigation vers les massifs.Acceder par la liste") );
 		assertTrue( testCase1.getName().equals("Acceder par la liste (outline example : | Massif du Mercantour | Massif du Mercantour |)") );
 		assertTrue( testCase1.getTime().equals("31.781000"));
 		
-		TestCase testCase2 = testSuite.getTestCases().get(1);
+		TestCase testCase2 = suite.getTestCases().get(1);
 		assertNotNull( testCase2 );
 		assertTrue( testCase2.getClassName().equals("Navigation vers les massifs.Acceder par la carte") );
 		assertTrue( testCase2.getName().equals("Acceder par la carte (outline example : | 3 | Massif du Mercantour |)") );

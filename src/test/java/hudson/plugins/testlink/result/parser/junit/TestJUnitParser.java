@@ -32,6 +32,7 @@ import hudson.plugins.testlink.parser.junit.TestSuite;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -62,10 +63,10 @@ extends junit.framework.TestCase
 		URL url = cl.getResource("hudson/plugins/testlink/result/parser/junit/TEST-br.eti.kinoshita.Test.xml");
 		File junitFile = new File( url.getFile() );
 		
-		TestSuite testSuite = null;
+		List<TestSuite> testSuites = null;
 		try
 		{
-			testSuite = this.parser.parse( junitFile );
+			testSuites = this.parser.parse( junitFile );
 		} 
 		catch (Exception e)
 		{
@@ -73,10 +74,15 @@ extends junit.framework.TestCase
 			Assert.fail("Failed to parse JUnit xml report '"+junitFile+"'.");
 		}
 		
-		Assert.assertNotNull( testSuite );
-		Assert.assertTrue( testSuite.getTestCases().size() == 1 );
+		Assert.assertNotNull( testSuites );
 		
-		Assert.assertTrue( testSuite.getFailures().equals(1L));
+		Assert.assertEquals( testSuites.size(), 1 );
+		
+		TestSuite suite = testSuites.get( 0 );
+		
+		Assert.assertTrue( suite.getTestCases().size() == 1 );
+		
+		Assert.assertTrue( suite.getFailures().equals(1L));
 		
 	}
 	
@@ -86,24 +92,30 @@ extends junit.framework.TestCase
 		URL url = cl.getResource("hudson/plugins/testlink/result/parser/junit/TEST-net.cars.engine.CarburateurTest.xml");
 		File junitFile = new File( url.getFile() );
 		
-		TestSuite testSuite = null;
+		List<TestSuite> testSuites = null;
 		try
 		{
-			testSuite = this.parser.parse( junitFile );
+			testSuites = this.parser.parse( junitFile );
 		} 
 		catch (Exception e)
 		{
+			e.printStackTrace( System.err );
 			Assert.fail("Failed to parse JUnit xml report '"+junitFile+"'.");
 		}
 		
-		Assert.assertNotNull( testSuite );
-		Assert.assertTrue( testSuite.getTestCases().size() == 1 );
+		Assert.assertNotNull( testSuites );
 		
-		Assert.assertTrue( testSuite.getFailures().equals( 1L ));
-		Assert.assertTrue( testSuite.getTimestamp().equals("2007-11-02T23:13:50") );
+		Assert.assertEquals( testSuites.size(), 1 );
 		
-		Assert.assertTrue( testSuite.getHostname().equals("hazelnut.osuosl.org"));
-		TestCase t1 = testSuite.getTestCases().get(0);
+		TestSuite suite = testSuites.get( 0 );
+		
+		Assert.assertTrue( suite.getTestCases().size() == 1 );
+		
+		Assert.assertTrue( suite.getFailures().equals( 1L ));
+		Assert.assertTrue( suite.getTimestamp().equals("2007-11-02T23:13:50") );
+		
+		Assert.assertTrue( suite.getHostname().equals("hazelnut.osuosl.org"));
+		TestCase t1 = suite.getTestCases().get(0);
 		Failure failure = t1.getFailures().get(0);
 		
 		Assert.assertNotNull( failure );
@@ -114,9 +126,9 @@ extends junit.framework.TestCase
 		Assert.assertTrue( t1.removeFailure( failure ) );
 		Assert.assertTrue( t1.getFailures().size() == 0 );
 		
-		Assert.assertTrue( testSuite.removeTestCase(t1) );
+		Assert.assertTrue( suite.removeTestCase(t1) );
 		
-		Assert.assertTrue( testSuite.getTestCases().size() == 0 );
+		Assert.assertTrue( suite.getTestCases().size() == 0 );
 	}
 	
 	public void testJunitDelcoXml()
@@ -125,28 +137,34 @@ extends junit.framework.TestCase
 		URL url = cl.getResource("hudson/plugins/testlink/result/parser/junit/TEST-net.cars.engine.DelcoTest.xml");
 		File junitFile = new File( url.getFile() );
 		
-		TestSuite testSuite = null;
+		List<TestSuite> testSuites = null;
 		try
 		{
-			testSuite = this.parser.parse( junitFile );
+			testSuites = this.parser.parse( junitFile );
 		} 
 		catch (Exception e)
 		{
+			e.printStackTrace( System.err );
 			Assert.fail("Failed to parse JUnit xml report '"+junitFile+"'.");
 		}
 		
-		Assert.assertNotNull( testSuite );
-		Assert.assertTrue( testSuite.getTestCases().size() == 1 );
+		Assert.assertNotNull( testSuites );
 		
-		Assert.assertTrue( testSuite.getFailures().equals( 0L ));
+		Assert.assertEquals( testSuites.size(), 1 );
 		
-		Assert.assertTrue( testSuite.getHostname().equals("hazelnut.osuosl.org"));
+		TestSuite suite = testSuites.get( 0 );
 		
-		String systemOut = testSuite.getSystemOut();
+		Assert.assertTrue( suite.getTestCases().size() == 1 );
+		
+		Assert.assertTrue( suite.getFailures().equals( 0L ));
+		
+		Assert.assertTrue( suite.getHostname().equals("hazelnut.osuosl.org"));
+		
+		String systemOut = suite.getSystemOut();
 		Assert.assertNotNull( systemOut );
 		Assert.assertTrue( systemOut.equals("Rotation is simulated for a four spark engine with an angle of 0?.\n"));
 		
-		String systemErr = testSuite.getSystemErr();
+		String systemErr = suite.getSystemErr();
 		Assert.assertNotNull( systemErr );
 		Assert.assertTrue( systemErr.equals("BrunoPKinoshita"));
 	}
@@ -157,29 +175,35 @@ extends junit.framework.TestCase
 		URL url = cl.getResource("hudson/plugins/testlink/result/parser/junit/TEST-net.cars.engine.PistonTest.xml");
 		File junitFile = new File( url.getFile() );
 		
-		TestSuite testSuite = null;
+		List<TestSuite> testSuites = null;
 		try
 		{
-			testSuite = this.parser.parse( junitFile );
+			testSuites = this.parser.parse( junitFile );
 		} 
 		catch (Exception e)
 		{
+			e.printStackTrace( System.err );
 			Assert.fail("Failed to parse JUnit xml report '"+junitFile+"'.");
 		}
 		
-		Assert.assertNotNull( testSuite );
-		Assert.assertTrue( testSuite.getTestCases().size() == 5 );
+		Assert.assertNotNull( testSuites );
 		
-		Assert.assertTrue( testSuite.getFailures().equals( 3L ));
-		Assert.assertTrue( testSuite.getErrors().equals( 1L ));
-		Assert.assertTrue( testSuite.getHostname().equals("hazelnut.osuosl.org"));
-		Assert.assertTrue( testSuite.getName().equals("net.cars.engine.PistonTest"));
-		Assert.assertEquals( ""+testSuite.getTestCases().size(), testSuite.getTests() );
+		Assert.assertEquals( testSuites.size(), 1 );
 		
-		String systemOut = testSuite.getSystemOut();
+		TestSuite suite = testSuites.get( 0 );
+		
+		Assert.assertTrue( suite.getTestCases().size() == 5 );
+		
+		Assert.assertTrue( suite.getFailures().equals( 3L ));
+		Assert.assertTrue( suite.getErrors().equals( 1L ));
+		Assert.assertTrue( suite.getHostname().equals("hazelnut.osuosl.org"));
+		Assert.assertTrue( suite.getName().equals("net.cars.engine.PistonTest"));
+		Assert.assertEquals( ""+suite.getTestCases().size(), suite.getTests() );
+		
+		String systemOut = suite.getSystemOut();
 		Assert.assertNotNull( systemOut );
 		
-		TestCase t1 = testSuite.getTestCases().get(0);
+		TestCase t1 = suite.getTestCases().get(0);
 		Error error = t1.getErrors().get(0);
 		Assert.assertNotNull( error );
 		

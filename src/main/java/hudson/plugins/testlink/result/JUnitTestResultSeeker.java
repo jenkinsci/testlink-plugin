@@ -138,16 +138,19 @@ extends TestResultSeeker
 			
 			try
 			{
-				final TestSuite junitSuite = parser.parse( junitFile );
+				final List<TestSuite> junitSuites = parser.parse( junitFile );
 				
-				final TestCaseWrapper junitSuiteTestResult = this.doFindTestResult( junitSuite, junitFile );
-				
-				if ( junitSuiteTestResult != null ) 
+				for ( TestSuite junitSuite : junitSuites )
 				{
-					testResults.add ( junitSuiteTestResult );
+					final TestCaseWrapper junitSuiteTestResult = this.doFindTestResult( junitSuite, junitFile );
+					
+					if ( junitSuiteTestResult != null ) 
+					{
+						testResults.add ( junitSuiteTestResult );
+					}
+					
+					this.doJunitSuite( junitSuite, junitFile, testResults );
 				}
-				
-				this.doJunitSuite( junitSuite, junitFile, testResults );
 			}
 			catch ( ParserException e )
 			{
