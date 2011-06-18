@@ -219,18 +219,22 @@ extends junit.framework.TestCase
 	public void testInvalidJUnitReport()
 	{
 		ClassLoader cl = TestJUnitParser.class.getClassLoader();
-		URL url = cl.getResource("hudson/plugins/testlink/result/parser/junit/TEST-invalid.xml");
+		String fileName = "hudson/plugins/testlink/result/parser/junit/TEST-invalid.xml";
+		URL url = cl.getResource( fileName );
 		File junitFile = new File( url.getFile() );
+		
+		List<TestSuite> testSuites = null;
 		
 		try
 		{
-			this.parser.parse( junitFile );
-			Assert.fail( "Not supposed to get here." );
+			testSuites = this.parser.parse( junitFile );
 		}
 		catch ( ParserException e )
 		{
-			
+			Assert.fail( "Failed to parse JUnit file ["+ fileName +"]: " + e.getMessage() );
 		}
+		
+		Assert.assertTrue( testSuites.size() == 0 );
 	}
 	
 }

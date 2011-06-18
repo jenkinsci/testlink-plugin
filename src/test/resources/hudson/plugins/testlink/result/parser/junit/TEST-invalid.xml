@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites failures="1" time="0.078" errors="0" skipped="0" tests="1" name="br.eti.kinoshita.Test">
+<testsuites2 failures="1" time="0.078" errors="0" skipped="0" tests="1" name="br.eti.kinoshita.Test">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="C:\opt\java\jdk1.6.0_17\jre\bin"/>
@@ -60,4 +60,4 @@
     <property name="sun.cpu.isalist" value="pentium_pro+mmx pentium_pro pentium+mmx pentium i486 i386 i86"/>
   </properties>
   <testcases time="0" classname="br.eti.kinoshita.Test" name="testVoid"/>
-</testsuites>
+</testsuites2>
