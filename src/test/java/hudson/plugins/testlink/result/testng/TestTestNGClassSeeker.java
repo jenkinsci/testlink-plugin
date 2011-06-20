@@ -21,17 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.result;
+package hudson.plugins.testlink.result.testng;
 
 import hudson.model.BuildListener;
 import hudson.model.StreamBuildListener;
+import hudson.plugins.testlink.result.TestCaseWrapper;
+import hudson.plugins.testlink.result.TestLinkReport;
 
 import java.io.File;
 import java.io.PrintStream;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.Map;
 
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
@@ -41,13 +42,13 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
  * Tests TestResultSeeker with TestNG.
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 2.1
+ * @since 2.5
  */
-public class TestTestResultSeekerTestNG 
+public class TestTestNGClassSeeker 
 extends junit.framework.TestCase
 {
 	
-	private TestNGTestResultSeeker seeker;
+	private TestNGTestsTestResultSeeker<hudson.plugins.testlink.parser.testng.Class> seeker;
 	
 	private TestLinkReport report;
 	
@@ -58,7 +59,7 @@ extends junit.framework.TestCase
 		this.report = new TestLinkReport();
 		BuildListener listener = new StreamBuildListener(new PrintStream(System.out), Charset.defaultCharset());
 		this.seeker = 
-			new TestNGTestResultSeeker(report, KEY_CUSTOM_FIELD, listener);
+			new TestNGTestsTestResultSeeker<hudson.plugins.testlink.parser.testng.Class>("testng*.xml", report, KEY_CUSTOM_FIELD, listener);
 	}
 
 	public void testTestResultSeekerTestNGOne()
@@ -71,13 +72,13 @@ extends junit.framework.TestCase
 		tc.setId(1);
 		this.report.getTestCases().put( tc.getId(), tc );
 		
-		ClassLoader cl = TestTestResultSeekerTestNG.class.getClassLoader();
-		URL url = cl.getResource("hudson/plugins/testlink/result/");
+		ClassLoader cl = TestTestNGClassSeeker.class.getClassLoader();
+		URL url = cl.getResource("hudson/plugins/testlink/result/testng/");
 		File testNGDir = new File( url.getFile() );
-		Set<TestCaseWrapper> found = seeker.seek( testNGDir, "testng*.xml" );
+		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> found = seeker.seek( testNGDir );
 		assertNotNull( found );
 		assertTrue( found.size() == 1 );
-		assertTrue( found.iterator().next().getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
+		assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
 	}
 	
 	public void testTestResultSeekerTestNGTwo()
@@ -100,15 +101,14 @@ extends junit.framework.TestCase
 		
 		assertTrue( this.report.getTestCases().size() == 2 );
 		
-		ClassLoader cl = TestTestResultSeekerTestNG.class.getClassLoader();
-		URL url = cl.getResource("hudson/plugins/testlink/result/");
+		ClassLoader cl = TestTestNGClassSeeker.class.getClassLoader();
+		URL url = cl.getResource("hudson/plugins/testlink/result/testng/");
 		File testNGDir = new File( url.getFile() );
-		Set<TestCaseWrapper> found = seeker.seek(testNGDir, "testng*.xml" );
+		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> found = seeker.seek(testNGDir);
 		assertNotNull( found );
-		Iterator<TestCaseWrapper> iter = found.iterator();
 		assertTrue( found.size() == 2 );
-		assertTrue( iter.next().getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
-		assertTrue( iter.next().getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );
+		assertTrue( found.get(2).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
+		assertTrue( found.get(3).getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );
 	}
 	
 }

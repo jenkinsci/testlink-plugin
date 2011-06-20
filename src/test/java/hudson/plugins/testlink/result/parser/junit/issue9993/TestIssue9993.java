@@ -30,6 +30,8 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 
+import org.jvnet.hudson.test.Bug;
+
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
@@ -39,6 +41,7 @@ import junit.framework.TestCase;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.5
  */
+@Bug(9993)
 public class TestIssue9993 
 extends TestCase
 {

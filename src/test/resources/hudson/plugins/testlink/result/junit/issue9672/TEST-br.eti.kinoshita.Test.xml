@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite failures="1" time="0.078" errors="0" skipped="0" tests="1" name="A Suite">
+  <properties>
+    <property name="sun.cpu.isalist" value="pentium_pro+mmx pentium_pro pentium+mmx pentium i486 i386 i86"/>
+  </properties>
+  <testcase time="0" classname="tcA" name="testVoid">
+  	<failure type="junit.framework.AssertionFailedError" message="null">junit....</failure>
+  </testcase>
+  <testcase time="0" classname="tcB" name="testVoid" />
+  <testcase time="0" classname="tcC" name="testVoid" />
+  <testcase time="0" name="nameA" />
+  <testcase time="0" name="nameB" />
+</testsuite>

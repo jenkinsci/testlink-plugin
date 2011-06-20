@@ -30,7 +30,9 @@ import hudson.plugins.testlink.util.Messages;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -38,18 +40,21 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.types.FileSet;
 
+import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
+
 /**
  * Seeks for Test Results.
  *
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.2
  */
-public abstract class TestResultSeeker 
+public abstract class TestResultSeeker<T>
 implements Serializable
 {
 
 	private static final long serialVersionUID = 6476036912489515690L;
 	
+	protected final String includePattern;
 	protected final TestLinkReport report;
 	protected final String keyCustomFieldName;
 	protected final BuildListener listener;
@@ -57,17 +62,20 @@ implements Serializable
 	/**
 	 * Default constructor.
 	 * 
+	 * @param includePattern Include pattern.
 	 * @param report TestLink report.
 	 * @param keyCustomFieldName Name of the Key Custom Field.
 	 * @param listener Hudson Build listener.
 	 */
 	public TestResultSeeker( 
+			String includePattern, 
 		TestLinkReport report, 
 		String keyCustomFieldName, 
 		BuildListener listener)
 	{
 		super();
 		
+		this.includePattern = includePattern;
 		this.report = report;
 		this.keyCustomFieldName = keyCustomFieldName;
 		this.listener = listener;
@@ -78,12 +86,10 @@ implements Serializable
 	 * includePattern with files in this directory.
 	 * 
 	 * @param directory Directory to look for test results
-	 * @param includePattern Include pattern
 	 * @throws TestResultSeekerException
 	 */
-	public abstract Set<TestCaseWrapper> seek( 
-			File directory, 
-			String includePattern )
+	public abstract Map<Integer, TestCaseWrapper<T>> seek( 
+			File directory )
 	throws TestResultSeekerException;
 	
 	/**
@@ -98,6 +104,28 @@ implements Serializable
 	{
 		byte[] fileData = FileUtils.readFileToByteArray(file);
 		return Base64.encodeBase64String( fileData );
+	}
+	
+	/**
+	 * Splits a String by comma and gets an array of Strings.
+	 */
+	protected String[] split( String input )
+	{
+		if ( StringUtils.isBlank( input ) )
+		{
+			return new String[0];
+		}
+		
+		StringTokenizer tokenizer = new StringTokenizer( input, ",");
+		
+		String[] values = new String[ tokenizer.countTokens() ];
+		
+		for( int i = 0 ; tokenizer.hasMoreTokens() ; i++ )
+		{
+			values[i] = tokenizer.nextToken().trim();
+		}
+		
+		return values;		
 	}
 	
 	/**
@@ -139,6 +167,27 @@ implements Serializable
 		
 		return fileNames;
 		
+	}
+	
+	/**
+	 * Gets the key custom field out of a list using the key custom field name.
+	 */
+	protected CustomField getKeyCustomField( List<CustomField> customFields )
+	{
+		CustomField customField = null;
+		 
+		for ( CustomField cf : customFields )
+		{
+			boolean isKeyCustomField = cf.getName().equals(keyCustomFieldName);
+			
+			if ( isKeyCustomField )
+			{
+				customField = cf;
+				break;
+			}
+			
+		}
+		return customField;
 	}
 	
 }

@@ -29,9 +29,10 @@ import hudson.plugins.testlink.util.Messages;
 import hudson.plugins.testlink.util.TestLinkHelper;
 
 import java.net.URL;
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPIException;
@@ -151,15 +152,16 @@ public class TestLinkHandler
 	 * @param wrappedTestCases List of TestResults
 	 * @throws TestLinkAPIException
 	 */
-	public void updateTestCasesAndUploadAttachments( Set<TestCaseWrapper> wrappedTestCases ) 
+	@SuppressWarnings("rawtypes")
+	public void updateTestCasesAndUploadAttachments( Map<Integer, TestCaseWrapper> wrappedTestCases ) 
 	throws TestLinkAPIException
 	{
-		if ( CollectionUtils.isNotEmpty( wrappedTestCases ) )
+		if ( MapUtils.isNotEmpty( wrappedTestCases ) )
 		{
 			listener.getLogger().println( Messages.TestLinkBuilder_Update_AutomatedTestCases( wrappedTestCases.size() ) );
 			
 			// Update TestLink Test Status
-			for( TestCaseWrapper testResult : wrappedTestCases )
+			for( TestCaseWrapper testResult : wrappedTestCases.values() )
 			{
 				
 				TestCase testCase = testResult.getTestCase();
@@ -182,7 +184,9 @@ public class TestLinkHandler
 						null, // custom fields
 						null);
 				
-				for ( Attachment attachment : testResult.getAttachments() )
+				@SuppressWarnings("unchecked")
+				List<Attachment> attachments = testResult.getAttachments();
+				for ( Attachment attachment :  attachments)
 				{
 					listener.getLogger().println( Messages.TestLinkBuilder_Upload_ExecutionAttachment(reportTCResultResponse.getExecutionId(), attachment.getFileName()) );
 					api.uploadExecutionAttachment(

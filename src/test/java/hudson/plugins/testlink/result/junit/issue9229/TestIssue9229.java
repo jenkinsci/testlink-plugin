@@ -21,20 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.result.issue9229;
+package hudson.plugins.testlink.result.junit.issue9229;
 
 import hudson.model.BuildListener;
 import hudson.model.StreamBuildListener;
-import hudson.plugins.testlink.result.JUnitTestResultSeeker;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 import hudson.plugins.testlink.result.TestLinkReport;
-import hudson.plugins.testlink.result.TestTestResultSeekerJUnit;
+import hudson.plugins.testlink.result.junit.JUnitTestCasesTestResultSeeker;
+import hudson.plugins.testlink.result.junit.TestJUnitTestCaseSeeker;
 
 import java.io.File;
 import java.io.PrintStream;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.Set;
+import java.util.Map;
+
+import org.jvnet.hudson.test.Bug;
 
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
@@ -44,11 +46,12 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 1.0
  */
+@Bug(9229)
 public class TestIssue9229 
 extends junit.framework.TestCase
 {
 	
-	private JUnitTestResultSeeker seeker;
+	private JUnitTestCasesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestCase> seeker;
 	
 	private TestLinkReport report;
 	
@@ -59,7 +62,7 @@ extends junit.framework.TestCase
 		this.report = new TestLinkReport();
 		BuildListener listener = new StreamBuildListener(new PrintStream(System.out), Charset.defaultCharset());
 		this.seeker = 
-			new JUnitTestResultSeeker(report, KEY_CUSTOM_FIELD, listener);
+			new JUnitTestCasesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestCase>("TEST-*.xml", report, KEY_CUSTOM_FIELD, listener);
 	}
 	
 	public void testTestResultSeekerJUnitIssue9229()
@@ -73,14 +76,14 @@ extends junit.framework.TestCase
 		tc.getCustomFields().add(cf);
 		this.report.getTestCases().put(tc.getId(), tc);
 		
-		ClassLoader cl = TestTestResultSeekerJUnit.class.getClassLoader();
-		URL url = cl.getResource("hudson/plugins/testlink/result/issue9229/");
+		ClassLoader cl = TestJUnitTestCaseSeeker.class.getClassLoader();
+		URL url = cl.getResource("hudson/plugins/testlink/result/junit/issue9229/");
 		File junitDir = new File( url.getFile() );
-		Set<TestCaseWrapper> found = seeker.seek(junitDir, "TEST-*.xml");
+		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.junit.TestCase>> found = seeker.seek(junitDir);
 		assertNotNull( found );
 		assertTrue( found.size() == 1 );
 		
-		assertTrue( found.iterator().next().getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
+		assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
 		
 	}
 

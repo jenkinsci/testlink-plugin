@@ -24,32 +24,71 @@
 package hudson.plugins.testlink.result;
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
+import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
  */
-public class TestCaseWrapper implements Serializable
+public class TestCaseWrapper<T> implements Serializable
 {
 
+	private final T origin;
+	
 	private static final long serialVersionUID = -3580223939886620157L;
 
 	private TestCase testCase;
 	private List<Attachment> attachments;
-	private String notes;
+	private StringBuilder notes;
 	private String platform = null;
 
-	public TestCaseWrapper(TestCase testCase)
+	private final Map<String, ExecutionStatus> customFieldAndStatus;
+	private final String[] customFields;
+	
+	public TestCaseWrapper( TestCase testCase, String[] customFields, T origin )
 	{
 		this.testCase = testCase;
+		this.notes = new StringBuilder();
 		this.attachments = new LinkedList<Attachment>();
+		this.customFieldAndStatus = new LinkedHashMap<String, ExecutionStatus>();
+		if( customFields == null )
+		{
+			this.customFields = new String[0];
+		}
+		else
+		{
+			this.customFields = customFields;
+		}
+		this.origin = origin;
+	}
+	
+	public T getOrigin()
+	{
+		return this.origin;
+	}
+	
+	public String[] getCustomFields()
+	{
+		return this.customFields;
 	}
 
+	public void addCustomFieldAndStatus(String customField, ExecutionStatus executionStatus)
+	{
+		this.customFieldAndStatus.put(customField, executionStatus);
+	}
+
+	public Map<String, ExecutionStatus> getCustomFieldAndStatus()
+	{
+		return customFieldAndStatus;
+	}
+	
 	public void addAttachment( Attachment attachment )
 	{
 		this.attachments.add(attachment);
@@ -57,6 +96,21 @@ public class TestCaseWrapper implements Serializable
 
 	public TestCase getTestCase()
 	{
+		testCase.setExecutionStatus( ExecutionStatus.NOT_RUN );
+		
+		if ( customFieldAndStatus.size() > 0 && customFieldAndStatus.size() == customFields.length )
+		{
+			ExecutionStatus status = ExecutionStatus.PASSED;
+			for( ExecutionStatus reportedStatus : customFieldAndStatus.values() )
+			{
+				if ( reportedStatus == ExecutionStatus.FAILED )
+				{
+					status = ExecutionStatus.FAILED;
+					break;
+				}
+			}
+			testCase.setExecutionStatus( status );
+		}
 		return testCase;
 	}
 
@@ -72,12 +126,12 @@ public class TestCaseWrapper implements Serializable
 
 	public String getNotes()
 	{
-		return notes;
+		return notes.toString();
 	}
 
-	public void setNotes( String notes )
+	public void appendNotes( String notes )
 	{
-		this.notes = notes;
+		this.notes.append( notes );
 	}
 
 	public String getPlatform()
@@ -90,6 +144,16 @@ public class TestCaseWrapper implements Serializable
 		this.platform = platform;
 	}
 
+	public Integer getId()
+	{
+		return this.testCase.getId();
+	}
+	
+	public String getName()
+	{
+		return this.testCase.getName();
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -99,12 +163,12 @@ public class TestCaseWrapper implements Serializable
 	public boolean equals( Object obj )
 	{
 		boolean equals = false;
-		if (obj != null && obj instanceof TestCaseWrapper)
+		if (obj != null && obj instanceof TestCaseWrapper<?>)
 		{
-			TestCaseWrapper testResult = ((TestCaseWrapper) obj);
+			TestCaseWrapper<?> testResult = ((TestCaseWrapper<?>) obj);
 			TestCase tc = testResult.getTestCase();
 			TestCase thisTc = this.getTestCase();
-			if (tc != null && thisTc != null)
+			if ( testResult.getOrigin().equals(this.getOrigin()) && tc != null && thisTc != null)
 			{
 				equals = tc.getId() == thisTc.getId();
 			}
@@ -134,7 +198,7 @@ public class TestCaseWrapper implements Serializable
 	{
 		return "TestCaseWrapper [testCase=" + testCase + ", attachments="
 				+ attachments + ", notes=" + notes + ", platform=" + platform
-				+ "]";
+				+ ", customFieldAndStatus=" + customFieldAndStatus + "]";
 	}
 
 }

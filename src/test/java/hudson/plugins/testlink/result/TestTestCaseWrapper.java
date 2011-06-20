@@ -23,6 +23,7 @@
  */
 package hudson.plugins.testlink.result;
 
+import hudson.plugins.testlink.parser.junit.TestSuite;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
@@ -40,7 +41,11 @@ extends junit.framework.TestCase
 	protected Build build;
 	protected TestPlan testPlan;
 	
-	protected TestCaseWrapper testResult;
+	protected TestCaseWrapper<TestSuite> testResult;
+	
+	private final String suiteName = "Sample junit test suite.";
+	
+	private String[] customFields = new String[]{"nz", "au"};
 	
 	protected void setUp()
 	{
@@ -50,7 +55,12 @@ extends junit.framework.TestCase
 		build.setId( 100 );
 		testPlan = new TestPlan();
 		testPlan.setId( 100 );
-		testResult = new TestCaseWrapper(testCase);
+		
+		TestSuite junitTestSuite = new TestSuite();
+		
+		junitTestSuite.setName( suiteName );
+		
+		testResult = new TestCaseWrapper<TestSuite>(testCase, customFields, junitTestSuite );
 	}
 	
 	public void testTestResultTestCase()
@@ -68,10 +78,10 @@ extends junit.framework.TestCase
 
 	public void testTestResultNotes()
 	{
-		assertNull( this.testResult.getNotes() );
+		assertNotNull( this.testResult.getNotes() );
 		
 		String newNotes = "Home sweet home";
-		this.testResult.setNotes( newNotes );
+		this.testResult.appendNotes( newNotes );
 		
 		assertNotNull( this.testResult.getNotes() );
 	}
@@ -100,6 +110,31 @@ extends junit.framework.TestCase
 		assertNotNull( toStringResult );
 		
 		assertTrue( toStringResult.startsWith("TestCaseWrapper [testCase=") );
+	}
+	
+	public void testTestResultOrigin()
+	{
+		assertNotNull( testResult.getOrigin() );
+		
+		assertTrue( testResult.getOrigin() instanceof TestSuite );
+		
+		TestSuite origin = testResult.getOrigin();
+		
+		assertEquals( origin.getName(), suiteName );
+	}
+	
+	public void testTestResultsCustomFields()
+	{
+		assertNotNull( testResult.getCustomFields() );
+		
+		assertEquals( testResult.getCustomFields().length, 2 );
+	}
+	
+	public void testTestResultCustomFieldAndStatus()
+	{
+		assertNotNull( testResult.getCustomFieldAndStatus() );
+		
+		assertEquals( testResult.getCustomFieldAndStatus().size(), 0 );
 	}
 
 }

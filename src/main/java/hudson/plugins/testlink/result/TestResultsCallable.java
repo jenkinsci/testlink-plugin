@@ -30,28 +30,26 @@ import hudson.remoting.VirtualChannel;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 
 /**
- * Seeks for Test Results using a Test Result Seekers.
+ * Uses test results seekers to find results.
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
+@SuppressWarnings("rawtypes")
 public class TestResultsCallable 
-implements FileCallable<Set<TestCaseWrapper>>
+implements FileCallable<Map<Integer, TestCaseWrapper>>
 {
 
 	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * The ReportFilesPattern object.
-	 */
-	private ReportFilesPatterns reportFilesPattern;
 	
 	/**
 	 * The Hudson Build listener.
@@ -59,45 +57,40 @@ implements FileCallable<Set<TestCaseWrapper>>
 	private BuildListener listener;
 	
 	/**
-	 * JUnit Test Result Seeker.
+	 * List of test results seekers.
 	 */
-	private JUnitTestResultSeeker junitTestResultSeeker;
+	private List<TestResultSeeker<?>> testResultsSeekers;
 	
 	/**
-	 * TestNG Test Result Seeker.
+	 * Adds a test result seeker.
 	 */
-	private TestNGTestResultSeeker testNGTestResultSeeker;
+	public void addTestResultSeeker( TestResultSeeker<?> testResultSeeker )
+	{
+		this.testResultsSeekers.add ( testResultSeeker );
+	}
 	
 	/**
-	 * TAP Test Result Seeker.
+	 * Gets test result seekers. 
 	 */
-	private TAPTestResultSeeker tapTestResultSeeker;
+	public List<TestResultSeeker<?>> getTestResultSeekers()
+	{
+		return this.testResultsSeekers;
+	}
 	
 	/**
-	 * Default constructor. Initializes the List of automated test cases, 
-	 * the key custom field name, the ReportFilesPattern object, 
-	 * the Hudson Build listener, the scanner and the parsers.
-	 * 
-	 * @param report TestLink report.
-	 * @param keyCustomFieldName The name of the Key Custom Field.
-	 * @param reportFilesPatterns The report files patterns.
-	 * @param listener The Hudson Build listener.
+	 * Default constructor. 
 	 */
 	public TestResultsCallable( 
 		TestLinkReport report, 
 		String keyCustomFieldName, 
-		ReportFilesPatterns reportFilesPatterns, 
 		BuildListener listener			
 	)
 	{
 		super();
 		
-		this.reportFilesPattern = reportFilesPatterns;
 		this.listener = listener;
 		
-		this.junitTestResultSeeker = new JUnitTestResultSeeker(report, keyCustomFieldName, listener);
-		this.testNGTestResultSeeker = new TestNGTestResultSeeker(report, keyCustomFieldName, listener);
-		this.tapTestResultSeeker = new TAPTestResultSeeker(report, keyCustomFieldName, listener);
+		this.testResultsSeekers = new LinkedList<TestResultSeeker<?>>();
 	}
 	
 	/**
@@ -107,23 +100,18 @@ implements FileCallable<Set<TestCaseWrapper>>
 	 * @param directory directory to seek for test results.
 	 * @return list of test results.
 	 */
-	public Set<TestCaseWrapper> seekTestResults( File directory ) 
+	@SuppressWarnings({ "unchecked" })
+	public Map<Integer, TestCaseWrapper> seekTestResults( File directory ) 
 	throws TestResultSeekerException
 	{
-		if ( this.reportFilesPattern == null )
+		final Map<Integer, TestCaseWrapper> testResults = new LinkedHashMap<Integer, TestCaseWrapper>();
+		
+		for( TestResultSeeker testResultSeeker : this.testResultsSeekers )
 		{
-			throw new TestResultSeekerException( "Internal error: null report files pattern. Please, fill a JIRA with this information." );
+			final Map<Integer, TestCaseWrapper> results = testResultSeeker.seek( directory );
+			
+			testResults.putAll( results );
 		}
-		
-		final Set<TestCaseWrapper> testResults = new LinkedHashSet<TestCaseWrapper>();
-		
-		Set<TestCaseWrapper> junitResults = this.junitTestResultSeeker.seek(directory, this.reportFilesPattern.getJunitXmlReportFilesPattern());
-		Set<TestCaseWrapper> testNGResults = this.testNGTestResultSeeker.seek(directory, this.reportFilesPattern.getTestNGXmlReportFilesPattern());
-		Set<TestCaseWrapper> tapResults = this.tapTestResultSeeker.seek(directory, this.reportFilesPattern.getTapStreamReportFilesPattern());
-		
-		testResults.addAll(junitResults);
-		testResults.addAll(testNGResults);
-		testResults.addAll(tapResults);
 		
 		if ( testResults.size() > 0 )
 		{
@@ -156,7 +144,7 @@ implements FileCallable<Set<TestCaseWrapper>>
 	/* (non-Javadoc)
 	 * @see hudson.FilePath.FileCallable#invoke(java.io.File, hudson.remoting.VirtualChannel)
 	 */
-	public Set<TestCaseWrapper> invoke( File f, VirtualChannel channel )
+	public Map<Integer, TestCaseWrapper> invoke( File f, VirtualChannel channel )
 			throws IOException, InterruptedException
 	{
 		listener.getLogger().println( Messages.Results_LookingForTestResults() );

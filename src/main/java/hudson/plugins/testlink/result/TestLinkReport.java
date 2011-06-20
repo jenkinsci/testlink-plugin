@@ -28,7 +28,6 @@ import hudson.plugins.testlink.util.Messages;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
@@ -177,15 +176,16 @@ implements Serializable
 	 * 
 	 * @param wrappedTestCases Set of wrapped test cases
 	 */
-	public void verifyBlockedTestCases( Set<TestCaseWrapper> wrappedTestCases )
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void verifyBlockedTestCases( Map<Integer, TestCaseWrapper> wrappedTestCases )
 	{
 		for( TestCase testCase : testCases.values() )
 		{
 			if ( testCase.getExecutionStatus() == ExecutionStatus.BLOCKED )
 			{
-				TestCaseWrapper blockedTestWrapper = new TestCaseWrapper(testCase);
-				blockedTestWrapper.setNotes( Messages.TestLinkBuilder_TransactionalExecutionFailedNotes() );
-				wrappedTestCases.add(blockedTestWrapper);
+				TestCaseWrapper blockedTestWrapper = new TestCaseWrapper(testCase, null, null);
+				blockedTestWrapper.appendNotes( Messages.TestLinkBuilder_TransactionalExecutionFailedNotes() );
+				wrappedTestCases.put(blockedTestWrapper.getId(), blockedTestWrapper);
 			}
 		}
 	}
@@ -193,11 +193,12 @@ implements Serializable
 	/**
 	 * Update report test cases' status from a set of wrapped test cases.
 	 * 
-	 * @param wrappedTestCases set of wrapped test cases.
+	 * @param wrappedTestCases list of wrapped test cases.
 	 */
-	public void updateReport( Set<TestCaseWrapper> wrappedTestCases )
+	@SuppressWarnings("rawtypes")
+	public void updateReport( Map<Integer, TestCaseWrapper> wrappedTestCases )
 	{
-		for( TestCaseWrapper wrapper : wrappedTestCases )
+		for( TestCaseWrapper wrapper : wrappedTestCases.values() )
 		{
 			final TestCase wrappedTestCase = wrapper.getTestCase();
 			final TestCase originalTestCase = this.testCases.get( wrappedTestCase.getId() );

@@ -29,10 +29,17 @@ import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
+import hudson.plugins.testlink.parser.testng.Suite;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 import hudson.plugins.testlink.result.TestLinkReport;
+import hudson.plugins.testlink.result.TestResultSeeker;
 import hudson.plugins.testlink.result.TestResultSeekerException;
 import hudson.plugins.testlink.result.TestResultsCallable;
+import hudson.plugins.testlink.result.junit.JUnitSuitesTestResultSeeker;
+import hudson.plugins.testlink.result.junit.JUnitTestCasesTestResultSeeker;
+import hudson.plugins.testlink.result.tap.TAPTestResultSeeker;
+import hudson.plugins.testlink.result.testng.TestNGSuitesTestResultSeeker;
+import hudson.plugins.testlink.result.testng.TestNGTestsTestResultSeeker;
 import hudson.plugins.testlink.tasks.CommandExecutor;
 import hudson.plugins.testlink.util.Messages;
 import hudson.plugins.testlink.util.TestLinkHelper;
@@ -40,10 +47,11 @@ import hudson.plugins.testlink.util.TestLinkHelper;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Set;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.tap4j.model.TestSet;
 
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPIException;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
@@ -176,16 +184,16 @@ extends AbstractTestLinkBuilder
 				automatedTestCases);
 		
 		// The object that searches for test results
-		final TestResultsCallable testResultSeeker = 
-			new TestResultsCallable(report, this.keyCustomField, reportFilesPatterns, listener);
+		final TestResultsCallable testResultCallable = initTestResultsCallable(report, listener);
 
-		final Set<TestCaseWrapper> wrappedTestCases;
+		@SuppressWarnings("rawtypes")
+		final Map<Integer, TestCaseWrapper> wrappedTestCases;
 		
 		// Here we search for test results. The return if a wrapped Test Case that 
 		// contains attachments, platform and notes.
 		try
 		{
-			wrappedTestCases = build.getWorkspace().act( testResultSeeker );
+			wrappedTestCases = build.getWorkspace().act( testResultCallable );
 		}
 		catch ( TestResultSeekerException trse )
 		{
@@ -217,6 +225,65 @@ extends AbstractTestLinkBuilder
 		
 		// end
 		return Boolean.TRUE;
+	}
+
+	/**
+	 * Inits a test results callable with JUnit, TestNG and TAP seekers (suite and test case).
+	 */
+	private TestResultsCallable initTestResultsCallable( TestLinkReport report, BuildListener listener )
+	{
+		final TestResultsCallable testResultsCallable = new TestResultsCallable(report, this.keyCustomField, listener);
+		
+		if ( StringUtils.isNotBlank( reportFilesPatterns.getJunitXmlReportFilesPattern() ) )
+		{
+			final TestResultSeeker<?> junitSuitesSeeker = 
+				new JUnitSuitesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestSuite>(
+						reportFilesPatterns.getJunitXmlReportFilesPattern(), 
+						report, 
+						this.keyCustomField, 
+						listener);
+			testResultsCallable.addTestResultSeeker(junitSuitesSeeker);
+			
+			final TestResultSeeker<?> junitTestsSeeker = 
+				new JUnitTestCasesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestCase>(
+						reportFilesPatterns.getJunitXmlReportFilesPattern(), 
+						report, 
+						this.keyCustomField, 
+						listener);
+			testResultsCallable.addTestResultSeeker(junitTestsSeeker);
+		}
+		
+		if ( StringUtils.isNotBlank( reportFilesPatterns.getTestNGXmlReportFilesPattern() ) )
+		{
+			final TestResultSeeker<?> testNGSuitesSeeker = 
+				new TestNGSuitesTestResultSeeker<Suite>(
+						reportFilesPatterns.getJunitXmlReportFilesPattern(), 
+						report, 
+						this.keyCustomField, 
+						listener);
+			testResultsCallable.addTestResultSeeker(testNGSuitesSeeker);
+			
+			final TestResultSeeker<?> testNGTestsSeeker = 
+				new TestNGTestsTestResultSeeker<hudson.plugins.testlink.parser.testng.Class>(
+						reportFilesPatterns.getJunitXmlReportFilesPattern(), 
+						report, 
+						this.keyCustomField, 
+						listener);
+			testResultsCallable.addTestResultSeeker(testNGTestsSeeker);
+		}
+		
+		if ( StringUtils.isNotBlank( reportFilesPatterns.getTapStreamReportFilesPattern() ) )
+		{
+			final TestResultSeeker<?> tapTestsSeeker = 
+				new TAPTestResultSeeker<TestSet>(
+						reportFilesPatterns.getTapStreamReportFilesPattern(), 
+						report, 
+						this.keyCustomField, 
+						listener);
+			testResultsCallable.addTestResultSeeker(tapTestsSeeker);
+		}
+		
+		return testResultsCallable;
 	}
 
 	protected TestLinkHandler createTestLinkHandler( 

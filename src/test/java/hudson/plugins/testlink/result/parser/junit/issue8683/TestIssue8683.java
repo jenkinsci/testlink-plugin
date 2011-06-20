@@ -8,7 +8,7 @@
  *	    \/_/\/_/\/_/\/_/\/_/\/___/  \/__//__/  
  *                                          
  * Copyright (c) 1999-present Kinow
- * Casa Verde - São Paulo - SP. Brazil.
+ * Casa Verde - Sï¿½o Paulo - SP. Brazil.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -33,12 +33,15 @@ import java.util.List;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import org.jvnet.hudson.test.Bug;
+
 /**
  * Tests the JUnit parser for issue 8683.
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
+@Bug(8683)
 public class TestIssue8683 
 extends TestCase
 {

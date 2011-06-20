@@ -21,22 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.result;
+package hudson.plugins.testlink.result.tap;
 
 import hudson.model.BuildListener;
 import hudson.plugins.testlink.parser.ParserException;
 import hudson.plugins.testlink.parser.tap.TAPParser;
+import hudson.plugins.testlink.result.TestCaseWrapper;
+import hudson.plugins.testlink.result.TestLinkReport;
+import hudson.plugins.testlink.result.TestResultSeeker;
+import hudson.plugins.testlink.result.TestResultSeekerException;
 import hudson.plugins.testlink.util.Messages;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.tap4j.model.Plan;
@@ -51,38 +55,37 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
  * results.
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 2.1.1
+ * @since 2.5
  */
-public class TAPTestResultSeeker 
-extends TestResultSeeker
+public class TAPTestResultSeeker<T extends TestSet> 
+extends TestResultSeeker<TestSet>
 {
-
-	private static final long serialVersionUID = 7863500426827985381L;
 	
+	private static final long serialVersionUID = -652872928488835064L;
+
 	protected final TAPParser parser = new TAPParser();
 	
+	protected final Map<Integer, TestCaseWrapper<TestSet>> results = new LinkedHashMap<Integer, TestCaseWrapper<TestSet>>();
+	
 	/**
-	 * Constructor.
-	 * 
-	 * @param report TestLink Report.
-	 * @param keyCustomFieldName Name of the Key custom field.
-	 * @param listener Hudson Build listener.
+	 * @param includePattern
+	 * @param report
+	 * @param keyCustomFieldName
+	 * @param listener
 	 */
-	public TAPTestResultSeeker(TestLinkReport report, String keyCustomFieldName,
-			BuildListener listener)
+	public TAPTestResultSeeker(String includePattern, TestLinkReport report,
+			String keyCustomFieldName, BuildListener listener)
 	{
-		super(report, keyCustomFieldName, listener);
+		super(includePattern, report, keyCustomFieldName, listener);
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see hudson.plugins.testlink.result.TestResultSeeker#seek(java.io.File, java.lang.String)
 	 */
 	@Override
-	public Set<TestCaseWrapper> seek( File directory, String includePattern )
+	public Map<Integer, TestCaseWrapper<TestSet>> seek( File directory )
 			throws TestResultSeekerException
 	{
-		final Set<TestCaseWrapper> results = new HashSet<TestCaseWrapper>();
-		
 		if ( StringUtils.isBlank(includePattern) ) // skip TAP
 		{
 			listener.getLogger().println( Messages.Results_TAP_NoPattern() );
@@ -97,7 +100,7 @@ extends TestResultSeeker
 				listener.getLogger().println( Messages.Results_TAP_NumberOfReportsFound( tapReports.length ) );
 				listener.getLogger().println();
 				
-				this.doTAPReports( directory, tapReports, results );
+				this.doTAPReports( directory, tapReports );
 			} 
 			catch (IOException e)
 			{
@@ -118,12 +121,10 @@ extends TestResultSeeker
 	 * 
 	 * @param directory Directory where to search for.
 	 * @param tapReports Array of TAP report files.
-	 * @param testResults List of Test Results.
 	 */
 	protected void doTAPReports( 
 		File directory, 
-		String[] tapReports, 
-		Set<TestCaseWrapper> testResults)
+		String[] tapReports )
 	{
 		
 		for ( int i = 0 ; i < tapReports.length ; ++i )
@@ -137,7 +138,7 @@ extends TestResultSeeker
 			{
 				final TestSet tapTestSet = parser.parse( tapFile );
 				
-				this.doTAPTestSet( tapTestSet, tapFile, testResults );
+				this.doTAPTestSet( tapTestSet, tapFile );
 			}
 			catch ( ParserException e )
 			{
@@ -156,12 +157,10 @@ extends TestResultSeeker
 	 * @param tapTestSet TAP test set.
 	 * @param tapFile TAP file (added as an attachment for each test result 
 	 * 				    found).
-	 * @param testResults List of Test Results.
 	 */
 	protected void doTAPTestSet( 
 		TestSet tapTestSet, 
-		File tapFile, 
-		Set<TestCaseWrapper> testResults ) 
+		File tapFile )
 	{
 		listener.getLogger().println( Messages.Results_TAP_VerifyingTapSet( tapTestSet.getNumberOfTestResults() ) );
 		listener.getLogger().println();
@@ -174,18 +173,7 @@ extends TestResultSeeker
 			tapFileNameWithoutExtension = tapFileNameWithoutExtension.substring(0, tapFileNameWithoutExtension.lastIndexOf('.'));
 		}
 		
-		final TestCaseWrapper testResult = this.doFindTestResult( tapFileNameWithoutExtension, tapTestSet, tapFile );
-		
-		if ( testResult != null )
-		{
-			br.eti.kinoshita.testlinkjavaapi.model.TestCase tc = testResult.getTestCase();
-			listener.getLogger().println( Messages.Results_TAP_TestResultsFound( tc.getName(), tc.getId(), tapFile.toString(), testResult.getTestCase().getExecutionStatus().toString() ) );
-			testResults.add( testResult );
-		}
-		else
-		{
-			listener.getLogger().println( Messages.Results_TAP_NoTestResultFound( tapFile.toString() ) );
-		}
+		this.findTestResult( tapFileNameWithoutExtension, tapTestSet, tapFile );
 		
 		listener.getLogger().println();
 		
@@ -197,12 +185,11 @@ extends TestResultSeeker
 	 * @param tapFile TAP File for attachments.
 	 * @return Test Result.
 	 */
-	protected TestCaseWrapper doFindTestResult( 
+	protected void findTestResult( 
 		String tapFileNameWithoutExtension,
 		TestSet tapTestSet, 
 		File tapFile )
 	{
-		listener.getLogger().println();
 		listener.getLogger().println( Messages.Results_TAP_LookingForTestResults( keyCustomFieldName, tapFileNameWithoutExtension ) );
 		listener.getLogger().println();
 		
@@ -211,27 +198,21 @@ extends TestResultSeeker
 			listener.getLogger().println( Messages.Results_TAP_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
 			
 			final List<CustomField> customFields = testLinkTestCase.getCustomFields();
-			
 			listener.getLogger().println( Messages.Results_TAP_ListOfCustomFields( customFields ) );
 			
-			// For each automated test case
-			for ( CustomField customField : customFields )
+			final CustomField keyCustomField = this.getKeyCustomField( customFields );
+			if ( keyCustomField != null ) 
 			{
+				final String[] commaSeparatedValues = this.split ( keyCustomField.getValue() );
 				
-				final String customFieldValue = customField.getValue();
-				Boolean isKeyCustomField = customField.getName().equals( keyCustomFieldName );
-				
-				// We search for the key custom field
-				// If the key custom field value is equal to the 
-				// test suite name, then we have a Test Result to update
-				if ( isKeyCustomField && tapFileNameWithoutExtension.equals(customFieldValue) )
+				for ( String value : commaSeparatedValues )
 				{
-					
-					if ( ExecutionStatus.BLOCKED != testLinkTestCase.getExecutionStatus() )
+					if ( tapFileNameWithoutExtension.equals(value) && ExecutionStatus.BLOCKED != testLinkTestCase.getExecutionStatus() )
 					{
+						final TestCaseWrapper<TestSet> testResult = new TestCaseWrapper<TestSet>( testLinkTestCase, commaSeparatedValues, tapTestSet );
+						
 						final ExecutionStatus status = this.getTapExecutionStatus( tapTestSet );
-						testLinkTestCase.setExecutionStatus( status );
-						final TestCaseWrapper testResult = new TestCaseWrapper( testLinkTestCase );
+						testResult.addCustomFieldAndStatus(value, status);
 						
 						String notes = this.getTapNotes( tapTestSet );
 						
@@ -250,15 +231,41 @@ extends TestResultSeeker
 							ioe.printStackTrace( listener.getLogger() );
 						}
 						
-						testResult.setNotes( notes );
-						return testResult;
+						testResult.appendNotes( notes );
+						
+						this.addOrUpdate( testResult, tapFileNameWithoutExtension );
+						
 					}
-					
 				}
 			}
 		}
 		
-		return null;
+	}
+
+	/**
+	 * Adds a test result to the map of test results. If the entry already 
+	 * exists, then it is updated (notes, attachments and statuses).
+	 */
+	protected void addOrUpdate( TestCaseWrapper<TestSet> testResult, String tapFileNameWithoutExtension )
+	{
+		final TestCaseWrapper<TestSet> temp = this.results.get(testResult.getId());
+		
+		TestSet origin = testResult.getOrigin();
+		listener.getLogger().println( Messages.Results_JUnit_TestResultsFound( testResult.getName(), testResult.getId(), origin, tapFileNameWithoutExtension, testResult.getTestCase().getExecutionStatus().toString() ) );
+		
+		if ( temp == null )
+		{
+			this.results.put(testResult.getId(), testResult);
+		}
+		else
+		{
+			temp.appendNotes( testResult.getNotes() );
+			for( Attachment attachment : testResult.getAttachments() )
+			{
+				temp.addAttachment(attachment);
+			}
+			temp.getCustomFieldAndStatus().putAll( testResult.getCustomFieldAndStatus() );
+		}
 	}
 
 	/**
