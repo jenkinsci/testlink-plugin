@@ -48,9 +48,11 @@ extends TestCase
 	
 	private final String command = "commandNotExistent7&";
 	
+	private BuildListener listener;
+	
 	public void setUp()
 	{
-		BuildListener listener = new StreamBuildListener(new PrintStream(System.out), Charset.defaultCharset());
+		listener = new StreamBuildListener(new PrintStream(System.out), Charset.defaultCharset());
 		this.cmd = new BatchFile( command, new EnvVars(), listener );
 	}
 	
@@ -116,6 +118,20 @@ extends TestCase
 	public void testCommand()
 	{
 		Assert.assertEquals(this.command, this.cmd.getCommand() );
+	}
+	
+	public void testUsingCommandExecutor()
+	{
+		try
+		{
+			CommandExecutor.executeCommand(null, listener, false, new EnvVars(), command);
+			
+			fail("Not supposed to get here.");
+		} 
+		catch ( NullPointerException npe )
+		{
+			
+		}
 	}
 	
 }

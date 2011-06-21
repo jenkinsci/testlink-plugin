@@ -1,0 +1,24 @@
+<testng-results>
+  <reporter-output>
+  </reporter-output>
+  <suite name="Command line suite 2" duration-ms="0" started-at="2010-11-17T13:31:41Z" finished-at="2010-11-17T13:31:41Z">
+    <groups>
+    </groups>
+    <test name="Command line test21" duration-ms="0" started-at="2010-11-17T13:31:41Z" finished-at="2010-11-17T13:31:41Z">
+      <class name="br.eti.kinoshita.TestB">
+        <test-method status="PASS" signature="testVoid()" name="testVoid" duration-ms="0" started-at="2010-11-17T13:31:41Z" finished-at="2010-11-17T13:31:41Z">
+        </test-method>
+      </class>
+      <class name="br.eti.kinoshita.Test2">
+        <test-method status="PASS" signature="testVoid()" name="testVoid" duration-ms="0" started-at="2010-11-17T13:31:41Z" finished-at="2010-11-17T13:31:41Z">
+        </test-method>
+      </class>
+      <class name="br.eti.kinoshita.Test3">
+        <test-method status="PASS" signature="testVoid()" name="testVoid" duration-ms="0" started-at="2010-11-17T13:31:41Z" finished-at="2010-11-17T13:31:41Z">
+        </test-method>
+        <test-method status="FAILED" signature="testVoidA()" name="testVoid" duration-ms="0" started-at="2010-11-17T13:31:41Z" finished-at="2010-11-17T13:31:41Z">
+        </test-method>
+      </class>
+    </test>
+  </suite>
+</testng-results>

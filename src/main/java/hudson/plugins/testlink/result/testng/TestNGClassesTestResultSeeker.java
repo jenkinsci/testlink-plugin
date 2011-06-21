@@ -25,7 +25,6 @@ package hudson.plugins.testlink.result.testng;
 
 import hudson.model.BuildListener;
 import hudson.plugins.testlink.parser.ParserException;
-import hudson.plugins.testlink.parser.testng.Class;
 import hudson.plugins.testlink.parser.testng.Suite;
 import hudson.plugins.testlink.parser.testng.Test;
 import hudson.plugins.testlink.parser.testng.TestMethod;
@@ -56,7 +55,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.5
  */
-public class TestNGTestsTestResultSeeker<T extends hudson.plugins.testlink.parser.testng.Class>
+public class TestNGClassesTestResultSeeker<T extends hudson.plugins.testlink.parser.testng.Class>
 extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Class>
 {
 
@@ -69,7 +68,7 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 	 */
 	private final Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> results = new LinkedHashMap<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>>();
 	
-	public TestNGTestsTestResultSeeker(String includePattern, TestLinkReport report,
+	public TestNGClassesTestResultSeeker(String includePattern, TestLinkReport report,
 			String keyCustomFieldName, BuildListener listener)
 	{
 		super(includePattern, report, keyCustomFieldName, listener);

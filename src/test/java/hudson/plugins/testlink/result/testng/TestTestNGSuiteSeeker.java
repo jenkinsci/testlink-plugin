@@ -25,6 +25,7 @@ package hudson.plugins.testlink.result.testng;
 
 import hudson.model.BuildListener;
 import hudson.model.StreamBuildListener;
+import hudson.plugins.testlink.parser.testng.Suite;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 import hudson.plugins.testlink.result.TestLinkReport;
 
@@ -39,16 +40,16 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**
- * Tests TestResultSeeker with TestNG.
+ * Tests TestNG suites seeker..
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.5
  */
-public class TestTestNGClassSeeker 
+public class TestTestNGSuiteSeeker 
 extends junit.framework.TestCase
 {
 	
-	private TestNGClassesTestResultSeeker<hudson.plugins.testlink.parser.testng.Class> seeker;
+	private TestNGSuitesTestResultSeeker<Suite> seeker;
 	
 	private TestLinkReport report;
 	
@@ -59,56 +60,45 @@ extends junit.framework.TestCase
 		this.report = new TestLinkReport();
 		BuildListener listener = new StreamBuildListener(new PrintStream(System.out), Charset.defaultCharset());
 		this.seeker = 
-			new TestNGClassesTestResultSeeker<hudson.plugins.testlink.parser.testng.Class>("testng*.xml", report, KEY_CUSTOM_FIELD, listener);
+			new TestNGSuitesTestResultSeeker<Suite>("testng*.xml", report, KEY_CUSTOM_FIELD, listener);
 	}
 
-	public void testTestResultSeekerTestNGOne()
+	public void testTestResultSeekerTwoSuites()
 	{
 		TestCase tc = new TestCase();
 		CustomField cf = new CustomField();
 		cf.setName( KEY_CUSTOM_FIELD );
-		cf.setValue("br.eti.kinoshita.Test");
+		cf.setValue("Command line suite, Command line suite2");
 		tc.getCustomFields().add(cf);
 		tc.setId(1);
 		this.report.getTestCases().put( tc.getId(), tc );
 		
-		ClassLoader cl = TestTestNGClassSeeker.class.getClassLoader();
+		ClassLoader cl = TestTestNGSuiteSeeker.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/testng/");
 		File testNGDir = new File( url.getFile() );
-		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> found = seeker.seek( testNGDir );
+		Map<Integer, TestCaseWrapper<Suite>> found = seeker.seek( testNGDir );
 		assertNotNull( found );
 		assertTrue( found.size() == 1 );
 		assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
 	}
 	
-	public void testTestResultSeekerTestNGTwo()
+	public void testTestResultSeekerTwoSuitesOneNonExistent()
 	{
 		TestCase tc = new TestCase();
 		CustomField cf = new CustomField();
 		cf.setName( KEY_CUSTOM_FIELD );
-		cf.setValue("br.eti.kinoshita.Test2");
+		cf.setValue("Command line suite, Command line suite3");
 		tc.getCustomFields().add(cf);
-		tc.setId(2);
-		this.report.addTestCase(tc);
+		tc.setId(1);
+		this.report.getTestCases().put( tc.getId(), tc );
 		
-		tc = new TestCase();
-		cf = new CustomField();
-		cf.setName( KEY_CUSTOM_FIELD );
-		cf.setValue("br.eti.kinoshita.TestImmo");
-		tc.getCustomFields().add(cf);
-		tc.setId(3);
-		this.report.addTestCase(tc);
-		
-		assertTrue( this.report.getTestCases().size() == 2 );
-		
-		ClassLoader cl = TestTestNGClassSeeker.class.getClassLoader();
+		ClassLoader cl = TestTestNGSuiteSeeker.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/testng/");
 		File testNGDir = new File( url.getFile() );
-		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> found = seeker.seek(testNGDir);
+		Map<Integer, TestCaseWrapper<Suite>> found = seeker.seek( testNGDir );
 		assertNotNull( found );
-		assertTrue( found.size() == 2 );
-		assertTrue( found.get(2).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
-		assertTrue( found.get(3).getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );
+		assertTrue( found.size() == 1 );
+		assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.NOT_RUN );
 	}
 	
 }

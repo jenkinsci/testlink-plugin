@@ -23,11 +23,22 @@
  */
 package hudson.plugins.testlink.util;
 
+import hudson.EnvVars;
+import hudson.model.BuildListener;
+import hudson.model.StreamBuildListener;
+
+import java.io.PrintStream;
 import java.lang.reflect.Constructor;
+import java.nio.charset.Charset;
 import java.util.Locale;
+import java.util.Map;
 
 import junit.framework.TestCase;
+import br.eti.kinoshita.testlinkjavaapi.model.Build;
+import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
+import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
+import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
 
 /**
  *
@@ -36,12 +47,16 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 public class TestTestLinkHelper 
 extends TestCase
 {
+	
+	BuildListener listener;
 
 	/**
 	 * Defines the Locale to US
 	 */
 	public void setUp()
 	{
+		listener = new StreamBuildListener(new PrintStream(System.out), Charset.defaultCharset());
+		
 		Locale.setDefault(new Locale("en", "US"));
 		
 		try
@@ -95,6 +110,55 @@ extends TestCase
 		status = ExecutionStatus.BLOCKED;
 		text = TestLinkHelper.getExecutionStatusTextColored(status); 
 		assertTrue( text.equals("<span style='color: yellow'>Blocked</span>") );
+	}
+	
+	public void testTestLinkJavaAPIProperties()
+	{
+		String testLinkJavaAPIProperties = "httpd.server=false, testlink.security=true, test";
+		
+		TestLinkHelper.setTestLinkJavaAPIProperties(testLinkJavaAPIProperties, listener);
+		
+		assertEquals( System.getProperties().get("httpd.server"), "false");
+	}
+	
+	public void testCreateTestLinkEnvVars()
+	{
+		br.eti.kinoshita.testlinkjavaapi.model.TestCase testCase = 
+			new br.eti.kinoshita.testlinkjavaapi.model.TestCase();
+		testCase.setId( 100 );
+		testCase.setName("Sample name");
+		testCase.setTestSuiteId(10);
+		testCase.setAuthorLogin("admin");
+		testCase.setSummary("summary");
+
+		CustomField cf = new CustomField();
+		cf.setName("cf");
+		cf.setValue("fc");
+		testCase.getCustomFields().add(cf);
+		
+		TestProject testProject = new TestProject();
+		testProject.setId( 1000 );
+		testCase.setTestProjectId(testProject.getId());
+		testProject.setName("Sample project name");
+		
+		TestPlan testPlan = new TestPlan();
+		testPlan.setName ( "10000" );
+		
+		Build build = new Build();
+		build.setName( "100000" );
+		
+		Map<String, String> envVars = TestLinkHelper.createTestLinkEnvironmentVariables(testCase, testProject, testPlan, build);
+		
+		assertEquals( envVars.get("TESTLINK_TESTCASE_ID"), "100");
+		assertEquals( envVars.get("TESTLINK_TESTCASE_TESTPROJECTID"), "1000");
+		assertEquals( envVars.get("TESTLINK_TESTPLAN_NAME"), "10000");
+		assertEquals( envVars.get("TESTLINK_BUILD_NAME"), "100000");
+		
+		assertEquals( envVars.get("TESTLINK_TESTCASE_CF"), "fc");
+		
+		EnvVars envVarsEnvVars = TestLinkHelper.buildTestCaseEnvVars(testCase, testProject, testPlan, build, listener);
+		
+		assertTrue( envVarsEnvVars.equals(envVars) );
 	}
 	
 }
