@@ -50,6 +50,8 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**
+ * Seeks for test results of TestNG suites.
+ * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.5
  */
@@ -59,9 +61,9 @@ extends AbstractTestNGTestResultSeeker<Suite>
 
 	private static final long serialVersionUID = -3492359249081599662L;
 
-	private final TestNGParser parser = new TestNGParser();
+	protected final TestNGParser parser = new TestNGParser();
 	
-	private final Map<Integer, TestCaseWrapper<Suite>> results = new LinkedHashMap<Integer, TestCaseWrapper<Suite>>();
+	protected final Map<Integer, TestCaseWrapper<Suite>> results = new LinkedHashMap<Integer, TestCaseWrapper<Suite>>();
 	
 	public TestNGSuitesTestResultSeeker(String includePattern,
 			TestLinkReport report, String keyCustomFieldName,
@@ -77,6 +79,9 @@ extends AbstractTestNGTestResultSeeker<Suite>
 	public Map<Integer, TestCaseWrapper<Suite>> seek( File directory )
 			throws TestResultSeekerException
 	{
+		// TBD: i18n
+		listener.getLogger().println( "Looking for TestNG suites test results.\n" );
+		
 		if ( StringUtils.isBlank(includePattern) ) // skip TestNG
 		{
 			listener.getLogger().println( Messages.Results_TestNG_NoPattern() );
@@ -109,7 +114,7 @@ extends AbstractTestNGTestResultSeeker<Suite>
 	/**
 	 * Processes TestNG reports.
 	 */
-	private void processTestNGReports( File directory, String[] testNGReports )
+	protected void processTestNGReports( File directory, String[] testNGReports )
 	{
 		for ( int i = 0 ; i < testNGReports.length ; ++i )
 		{
@@ -136,7 +141,7 @@ extends AbstractTestNGTestResultSeeker<Suite>
 	/**
 	 * Processes TestNG Suite.
 	 */
-	private void processTestNGSuite( Suite testNGSuite, File testNGFile )
+	protected void processTestNGSuite( Suite testNGSuite, File testNGFile )
 	{
 		final String suiteName = testNGSuite.getName();
 		
@@ -145,7 +150,6 @@ extends AbstractTestNGTestResultSeeker<Suite>
 			final Collection<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
 				this.report.getTestCases().values();
 			
-			listener.getLogger().println();
 			listener.getLogger().println( Messages.Results_TestNG_LookingForTestResults( keyCustomFieldName, suiteName ) );
 			listener.getLogger().println();
 			
@@ -165,7 +169,7 @@ extends AbstractTestNGTestResultSeeker<Suite>
 	/**
 	 * Looks for test results in a TestNG suite.
 	 */
-	private void findTestResults( Suite testNGSuite, TestCase testLinkTestCase,
+	protected void findTestResults( Suite testNGSuite, TestCase testLinkTestCase,
 			File testNGFile )
 	{
 		final List<CustomField> customFields = testLinkTestCase.getCustomFields();
@@ -211,7 +215,7 @@ extends AbstractTestNGTestResultSeeker<Suite>
 	 * Adds a test result to the map of test results. If the entry already 
 	 * exists, then it is updated (notes, attachments and statuses).
 	 */
-	private void addOrUpdate( TestCaseWrapper<Suite> testResult )
+	protected void addOrUpdate( TestCaseWrapper<Suite> testResult )
 	{
 		final TestCaseWrapper<Suite> temp = this.results.get(testResult.getId());
 		

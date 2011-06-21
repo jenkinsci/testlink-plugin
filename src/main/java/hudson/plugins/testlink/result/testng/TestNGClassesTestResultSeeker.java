@@ -36,8 +36,6 @@ import hudson.plugins.testlink.util.Messages;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +48,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**
- * This class is responsible 
+ * Seeks for test results of TestNG tests.
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.5
@@ -66,7 +64,7 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 	/**
 	 * Map of Wrappers for TestLink Test Cases.
 	 */
-	private final Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> results = new LinkedHashMap<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>>();
+	protected final Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> results = new LinkedHashMap<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>>();
 	
 	public TestNGClassesTestResultSeeker(String includePattern, TestLinkReport report,
 			String keyCustomFieldName, BuildListener listener)
@@ -81,6 +79,9 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 	public Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> seek( File directory )
 			throws TestResultSeekerException
 	{
+		// TBD: i18n
+		listener.getLogger().println( "Looking for TestNG classes test results.\n" );
+		
 		if ( StringUtils.isBlank(includePattern) ) // skip TestNG
 		{
 			listener.getLogger().println( Messages.Results_TestNG_NoPattern() );
@@ -157,6 +158,8 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 		{
 			this.processTestNGTest( testNGTest, testNGSuite, testNGFile );
 		}
+		
+		listener.getLogger().println();
 	}
 	
 	/**
@@ -168,15 +171,15 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 			testNGTest.getClasses();
 		
 		listener.getLogger().println( Messages.Results_TestNG_VerifyingTestNGTest( testNGTest.getName(), classes.size() ));
+		listener.getLogger().println();
 		
 		for ( hudson.plugins.testlink.parser.testng.Class clazz : classes )
 		{
 			listener.getLogger().println( Messages.Results_TestNG_VerifyingTestNGTestClass( clazz.getName() ) );
+			listener.getLogger().println();
 			
 			this.processTestClass( clazz, testNGSuite, testNGFile );
 		}
-		
-		listener.getLogger().println();
 	}
 
 	/**
@@ -188,19 +191,13 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 		
 		if ( ! StringUtils.isBlank( testNGTestClassName ) )
 		{
-			final Collection<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
-				this.report.getTestCases().values();
-			
-			listener.getLogger().println();
 			listener.getLogger().println( Messages.Results_TestNG_LookingForTestResults( keyCustomFieldName, testNGTestClassName ) );
 			listener.getLogger().println();
 			
-			final Iterator<br.eti.kinoshita.testlinkjavaapi.model.TestCase> iter = testLinkTestCases.iterator();
-			while( iter.hasNext() )
+			for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : this.report.getTestCases().values() )
 			{
-				final br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase = iter.next();
 				listener.getLogger().println( Messages.Results_TestNG_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
-			
+				
 				this.findTestResults( testNGSuite, clazz, testLinkTestCase, testNGFile );
 			
 				listener.getLogger().println();

@@ -61,7 +61,7 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 
 	protected final JUnitParser parser = new JUnitParser();
 	
-	private final Map<Integer, TestCaseWrapper<TestSuite>> results = new LinkedHashMap<Integer, TestCaseWrapper<TestSuite>>();
+	protected final Map<Integer, TestCaseWrapper<TestSuite>> results = new LinkedHashMap<Integer, TestCaseWrapper<TestSuite>>();
 
 	public JUnitSuitesTestResultSeeker(String includePattern,
 			TestLinkReport report, String keyCustomFieldName,
@@ -80,6 +80,9 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 	public Map<Integer, TestCaseWrapper<TestSuite>> seek( File directory )
 			throws TestResultSeekerException
 	{
+		// TBD: i18n
+		listener.getLogger().println( "Looking for JUnit test suites test results.\n" );
+		
 		if ( StringUtils.isBlank(includePattern) ) // skip JUnit
 		{
 			listener.getLogger().println( Messages.Results_JUnit_NoPattern() );
@@ -155,7 +158,6 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 			final Collection<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
 				this.report.getTestCases().values();
 			
-			listener.getLogger().println();
 			listener.getLogger().println( Messages.Results_JUnit_LookingForTestResults( keyCustomFieldName, suiteName ) );
 			listener.getLogger().println();
 			

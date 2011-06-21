@@ -30,10 +30,10 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 
-import org.jvnet.hudson.test.Bug;
-
 import junit.framework.Assert;
 import junit.framework.TestCase;
+
+import org.jvnet.hudson.test.Bug;
 
 /**
  * Tests the JUnit parser for issue 9993.

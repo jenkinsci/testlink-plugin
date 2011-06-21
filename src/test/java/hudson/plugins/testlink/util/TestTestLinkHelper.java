@@ -33,6 +33,8 @@ import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.Map;
 
+import org.jvnet.hudson.test.Bug;
+
 import junit.framework.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
@@ -155,6 +157,52 @@ extends TestCase
 		assertEquals( envVars.get("TESTLINK_BUILD_NAME"), "100000");
 		
 		assertEquals( envVars.get("TESTLINK_TESTCASE_CF"), "fc");
+		
+		assertNull( envVars.get("TESTLINK_TESTCASE_CF_0") );
+		
+		EnvVars envVarsEnvVars = TestLinkHelper.buildTestCaseEnvVars(testCase, testProject, testPlan, build, listener);
+		
+		assertTrue( envVarsEnvVars.equals(envVars) );
+	}
+	
+	@Bug(9672)
+	public void testCreateTestLinkEnvVarsWithCommas()
+	{
+		br.eti.kinoshita.testlinkjavaapi.model.TestCase testCase = 
+			new br.eti.kinoshita.testlinkjavaapi.model.TestCase();
+		testCase.setId( 100 );
+		testCase.setName("Sample name");
+		testCase.setTestSuiteId(10);
+		testCase.setAuthorLogin("admin");
+		testCase.setSummary("summary");
+
+		CustomField cf = new CustomField();
+		cf.setName("cf");
+		cf.setValue("fc, gh");
+		testCase.getCustomFields().add(cf);
+		
+		TestProject testProject = new TestProject();
+		testProject.setId( 1000 );
+		testCase.setTestProjectId(testProject.getId());
+		testProject.setName("Sample project name");
+		
+		TestPlan testPlan = new TestPlan();
+		testPlan.setName ( "10000" );
+		
+		Build build = new Build();
+		build.setName( "100000" );
+		
+		Map<String, String> envVars = TestLinkHelper.createTestLinkEnvironmentVariables(testCase, testProject, testPlan, build);
+		
+		assertEquals( envVars.get("TESTLINK_TESTCASE_ID"), "100");
+		assertEquals( envVars.get("TESTLINK_TESTCASE_TESTPROJECTID"), "1000");
+		assertEquals( envVars.get("TESTLINK_TESTPLAN_NAME"), "10000");
+		assertEquals( envVars.get("TESTLINK_BUILD_NAME"), "100000");
+		
+		assertEquals( envVars.get("TESTLINK_TESTCASE_CF"), "fc, gh");
+		
+		assertEquals( envVars.get("TESTLINK_TESTCASE_CF_0"), "fc");
+		assertEquals( envVars.get("TESTLINK_TESTCASE_CF_1"), "gh");
 		
 		EnvVars envVarsEnvVars = TestLinkHelper.buildTestCaseEnvVars(testCase, testProject, testPlan, build, listener);
 		

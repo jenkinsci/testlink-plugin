@@ -123,6 +123,7 @@ public class TestLinkHandler
 		// Creating Build or Retrieving existing one
 		this.build = api.createBuild( this.testPlan.getId(), buildName, buildNotes);
 		
+		// TBD: i18n
 		listener.getLogger().println( "Using TestLink Test Project: ["+this.testProject.getName()+"], ID: ["+this.testProject.getId()+"]." );
 		listener.getLogger().println( "Using TestLink Test Plan: ["+this.testPlan.getName()+"], ID: ["+this.testPlan.getId()+"]." );
 		listener.getLogger().println( "Using TestLink Build: ["+this.build.getName()+"], ID: ["+this.build.getId()+"]." );

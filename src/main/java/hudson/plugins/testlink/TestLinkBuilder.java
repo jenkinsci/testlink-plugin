@@ -38,8 +38,8 @@ import hudson.plugins.testlink.result.TestResultsCallable;
 import hudson.plugins.testlink.result.junit.JUnitSuitesTestResultSeeker;
 import hudson.plugins.testlink.result.junit.JUnitTestCasesTestResultSeeker;
 import hudson.plugins.testlink.result.tap.TAPTestResultSeeker;
-import hudson.plugins.testlink.result.testng.TestNGSuitesTestResultSeeker;
 import hudson.plugins.testlink.result.testng.TestNGClassesTestResultSeeker;
+import hudson.plugins.testlink.result.testng.TestNGSuitesTestResultSeeker;
 import hudson.plugins.testlink.tasks.CommandExecutor;
 import hudson.plugins.testlink.util.Messages;
 import hudson.plugins.testlink.util.TestLinkHelper;
@@ -257,7 +257,7 @@ extends AbstractTestLinkBuilder
 		{
 			final TestResultSeeker<?> testNGSuitesSeeker = 
 				new TestNGSuitesTestResultSeeker<Suite>(
-						reportFilesPatterns.getJunitXmlReportFilesPattern(), 
+						reportFilesPatterns.getTestNGXmlReportFilesPattern(), 
 						report, 
 						this.keyCustomField, 
 						listener);
@@ -265,7 +265,7 @@ extends AbstractTestLinkBuilder
 			
 			final TestResultSeeker<?> testNGTestsSeeker = 
 				new TestNGClassesTestResultSeeker<hudson.plugins.testlink.parser.testng.Class>(
-						reportFilesPatterns.getJunitXmlReportFilesPattern(), 
+						reportFilesPatterns.getTestNGXmlReportFilesPattern(), 
 						report, 
 						this.keyCustomField, 
 						listener);

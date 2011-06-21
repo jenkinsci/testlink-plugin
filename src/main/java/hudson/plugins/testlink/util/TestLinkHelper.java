@@ -27,7 +27,6 @@ import hudson.EnvVars;
 import hudson.model.BuildListener;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -233,29 +232,71 @@ public final class TestLinkHelper
 		testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, testProject.getName() );
 		
 		List<CustomField> customFields = testCase.getCustomFields();
-		for (Iterator<CustomField> iterator = customFields.iterator(); iterator.hasNext();)
+		for ( CustomField customField : customFields )
 		{
-			CustomField customField = iterator.next();
-			String customFieldEnvVarName = formatCustomFieldEnvironmentVariableName( customField.getName() );
-			testLinkEnvVar.put(customFieldEnvVarName , customField.getValue());
+			addCustomFieldEnvironmentVariableName( customField, testLinkEnvVar );
 		}
 		
 		return testLinkEnvVar;
 	}
 	
 	/**
-	 * Formats a custom field's name into an environment variable. 
+	 * <p>Formats a custom field into an environment variable. It appends 
+	 * TESTLINK_TESTCASE in front of the environment variable name.</p>
 	 * 
-	 * @param name The name of the custom field
+	 * <p>So, for example, the custom field which name is Sample  Custom Field and 
+	 * value is <b>Sample Value</b>, will be added into the environment variables 
+	 * as TESTLINK_TESTCASE_SAMPLE__CUSTOM_FIELD="Sample Value" (note for the double spaces).</p>
+	 * 
+	 * <p>If the custom's value contains commas (,), then this method splits the 
+	 * value and, for each token found, it creates a new environment variable 
+	 * appending a numeric index after its name</p>
+	 * 
+	 * <p>So, for example, the custom field which name is Sample Custom Field and 
+	 * value is <b>Sample Value 1, Sample Value 2</b>, will generate three 
+	 * environment variables: TESTLINK_TESTCASE_SAMPLE_CUSTOM_FIELD="Sample Value 1, Sample Value 2", 
+	 * TESTLINK_TESTCASE_SAMPLE_CUSTOM_FIELD_0="Sample Value 1" and 
+	 * TESTLINK_TESTCASE_SAMPLE_CUSTOM_FIELD_1="Sample Value 2".</p> 
+	 * 
+	 * @param customField The custom field
+	 * @param testLinkEnvVar TestLink envVars
 	 * @return Formatted name for a environment variable
 	 */
-	public static String formatCustomFieldEnvironmentVariableName(String name) 
+	public static void addCustomFieldEnvironmentVariableName(CustomField customField, Map<String, String> testLinkEnvVar) 
 	{
-		name = name.toUpperCase(); // uppercase
-		name = name.trim(); // trim
-		name = TESTLINK_TESTCASE_PREFIX + name; // add prefix
-		name = name.replaceAll( "\\s+", "_" ); // replace white spaces
-		return name;
+		String customFieldName = customField.getName();
+		String customFieldValue = customField.getValue();
+		
+		customFieldName = customFieldName.toUpperCase(); // uppercase
+		customFieldName = customFieldName.trim(); // trim
+		customFieldName = TESTLINK_TESTCASE_PREFIX + customFieldName; // add prefix
+		customFieldName = customFieldName.replaceAll( "\\s+", "_" ); // replace white spaces
+		
+		testLinkEnvVar.put(customFieldName, customFieldValue);
+		
+		if ( StringUtils.isNotBlank( customFieldValue ) ) 
+		{
+			StringTokenizer tokenizer = new StringTokenizer( customFieldValue, "," );
+			if ( tokenizer.countTokens() > 1 )
+			{
+				int index = 0;
+				while ( tokenizer.hasMoreTokens() )
+				{
+					String token = tokenizer.nextToken();
+					token = token.trim();
+					
+					customFieldName = customField.getName();
+					customFieldName = customFieldName.toUpperCase(); // uppercase
+					customFieldName = customFieldName.trim(); // trim
+					
+					String tokenName = TESTLINK_TESTCASE_PREFIX + customFieldName + "_" + index; // add prefix
+					tokenName = tokenName.replaceAll( "\\s+", "_" ); // replace white spaces
+					
+					testLinkEnvVar.put(tokenName, token);
+					++index;
+				}
+			}
+		}
 	}
 	
 	/**

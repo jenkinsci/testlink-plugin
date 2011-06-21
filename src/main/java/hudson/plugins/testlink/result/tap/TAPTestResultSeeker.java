@@ -49,10 +49,10 @@ import org.tap4j.model.TestSet;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
+import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**
- * This class is responsible for scanning directories looking for TAP Test 
- * results.
+ * Seeks for test results of TAP test sets.
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.5
@@ -86,6 +86,9 @@ extends TestResultSeeker<TestSet>
 	public Map<Integer, TestCaseWrapper<TestSet>> seek( File directory )
 			throws TestResultSeekerException
 	{
+		// TBD: i18n
+		listener.getLogger().println( "Looking for TAP test sets test results.\n" );
+		
 		if ( StringUtils.isBlank(includePattern) ) // skip TAP
 		{
 			listener.getLogger().println( Messages.Results_TAP_NoPattern() );
@@ -173,72 +176,71 @@ extends TestResultSeeker<TestSet>
 			tapFileNameWithoutExtension = tapFileNameWithoutExtension.substring(0, tapFileNameWithoutExtension.lastIndexOf('.'));
 		}
 		
-		this.findTestResult( tapFileNameWithoutExtension, tapTestSet, tapFile );
-		
-		listener.getLogger().println();
-		
-	}
-	
-	/**
-	 * @param tapFileNameWithoutExtension TAP File Name without extension.
-	 * @param tapTestSet TAP Test Set.
-	 * @param tapFile TAP File for attachments.
-	 */
-	protected void findTestResult( 
-		String tapFileNameWithoutExtension,
-		TestSet tapTestSet, 
-		File tapFile )
-	{
 		listener.getLogger().println( Messages.Results_TAP_LookingForTestResults( keyCustomFieldName, tapFileNameWithoutExtension ) );
 		listener.getLogger().println();
 		
 		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : this.report.getTestCases().values() )
 		{
 			listener.getLogger().println( Messages.Results_TAP_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
+		
+			this.findTestResult( tapFileNameWithoutExtension, tapTestSet, testLinkTestCase, tapFile );
+		
+			listener.getLogger().println();
+		}
+		
+	}
+	
+	/**
+	 * Looks for test results in a TAP Test Set test case.
+	 */
+	protected void findTestResult( 
+		String tapFileNameWithoutExtension,
+		TestSet tapTestSet, 
+		TestCase testLinkTestCase, 
+		File tapFile )
+	{
+		
+		final List<CustomField> customFields = testLinkTestCase.getCustomFields();
+		listener.getLogger().println( Messages.Results_TAP_ListOfCustomFields( customFields ) );
+		
+		final CustomField keyCustomField = this.getKeyCustomField( customFields );
+		if ( keyCustomField != null ) 
+		{
+			final String[] commaSeparatedValues = this.split ( keyCustomField.getValue() );
 			
-			final List<CustomField> customFields = testLinkTestCase.getCustomFields();
-			listener.getLogger().println( Messages.Results_TAP_ListOfCustomFields( customFields ) );
-			
-			final CustomField keyCustomField = this.getKeyCustomField( customFields );
-			if ( keyCustomField != null ) 
+			for ( String value : commaSeparatedValues )
 			{
-				final String[] commaSeparatedValues = this.split ( keyCustomField.getValue() );
-				
-				for ( String value : commaSeparatedValues )
+				if ( tapFileNameWithoutExtension.equals(value) && ExecutionStatus.BLOCKED != testLinkTestCase.getExecutionStatus() )
 				{
-					if ( tapFileNameWithoutExtension.equals(value) && ExecutionStatus.BLOCKED != testLinkTestCase.getExecutionStatus() )
+					final TestCaseWrapper<TestSet> testResult = new TestCaseWrapper<TestSet>( testLinkTestCase, commaSeparatedValues, tapTestSet );
+					
+					final ExecutionStatus status = this.getTapExecutionStatus( tapTestSet );
+					testResult.addCustomFieldAndStatus(value, status);
+					
+					String notes = this.getTapNotes( tapTestSet );
+					
+					try
 					{
-						final TestCaseWrapper<TestSet> testResult = new TestCaseWrapper<TestSet>( testLinkTestCase, commaSeparatedValues, tapTestSet );
+						List<Attachment> tapAttachments = this.getTapAttachments( testResult.getTestCase().getVersionId(), tapFile, tapTestSet );
 						
-						final ExecutionStatus status = this.getTapExecutionStatus( tapTestSet );
-						testResult.addCustomFieldAndStatus(value, status);
-						
-						String notes = this.getTapNotes( tapTestSet );
-						
-						try
+						for( Attachment attachment : tapAttachments )
 						{
-							List<Attachment> tapAttachments = this.getTapAttachments( testResult.getTestCase().getVersionId(), tapFile, tapTestSet );
-							
-							for( Attachment attachment : tapAttachments )
-							{
-								testResult.addAttachment( attachment );
-							}
+							testResult.addAttachment( attachment );
 						}
-						catch ( IOException ioe )
-						{
-							notes += Messages.Results_TAP_AddAttachmentsFail( ioe.getMessage() );
-							ioe.printStackTrace( listener.getLogger() );
-						}
-						
-						testResult.appendNotes( notes );
-						
-						this.addOrUpdate( testResult, tapFileNameWithoutExtension );
-						
 					}
+					catch ( IOException ioe )
+					{
+						notes += Messages.Results_TAP_AddAttachmentsFail( ioe.getMessage() );
+						ioe.printStackTrace( listener.getLogger() );
+					}
+					
+					testResult.appendNotes( notes );
+					
+					this.addOrUpdate( testResult, tapFileNameWithoutExtension );
+					
 				}
 			}
 		}
-		
 	}
 
 	/**

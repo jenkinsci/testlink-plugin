@@ -23,10 +23,9 @@
  */
 package hudson.plugins.testlink;
 
-import junit.framework.TestCase;
 import hudson.model.AbstractBuild;
-import hudson.plugins.testlink.TestLinkResult;
 import hudson.plugins.testlink.result.TestLinkReport;
+import junit.framework.TestCase;
 
 /**
  * Tests the TestLinkResult object.

@@ -50,8 +50,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 
 /**
- * This class is responsible for scanning directories looking for JUnit Test 
- * results.
+ * Seeks for test results of JUnit test cases.
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.5
@@ -64,6 +63,16 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 
 	protected final JUnitParser parser = new JUnitParser();
 	
+	/**
+	 * Map of Wrappers for TestLink Test Cases.
+	 */
+	protected final Map<Integer, TestCaseWrapper<TestCase>> results = new LinkedHashMap<Integer, TestCaseWrapper<TestCase>>();
+	
+	/**
+	 * Stores a list of JUnit test cases that one or more methods failed.
+	 */
+	protected final Set<String> failedTestCases = new HashSet<String>();
+	
 	public JUnitTestCasesTestResultSeeker(
 		String includePattern,
 		TestLinkReport report, 
@@ -74,23 +83,14 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 		super(includePattern, report, keyCustomFieldName, listener);
 	}
 	
-	/**
-	 * Stores a list of JUnit test cases that one or more methods failed.
-	 */
-	protected Set<String> failedTestCases = new HashSet<String>();
-	
-	/**
-	 * Map of Wrappers for TestLink Test Cases.
-	 */
-	final Map<Integer, TestCaseWrapper<TestCase>> results = new LinkedHashMap<Integer, TestCaseWrapper<TestCase>>();
-	
-
 	/* (non-Javadoc)
 	 * @see hudson.plugins.testlink.result.TestResultSeeker#seek(java.io.File, java.lang.String, hudson.plugins.testlink.result.TestLinkReport, hudson.model.BuildListener)
 	 */
 	public Map<Integer, TestCaseWrapper<TestCase>> seek( File directory ) 
 	throws TestResultSeekerException
 	{
+		// TBD: i18n
+		listener.getLogger().println( "Looking for JUnit test cases test results.\n" );
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip JUnit
 		{
