@@ -183,7 +183,6 @@ extends TestResultSeeker<TestSet>
 	 * @param tapFileNameWithoutExtension TAP File Name without extension.
 	 * @param tapTestSet TAP Test Set.
 	 * @param tapFile TAP File for attachments.
-	 * @return Test Result.
 	 */
 	protected void findTestResult( 
 		String tapFileNameWithoutExtension,
