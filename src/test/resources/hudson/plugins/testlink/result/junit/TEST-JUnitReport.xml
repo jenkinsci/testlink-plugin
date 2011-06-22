@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+    <testsuite name="POC_migration.Consultation">
+      <testcase name="Consultation" time="0.000" />
+    </testsuite>
+</testsuites>

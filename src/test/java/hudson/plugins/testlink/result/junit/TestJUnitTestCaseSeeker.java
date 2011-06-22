@@ -111,4 +111,24 @@ extends junit.framework.TestCase
 		assertTrue( found.get(3).getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );
 	}
 	
+	public void testPoorJUnitSuiteXML()
+	{
+		TestCase tc = new TestCase();
+		CustomField cf = new CustomField();
+		cf.setName( KEY_CUSTOM_FIELD );
+		cf.setValue("Consultation");
+		tc.getCustomFields().add(cf);
+		tc.setId(1);
+		this.report.addTestCase(tc);
+		
+		ClassLoader cl = TestJUnitTestCaseSeeker.class.getClassLoader();
+		URL url = cl.getResource("hudson/plugins/testlink/result/junit/");
+		File junitDir = new File( url.getFile() );
+		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.junit.TestCase>> found = seeker.seek(junitDir);
+		assertNotNull( found );
+		assertTrue( found.size() == 1 );
+		
+		assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );
+	}
+	
 }

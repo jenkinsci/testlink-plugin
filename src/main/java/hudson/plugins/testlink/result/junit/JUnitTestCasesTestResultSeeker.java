@@ -160,7 +160,7 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 	 */
 	protected void processJUnitSuite( TestSuite junitSuite, File junitFile )
 	{
-		listener.getLogger().println( Messages.Results_JUnit_VerifyingJUnitSuite( junitSuite.getName(), junitSuite.getTests().length(), junitSuite.getFailures(), junitSuite.getErrors() ) );
+		listener.getLogger().println( Messages.Results_JUnit_VerifyingJUnitSuite( junitSuite.getName(), junitSuite.getTests(), junitSuite.getFailures(), junitSuite.getErrors() ) );
 		listener.getLogger().println();
 		
 		final List<TestCase> testCases = junitSuite.getTestCases();
