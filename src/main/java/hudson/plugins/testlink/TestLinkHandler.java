@@ -59,12 +59,12 @@ public class TestLinkHandler
 	/**
 	 * The TestLink API object.
 	 */
-	private TestLinkAPI api;
+	private final TestLinkAPI api;
 	
 	/**
 	 * Hudson Build listener.
 	 */
-	private BuildListener listener;
+	private final BuildListener listener;
 	
 	/**
 	 * The Id of the Test Project.
@@ -164,7 +164,6 @@ public class TestLinkHandler
 			// Update TestLink Test Status
 			for( TestCaseWrapper testResult : wrappedTestCases.values() )
 			{
-				
 				TestCase testCase = testResult.getTestCase();
 				
 				listener.getLogger().println( Messages.TestLinkBuilder_Update_AutomatedTestCase(testCase.getName(), TestLinkHelper.getExecutionStatusText( testCase.getExecutionStatus() )) );

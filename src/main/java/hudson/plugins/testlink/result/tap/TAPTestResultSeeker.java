@@ -43,8 +43,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.tap4j.model.Directive;
 import org.tap4j.model.Plan;
+import org.tap4j.model.TestResult;
 import org.tap4j.model.TestSet;
+import org.tap4j.util.DirectiveValues;
+import org.tap4j.util.StatusValues;
 
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
@@ -295,11 +299,11 @@ extends TestResultSeeker<TestSet>
 	{
 		ExecutionStatus status = ExecutionStatus.PASSED;
 		
-		if ( testSet.getPlan().getSkip() != null  )
+		if ( isSkipped( testSet)  )
 		{
 			status = ExecutionStatus.BLOCKED;
 		}		
-		else if ( testSet.containsNotOk() )
+		else if ( isFailed( testSet ) )
 		{
 			status = ExecutionStatus.FAILED;
 		}
@@ -307,6 +311,60 @@ extends TestResultSeeker<TestSet>
 		return status;
 	}
 	
+	/**
+	 * Checks if a test set contains a plan with skip directive or any test case
+	 * with the same.
+	 */
+	private boolean isSkipped( TestSet testSet )
+	{
+		boolean r = false;
+		
+		if ( testSet.getPlan().isSkip() )
+		{
+			r = true;
+		}
+		else
+		{
+			for( TestResult testResult : testSet.getTestResults() )
+			{
+				final Directive directive = testResult.getDirective();
+				if ( directive != null && directive.getDirectiveValue() == DirectiveValues.SKIP )
+				{
+					r = true;
+					break;
+				}
+			}
+		}
+		return r;
+	}
+
+	/**
+	 * Checks if a test set contains not ok's, bail out!'s or a TO-DO directive.
+	 */
+	private boolean isFailed( TestSet testSet )
+	{
+		boolean r = false;
+		
+		if ( testSet.containsNotOk() || testSet.containsBailOut() )
+		{
+			r = true;
+		}
+		else
+		{
+			for( TestResult testResult : testSet.getTestResults() )
+			{
+				final Directive directive = testResult.getDirective();
+				if ( directive != null && directive.getDirectiveValue() == DirectiveValues.TODO )
+				{
+					r = true;
+					break;
+				}
+			}
+		}
+		
+		return r;
+	}
+
 	/**
 	 * Retrieves list of TAP Attachments. Besides the TAP stream file itself, 
 	 * this method also adds all extension / Files to this list.
