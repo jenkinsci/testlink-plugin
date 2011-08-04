@@ -165,6 +165,11 @@ public class TestLinkHandler
 			for( TestCaseWrapper testResult : wrappedTestCases.values() )
 			{
 				TestCase testCase = testResult.getTestCase();
+				if ( testCase.getExecutionStatus() == null || testCase.getExecutionStatus() == ExecutionStatus.NOT_RUN )
+				{
+					listener.getLogger().println( "Test case " + testCase.getName() + " execution status is \"Not Run\" and won't be updated in TestLink!" );
+					continue;
+				}
 				
 				listener.getLogger().println( Messages.TestLinkBuilder_Update_AutomatedTestCase(testCase.getName(), TestLinkHelper.getExecutionStatusText( testCase.getExecutionStatus() )) );
 				
