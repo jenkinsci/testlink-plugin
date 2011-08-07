@@ -1,0 +1,30 @@
+<div>
+  <p>
+	Le Plug-in TestLink Jenkins récupère les données de cas de test automatisés à partir de
+	TestLink. Ces données sont ensuite utilisées en variables d'environnement. Ainsi votre   
+	commande de test itérative peut utiliser ces informations pour exécuter vos tests
+	automatisés.
+  </p>
+  <p>Par exemple, vous pourriez exécuter ant en passant une Test Class en paramètre: <pre>/opt/java/apache-ant-1.8.0/bin/ant -DtestClass=$TESTLINK_TESTCASE_TEST_CLASS</pre></p>
+  <p>
+  	Liste des variables d'environnement que le Plug-in TestLink Jenkins défini:
+  </p>
+  <p>
+  	<ul>
+  		<li>TESTLINK_TESTCASE_ID</li>
+  		<li>TESTLINK_TESTCASE_NAME</li>
+  		<!--li>TESTLINK_TESTCASE_TESTSUITEID</li-->
+  		<li>TESTLINK_TESTCASE_TESTPROJECTID</li>
+  		<li>TESTLINK_TESTCASE_AUTHOR</li>
+  		<li>TESTLINK_TESTCASE_SUMMARY</li>
+  		<li>TESTLINK_BUILD_NAME</li>
+  		<li>TESTLINK_TESTPLAN_NAME</li>
+  		<li>TESTLINK_TESTCASE_$CUSTOM_FIELD_NAME</li>
+  	</ul>
+  </p>
+  <p>
+  	Pour chaque champ personnalisé trouvé, le Plug-in TestLink Jenkins défini une variable 
+  	d'environnement avec ses nom et valeur, comme indiqué ci-dessus (%CUSTOM_FIELD_NAME%).
+  	Si le nom du champ personnalisé contient des espaces, the plug-in va les convertir en _.
+  </p>
+</div>

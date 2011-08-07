@@ -1,0 +1,23 @@
+<div>
+  <p>
+    En Exécution Transactionnelle, si un test échoue l'exécution est interrompue 
+	et tous les tests restants sont marqués comme bloqués.
+  </p>
+  <p>
+	Par exemple, supposons que nous avons des tests A, B, C qui sont lancés dans 
+	cet ordre. Si l'option d'Exécution Transactionnelle est marquée et que le test  
+	A échoue alors A est marqué avec le statut de résultat 'Failed'. Et les tests B and C are not execute 
+	et C ne sont pas exécutés et leur statut de résultat passe à 'Blocked'.
+  </p>
+  <p>
+	Cette option est utile quand vous devez sauvegarder des ressources si 
+	un test échoue ou dansle cas d'un scénario où les résultats d'une exécution de test 
+	fournis des informations pour les autres tests.
+  </p>
+  <p>
+	Pour plus d'informations voir la page wiki du plug-in TestLink Jenkins 
+	<a href="http://wiki.jenkins-ci.org/display/JENKINS/TestLink+Plugin">
+	http://wiki.jenkins-ci.org/display/JENKINS/TestLink+Plugin</a>.
+  </p>
+  <p>
+</div>
