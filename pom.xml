@@ -52,7 +52,7 @@
 			<email>brunodepaulak@yahoo.com.br</email>
 			<timezone>-3</timezone>
 			<roles>
-				<role>Developer</role>
+				<role>developer</role>
 			</roles>
 		</developer>
 		<developer>
@@ -61,13 +61,22 @@
 			<name>Cesar Fernandes de Almeida</name>
 			<timezone>-3</timezone>
 			<roles>
-				<role>Developer</role>
+				<role>developer</role>
 			</roles>
 		</developer>
 		<developer>
 			<email>ftoumikian@april.org</email>
             <id>floreal</id>
             <name>Floreal Toumikian</name>
+            <timezone>+1</timezone>
+            <roles>
+                <role>developer</role>
+            </roles>
+		</developer>
+        <developer>
+			<email>orenault@gmail.com</email>
+            <id>orenault</id>
+            <name>Olivier Renault</name>
             <timezone>+1</timezone>
             <roles>
                 <role>developer</role>
