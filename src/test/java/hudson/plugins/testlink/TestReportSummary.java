@@ -75,17 +75,15 @@ extends junit.framework.TestCase
 	}
 	
 	/**
-	 * Tests printDifference() method.
+	 * Tests getPlusSignal() method.
 	 */
-	public void testPrintDifference()
+	public void getPlusSignal()
 	{
-		StringBuilder builder = new StringBuilder();
-		ResultsSummary.printDifference(1, 0, builder);
-		assertEquals( builder.toString(), " (+1)" );
+		String plusSignal = ResultsSummary.getPlusSignal(1, 0);
+		assertEquals( plusSignal, " (+1)" );
 		
-		builder = new StringBuilder();
-		ResultsSummary.printDifference(0, 1, builder);
-		assertEquals( builder.toString(), "" );
+		plusSignal = ResultsSummary.getPlusSignal(0, 1);
+		assertEquals( plusSignal, "" );
 	}
 	
 	/**
@@ -112,7 +110,7 @@ extends junit.framework.TestCase
 		
 		String reportSummary = ResultsSummary.createReportSummary(report, null);
 		assertNotNull(reportSummary);
-		assertEquals(reportSummary, "<p><b>TestLink build ID: 1</b></p><p><b>TestLink build name: My build</b></p><p><a href=\"testLinkResult\">Total of 3 tests.</a> Where 1 tests passed, 1 tests failed and 1 tests were blocked.</p>");
+		assertEquals(reportSummary, "<p><b>TestLink build ID: 1</b></p><p><b>TestLink build name: My build</b></p><p><a href=\"testLinkResult\">Total of 3 tests</a>. Where 1 passed, 1 failed, 1 were blocked and 0 were not executed.</p>");
 	}
 	
 	/**
@@ -132,10 +130,12 @@ extends junit.framework.TestCase
 		TestCase testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 1, 1, false, null, 1, 1, null, null, ExecutionStatus.PASSED );
 		TestCase testCase2 = new TestCase(2, "tc2", 2, 2, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 2, 2, false, null, 2, 2, null, null, ExecutionStatus.FAILED );
 		TestCase testCase3 = new TestCase(3, "tc3", 3, 3, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 3, 3, false, null, 3, 3, null, null, ExecutionStatus.BLOCKED );
+		TestCase testCase4 = new TestCase(4, "tc4", 4, 4, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 4, 4, false, null, 4, 4, null, null, ExecutionStatus.NOT_RUN );
 		
 		report.addTestCase( testCase1 );
 		report.addTestCase( testCase2 );
 		report.addTestCase( testCase3 );
+		report.addTestCase( testCase4 );
 		
 		TestLinkReport previous = new TestLinkReport();
 		previous.setBuild(build);
@@ -147,7 +147,7 @@ extends junit.framework.TestCase
 		
 		String reportSummary = ResultsSummary.createReportSummary(report, previous);
 		assertNotNull(reportSummary);
-		assertEquals(reportSummary, "<p><b>TestLink build ID: 1</b></p><p><b>TestLink build name: My build</b></p><p><a href=\"testLinkResult\">Total of 3 (+1) tests.</a> Where 1 tests passed, 1 tests failed and 1 (+1) tests were blocked.</p>");
+		assertEquals(reportSummary, "<p><b>TestLink build ID: 1</b></p><p><b>TestLink build name: My build</b></p><p><a href=\"testLinkResult\">Total of 4 (+2) tests</a>. Where 1 passed, 1 failed, 1 (+1) were blocked and 1 (+1) were not executed.</p>");
 	}
 	
 	/**
@@ -167,10 +167,12 @@ extends junit.framework.TestCase
 		TestCase testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 1, 1, false, null, 1, 1, null, null, ExecutionStatus.PASSED );
 		TestCase testCase2 = new TestCase(2, "tc2", 2, 2, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 2, 2, false, null, 2, 2, null, null, ExecutionStatus.FAILED );
 		TestCase testCase3 = new TestCase(3, "tc3", 3, 3, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 3, 3, false, null, 3, 3, null, null, ExecutionStatus.BLOCKED );
+		TestCase testCase4 = new TestCase(4, "tc4", 4, 4, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 4, 4, false, null, 4, 4, null, null, ExecutionStatus.NOT_RUN );
 		
 		report.addTestCase( testCase1 );
 		report.addTestCase( testCase2 );
 		report.addTestCase( testCase3 );
+		report.addTestCase( testCase4 );
 		
 		TestLinkReport previous = new TestLinkReport();
 		previous.setBuild(build);
@@ -194,6 +196,9 @@ extends junit.framework.TestCase
 "</tr>\n" +
 "<tr>\n" +
 "<td>3</td><td>3</td><td>tc3</td><td>3</td><td><span style='color: yellow'>Blocked</span></td>\n" +
+"</tr>\n" +
+"<tr>\n" +
+"<td>4</td><td>4</td><td>tc4</td><td>4</td><td><span style='color: gray'>Not Run</span></td>\n" +
 "</tr>\n" +
 "</table>";
 		

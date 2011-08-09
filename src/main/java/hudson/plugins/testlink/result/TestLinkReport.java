@@ -169,6 +169,22 @@ implements Serializable
 		}
 		return totalBlocked;
 	}
+	
+	/**
+	 * @return number of not run tests.
+	 */
+	public Integer getTestsNotRun() 
+	{
+		int totalNotRun = 0;
+		for(TestCase testCase : this.testCases.values() )
+		{
+			if ( testCase.getExecutionStatus() == ExecutionStatus.NOT_RUN )
+			{
+				totalNotRun = totalNotRun + 1;
+			}
+		}
+		return totalNotRun;
+	}
 
 	/**
 	 * Verifies if there are any test cases that were marked as BLOCKED during 
@@ -208,14 +224,17 @@ implements Serializable
 				originalTestCase.setExecutionStatus( wrappedTestCase.getExecutionStatus() );
 			}
 		}
-	}	
-	
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString()
 	{
 		return "TestLinkReport [build=" + build + ", testPlan=" + testPlan
 				+ ", testProject=" + testProject + ", testCases=" + testCases
 				+ "]";
-	}
-
+	}	
+	
 }

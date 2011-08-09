@@ -61,37 +61,26 @@ public class ResultsSummary
 		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildID(testLinkReport.getBuild().getId())+"</b></p>");
 		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildName(testLinkReport.getBuild().getName())+"</b></p>");
 		builder.append("<p><a href=\"" + TestLinkBuildAction.URL_NAME + "\">");
-        builder.append( Messages.ReportSummary_Summary_TotalOf( testLinkReport.getTestsTotal() ) );
-        if(previous != null){
-            printDifference(
-            		testLinkReport.getTestsTotal(),
-            		previous.getTestsTotal(), 
-            		builder);
-        }
-        builder.append( " " +  Messages.ReportSummary_Summary_Tests() );
-        builder.append("</a>");
-        builder.append( " " + Messages.ReportSummary_Summary_Where( testLinkReport.getTestsPassed() ) );
-        if(previous != null){
-            printDifference(
-            		testLinkReport.getTestsPassed(), 
-            		previous.getTestsPassed(), 
-            		builder);
-        }
-        builder.append( " " + Messages.ReportSummary_Summary_TestsPassed( testLinkReport.getTestsFailed() ) );
-        if(previous != null){
-            printDifference(
-            		testLinkReport.getTestsFailed(),
-            		previous.getTestsFailed(),
-            		builder);
-        }
-        builder.append( " " + Messages.ReportSummary_Summary_TestsFailed(testLinkReport.getTestsBlocked()) );
-        if(previous != null){
-            printDifference(
-            		testLinkReport.getTestsBlocked(),
-            		previous.getTestsBlocked(),
-            		builder);
-        }
-        builder.append( " " + Messages.ReportSummary_Summary_TestsBlocked() );
+		
+		Integer total = testLinkReport.getTestsTotal();
+		Integer previousTotal = previous != null ? previous.getTestsTotal() : total;
+		Integer passed = testLinkReport.getTestsPassed();
+		Integer previousPassed = previous != null ? previous.getTestsPassed() : passed;
+		Integer failed = testLinkReport.getTestsFailed();
+		Integer previousFailed = previous != null ? previous.getTestsFailed() : failed;
+		Integer blocked = testLinkReport.getTestsBlocked();
+		Integer previousBlocked = previous != null ? previous.getTestsBlocked() : blocked;
+		Integer notRun = testLinkReport.getTestsNotRun();
+		Integer previousNotRun = previous != null ? previous.getTestsNotRun() : notRun;
+		
+		builder.append( Messages.ReportSummary_Summary_Text(
+			 total + getPlusSignal(total, previousTotal), 
+			 passed + getPlusSignal(passed, previousPassed), 
+			 failed + getPlusSignal(failed, previousFailed), 
+			 blocked + getPlusSignal(blocked, previousBlocked), 
+			 notRun + getPlusSignal(notRun, previousNotRun)
+		) );
+		
         builder.append("</p>");
 		
 		return builder.toString();
@@ -151,18 +140,17 @@ public class ResultsSummary
 	 * @param previous Previous value
 	 * @param buffer StrinbBuilder that acts as a buffer
 	 */
-	protected static void printDifference(int current, int previous, StringBuilder buffer){
+	protected static String getPlusSignal(int current, int previous){
 		int difference = current - previous;
         
 		if(difference > 0)
         {
-			buffer.append(" (");
-            
-			buffer.append('+');
-			
-			buffer.append(difference);
-	        buffer.append(")");
+			return " (+"+difference+")";
         }
+		else
+		{
+			return "";
+		}
         
     }
 
