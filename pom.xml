@@ -12,7 +12,7 @@
 
 	<artifactId>testlink</artifactId>
 	<name>Jenkins TestLink Plugin</name>
-	<version>2.6-SNAPSHOT</version>
+	<version>2.5.1-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<description>This plug-in integrates Jenkins to TestLink</description>
 	
