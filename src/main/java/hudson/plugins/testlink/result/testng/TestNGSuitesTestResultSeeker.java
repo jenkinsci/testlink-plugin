@@ -79,8 +79,8 @@ extends AbstractTestNGTestResultSeeker<Suite>
 	public Map<Integer, TestCaseWrapper<Suite>> seek( File directory )
 			throws TestResultSeekerException
 	{
-		// TBD: i18n
-		listener.getLogger().println( "Looking for TestNG suites test results.\n" );
+		listener.getLogger().println( Messages.Results_TestNG_LookingForTestSuites() );
+		listener.getLogger().println();
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip TestNG
 		{
@@ -247,20 +247,14 @@ extends AbstractTestNGTestResultSeeker<Suite>
 	{
 		StringBuilder notes = new StringBuilder();
 		
-		notes.append( "name: " );
-		notes.append( suite.getName() + "\n" );
-		
-		notes.append( "duration in ms: " );
-		notes.append( suite.getDurationMs() + "\n" );
-		
-		notes.append( "started at: " );
-		notes.append( suite.getStartedAt() + "\n" );
-		
-		notes.append( "finished at: " );
-		notes.append( suite.getFinishedAt() + "\n" );
-		
-		notes.append( "number of tests: " );
-		notes.append( suite.getTests().size() + "\n" );
+		notes.append( 
+				Messages.Results_TestNG_NotesForSuite(
+						suite.getName(), 
+						suite.getDurationMs(), 
+						suite.getStartedAt(), 
+						suite.getFinishedAt(), suite.getTests().size() 
+				)
+		);
 		
 		return notes.toString();
 	}

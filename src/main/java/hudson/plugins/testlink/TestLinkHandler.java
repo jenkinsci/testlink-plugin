@@ -123,28 +123,13 @@ public class TestLinkHandler
 		// Creating Build or Retrieving existing one
 		this.build = api.createBuild( this.testPlan.getId(), buildName, buildNotes);
 		
-		// TBD: i18n
-		listener.getLogger().println( "Using TestLink Test Project: ["+this.testProject.getName()+"], ID: ["+this.testProject.getId()+"]." );
-		listener.getLogger().println( "Using TestLink Test Plan: ["+this.testPlan.getName()+"], ID: ["+this.testPlan.getId()+"]." );
-		listener.getLogger().println( "Using TestLink Build: ["+this.build.getName()+"], ID: ["+this.build.getId()+"]." );
+		listener.getLogger().println(Messages.TestLinkBuilder_InfoTestProject(this.testProject.getName(), this.testProject.getId()));
+		listener.getLogger().println(Messages.TestLinkBuilder_InfoTestPlan(this.testPlan.getName(), this.testPlan.getId()));
+		listener.getLogger().println(Messages.TestLinkBuilder_InfoBuild(this.build.getName(), this.build.getId()));
 		
 		listener.getLogger().println();
 	}
 
-	/**
-	 * Finds automated test cases for a given Test Plan name. First it will 
-	 * retrieve the Test Project, Test Plan and Build from TestLink. A new Build 
-	 * will be created if there is no Build with this name.
-	 * 
-	 * @param testProjectName the name of the Test Project
-	 * @param testPlanName the name of the Test Plan
-	 * @param buildName the name of the Build
-	 * @param buildNotes the notes for the Build
-	 * @param customFieldsNames array with the name of the custom fields to be retrieved from TestLink and injected into the Test Cases
-	 * @return array of Test Cases with Execution Type equals Automated
-	 * @throws TestLinkAPIException
-	 */
-	
 	/**
 	 * Updates the test cases status for a list of TestResult's. Besides 
 	 * updating the status this method also uploads the attachments of the 
@@ -167,7 +152,7 @@ public class TestLinkHandler
 				TestCase testCase = testResult.getTestCase();
 				if ( testCase.getExecutionStatus() == null || testCase.getExecutionStatus() == ExecutionStatus.NOT_RUN )
 				{
-					listener.getLogger().println( "Test case " + testCase.getName() + " execution status is \"Not Run\" and won't be updated in TestLink!" );
+					listener.getLogger().println(Messages.TestLinkBuilder_Update_NotRunStatusWarning(testCase.getName()));
 					continue;
 				}
 				
@@ -260,8 +245,8 @@ public class TestLinkHandler
 				null, 
 				ExecutionType.AUTOMATED, 
 				null);			
-		
-		listener.getLogger().println( "Found ["+testCases.length+"] TestLink Automated Test Cases." );
+
+		listener.getLogger().println( Messages.TestLinkBuilder_ShowFoundAutomatedTestCases(testCases.length) );
 		
 		this.setProjectIDExecutionStatusAndCustomFields( testCases, customFieldsNames );
 		

@@ -90,8 +90,8 @@ extends TestResultSeeker<TestSet>
 	public Map<Integer, TestCaseWrapper<TestSet>> seek( File directory )
 			throws TestResultSeekerException
 	{
-		// TBD: i18n
-		listener.getLogger().println( "Looking for TAP test sets test results.\n" );
+		listener.getLogger().println( Messages.Results_TAP_LookingForTestSets() );
+		listener.getLogger().println();
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip TAP
 		{

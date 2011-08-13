@@ -79,8 +79,8 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 	public Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> seek( File directory )
 			throws TestResultSeekerException
 	{
-		// TBD: i18n
-		listener.getLogger().println( "Looking for TestNG classes test results.\n" );
+		listener.getLogger().println( Messages.Results_TestNG_LookingForTestClasses() );
+		listener.getLogger().println();
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip TestNG
 		{
@@ -311,51 +311,31 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 	{
 		StringBuilder notes = new StringBuilder();
 		
-		notes.append( "name: " );
-		notes.append( suite.getName() + "\n" );
-		
-		notes.append( "duration in ms: " );
-		notes.append( suite.getDurationMs() + "\n" );
-		
-		notes.append( "started at: " );
-		notes.append( suite.getStartedAt() + "\n" );
-		
-		notes.append( "finished at: " );
-		notes.append( suite.getFinishedAt() + "\n" );
-		
-		notes.append( "number of tests: " );
-		notes.append( suite.getTests().size() + "\n" );
-		
-		notes.append( "---------------\n" );
-		
-		notes.append( "class name: " );
-		notes.append( clazz.getName() + "\n" );
-		
-		notes.append( "number of methods: " );
-		notes.append( clazz.getTestMethods().size() + "\n" );
+		notes.append( 
+				Messages.Results_TestNG_NotesForSuiteAndClass(
+						suite.getName(), 
+						suite.getDurationMs(), 
+						suite.getStartedAt(), 
+						suite.getFinishedAt(), suite.getTests().size(), 
+						clazz.getName(), 
+						clazz.getTestMethods().size()
+				)
+		);
 		
 		for( TestMethod method : clazz.getTestMethods() )
 		{
-			notes.append( "  name: " );
-			notes.append( method.getName() + "\n" );
 			
-			notes.append( "  config?: " );
-			notes.append( method.getIsConfig() + "\n" );
-			
-			notes.append( "  signature: " );
-			notes.append( method.getSignature() + "\n" );
-			
-			notes.append( "  status: " );
-			notes.append( method.getStatus() + "\n" );
-			
-			notes.append( "  duration in ms: " );
-			notes.append( method.getDurationMs() + "\n" );
-			
-			notes.append( "  started at: " );
-			notes.append( method.getStartedAt() + "\n" );
-			
-			notes.append( "  finished at: " );
-			notes.append( method.getFinishedAt() + "\n" );
+			notes.append(
+					Messages.Results_TestNG_NotesForMethods(
+						method.getName(), 
+						method.getIsConfig(), 
+						method.getSignature(), 
+						method.getStatus(), 
+						method.getDurationMs(), 
+						method.getStartedAt(), 
+						method.getFinishedAt()
+					)
+			);
 		}
 		
 		return notes.toString();

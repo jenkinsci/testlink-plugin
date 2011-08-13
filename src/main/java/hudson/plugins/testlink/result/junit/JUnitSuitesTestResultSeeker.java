@@ -80,8 +80,8 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 	public Map<Integer, TestCaseWrapper<TestSuite>> seek( File directory )
 			throws TestResultSeekerException
 	{
-		// TBD: i18n
-		listener.getLogger().println( "Looking for JUnit test suites test results.\n" );
+		listener.getLogger().println( Messages.Results_JUnit_LookingForTestSuites() );
+		listener.getLogger().println();
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip JUnit
 		{
@@ -268,32 +268,18 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 	{
 		StringBuilder notes = new StringBuilder();
 		
-		notes.append( "hostname: " );
-		notes.append( testSuite.getHostname() + "\n" );
-		
-		notes.append( "name: " );
-		notes.append( testSuite.getName() + "\n" );
-		
-		notes.append( "system err: " );
-		notes.append( testSuite.getSystemErr() + "\n" );
-		
-		notes.append( "system out: " );
-		notes.append( testSuite.getSystemOut() + "\n" );
-		
-		notes.append( "tests: " );
-		notes.append( testSuite.getTests()+ "\n" );
-		
-		notes.append( "time: " );
-		notes.append( testSuite.getTime()+ "\n" );
-		
-		notes.append( "timestamp: " );
-		notes.append( testSuite.getTimestamp() + "\n" );
-		
-		notes.append( "errors: " );
-		notes.append( testSuite.getErrors()+ "\n" );
-		
-		notes.append( "failures: " );
-		notes.append( testSuite.getFailures() + "\n" );
+		notes.append(
+				Messages.Results_JUnit_NotesForTestSuite(
+						testSuite.getHostname(), 
+						testSuite.getName(), 
+						testSuite.getSystemErr(), 
+						testSuite.getSystemOut(), 
+						testSuite.getTests(), 
+						testSuite.getTime(), 
+						testSuite.getTimestamp(), 
+						testSuite.getErrors(), 
+						testSuite.getFailures())
+		);
 		
 		return notes.toString();
 	}

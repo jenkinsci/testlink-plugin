@@ -37,6 +37,7 @@ import java.util.StringTokenizer;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.types.FileSet;
 
@@ -158,7 +159,7 @@ implements Serializable
 				DirectoryScanner ds = fs.getDirectoryScanner();
 				fileNames = ds.getIncludedFiles();
 			}
-			catch ( Exception e ) // TBD: find out which exception is thrown
+			catch ( BuildException e ) 
 			{
 				e.printStackTrace( listener.getLogger() );
 				throw new IOException( Messages.TestLinkBuilder_Scanner_FailedToOpenBaseDirectory(e.getMessage()), e );

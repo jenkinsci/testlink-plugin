@@ -24,6 +24,8 @@
 package hudson.plugins.testlink.parser;
 
 
+import hudson.plugins.testlink.util.Messages;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -80,23 +82,23 @@ implements Serializable
 	{
 		FileInputStream fileInputStream = null;
 		T 				resultingObject = null;
-		
+
 		try
 		{
 			fileInputStream = new FileInputStream( file );
 			resultingObject = this.parse( fileInputStream );
 			if ( resultingObject == null )
 			{
-				throw new ParserException("Invalid " + getName() + " file: " + file.getAbsolutePath());
+				throw new ParserException(Messages.TestLinkBuilder_Parser_InvalidFile( getName(), file.getAbsolutePath()));
 			}
 		} 
 		catch (FileNotFoundException e) 
 		{
-			throw new ParserException("File not found: '" + file + "'.", e);
+			throw new ParserException(Messages.TestLinkBuilder_Parser_FileNotFound(file), e);
 		}
 		catch ( Throwable t )
 		{
-			throw new ParserException("Unkown internal error: " + t.getMessage(), t);
+			throw new ParserException(Messages.TestLinkBuilder_Parser_UnknownError( t.getMessage() ), t);
 		}
 		finally
 		{
@@ -108,7 +110,7 @@ implements Serializable
 				} 
 				catch (IOException e) 
 				{
-					throw new ParserException("Failed to close input stream.", e);
+					throw new ParserException(Messages.TestLinkBuilder_Parser_FailedToCloseFile(), e);
 				}
 			}
 		}

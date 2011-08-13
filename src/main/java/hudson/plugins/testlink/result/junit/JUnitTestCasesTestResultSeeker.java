@@ -89,8 +89,8 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 	public Map<Integer, TestCaseWrapper<TestCase>> seek( File directory ) 
 	throws TestResultSeekerException
 	{
-		// TBD: i18n
-		listener.getLogger().println( "Looking for JUnit test cases test results.\n" );
+		listener.getLogger().println( Messages.Results_JUnit_LookingForTestClasses() );
+		listener.getLogger().println();
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip JUnit
 		{
@@ -321,6 +321,15 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 	protected String getJUnitNotes( TestCase testCase )
 	{
 		StringBuilder notes = new StringBuilder();
+		
+		notes.append( 
+				Messages.Results_JUnit_NotesForTestCase(
+						testCase.getName(), 
+						testCase.getClassName(), 
+						testCase.getErrors().size(), 
+						testCase.getFailures().size(), 
+						testCase.getTime())
+		);
 		
 		notes.append( "name: " );
 		notes.append( testCase.getName()+ "\n" );
