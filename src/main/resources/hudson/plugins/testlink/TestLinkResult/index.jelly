@@ -30,6 +30,10 @@
 	        </tr>
 	        
 	        <tr>
+            <td>${%Not Run}: </td><td><b>${it.report.testsNotRun}</b></td>
+            </tr>
+	        
+	        <tr>
 	        <td>${%Total}: </td><td><b>${it.report.testsTotal}</b></td>
 	        </tr>
 			</table>

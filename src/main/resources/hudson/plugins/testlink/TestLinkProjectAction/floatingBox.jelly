@@ -1,15 +1,9 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:local="local">
     <j:if test="${from.isDisplayGraph()}">
-	    <div align="right">
-          <p/>
-		  <div class="test-trend-caption">
-		    ${%TestLinkTrend}
-		  </div>
-		  <div>
-		    <a href="${from.urlName}/">       
-            	<img src="${from.urlName}/graph"/>
-            </a> 
-		  </div>
-	   	</div>
+	    <div class="test-trend-caption">
+         ${from.graphName}
+        </div>
+        <j:set var="relativeUrlPath" value="${from.urlName}/"/>
+        <img src="${relativeUrlPath}graph" lazymap="${relativeUrlPath}graphMap" alt="[Test result trend chart]"/>
 	</j:if>
 </j:jelly>

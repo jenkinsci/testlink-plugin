@@ -25,13 +25,16 @@ package hudson.plugins.testlink;
 
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.plugins.testlink.util.Messages;
+import hudson.plugins.testlink.result.TestLinkReport;
 import hudson.util.ChartUtil;
-import hudson.util.Graph;
+import hudson.util.DataSetBuilder;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.jfree.chart.JFreeChart;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
@@ -43,31 +46,28 @@ public class TestLinkProjectAction
 extends AbstractTestLinkProjectAction
 {
 
-	private static final long serialVersionUID = 5600270062198355080L;
-	
 	private AbstractProject<?, ?> project;
+	
+	/**
+	 * Used to figure out if we need to regenerate the graphs or not. Only used
+	 * in newGraphNotNeeded() method. Key is the request URI and value is the
+	 * number of builds for the project.
+	 */
+	private transient Map<String, Integer> requestMap = new HashMap<String, Integer>();
 
 	public TestLinkProjectAction(AbstractProject<?, ?> project)
 	{
 		this.project = project;
 	}
 	
-	/**
-	 * Checks if it should display graph.
-	 * 
-	 * @return <code>true</code> if it should display graph and 
-	 * 		   <code>false</code> otherwise.
-	 */
-	public final boolean isDisplayGraph()
+	public AbstractProject<?, ?> getProject()
 	{
-		Boolean displayGraph = Boolean.FALSE;
-		
-		if (project.getBuilds().size() > 0)
-		{
-			displayGraph = Boolean.TRUE;
-		}
-
-		return displayGraph;
+		return this.project;
+	}
+	
+	protected Class<TestLinkBuildAction> getBuildActionClass()
+	{
+		return TestLinkBuildAction.class;
 	}
 	
 	/**
@@ -82,7 +82,7 @@ extends AbstractTestLinkProjectAction
 		TestLinkBuildAction action = null;
 		if ( lastBuild != null )
 		{
-			action = lastBuild.getAction( TestLinkBuildAction.class );
+			action = lastBuild.getAction( getBuildActionClass() );
 		}
 		return action;
 	}
@@ -97,13 +97,13 @@ extends AbstractTestLinkProjectAction
 	{
 		AbstractBuild<?, ?> lastBuild = (AbstractBuild<?, ?>) project.getLastBuild();
 		while (lastBuild != null
-				&& lastBuild.getAction(TestLinkBuildAction.class) == null)
+				&& lastBuild.getAction( getBuildActionClass() ) == null)
 		{
 			lastBuild = lastBuild.getPreviousBuild();
 		}
 		return lastBuild;
 	}
-
+	
 	/**
 	 * 
 	 * Show CCM html report f the latest build. If no builds are associated 
@@ -133,43 +133,150 @@ extends AbstractTestLinkProjectAction
 					TestLinkBuildAction.URL_NAME) );
 		}
 	}
-
-	/**
-	 * Sets TestLink trend graph in the response.
-	 * 
-	 * @param request Request
-	 * @param response Response
-	 * @throws IOException
-	 */
-	public void doGraph( StaplerRequest request, StaplerResponse response )
+	
+	public void doGraph( final StaplerRequest req, StaplerResponse res )
 			throws IOException
 	{
 		if (ChartUtil.awtProblemCause != null) 
 		{
-			response.sendRedirect2(request.getContextPath() + "/images/headless.png");
+			res.sendRedirect2(req.getContextPath() + "/images/headless.png");
 			return;
 		}
 		
-		AbstractBuild<?, ?> lastCompletedBuild = project.getLastCompletedBuild();
-		
-		if ( lastCompletedBuild != null )
+		if (newGraphNotNeeded(req, res))
 		{
-		
-			Calendar t = lastCompletedBuild.getTimestamp();
-	
-			if ( request.checkIfModified(t, response) )
-			{
-				return;
-			}
-			
-			Graph g = new TestLinkGraph(
-					project.getLastBuild(), 
-					TestLinkGraphHelper.createDataSetForProject(this.project), 
-					Messages.ChartUtil_NumberOfTestCases(),
-					Messages.ChartUtil_BuildNumber());
-			g.doPng( request, response );
-		
+			return;
 		}
+		
+		final DataSetBuilder<String, ChartUtil.NumberOnlyBuildLabel> dataSetBuilder = new DataSetBuilder<String, ChartUtil.NumberOnlyBuildLabel>();
+
+		populateDataSetBuilder(dataSetBuilder);
+		new hudson.util.Graph(-1, getGraphWidth(), getGraphHeight())
+		{
+			protected JFreeChart createGraph()
+			{
+				return GraphHelper.createChart(req, dataSetBuilder.build());
+			}
+		}.doPng(req, res);
+	}
+	
+	public void doGraphMap( final StaplerRequest req, StaplerResponse rsp )
+			throws IOException
+	{
+		if (newGraphNotNeeded(req, rsp))
+		{
+			return;
+		}
+
+		final DataSetBuilder<String, ChartUtil.NumberOnlyBuildLabel> dataSetBuilder = new DataSetBuilder<String, ChartUtil.NumberOnlyBuildLabel>();
+
+		// TODO: optimize by using cache
+		populateDataSetBuilder(dataSetBuilder);
+		new hudson.util.Graph(-1, getGraphWidth(), getGraphHeight())
+		{
+			protected JFreeChart createGraph()
+			{
+				return GraphHelper.createChart(req, dataSetBuilder.build());
+			}
+		}.doMap(req, rsp);
+	}
+	
+	/**
+	 * Checks if it should display graph.
+	 * 
+	 * @return <code>true</code> if it should display graph and 
+	 * 		   <code>false</code> otherwise.
+	 */
+	public final boolean isDisplayGraph()
+	{
+		return project.getBuilds().size() > 0;
+	}
+	
+	/**
+	 * If number of builds hasn't changed and if checkIfModified() returns true,
+	 * no need to regenerate the graph. Browser should reuse it's cached image
+	 * 
+	 * @param req
+	 * @param rsp
+	 * @return true, if new image does NOT need to be generated, false otherwise
+	 */
+	private boolean newGraphNotNeeded( final StaplerRequest req,
+			StaplerResponse rsp )
+	{
+		Calendar t = getProject().getLastCompletedBuild().getTimestamp();
+		Integer prevNumBuilds = requestMap.get(req.getRequestURI());
+		int numBuilds = getProject().getBuilds().size();
+
+		// change null to 0
+		prevNumBuilds = prevNumBuilds == null ? 0 : prevNumBuilds;
+		if (prevNumBuilds != numBuilds)
+		{
+			requestMap.put(req.getRequestURI(), numBuilds);
+		}
+
+		if (requestMap.keySet().size() > 10)
+		{
+			// keep map size in check
+			requestMap.clear();
+		}
+
+		if (prevNumBuilds == numBuilds && req.checkIfModified(t, rsp))
+		{
+			/*
+			 * checkIfModified() is after '&&' because we want it evaluated only
+			 * if number of builds is different
+			 */
+			return true;
+		}
+
+		return false;
+	}
+	
+	protected void populateDataSetBuilder(
+			DataSetBuilder<String, ChartUtil.NumberOnlyBuildLabel> dataset )
+	{
+
+		for (AbstractBuild<?, ?> build = getProject().getLastBuild(); build != null; build = build
+				.getPreviousBuild())
+		{
+			ChartUtil.NumberOnlyBuildLabel label = new ChartUtil.NumberOnlyBuildLabel(
+					build);
+			TestLinkBuildAction action = build.getAction(getBuildActionClass());
+			if (action != null)
+			{
+				TestLinkResult result = action.getResult();
+				TestLinkReport report = result.getReport();
+
+				dataset.add(report.getTestsBlocked(),
+						"Blocked", label);
+				dataset.add(report.getTestsFailed(), "Failed",
+						label);
+				dataset.add(report.getTestsNotRun(),
+						"Not Run", label);
+				dataset.add(report.getTestsPassed(), "Passed",
+						label);
+			}
+		}
+	}
+
+	/**
+	 * Getter for property 'graphWidth'.
+	 * 
+	 * @return Value for property 'graphWidth'.
+	 */
+	public int getGraphWidth()
+	{
+		return 500;
+	}
+
+	/**
+	 * Getter for property 'graphHeight'.
+	 * 
+	 * @return Value for property 'graphHeight'.
+	 */
+	public int getGraphHeight()
+	{
+		return 200;
 	}
 	
 }
