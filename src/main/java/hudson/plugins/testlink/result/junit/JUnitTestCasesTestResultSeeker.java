@@ -59,6 +59,14 @@ public class JUnitTestCasesTestResultSeeker<T extends TestCase>
 extends AbstractJUnitTestResultSeeker<TestCase>
 {
 	
+	private static final String LINE_SEPARATOR = "\n";
+	
+	private static final String NOTES_TIME_TOKEN = "time: ";
+	private static final String NOTES_FAILURES_TOKEN = "failures: ";
+	private static final String NOTS_ERRORS_TOKEN = "errors: ";
+	private static final String NOTES_CLASSNAME_TOKEN = "classname: ";
+	private static final String NOTES_NAME_TOKEN = "name: ";
+
 	private static final long serialVersionUID = 7775155353548789211L;
 
 	protected final JUnitParser parser = new JUnitParser();
@@ -132,8 +140,8 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 	{
 		for ( int i = 0 ; i < junitReports.length ; ++i )
 		{
-			listener.getLogger().println( Messages.Results_JUnit_Parsing( junitReports[i] ) );
-			listener.getLogger().println();
+			//listener.getLogger().println( Messages.Results_JUnit_Parsing( junitReports[i] ) );
+			//listener.getLogger().println();
 			
 			final File junitFile = new File(directory, junitReports[i]);
 			
@@ -148,9 +156,9 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 			}
 			catch ( ParserException e )
 			{
-				listener.getLogger().println( Messages.Results_JUnit_ParsingFail(junitFile, e.getMessage() ) );
+				//listener.getLogger().println( Messages.Results_JUnit_ParsingFail(junitFile, e.getMessage() ) );
 				e.printStackTrace( listener.getLogger() );
-				listener.getLogger().println();
+				//listener.getLogger().println();
 			}
 		}
 	}
@@ -160,8 +168,8 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 	 */
 	protected void processJUnitSuite( TestSuite junitSuite, File junitFile )
 	{
-		listener.getLogger().println( Messages.Results_JUnit_VerifyingJUnitSuite( junitSuite.getName(), junitSuite.getTests(), junitSuite.getFailures(), junitSuite.getErrors() ) );
-		listener.getLogger().println();
+		//listener.getLogger().println( Messages.Results_JUnit_VerifyingJUnitSuite( junitSuite.getName(), junitSuite.getTests(), junitSuite.getFailures(), junitSuite.getErrors() ) );
+		//listener.getLogger().println();
 		
 		final List<TestCase> testCases = junitSuite.getTestCases();
 		
@@ -183,19 +191,19 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 			final Collection<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
 				this.report.getTestCases().values();
 			
-			listener.getLogger().println();
-			listener.getLogger().println( Messages.Results_JUnit_LookingForTestResults( keyCustomFieldName, testClassOrTestName ) );
-			listener.getLogger().println();
+			//listener.getLogger().println();
+			//listener.getLogger().println( Messages.Results_JUnit_LookingForTestResults( keyCustomFieldName, testClassOrTestName ) );
+			//listener.getLogger().println();
 			
 			final Iterator<br.eti.kinoshita.testlinkjavaapi.model.TestCase> iter = testLinkTestCases.iterator();
 			while( iter.hasNext() )
 			{
 				final br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase = iter.next();
-				listener.getLogger().println( Messages.Results_JUnit_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
+				//listener.getLogger().println( Messages.Results_JUnit_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
 				
 				this.findTestResults( junitTestCase, testClassOrTestName, testLinkTestCase, junitFile );
 				
-				listener.getLogger().println();
+				//listener.getLogger().println();
 			}
 		}
 	}
@@ -206,7 +214,7 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 	protected void findTestResults( TestCase junitTestCase, String testClassOrTestName, br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase, File junitFile ) 
 	{
 		final List<CustomField> customFields = testLinkTestCase.getCustomFields();
-		listener.getLogger().println( Messages.Results_JUnit_ListOfCustomFields( customFields ) );
+		//listener.getLogger().println( Messages.Results_JUnit_ListOfCustomFields( customFields ) );
 		
 		final CustomField keyCustomField = this.getKeyCustomField( customFields );
 		if ( keyCustomField != null )
@@ -250,8 +258,8 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 	{
 		final TestCaseWrapper<TestCase> temp = this.results.get(testResult.getId());
 		
-		TestCase origin = testResult.getOrigin();
-		listener.getLogger().println( Messages.Results_JUnit_TestResultsFound( testResult.getName(), testResult.getId(), origin, origin.getName(), testResult.getTestCase().getExecutionStatus().toString() ) );
+		//TestCase origin = testResult.getOrigin();
+		//listener.getLogger().println( Messages.Results_JUnit_TestResultsFound( testResult.getName(), testResult.getId(), origin, origin.getName(), testResult.getTestCase().getExecutionStatus().toString() ) );
 		
 		if ( temp == null )
 		{
@@ -331,20 +339,23 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 						testCase.getTime())
 		);
 		
-		notes.append( "name: " );
-		notes.append( testCase.getName()+ "\n" );
+		notes.append( NOTES_NAME_TOKEN );
+		notes.append( testCase.getName() );
+		notes.append( NOTES_CLASSNAME_TOKEN );
+		notes.append( testCase.getClassName() );
+		notes.append( LINE_SEPARATOR );
 		
-		notes.append( "classname: " );
-		notes.append( testCase.getClassName() + "\n" );
+		notes.append( NOTS_ERRORS_TOKEN );
+		notes.append( testCase.getErrors().size() );
+		notes.append( LINE_SEPARATOR );
 		
-		notes.append( "errors: " );
-		notes.append( testCase.getErrors().size() + "\n" );
+		notes.append( NOTES_FAILURES_TOKEN );
+		notes.append( testCase.getFailures().size() );
+		notes.append( LINE_SEPARATOR );
 		
-		notes.append( "failures: " );
-		notes.append( testCase.getFailures().size() + "\n" );
-		
-		notes.append( "time: " );
-		notes.append( testCase.getTime()+ "\n" );
+		notes.append( NOTES_TIME_TOKEN );
+		notes.append( testCase.getTime() );
+		notes.append( LINE_SEPARATOR );
 		
 		return notes.toString();
 	}

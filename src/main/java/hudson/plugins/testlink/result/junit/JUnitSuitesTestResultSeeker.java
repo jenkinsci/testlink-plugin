@@ -123,8 +123,8 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 	{
 		for ( int i = 0 ; i < junitReports.length ; ++i )
 		{
-			listener.getLogger().println( Messages.Results_JUnit_Parsing( junitReports[i] ) );
-			listener.getLogger().println();
+			//listener.getLogger().println( Messages.Results_JUnit_Parsing( junitReports[i] ) );
+			//listener.getLogger().println();
 			
 			final File junitFile = new File(directory, junitReports[i]);
 			
@@ -139,9 +139,9 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 			}
 			catch ( ParserException e )
 			{
-				listener.getLogger().println( Messages.Results_JUnit_ParsingFail(junitFile, e.getMessage() ) );
+				//listener.getLogger().println( Messages.Results_JUnit_ParsingFail(junitFile, e.getMessage() ) );
 				e.printStackTrace( listener.getLogger() );
-				listener.getLogger().println();
+				//listener.getLogger().println();
 			}
 		}
 	}
@@ -158,18 +158,18 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 			final Collection<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
 				this.report.getTestCases().values();
 			
-			listener.getLogger().println( Messages.Results_JUnit_LookingForTestResults( keyCustomFieldName, suiteName ) );
-			listener.getLogger().println();
+			//listener.getLogger().println( Messages.Results_JUnit_LookingForTestResults( keyCustomFieldName, suiteName ) );
+			//listener.getLogger().println();
 			
 			final Iterator<br.eti.kinoshita.testlinkjavaapi.model.TestCase> iter = testLinkTestCases.iterator();
 			while( iter.hasNext() )
 			{
 				final br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase = iter.next();
-				listener.getLogger().println( Messages.Results_JUnit_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
+				//listener.getLogger().println( Messages.Results_JUnit_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
 				
 				this.findTestResults( junitSuite, testLinkTestCase, junitFile );
 				
-				listener.getLogger().println();
+				//listener.getLogger().println();
 			}
 		}
 		
@@ -184,7 +184,7 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 		File junitFile )
 	{
 		final List<CustomField> customFields = testLinkTestCase.getCustomFields();
-		listener.getLogger().println( Messages.Results_JUnit_ListOfCustomFields( customFields ) );
+		//listener.getLogger().println( Messages.Results_JUnit_ListOfCustomFields( customFields ) );
 		
 		final CustomField keyCustomField = this.getKeyCustomField( customFields );
 		if ( keyCustomField != null ) 
@@ -230,8 +230,8 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 	{
 		final TestCaseWrapper<TestSuite> temp = this.results.get(testResult.getId());
 		
-		TestSuite origin = testResult.getOrigin();
-		listener.getLogger().println( Messages.Results_JUnit_TestResultsFound( testResult.getName(), testResult.getId(), origin, origin.getName(), testResult.getTestCase().getExecutionStatus().toString() ) );
+		//TestSuite origin = testResult.getOrigin();
+		//listener.getLogger().println( Messages.Results_JUnit_TestResultsFound( testResult.getName(), testResult.getId(), origin, origin.getName(), testResult.getTestCase().getExecutionStatus().toString() ) );
 		
 		if ( temp == null )
 		{

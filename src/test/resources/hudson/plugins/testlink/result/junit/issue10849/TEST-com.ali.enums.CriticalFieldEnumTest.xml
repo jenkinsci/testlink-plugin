@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" hostname="jenkins-slave2" name="com.ali.enums.CriticalFieldEnumTest" tests="3" time="2.185" timestamp="2011-08-30T17:40:33">
+  <properties>
+    <property name="distconnections" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/dist/connections" />
+    <property name="file.encoding.pkg" value="sun.io" />
+    <property name="ONQ_UPDATE_VERSION" value="" />
+    <property name="sql" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/sql" />
+    <property name="testFiles" value="./build/test" />
+    <property name="VINCIO_QUICKSVR_MINOR_VERSION" value="1" />
+    <property name="java.home" value="/home/buildsys/hudson/tools/defaultJava/jre" />
+    <property name="testetc" value="./build/etc" />
+    <property name="buildlib.basedir" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels" />
+    <property name="onqclient.src" value="../onqclient/src" />
+    <property name="STATUSSERVER_HOME" value="../statusserver" />
+    <property name="test.workflow.WorkflowMail.smtpUser" value="" />
+    <property name="publicURL" value="http://rogue:80/~buildsys" />
+    <property name="debug" value="true" />
+    <property name="java.awt.headless" value="true" />
+    <property name="ftp.password" value="valeo" />
+    <property name="ONQ_HOME" value="../onq" />
+    <property name="distarchive" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/dist/archive" />
+    <property name="testsrc" value="./test" />
+    <property name="java.endorsed.dirs" value="/home/buildsys/hudson/tools/defaultJava/jre/lib/endorsed" />
+    <property name="env.LOGNAME" value="buildsys" />
+    <property name="env.HUDSON_HOME" value="/home/buildsys/hudson" />
+    <property name="com.ali.commons.db.driver" value="oracle.jdbc.OracleDriver" />
+    <property name="sun.os.patch.level" value="unknown" />
+    <property name="java.vendor.url" value="http://java.sun.com/" />
+    <property name="env.NODE_NAME" value="jenkins-slave2" />
+    <property name="env.G_BROKEN_FILENAMES" value="1" />
+    <property name="java.version" value="1.6.0_26" />
+    <property name="test.workflow.WorkflowMail.smtpHost" value="10.1.200.176" />
+    <property name="classes" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/classes" />
+    <property name="env.NODE_LABELS" value="jenkins-slave2 linux" />
+    <property name="env.JENKINS_SERVER_COOKIE" value="a68fe8f4d44ceff00f4ae97dbca7cf5d" />
+    <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi" />
+    <property name="env.SSH_CLIENT" value="10.1.31.8 23838 22" />
+    <property name="ant.project.invoked-targets" value="clean,build,copy-dist-files,unit-tests-reporting" />
+    <property name="user.name" value="buildsys" />
+    <property name="env.LANG" value="en_US.UTF-8" />
+    <property name="env.CVS_RSH" value="ssh" />
+    <property name="testdata" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/test/data" />
+    <property name="testJavadocPath" value="/home/buildsys/public_html//trunk/test" />
+    <property name="ftp.dest.file" value="foo.log" />
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle" />
+    <property name="sun.jnu.encoding" value="UTF-8" />
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment" />
+    <property name="ONQ_MAJOR_VERSION" value="3" />
+    <property name="emma.coverage.out.file" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/../build/emma/coverage/coverage.emma" />
+    <property name="env.SSH_ASKPASS" value="/usr/libexec/openssh/gnome-ssh-askpass" />
+    <property name="env.SSH_CONNECTION" value="10.1.31.8 23838 10.1.31.24 22" />
+    <property name="ONQCLIENT_HOME" value="../onqclient" />
+    <property name="java.specification.name" value="Java Platform API Specification" />
+    <property name="disttools" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/dist/tools" />
+    <property name="user.timezone" value="" />
+    <property name="env.LESSOPEN" value="|/usr/bin/lesspipe.sh %s" />
+    <property name="path.separator" value=":" />
+    <property name="VINCIO_QUICKSVR_BUILD_VERSION" value="" />
+    <property name="javadocBase" value="/home/buildsys/public_html" />
+    <property name="distdata" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/dist/data" />
+    <property name="file.encoding" value="UTF-8" />
+    <property name="commons.etc" value="../commons/build/dist/etc" />
+    <property name="ant.file.type.buildlib" value="file" />
+    <property name="com.ali.test.integration.FILE" value="../../data/unison-test_file/hrs.150" />
+    <property name="ant.project.default-target" value="build" />
+    <property name="build" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build" />
+    <property name="lib" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/lib" />
+    <property name="env.HOME" value="/home/buildsys" />
+    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner com.ali.enums.CriticalFieldEnumTest filtertrace=true haltOnError=false haltOnFailure=false formatter=org.apache.tools.ant.taskdefs.optional.junit.SummaryJUnitResultFormatter showoutput=true outputtoformatters=true logfailedtests=true logtestlistenerevents=false formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/junit/TEST-com.ali.enums.CriticalFieldEnumTest.xml crashfile=/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/junitvmwatcher1960961708493322915.properties propsfile=/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/junit2969254038369714539.properties" />
+    <property name="env.SVN_REVISION_2" value="30166" />
+    <property name="checkstyle.out" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/checkstyle" />
+    <property name="env.SVN_REVISION_1" value="29161" />
+    <property name="ant.file" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build.xml" />
+    <property name="javadocURL" value="http://rogue:80/~buildsys/javadocs/trunk/models" />
+    <property name="commons.src" value="../commons/src" />
+    <property name="clover.out" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/clover" />
+    <property name="junit.out" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/junit" />
+    <property name="env.BUILD_TAG" value="jenkins-trunk-onqmodels-366" />
+    <property name="build.tools" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/tools" />
+    <property name="configurationserver.src" value="../configurationserver/src" />
+    <property name="java.io.tmpdir" value="/tmp" />
+    <property name="onqmodels.src" value="../onqmodels/src" />
+    <property name="bin" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/bin" />
+    <property name="statusserver.src" value="../statusserver/src" />
+    <property name="user.language" value="en" />
+    <property name="build.tools.jar" value="models-tools.jar" />
+    <property name="line.separator" value="&#xa;" />
+    <property name="ant.file.type" value="file" />
+    <property name="distributed.src" value="../distributed/src" />
+    <property name="ftp.host" value="squid" />
+    <property name="emma.coverage.dir" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/../build/emma/coverage" />
+    <property name="VINCIO_MAJOR_VERSION" value="3" />
+    <property name="env.JOB_NAME" value="trunk-onqmodels" />
+    <property name="java.vm.info" value="mixed mode" />
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+    <property name="JUNIT_RUN_DIR" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/dist" />
+    <property name="env.BUILD_URL" value="https://rogue.corp.alisolutions.com:8443/jenkins/job/trunk-onqmodels/366/" />
+    <property name="env.COPYARTIFACT_BUILD_NUMBER_TRUNK_COMMONS" value="544" />
+    <property name="ONQ_PATCH_VERSION" value="" />
+    <property name="distjar" value="models.jar" />
+    <property name="com.ali.commons.db.user" value="trunk" />
+    <property name="uiframework.src" value="../uiframework/src" />
+    <property name="TENANT" value="" />
+    <property name="java.awt.printerjob" value="sun.print.PSPrinterJob" />
+    <property name="distcache" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/dist/cache" />
+    <property name="ftp.username" value="valeo" />
+    <property name="junit.jar" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/../build/lib/junit-4.1.jar" />
+    <property name="env.HUDSON_SERVER_COOKIE" value="a68fe8f4d44ceff00f4ae97dbca7cf5d" />
+    <property name="com.ali.test.integration.TREETOP" value="../../.." />
+    <property name="debugArg2" value="-Dfoo=bar" />
+    <property name="distetc" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/dist/etc" />
+    <property name="loglevel" value="INFO" />
+    <property name="vincio.src" value="../vincio/src" />
+    <property name="debugArg1" value="-Dfoo=bar" />
+    <property name="ant.version" value="Apache Ant(TM) version 1.8.2 compiled on December 20 2010" />
+    <property name="distributed-commons.home" value="../distributed/build/dist" />
+    <property name="dialerdrivers.src" value="../dialerdrivers/src" />
+    <property name="testclasses" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/test" />
+    <property name="distributed-commons.lib" value="../distributed/build/dist/lib" />
+    <property name="emma.jar" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/../build/lib/emma.jar" />
+    <property name="env.BUILD_NUMBER" value="366" />
+    <property name="com.ali.test.integration..TEST_DURATION_MINUTES" value="5" />
+    <property name="vincioapp.src" value="../vincioapp/src" />
+    <property name="os.name" value="Linux" />
+    <property name="java.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="VINCIO_QUICKSVR_MAJOR_VERSION" value="1" />
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM" />
+    <property name="env.JOB_URL" value="https://rogue.corp.alisolutions.com:8443/jenkins/job/trunk-onqmodels/" />
+    <property name="project.sql" value="oracle.sql" />
+    <property name="java.library.path" value="/home/buildsys/hudson/tools/defaultJava/jre/lib/amd64/server:/home/buildsys/hudson/tools/defaultJava/jre/lib/amd64:/home/buildsys/hudson/tools/defaultJava/jre/../lib/amd64:/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/jre/lib/amd64/server:/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/jre/lib/amd64:/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/jre/../lib/amd64:/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib" />
+    <property name="ftp.dest.dir" value="." />
+    <property name="env.PATH" value="/home/buildsys/hudson/tools/defaultJava/bin:/usr/lib64/qt-3.3/bin:/usr/local/bin:/bin:/usr/bin" />
+    <property name="env.HUDSON_URL" value="https://rogue.corp.alisolutions.com:8443/jenkins/" />
+    <property name="ant.file.OnQ Models" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build.xml" />
+    <property name="distsql" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/dist/sql" />
+    <property name="ant.java.version" value="1.6" />
+    <property name="configurationserver.distjar" value="model-messages-all-1.0.jar" />
+    <property name="env.JENKINS_URL" value="https://rogue.corp.alisolutions.com:8443/jenkins/" />
+    <property name="basedir" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels" />
+    <property name="java.class.version" value="50.0" />
+    <property name="env.SHLVL" value="1" />
+    <property name="env.LD_LIBRARY_PATH" value="/home/buildsys/hudson/tools/defaultJava/jre/lib/amd64/server:/home/buildsys/hudson/tools/defaultJava/jre/lib/amd64:/home/buildsys/hudson/tools/defaultJava/jre/../lib/amd64:/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/jre/lib/amd64/server:/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/jre/lib/amd64:/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/jre/../lib/amd64" />
+    <property name="emma.base" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/../build/emma" />
+    <property name="ant.home" value="/home/buildsys/hudson/tools/defaultAnt" />
+    <property name="commons.lib" value="../commons/build/dist/lib" />
+    <property name="VINCIO_TOMCAT_HOME" value="/home/buildsys/dev/apache-tomcat-7.0.14" />
+    <property name="VINCIO_PATCH_VERSION" value="" />
+    <property name="mysqldriver.jar" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/../build/lib/mysql-connector-java-5.0.7-bin.jar" />
+    <property name="com.ali.commons.db.dbtype" value="oracle" />
+    <property name="build.lib" value="../build/buildlib.xml" />
+    <property name="env.JENKINS_HOME" value="/home/buildsys/hudson" />
+    <property name="releaseInfo" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/releaseInfo" />
+    <property name="sun.boot.library.path" value="/home/buildsys/hudson/tools/defaultJava/jre/lib/amd64" />
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers" />
+    <property name="emma.instr.dir" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/../build/emma/instr" />
+    <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment" />
+    <property name="env.USER" value="buildsys" />
+    <property name="com.ali.commons.db.password" value="trunk" />
+    <property name="emma.coverage.out.merge" value="true" />
+    <property name="base.dir.name" value="onqmodels" />
+    <property name="INSTALL4J_BIN" value="/tools/install4j/bin" />
+    <property name="DEBUG_SUSPEND" value="n" />
+    <property name="ONQ_MINOR_VERSION" value="3" />
+    <property name="ant.project.name" value="OnQ Models" />
+    <property name="CONFIGSERVER_HOME" value="../configurationserver" />
+    <property name="BRANCH" value="trunk" />
+    <property name="java.vm.specification.version" value="1.0" />
+    <property name="com.ali.commons.db.superpass" value="buildsys" />
+    <property name="commons.home" value="../commons/build/dist" />
+    <property name="env.NLSPATH" value="/usr/dt/lib/nls/msg/%L/%N.cat" />
+    <property name="com.ali.test.integration.BUILD_DIST" value="build/dist" />
+    <property name="com.ali.commons.db.mqport" value="60000" />
+    <property name="sun.cpu.isalist" value="" />
+    <property name="ant.file.buildlib" value="/home/buildsys/hudson/workspace/trunk-onqmodels/build/buildlib.xml" />
+    <property name="java.ext.dirs" value="/home/buildsys/hudson/tools/defaultJava/jre/lib/ext:/usr/java/packages/lib/ext" />
+    <property name="ACTIVEMQ_VERSION" value="5.5.0" />
+    <property name="VINCIO_QUICKSVR_PATCH_VERSION" value="" />
+    <property name="os.version" value="2.6.32-131.6.1.el6.x86_64" />
+    <property name="user.home" value="/home/buildsys" />
+    <property name="com.ali.commons.db.connection" value="jdbc:oracle:thin:@localhost:1521:orcl" />
+    <property name="java.vm.vendor" value="Sun Microsystems Inc." />
+    <property name="com.ali.commons.db.superuser" value="buildsys" />
+    <property name="env.COPYARTIFACT_BUILD_NUMBER_TRUNK_DISTRIBUTED" value="389" />
+    <property name="env.JAVA_HOME" value="/home/buildsys/hudson/tools/defaultJava" />
+    <property name="VINCIO_UPDATE_VERSION" value="" />
+    <property name="user.dir" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/dist" />
+    <property name="auditserver.src" value="../auditserver/src" />
+    <property name="env.XFILESEARCHPATH" value="/usr/dt/app-defaults/%L/Dt" />
+    <property name="env.MAIL" value="/var/mail/buildsys" />
+    <property name="com.ali.commons.db.connection.name" value="jdbc_connection.xml" />
+    <property name="env.PWD" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels" />
+    <property name="foo" value="bar" />
+    <property name="distlib" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/dist/lib" />
+    <property name="ftp.src.file" value="foo.log" />
+    <property name="release.dir.name" value="trunk-onqmodels" />
+    <property name="sun.cpu.endian" value="little" />
+    <property name="com.ali.test.integration.DEVTREE" value="true" />
+    <property name="project" value="models" />
+    <property name="env.QTLIB" value="/usr/lib64/qt-3.3/lib" />
+    <property name="ONQ_BUILD_VERSION" value="" />
+    <property name="ftp.src.dir" value="/tmp" />
+    <property name="distdir" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/dist" />
+    <property name="java.vm.version" value="20.1-b02" />
+    <property name="java.class.path" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/test:/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/dist:/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/dist/etc:/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/classes:/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/etc:/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/test:/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/test/data:/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels:/home/buildsys/hudson/workspace/trunk-onqmodels/build/lib/emma.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/build/lib/mysql-connector-java-5.0.7-bin.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/build/lib/junit-4.1.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/antlr-2.7.7.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/asm-2.2.3.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/asm-analysis-2.2.3.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/asm-tree-2.2.3.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/asm-util-2.2.3.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/aspectjrt.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/cglib-nodep-2.1_3.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/colt.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/commons-beanutils-1.5.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/commons-dbcp-1.2.1.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/commons-digester-1.7.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/commons-io-1.4.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/commons-lang-2.0.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/commons-logging-1.1.1.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/commons-mail.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/commons-math-1.0-RC2.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/commons-pool-1.2.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/commons-test.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/commons.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/db2jcc.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/edtftpj-pro.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/ehcache-core-2.0.1.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/expressions.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/google-collect-1.0-rc1.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/groovy-1.6.0.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/hamcrest-api-1.0.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/hamcrest-library-1.0.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/httpclient-4.0.1.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/httpcore-4.0.1.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/ibatis-2.3.4.726.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/jakarta-commons-collections-3.1.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/jmock-2.0.0.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/jmock-cglib-1.1.0.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/jmock-junit3-2.0.0.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/jmock-junit4-2.0.0.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/jtds-1.2.2.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/junit-4.1.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/log4j-1.2.14.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/mail.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/ojdbc6.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/slf4j-api-1.5.6.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/slf4j-log4j12-1.5.6.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/spring-2.5.6.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/tar.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/vtd-xml.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/xpp3-1.1.3.4.O.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/xpp3_xpath-1.1.3.4.O.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist/lib/xstream-1.2.2.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/distributed/build/dist/lib/activemq-all-5.5.0.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/distributed/build/dist/lib/cglib-nodep-2.1_3.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/distributed/build/dist/lib/distributed-commons-tools.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/distributed/build/dist/lib/distributed-commons.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/distributed/build/dist/lib/mx4j-2.1.1.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/distributed/build/dist/lib/opencsv-1.6.jar:/home/buildsys/hudson/workspace/trunk-onqmodels/commons/build/dist:/home/buildsys/hudson/tools/defaultAnt/lib/ant-launcher.jar:/home/buildsys/hudson/tools/defaultAnt/lib/ant.jar:/home/buildsys/hudson/tools/defaultAnt/lib/ant-junit.jar:/home/buildsys/hudson/tools/defaultAnt/lib/ant-junit4.jar" />
+    <property name="doc" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/javadoc" />
+    <property name="env.QTDIR" value="/usr/lib64/qt-3.3" />
+    <property name="ant.library.dir" value="/home/buildsys/hudson/tools/defaultAnt/lib" />
+    <property name="os.arch" value="amd64" />
+    <property name="distbin" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/build/dist/bin" />
+    <property name="AUDITSERVER_HOME" value="../auditserver" />
+    <property name="install.lib" value="./installlib.xml" />
+    <property name="publicHTML" value="/home/buildsys/public_html/" />
+    <property name="sun.java.launcher" value="SUN_STANDARD" />
+    <property name="VINCIO_MINOR_VERSION" value="7" />
+    <property name="testsToRun" value="**/*Test.java" />
+    <property name="emma.filter" value="com.ali.model.*,com.ali.destinations.*, com.ali.enums.*,com.ali.interfaces.*,com.ali.message.*" />
+    <property name="env.BUILD_ID" value="2011-08-30_12-38-53" />
+    <property name="ant.core.lib" value="/home/buildsys/hudson/tools/defaultAnt/lib/ant.jar" />
+    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="file.separator" value="/" />
+    <property name="onq.src" value="../onq/src" />
+    <property name="java.runtime.version" value="1.6.0_26-b03" />
+    <property name="sun.boot.class.path" value="/home/buildsys/hudson/tools/defaultJava/jre/lib/resources.jar:/home/buildsys/hudson/tools/defaultJava/jre/lib/rt.jar:/home/buildsys/hudson/tools/defaultJava/jre/lib/sunrsasign.jar:/home/buildsys/hudson/tools/defaultJava/jre/lib/jsse.jar:/home/buildsys/hudson/tools/defaultJava/jre/lib/jce.jar:/home/buildsys/hudson/tools/defaultJava/jre/lib/charsets.jar:/home/buildsys/hudson/tools/defaultJava/jre/lib/modules/jdk.boot.jar:/home/buildsys/hudson/tools/defaultJava/jre/classes" />
+    <property name="com.ali.commons.db.mqhost" value="localhost" />
+    <property name="emma.dir" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/../build/lib" />
+    <property name="env.WORKSPACE" value="/home/buildsys/hudson/workspace/trunk-onqmodels" />
+    <property name="etc" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/etc" />
+    <property name="env.QTINC" value="/usr/lib64/qt-3.3/include" />
+    <property name="user.country" value="US" />
+    <property name="env.ANT_HOME" value="/home/buildsys/hudson/tools/defaultAnt" />
+    <property name="env.EXECUTOR_NUMBER" value="0" />
+    <property name="ant.file.type.OnQ Models" value="file" />
+    <property name="env.SHELL" value="/bin/bash" />
+    <property name="src" value="/home/buildsys/hudson/workspace/trunk-onqmodels/onqmodels/src" />
+    <property name="floweditor.src" value="../floweditor/src" />
+    <property name="excludes.file" value="unit-test.excludes" />
+    <property name="java.vendor" value="Sun Microsystems Inc." />
+    <property name="javadocDir" value="/home/buildsys/public_html//javadocs/trunk/models" />
+    <property name="VINCIO_QUICKSVR_UPDATE_VERSION" value="" />
+    <property name="env.SVN_URL_2" value="https://svn.austinlogistics.com/svn/trunk/dev/onqmodels" />
+    <property name="env.SVN_URL_1" value="https://svn.austinlogistics.com/svn/trunk/dev/build" />
+    <property name="test.workflow.WorkflowMail.smtpPass" value="" />
+    <property name="testjar" value="models-test.jar" />
+    <property name="env.HUDSON_COOKIE" value="9310626b-bacc-43cc-a3c4-55bb7543b7e8" />
+    <property name="VINCIO_BUILD_VERSION" value="" />
+    <property name="java.specification.version" value="1.6" />
+    <property name="sun.arch.data.model" value="64" />
+  </properties>
+  <testcase classname="com.ali.enums.CriticalFieldEnumTest" name="testLongName" time="0.028" />
+  <testcase classname="com.ali.enums.CriticalFieldEnumTest" name="testGetPhoneIndexValue" time="0.0020" />
+  <testcase classname="com.ali.enums.CriticalFieldEnumTest" name="testToIntFromInt" time="0.0020" />
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[log4j:WARN No appenders could be found for logger (com.ali.commons.sqlmapper.LocalSqlExecutor).
+log4j:WARN Please initialize the log4j system properly.
+]]></system-err>
+</testsuite>
