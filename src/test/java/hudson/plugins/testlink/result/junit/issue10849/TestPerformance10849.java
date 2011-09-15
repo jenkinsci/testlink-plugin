@@ -39,11 +39,12 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
 
+import junit.framework.TestCase;
+
 import org.junit.Assert;
 import org.jvnet.hudson.test.Bug;
 
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
-import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**
  * Tests for issue 10849. In this issue, the user reported
@@ -52,7 +53,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
  */
 @Bug(10849)
 public class TestPerformance10849 
-extends junit.framework.TestCase
+extends TestCase
 {
 	
 	private TestResultsCallable testResultsCallable;
@@ -91,7 +92,7 @@ extends junit.framework.TestCase
 		long start = System.currentTimeMillis();
 		for( int i = 1 ; i <= 100 ; ++i )
 		{
-			TestCase tc = new TestCase();
+			br.eti.kinoshita.testlinkjavaapi.model.TestCase tc = new br.eti.kinoshita.testlinkjavaapi.model.TestCase();
 			CustomField cf = new CustomField();
 			cf.setName(KEY_CUSTOM_FIELD);
 			cf.setValue("br.eti.kinoshita.junit.SampleTest");
@@ -104,6 +105,7 @@ extends junit.framework.TestCase
 		ClassLoader cl = TestJUnitTestCaseSeeker.class.getClassLoader();
 		URL url = cl
 				.getResource("hudson/plugins/testlink/result/junit/issue10849/");
+		@SuppressWarnings("rawtypes")
 		final Map<Integer, TestCaseWrapper> wrappedTestCases = testResultsCallable.seekTestResults(new File(url.getFile()));
 		//assertTrue(found.size() == 1);
 
