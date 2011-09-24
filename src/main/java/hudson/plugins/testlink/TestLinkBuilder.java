@@ -28,6 +28,7 @@ import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.BuildListener;
+import hudson.model.EnvironmentContributingAction;
 import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.parser.testng.Suite;
 import hudson.plugins.testlink.result.TestCaseWrapper;
@@ -40,13 +41,15 @@ import hudson.plugins.testlink.result.junit.JUnitTestCasesTestResultSeeker;
 import hudson.plugins.testlink.result.tap.TAPTestResultSeeker;
 import hudson.plugins.testlink.result.testng.TestNGClassesTestResultSeeker;
 import hudson.plugins.testlink.result.testng.TestNGSuitesTestResultSeeker;
-import hudson.plugins.testlink.tasks.CommandExecutor;
 import hudson.plugins.testlink.util.Messages;
 import hudson.plugins.testlink.util.TestLinkHelper;
+import hudson.tasks.BuildStep;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -85,16 +88,16 @@ extends AbstractTestLinkBuilder
 		String testPlanName, 
 		String buildName, 
 		String customFields, 
-		String singleTestCommand, 
-		String iterativeTestCommand, 
 		String keyCustomField, 
+		List<BuildStep> singleBuildSteps, 
+		List<BuildStep> beforeIteratingAllTestCasesBuildSteps,
+		List<BuildStep> iterativeBuildSteps, 
+		List<BuildStep> afterIteratingAllTestCasesBuildSteps, 
 		Boolean transactional, 
 		Boolean failedTestsMarkBuildAsFailure, 
 		String junitXmlReportFilesPattern, 
 		String testNGXmlReportFilesPattern, 
-		String tapStreamReportFilesPattern, 
-		String beforeIteratingAllTestCasesCommand, 
-		String afterIteratingAllTestCasesCommand
+		String tapStreamReportFilesPattern
 	)
 	{
 		super(
@@ -103,16 +106,16 @@ extends AbstractTestLinkBuilder
 			testPlanName, 
 			buildName, 
 			customFields, 
-			singleTestCommand, 
-			iterativeTestCommand, 
 			keyCustomField, 
+			singleBuildSteps, 
+			beforeIteratingAllTestCasesBuildSteps, 
+			iterativeBuildSteps, 
+			afterIteratingAllTestCasesBuildSteps, 
 			transactional, 
 			failedTestsMarkBuildAsFailure, 
 			junitXmlReportFilesPattern, 
 			testNGXmlReportFilesPattern, 
-			tapStreamReportFilesPattern, 
-			beforeIteratingAllTestCasesCommand, 
-			afterIteratingAllTestCasesCommand
+			tapStreamReportFilesPattern
 		);
 	}
 	
@@ -123,11 +126,6 @@ extends AbstractTestLinkBuilder
 	
 	/**
 	 * <p>Called when the job is executed.</p>
-	 * 
-	 * <p>It downloads information from TestLink using testlink-java-api. 
-	 * The information gathered is sufficient to execute a test command 
-	 * that runs automated tests.</p>
-	 * 
 	 */
 	@Override
 	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher,
@@ -160,20 +158,14 @@ extends AbstractTestLinkBuilder
 		}
 		
 		// Sorts test cases by each execution order (this info comes from TestLink)
-		this.sortAutomatedTestCases( automatedTestCases, listener );
+		listener.getLogger().println( Messages.TestLinkBuilder_SortingTestCases() );
+		Arrays.sort( automatedTestCases, this.executionOrderComparator );
 		
 		// Execute single test command
-		this.executeSingleTestCommand( build, launcher.isUnix(), listener );
+		this.executeSingleTestCommand( build, launcher, listener );
 		
 		// Execute iterative test command for each automated test case
-		this.executeIterativeTestCommand( 
-			automatedTestCases, 
-			testLinkHandler.getTestProject(),
-			testLinkHandler.getTestPlan(), 
-			testLinkHandler.getBuild(), 
-			build, 
-			launcher.isUnix(), 
-			listener );
+		this.executeIterativeTestCommand( automatedTestCases, testLinkHandler.getTestProject(), testLinkHandler.getTestPlan(), testLinkHandler.getBuild(), build, launcher, listener );
 		
 		// This report is used to generate the graphs and to store the list of 
 		// test cases with each found status.
@@ -228,7 +220,169 @@ extends AbstractTestLinkBuilder
 	}
 
 	/**
-	 * Inits a test results callable with JUnit, TestNG and TAP seekers (suite and test case).
+	 * Creates the service class to interface with TestLink using its 
+	 * external API.
+	 */
+	protected TestLinkHandler createTestLinkHandler( 
+			String testProjectName, 
+			String testPlanName, 
+			String buildName, 
+			String buildNotes, 
+			BuildListener listener ) 
+	throws AbortException
+	{
+		final TestLinkHandler testLinkHandler;
+		
+		// TestLink installation.
+		listener.getLogger().println( Messages.TestLinkBuilder_PreparingTLAPI() );
+		
+		final TestLinkInstallation installation = 
+			DESCRIPTOR.getInstallationByTestLinkName( this.testLinkName );
+		if ( installation == null )
+		{
+			throw new AbortException( Messages.TestLinkBuilder_InvalidTLAPI() );
+		}
+		
+		listener.getLogger().println ( Messages.TestLinkBuilder_UsedTLURL( installation.getUrl()) );
+		listener.getLogger().println();
+		
+		TestLinkHelper.setTestLinkJavaAPIProperties( installation.getTestLinkJavaAPIProperties(), listener );
+		
+		final String testLinkUrl = installation.getUrl();
+		final String testLinkDevKey = installation.getDevKey();
+		
+		try
+		{
+			final URL url = new URL( testLinkUrl );
+			testLinkHandler = new TestLinkHandler( url, testLinkDevKey, testProjectName, testPlanName, buildName, buildNotes, listener );
+		}
+		catch (MalformedURLException mue) 
+		{
+			throw new AbortException( Messages.TestLinkBuilder_InvalidTLURL( testLinkUrl) );
+		}
+		
+		return testLinkHandler;
+	}
+	
+	/**
+	 * Executes the list of single build steps.
+	 * 
+	 * @param build Jenkins build.
+	 * @param launcher
+	 * @param listener
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	protected void executeSingleTestCommand(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener ) 
+	throws IOException, InterruptedException
+	{
+		if( singleBuildSteps != null )
+		{
+			for( BuildStep b : singleBuildSteps )
+			{
+				final boolean success = b.perform(build, launcher, listener);
+				if ( ! success ) 
+				{
+					this.failure = Boolean.TRUE;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * <p>Executes iterative test command. For each automated test case found in the 
+	 * array of automated test cases, this method executes the iterative command 
+	 * using Jenkins objects.</p>
+	 * 
+	 * @param automatedTestCases 
+	 * @param build Jenkins Build.
+	 * @param launcher
+	 * @param listener
+	 * @throws InterruptedException 
+	 * @throws IOException 
+	 */
+	protected void executeIterativeTestCommand( TestCase[] automatedTestCases, TestProject project, TestPlan testPlan, Build testLinkBuild, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener ) 
+	throws IOException, InterruptedException 
+	{
+
+		if( beforeIteratingAllTestCasesBuildSteps != null )
+		{
+			for( BuildStep b : beforeIteratingAllTestCasesBuildSteps ) 
+			{
+				final boolean success = b.perform(build, launcher, listener);
+				if ( ! success ) 
+				{
+					this.failure = Boolean.TRUE;
+				}
+			}
+		}
+		
+		for( TestCase automatedTestCase : automatedTestCases ) 
+		{
+			if ( this.failure  && this.transactional )
+			{
+				automatedTestCase.setExecutionStatus( ExecutionStatus.BLOCKED );
+			}
+			else
+			{
+				if( iterativeBuildSteps != null ) 
+				{
+					final EnvVars iterativeEnvVars = TestLinkHelper.buildTestCaseEnvVars( automatedTestCase, project, testPlan, testLinkBuild, listener );
+
+					build.addAction(new EnvironmentContributingAction()
+					{
+						public void buildEnvVars( AbstractBuild<?, ?> build, EnvVars env )
+						{
+							env.putAll(iterativeEnvVars);
+						}
+						
+						public String getUrlName()
+						{
+							return null;
+						}
+						
+						public String getIconFileName()
+						{
+							return null;
+						}
+						
+						public String getDisplayName()
+						{
+							return null;
+						}
+					});
+					
+					for( BuildStep b : iterativeBuildSteps ) 
+					{
+						final boolean success = b.perform(build, launcher, listener);
+						if ( ! success ) 
+						{
+							this.failure = Boolean.TRUE;
+						}
+					}
+				}
+			}
+		}
+		
+		if( afterIteratingAllTestCasesBuildSteps != null )
+		{
+			for( BuildStep b : afterIteratingAllTestCasesBuildSteps )
+			{
+				final boolean success = b.perform(build, launcher, listener);
+				if ( ! success ) 
+				{
+					this.failure = Boolean.TRUE;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Inits a test results callable. For each test reports pattern, if not 
+	 * empty, a seeker is created and added to the results callable.
+	 * 
+	 * @param report TestLink report
+	 * @param listener Jenkins Build listener
 	 */
 	private TestResultsCallable initTestResultsCallable( TestLinkReport report, BuildListener listener )
 	{
@@ -284,167 +438,6 @@ extends AbstractTestLinkBuilder
 		}
 		
 		return testResultsCallable;
-	}
-
-	protected TestLinkHandler createTestLinkHandler( 
-			String testProjectName, 
-			String testPlanName, 
-			String buildName, 
-			String buildNotes, 
-			BuildListener listener ) 
-	throws AbortException
-	{
-		final TestLinkHandler testLinkHandler;
-		
-		// TestLink installation.
-		listener.getLogger().println( Messages.TestLinkBuilder_PreparingTLAPI() );
-		
-		final TestLinkInstallation installation = 
-			DESCRIPTOR.getInstallationByTestLinkName( this.testLinkName );
-		if ( installation == null )
-		{
-			throw new AbortException( Messages.TestLinkBuilder_InvalidTLAPI() );
-		}
-		
-		listener.getLogger().println ( Messages.TestLinkBuilder_UsedTLURL( installation.getUrl()) );
-		listener.getLogger().println();
-		
-		TestLinkHelper.setTestLinkJavaAPIProperties( installation.getTestLinkJavaAPIProperties(), listener );
-		
-		final String testLinkUrl = installation.getUrl();
-		final String testLinkDevKey = installation.getDevKey();
-		
-		try
-		{
-			final URL url = new URL( testLinkUrl );
-			testLinkHandler = new TestLinkHandler( url, testLinkDevKey, testProjectName, testPlanName, buildName, buildNotes, listener );
-		}
-		catch (MalformedURLException mue) 
-		{
-			throw new AbortException( Messages.TestLinkBuilder_InvalidTLURL( testLinkUrl) );
-		}
-		
-		return testLinkHandler;
-	}
-	
-	/**
-	 * Executes single test command.
-	 * 
-	 * @param build Jenkins build.
-	 * @param isUnix Whether it is being built on Windows or nix
-	 * @param listener Jenkins build listener.
-	 * @throws IOException
-	 * @throws InterruptedException
-	 */
-	protected void executeSingleTestCommand(AbstractBuild<?, ?> build, boolean isUnix, BuildListener listener ) 
-	throws IOException, InterruptedException
-	{
-		if ( StringUtils.isNotBlank( singleTestCommand ) )
-		{
-			listener.getLogger().println( Messages.TestLinkBuilder_ExecutingSingleTestCommand( this.singleTestCommand ) );
-			listener.getLogger().println();
-			
-			final EnvVars envVars = build.getEnvironment( listener );
-			
-			final boolean success = CommandExecutor.executeCommand(build, listener, 
-					isUnix, envVars, singleTestCommand); 
-			
-			this.failure = !success;
-		}
-		else
-		{
-			listener.getLogger().println( Messages.TestLinkBuilder_BlankSingleTestCommand() );
-		}
-		
-		listener.getLogger().println();
-	}
-	
-	/**
-	 * <p>Executes iterative test command. For each automated test case found in the 
-	 * array of automated test cases, this method executes the iterative command 
-	 * using Hudson objects.</p>
-	 * 
-	 * <p>The objects of the TestLink Java API are used to create the 
-	 * environment variables.</p>
-	 * 
-	 * @param automatedTestCases Array of automated test cases.
-	 * @param project TestLink project.
-	 * @param testPlan TestLink Test Plan.
-	 * @param testLinkBuild TestLink Build.
-	 * @param build Jenkins Build.
-	 * @param isUnix Whether it is a Windows or a Unix environment.
-	 * @param listener Jenkins Listener.
-	 * @throws InterruptedException 
-	 * @throws IOException 
-	 */
-	protected void executeIterativeTestCommand( TestCase[] automatedTestCases, TestProject project, TestPlan testPlan, Build testLinkBuild, AbstractBuild<?, ?> build, boolean isUnix, BuildListener listener ) 
-	throws IOException, InterruptedException 
-	{
-		if ( StringUtils.isNotBlank( iterativeTestCommand ) )
-		{
-		
-			try
-			{
-				CommandExecutor.executeCommand( build, listener, isUnix, 
-					build.getEnvironment(listener), this.beforeIteratingAllTestCasesCommand);
-			}
-			catch (InterruptedException e) 
-	        {
-	        	e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_TestCommandError(e.getMessage())) );
-	        } 
-			catch (IOException e)
-			{
-	        	e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_TestCommandError(e.getMessage())) );
-			} 
-			
-			for ( TestCase automatedTestCase : automatedTestCases )
-			{
-				if ( this.failure  && this.transactional )
-				{
-					listener.getLogger().println(Messages.TestLinkBuilder_TransactionalError());
-					listener.getLogger().println();
-					
-					automatedTestCase.setExecutionStatus( ExecutionStatus.BLOCKED );
-				} 
-				else
-				{
-					// Build environment variables
-					final EnvVars iterativeEnvVars = TestLinkHelper.buildTestCaseEnvVars( automatedTestCase, project, testPlan, testLinkBuild, listener ); 
-					
-					iterativeEnvVars.putAll( build.getEnvironment( listener ) );
-					
-					listener.getLogger().println( Messages.TestLinkBuilder_ExecutingIterativeTestCommand( this.iterativeTestCommand ) );
-					listener.getLogger().println();
-					
-					// Execute iterative test command with pre and post commands
-					final boolean success = CommandExecutor.executeCommand( build, 
-							listener, isUnix, iterativeEnvVars,
-							iterativeTestCommand ); 
-					
-					this.failure = ! success;
-				}
-			} // #end for
-			
-			try
-			{
-				CommandExecutor.executeCommand( build, listener, isUnix, 
-					build.getEnvironment(listener), this.afterIteratingAllTestCasesCommand);
-			}
-			catch (InterruptedException e) 
-	        {
-	        	e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_TestCommandError(e.getMessage())) );
-	        } 
-			catch (IOException e)
-			{
-	        	e.printStackTrace( listener.fatalError(Messages.TestLinkBuilder_TestCommandError(e.getMessage())) );
-			} 
-			
-		}
-		else
-		{
-			listener.getLogger().println( Messages.TestLinkBuilder_BlankIterativeTestCommand() );
-			listener.getLogger().println();
-		}
 	}
 	
 }

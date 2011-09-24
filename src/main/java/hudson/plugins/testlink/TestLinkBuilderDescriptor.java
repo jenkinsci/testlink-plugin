@@ -24,10 +24,19 @@
 package hudson.plugins.testlink;
 
 import hudson.CopyOnWrite;
+import hudson.model.AbstractProject;
 import hudson.model.Descriptor;
+import hudson.model.FreeStyleProject;
 import hudson.plugins.testlink.util.Messages;
+import hudson.tasks.BuildStep;
+import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
+import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
@@ -42,6 +51,9 @@ public class TestLinkBuilderDescriptor
 extends Descriptor<Builder>
 {
 
+	// exposed for Jelly
+    public final Class<TestLinkBuilder> testLinkBuildType = TestLinkBuilder.class;
+	
 	private static final String DISPLAY_NAME = "Invoke TestLink";
 	
 	@CopyOnWrite
@@ -98,6 +110,11 @@ extends Descriptor<Builder>
 		return true;
 	}
 	
+	// exposed for Jelly
+    public List<Descriptor<? extends BuildStep>> getApplicableBuildSteps(AbstractProject<?,?> p) {
+        return getBuildSteps();
+    }
+	
 	/* 
 	 * --- Validation methods ---
 	 */
@@ -109,6 +126,35 @@ extends Descriptor<Builder>
 			returnValue = FormValidation.error( Messages.TestLinkBuilder_MandatoryProperty() );
 		}
 		return returnValue;
+	}
+	
+	public static List<Descriptor<? extends BuildStep>> getBuildSteps()
+	{
+		List<Descriptor<? extends BuildStep>> list = new ArrayList<Descriptor<? extends BuildStep>>();
+		addTo(Builder.all(), list);
+		addTo(Publisher.all(), list);
+		return list;
+	}
+
+	/**
+	 * @param all
+	 * @param list
+	 */
+	private static void addTo(
+			List<? extends Descriptor<? extends BuildStep>> source, 
+			List<Descriptor<? extends BuildStep>> list )
+	{
+		for(Descriptor<? extends BuildStep> d : source)
+		{
+			if ( d instanceof BuildStepDescriptor)
+			{
+				BuildStepDescriptor<?> bsd = (BuildStepDescriptor<?>)d;
+				if(bsd.isApplicable(FreeStyleProject.class))
+				{
+					list.add(d);
+				}
+			}
+		}
 	}
 
 }

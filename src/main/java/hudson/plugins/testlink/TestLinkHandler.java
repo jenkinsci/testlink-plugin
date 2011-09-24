@@ -170,7 +170,7 @@ public class TestLinkHandler
 						null, // guess
 						null, // bug id
 						null, // platform id 
-						null, // platform name
+						testResult.getPlatform(), // platform name
 						null, // custom fields
 						null);
 				

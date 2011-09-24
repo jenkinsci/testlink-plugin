@@ -27,18 +27,34 @@
 	  <f:textbox id="customFields" name="TestLinkBuilder.customFields" value="${instance.customFields}" />
   </f:entry>
   
-  <f:entry title="${%SingleTestCommand}" help="${rootURL}/../plugin/testlink/help-singleTestCommand.html">
-	  <f:textarea name="TestLinkBuilder.singleTestCommand" value="${instance.singleTestCommand}" />
+  <f:entry title="${%Key Custom Field}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
+      <f:textbox id="keyCustomField" name="TestLinkBuilder.keyCustomField" value="${instance.keyCustomField}" />
   </f:entry>
   
-  <f:entry title="${%IterativeTestCommand}" help="${rootURL}/../plugin/testlink/help-iterativeTestCommand.html">
-	  <f:textarea name="TestLinkBuilder.iterativeTestCommand" value="${instance.iterativeTestCommand}" />
+  <f:entry title="${%Single Test Build Steps}" help="${rootURL}/../plugin/testlink/help-singleTestCommand.html">
+      <f:hetero-list name="singleBuildSteps" targetType="${descriptor.testLinkBuildType}"
+           descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.singleBuildSteps}"
+           addCaption="Add action" hasHeader="true"/>
+  </f:entry>
+  
+  <f:entry title="${%Before iterating all test cases Build Steps}" help="${rootURL}/../plugin/testlink/help-beforeIteratingAllTestCasesCommand.html">
+      <f:hetero-list name="beforeIteratingAllTestCasesBuildSteps" targetType="${descriptor.testLinkBuildType}"
+           descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.beforeIteratingAllTestCasesBuildSteps}"
+           addCaption="Add action" hasHeader="true"/>
+  </f:entry>
+  
+  <f:entry title="${%Iterative Test Build Steps}" help="${rootURL}/../plugin/testlink/help-iterativeTestCommand.html">
+	  <f:hetero-list name="iterativeBuildSteps" targetType="${descriptor.testLinkBuildType}"
+           descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.iterativeBuildSteps}"
+           addCaption="Add action" hasHeader="true"/>
+  </f:entry>
+  
+  <f:entry title="${%After iterating all test cases Build Steps}" help="${rootURL}/../plugin/testlink/help-afterIteratingAllTestCasesCommand.html">
+      <f:hetero-list name="afterIteratingAllTestCasesBuildSteps" targetType="${descriptor.testLinkBuildType}"
+           descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.afterIteratingAllTestCasesBuildSteps}"
+           addCaption="Add action" hasHeader="true"/>
   </f:entry>
 
-  <f:entry title="${%KeyCustomField}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
-	  <f:textbox id="keyCustomField" name="TestLinkBuilder.keyCustomField" value="${instance.keyCustomField}" />
-  </f:entry>
-  
   <f:entry title="${%JUnitReportFilesPattern}" help="${rootURL}/../plugin/testlink/help-junitIncludePattern.html">
 	  <f:textbox name="TestLinkBuilder.junitXmlReportFilesPattern" value="${instance.junitXmlReportFilesPattern}" />
   </f:entry>
@@ -51,21 +67,14 @@
 	  <f:textbox name="TestLinkBuilder.tapStreamReportFilesPattern" value="${instance.tapStreamReportFilesPattern}" />
   </f:entry>
   
-  <f:advanced>	  
+  <f:advanced>	 
+   
 	  <f:entry title="${%Transactional}" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
 		  <f:checkbox name="TestLinkBuilder.transactional" value="${instance.transactional}" checked="${instance.transactional}" />
 	  </f:entry>
 	  
 	  <f:entry title="${%Failed tests mark build as failure}" help="${rootURL}/../plugin/testlink/help-failedTestsMarkBuildAsFailure.html">
 		  <f:checkbox name="TestLinkBuilder.failedTestsMarkBuildAsFailure" value="${instance.failedTestsMarkBuildAsFailure}" checked="${instance.failedTestsMarkBuildAsFailure}" />
-	  </f:entry>
-	  
-	  <f:entry title="${%Before iterating all test cases}" help="${rootURL}/../plugin/testlink/help-beforeIteratingAllTestCasesCommand.html">
-		  <f:textarea name="TestLinkBuilder.beforeIteratingAllTestCasesCommand" value="${instance.beforeIteratingAllTestCasesCommand}" />
-	  </f:entry>
-	  
-	  <f:entry title="${%After iterating all test cases}" help="${rootURL}/../plugin/testlink/help-afterIteratingAllTestCasesCommand.html">
-		  <f:textarea name="TestLinkBuilder.afterIteratingAllTestCasesCommand" value="${instance.afterIteratingAllTestCasesCommand}" />
 	  </f:entry>
 	  
   </f:advanced>

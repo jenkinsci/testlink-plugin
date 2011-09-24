@@ -239,6 +239,10 @@ extends TestResultSeeker<TestSet>
 					
 					testResult.appendNotes( notes );
 					
+					String platform = this.retrievePlatform( tapTestSet );
+					
+					testResult.setPlatform(platform);
+					
 					this.addOrUpdate( testResult, tapFileNameWithoutExtension );
 					
 				}
@@ -285,6 +289,62 @@ extends TestResultSeeker<TestSet>
 		notes.append( testSet.toString() );
 		
 		return notes.toString();
+	}
+	
+	/**
+	 * Retrieves the TestLink platform.
+	 * 
+	 * @param tapTestSet TAP test set.
+	 * @return TestLink platform.
+	 */
+	protected String retrievePlatform( TestSet tapTestSet )
+	{
+		String platform = null;
+		
+		Plan plan = tapTestSet.getPlan();
+		Map<String, Object> planDiagnostic = plan.getDiagnostic();
+		
+		platform = this.extractPlatform( planDiagnostic );
+		
+		if ( platform == null ) 
+		{
+			for ( TestResult testResult : tapTestSet.getTestResults() )
+			{
+				Map<String, Object> diagnostic = testResult.getDiagnostic();
+				platform = this.extractPlatform( diagnostic );
+				if ( platform != null )
+				{
+					break;
+				}
+			}
+		}
+		
+		return platform;
+	}
+
+	/**
+	 * @param planDiagnostic
+	 * @return
+	 */
+	protected String extractPlatform( Map<String, Object> diagnostic )
+	{
+		String platform = null;
+		Object testlink = diagnostic.get( "TestLink" );
+		if ( testlink != null && testlink instanceof Map<?, ?>)
+		{
+			@SuppressWarnings("unchecked")
+			Map<String, Object> testLinkInfo = (Map<String, Object>)testlink;
+			Object o = testLinkInfo.get("Platform");
+			if(o == null) 
+			{
+				o = testLinkInfo.get("platform");
+			}
+			if ( o != null && o instanceof String )
+			{
+				platform = (String)o;
+			}
+		}
+		return platform;
 	}
 
 	/**
