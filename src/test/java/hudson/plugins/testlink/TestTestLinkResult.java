@@ -24,7 +24,7 @@
 package hudson.plugins.testlink;
 
 import hudson.model.AbstractBuild;
-import hudson.plugins.testlink.result.TestLinkReport;
+import hudson.plugins.testlink.result.Report;
 import junit.framework.TestCase;
 
 /**
@@ -41,7 +41,7 @@ extends TestCase
 
 	public void testTestLinkResult()
 	{
-		TestLinkReport report = new TestLinkReport();
+		Report report = new Report(null);
 		AbstractBuild<?, ?> build = null;
 		TestLinkResult tlr = new TestLinkResult(report, build);
 		

@@ -45,7 +45,7 @@ extends junit.framework.TestCase
 	
 	private final String suiteName = "Sample junit test suite.";
 	
-	private String[] customFields = new String[]{"nz", "au"};
+	private String[] customFieldsNames = new String[]{"nz", "au"};
 	
 	protected void setUp()
 	{
@@ -60,20 +60,12 @@ extends junit.framework.TestCase
 		
 		junitTestSuite.setName( suiteName );
 		
-		testResult = new TestCaseWrapper<TestSuite>(testCase, customFields, junitTestSuite );
+		testResult = new TestCaseWrapper<TestSuite>(testCase, customFieldsNames, junitTestSuite );
 	}
 	
-	public void testTestResultTestCase()
+	public void testTestResultTestCaseId()
 	{
-		assertNotNull( testResult.getTestCase() );
-		
-		assertTrue( testResult.getTestCase().getId() == 100 );
-		
-		TestCase testCase2 = new TestCase();
-		testCase2.setId( 101 );
-		testResult.setTestCase( testCase2 );
-		
-		assertTrue( testResult.getTestCase().getId() == 101 );
+		assertTrue( testResult.getId() == 100 );
 	}
 
 	public void testTestResultNotes()
@@ -103,15 +95,6 @@ extends junit.framework.TestCase
 		assertEquals( testResult.getAttachments().size(), 2 );
 	}
 	
-	public void testTestResultToString()
-	{
-		String toStringResult = testResult.toString();
-		
-		assertNotNull( toStringResult );
-		
-		assertTrue( toStringResult.startsWith("TestCaseWrapper [testCase=") );
-	}
-	
 	public void testTestResultOrigin()
 	{
 		assertNotNull( testResult.getOrigin() );
@@ -125,9 +108,9 @@ extends junit.framework.TestCase
 	
 	public void testTestResultsCustomFields()
 	{
-		assertNotNull( testResult.getCustomFields() );
+		assertNotNull( testResult.getCustomFieldsNames() );
 		
-		assertEquals( testResult.getCustomFields().length, 2 );
+		assertEquals( testResult.getCustomFieldsNames().length, 2 );
 	}
 	
 	public void testTestResultCustomFieldAndStatus()

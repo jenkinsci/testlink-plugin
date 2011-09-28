@@ -26,7 +26,6 @@ package hudson.plugins.testlink.result.tap.issue9672;
 import hudson.model.BuildListener;
 import hudson.model.StreamBuildListener;
 import hudson.plugins.testlink.result.TestCaseWrapper;
-import hudson.plugins.testlink.result.TestLinkReport;
 import hudson.plugins.testlink.result.TestResultsCallable;
 import hudson.plugins.testlink.result.tap.TAPTestResultSeeker;
 
@@ -56,60 +55,58 @@ extends junit.framework.TestCase
 	
 	private TestResultsCallable seeker;
 	
-	private TestLinkReport report;
-	
 	private final static String KEY_CUSTOM_FIELD = "testCustomField";
 
 	private String tapReportFilesPattern = "*.tap";
 	
 	public void setUp()
 	{
-		this.report = new TestLinkReport();
 		BuildListener listener = new StreamBuildListener(new PrintStream(System.out), Charset.defaultCharset());
 		this.seeker = 
-			new TestResultsCallable(report, KEY_CUSTOM_FIELD, listener);
+			new TestResultsCallable( KEY_CUSTOM_FIELD, listener);
 		
-		this.seeker.addTestResultSeeker( new TAPTestResultSeeker<TestSet>(tapReportFilesPattern, report, KEY_CUSTOM_FIELD, listener) );
-	}
-
-	@SuppressWarnings("rawtypes")
-	public void testTwoTestSetsAandB()
-	{
+		TestCase[] tcs = new TestCase[2];
 		TestCase tc = new TestCase();
 		CustomField cf = new CustomField();
 		cf.setName( KEY_CUSTOM_FIELD );
 		cf.setValue("A, B");
 		tc.getCustomFields().add(cf);
 		tc.setId(1);
-		this.report.getTestCases().put( tc.getId(), tc );
+		tcs[0] = tc;
 		
+		tc = new TestCase();
+		cf = new CustomField();
+		cf.setName( KEY_CUSTOM_FIELD );
+		cf.setValue("A, K");
+		tc.getCustomFields().add(cf);
+		tc.setId(2);
+		tcs[1] = tc;
+		
+		this.seeker.addTestResultSeeker( new TAPTestResultSeeker<TestSet>(tapReportFilesPattern, tcs, KEY_CUSTOM_FIELD, listener) );
+	}
+
+	@SuppressWarnings("rawtypes")
+	public void testTwoTestSetsAandB()
+	{
 		ClassLoader cl = TestTestResultSeekerTAP.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/tap/issue9672/");
 		File tapDir = new File( url.getFile() );
 		Map<Integer, TestCaseWrapper> found = seeker.seekTestResults(tapDir);
 		assertNotNull( found );
-		assertTrue( found.size() == 1 );
-		assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
+		assertTrue( found.size() == 2 );
+		assertTrue( found.get(1).getExecutionStatus() == ExecutionStatus.FAILED );
 	}
 	
 	@SuppressWarnings("rawtypes")
 	public void testTwoTestSetsAandNonExistentK()
 	{
-		TestCase tc = new TestCase();
-		CustomField cf = new CustomField();
-		cf.setName( KEY_CUSTOM_FIELD );
-		cf.setValue("A, K");
-		tc.getCustomFields().add(cf);
-		tc.setId(1);
-		this.report.getTestCases().put( tc.getId(), tc );
-		
 		ClassLoader cl = TestTestResultSeekerTAP.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/tap/issue9672/");
 		File tapDir = new File( url.getFile() );
 		Map<Integer, TestCaseWrapper> found = seeker.seekTestResults(tapDir);
 		assertNotNull( found );
-		assertTrue( found.size() == 1 );
-		assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.NOT_RUN );
+		assertTrue( found.size() == 2 );
+		assertTrue( found.get(2).getExecutionStatus() == ExecutionStatus.NOT_RUN );
 	}
 	
 }

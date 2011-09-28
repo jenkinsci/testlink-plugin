@@ -115,20 +115,7 @@ extends Descriptor<Builder>
         return getBuildSteps();
     }
 	
-	/* 
-	 * --- Validation methods ---
-	 */
-	public FormValidation doCheckMandatory(@QueryParameter String value)
-	{
-		FormValidation returnValue = FormValidation.ok();
-		if ( StringUtils.isBlank( value ) )
-		{
-			returnValue = FormValidation.error( Messages.TestLinkBuilder_MandatoryProperty() );
-		}
-		return returnValue;
-	}
-	
-	public static List<Descriptor<? extends BuildStep>> getBuildSteps()
+    public static List<Descriptor<? extends BuildStep>> getBuildSteps()
 	{
 		List<Descriptor<? extends BuildStep>> list = new ArrayList<Descriptor<? extends BuildStep>>();
 		addTo(Builder.all(), list);
@@ -136,10 +123,6 @@ extends Descriptor<Builder>
 		return list;
 	}
 
-	/**
-	 * @param all
-	 * @param list
-	 */
 	private static void addTo(
 			List<? extends Descriptor<? extends BuildStep>> source, 
 			List<Descriptor<? extends BuildStep>> list )
@@ -156,5 +139,18 @@ extends Descriptor<Builder>
 			}
 		}
 	}
-
+    
+	/* 
+	 * --- Validation methods ---
+	 */
+	public FormValidation doCheckMandatory(@QueryParameter String value)
+	{
+		FormValidation returnValue = FormValidation.ok();
+		if ( StringUtils.isBlank( value ) )
+		{
+			returnValue = FormValidation.error( Messages.TestLinkBuilder_MandatoryProperty() );
+		}
+		return returnValue;
+	}
+	
 }

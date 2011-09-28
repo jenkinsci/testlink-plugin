@@ -81,7 +81,6 @@ implements FileCallable<Map<Integer, TestCaseWrapper>>
 	 * Default constructor. 
 	 */
 	public TestResultsCallable( 
-		TestLinkReport report, 
 		String keyCustomFieldName, 
 		BuildListener listener			
 	)

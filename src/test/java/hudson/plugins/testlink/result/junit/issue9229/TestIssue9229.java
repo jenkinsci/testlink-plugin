@@ -26,7 +26,6 @@ package hudson.plugins.testlink.result.junit.issue9229;
 import hudson.model.BuildListener;
 import hudson.model.StreamBuildListener;
 import hudson.plugins.testlink.result.TestCaseWrapper;
-import hudson.plugins.testlink.result.TestLinkReport;
 import hudson.plugins.testlink.result.junit.JUnitTestCasesTestResultSeeker;
 import hudson.plugins.testlink.result.junit.TestJUnitTestCaseSeeker;
 
@@ -53,20 +52,14 @@ extends junit.framework.TestCase
 	
 	private JUnitTestCasesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestCase> seeker;
 	
-	private TestLinkReport report;
-	
 	private final static String KEY_CUSTOM_FIELD = "testCustomField";
 	
 	public void setUp()
 	{
-		this.report = new TestLinkReport();
 		BuildListener listener = new StreamBuildListener(new PrintStream(System.out), Charset.defaultCharset());
-		this.seeker = 
-			new JUnitTestCasesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestCase>("TEST-*.xml", report, KEY_CUSTOM_FIELD, listener);
-	}
-	
-	public void testTestResultSeekerJUnitIssue9229()
-	{
+		
+		TestCase[] tcs = new TestCase[1];
+		
 		TestCase tc = new TestCase();
 		CustomField cf = new CustomField();
 		cf.setName( KEY_CUSTOM_FIELD );
@@ -74,8 +67,14 @@ extends junit.framework.TestCase
 		tc.setId( 1 );
 		tc.setName( "TC for issue 9229" );
 		tc.getCustomFields().add(cf);
-		this.report.getTestCases().put(tc.getId(), tc);
+		tcs[0] = tc;
 		
+		this.seeker = 
+			new JUnitTestCasesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestCase>("TEST-*.xml", tcs, KEY_CUSTOM_FIELD, listener);
+	}
+	
+	public void testTestResultSeekerJUnitIssue9229()
+	{
 		ClassLoader cl = TestJUnitTestCaseSeeker.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/junit/issue9229/");
 		File junitDir = new File( url.getFile() );
@@ -83,7 +82,7 @@ extends junit.framework.TestCase
 		assertNotNull( found );
 		assertTrue( found.size() == 1 );
 		
-		assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
+		assertTrue( found.get(1).getExecutionStatus() == ExecutionStatus.FAILED );
 		
 	}
 

@@ -30,7 +30,6 @@ import hudson.plugins.testlink.parser.testng.Test;
 import hudson.plugins.testlink.parser.testng.TestMethod;
 import hudson.plugins.testlink.parser.testng.TestNGParser;
 import hudson.plugins.testlink.result.TestCaseWrapper;
-import hudson.plugins.testlink.result.TestLinkReport;
 import hudson.plugins.testlink.result.TestResultSeekerException;
 import hudson.plugins.testlink.util.Messages;
 
@@ -66,10 +65,10 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 	 */
 	protected final Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> results = new LinkedHashMap<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>>();
 	
-	public TestNGClassesTestResultSeeker(String includePattern, TestLinkReport report,
+	public TestNGClassesTestResultSeeker(String includePattern, TestCase[] automatedTestCases,
 			String keyCustomFieldName, BuildListener listener)
 	{
-		super(includePattern, report, keyCustomFieldName, listener);
+		super(includePattern, automatedTestCases, keyCustomFieldName, listener);
 	}
 	
 	/* (non-Javadoc)
@@ -194,7 +193,7 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 			listener.getLogger().println( Messages.Results_TestNG_LookingForTestResults( keyCustomFieldName, testNGTestClassName ) );
 			listener.getLogger().println();
 			
-			for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : this.report.getTestCases().values() )
+			for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : this.automatedTestCases )
 			{
 				listener.getLogger().println( Messages.Results_TestNG_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
 				
@@ -258,7 +257,7 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 			this.results.get(testResult.getId());
 		
 		hudson.plugins.testlink.parser.testng.Class origin = testResult.getOrigin();
-		listener.getLogger().println( Messages.Results_TestNG_TestResultsFound( testResult.getName(), testResult.getId(), origin, origin.getName(), testResult.getTestCase().getExecutionStatus().toString() ) );
+		listener.getLogger().println( Messages.Results_TestNG_TestResultsFound( testResult.getName(), testResult.getId(), origin, origin.getName(), testResult.getExecutionStatus().toString() ) );
 		
 		if ( temp == null )
 		{

@@ -29,10 +29,11 @@ import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.EnvironmentContributingAction;
+import hudson.model.Result;
 import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.parser.testng.Suite;
+import hudson.plugins.testlink.result.Report;
 import hudson.plugins.testlink.result.TestCaseWrapper;
-import hudson.plugins.testlink.result.TestLinkReport;
 import hudson.plugins.testlink.result.TestResultSeeker;
 import hudson.plugins.testlink.result.TestResultSeekerException;
 import hudson.plugins.testlink.result.TestResultsCallable;
@@ -56,6 +57,7 @@ import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.tap4j.model.TestSet;
 
+import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPIException;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
@@ -64,9 +66,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
 
 /**
- * <p>
  * A builder to add a TestLink build step.
- * </p>
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 1.0
@@ -119,13 +119,8 @@ extends AbstractTestLinkBuilder
 		);
 	}
 	
-	public Object readResolve()
-	{
-		return this;
-	}
-	
 	/**
-	 * <p>Called when the job is executed.</p>
+	 * Called when the job is executed.
 	 */
 	@Override
 	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher,
@@ -134,76 +129,82 @@ extends AbstractTestLinkBuilder
 	{
 		this.failure = false;
 		
-		final TestLinkHandler testLinkHandler = 
-			this.createTestLinkHandler( 
-				expandTestProjectName( build.getBuildVariableResolver(), build.getEnvironment(listener) ), 
-				expandTestPlanName( build.getBuildVariableResolver(), build.getEnvironment(listener) ), 
-				expandBuildName( build.getBuildVariableResolver(), build.getEnvironment(listener) ), 
-				Messages.TestLinkBuilder_Build_Notes(), 
-				listener 
-			);
-		
-		final String[] customFieldsNames 	= createArrayOfCustomFieldsNames();
-		
-		final TestCase[] automatedTestCases;
-		
-		try
+		// TestLink installation
+		listener.getLogger().println( Messages.TestLinkBuilder_PreparingTLAPI() );
+		final TestLinkInstallation installation = DESCRIPTOR.getInstallationByTestLinkName( this.testLinkName );
+		if ( installation == null )
 		{
-			automatedTestCases = testLinkHandler.retrieveAutomatedTestCasesWithCustomFields( customFieldsNames );
-		} 
-		catch (TestLinkAPIException e)
+			throw new AbortException( Messages.TestLinkBuilder_InvalidTLAPI() );
+		}
+		
+		listener.getLogger().println ( Messages.TestLinkBuilder_UsedTLURL( installation.getUrl()) );
+		TestLinkHelper.setTestLinkJavaAPIProperties( installation.getTestLinkJavaAPIProperties(), listener );
+		
+		final TestLinkSite testLinkSite;
+		final TestCase[] automatedTestCases;
+		final String testLinkUrl 	 = installation.getUrl();
+		final String testLinkDevKey  = installation.getDevKey();
+		listener.getLogger().println ( Messages.TestLinkBuilder_UsedTLURL( testLinkUrl ) );
+		
+		try 
+		{
+			final String testProjectName = expandTestProjectName(build.getBuildVariableResolver(), build.getEnvironment(listener));
+			final String testPlanName    = expandTestPlanName(build.getBuildVariableResolver(), build.getEnvironment(listener));
+			final String buildName 		 = expandBuildName(build.getBuildVariableResolver(), build.getEnvironment(listener));
+			final String buildNotes 	 = Messages.TestLinkBuilder_Build_Notes();
+			// TestLink Site object
+			listener.getLogger().println( Messages.TestLinkBuilder_PreparingTLAPI() );
+			testLinkSite = this.getTestLinkSite(testLinkUrl, testLinkDevKey, testProjectName, testPlanName, buildName, buildNotes);
+			final String[] customFieldsNames = this.createArrayOfCustomFieldsNames();
+			// Array of automated test cases
+			automatedTestCases = testLinkSite.getAutomatedTestCases( customFieldsNames );
+
+			// Sorts test cases by each execution order (this info comes from TestLink)
+			listener.getLogger().println( Messages.TestLinkBuilder_SortingTestCases() );
+			Arrays.sort( automatedTestCases, this.executionOrderComparator );
+		}
+		catch (MalformedURLException mue) 
+		{
+			mue.printStackTrace( listener.fatalError(mue.getMessage()) );
+			throw new AbortException( Messages.TestLinkBuilder_InvalidTLURL( testLinkUrl ) );
+		}
+		catch ( TestLinkAPIException e )
 		{
 			e.printStackTrace( listener.fatalError(e.getMessage()) );
 			throw new AbortException( Messages.TestLinkBuilder_TestLinkCommunicationError() );
 		}
 		
-		// Sorts test cases by each execution order (this info comes from TestLink)
-		listener.getLogger().println( Messages.TestLinkBuilder_SortingTestCases() );
-		Arrays.sort( automatedTestCases, this.executionOrderComparator );
+		this.executeSingleBuildSteps( build, launcher, listener );
 		
-		// Execute single test command
-		this.executeSingleTestCommand( build, launcher, listener );
-		
-		// Execute iterative test command for each automated test case
-		this.executeIterativeTestCommand( automatedTestCases, testLinkHandler.getTestProject(), testLinkHandler.getTestPlan(), testLinkHandler.getBuild(), build, launcher, listener );
-		
-		// This report is used to generate the graphs and to store the list of 
-		// test cases with each found status.
-		final TestLinkReport report = this.createReport(
-				testLinkHandler.getBuild(), 
-				testLinkHandler.getTestPlan(), 
-				testLinkHandler.getTestProject(), 
-				automatedTestCases);
+		this.executeIterativeBuildSteps( automatedTestCases, testLinkSite, build, launcher, listener );
 		
 		// The object that searches for test results
-		final TestResultsCallable testResultCallable = initTestResultsCallable(report, listener);
+		final TestResultsCallable testResultCallable = initTestResultsCallable(automatedTestCases, listener);
 
 		@SuppressWarnings("rawtypes")
 		final Map<Integer, TestCaseWrapper> wrappedTestCases;
 		
+		// This report is used to generate the graphs and to store the list of 
+		// test cases with each found status.
+		final Report report;
 		// Here we search for test results. The return if a wrapped Test Case that 
 		// contains attachments, platform and notes.
 		try
 		{
 			wrappedTestCases = build.getWorkspace().act( testResultCallable );
+			// Update TestLink with test results and uploads attachments
+			testLinkSite.updateTestCases( wrappedTestCases.values() );
+			report = new Report(testLinkSite.getBuild());
+			for(TestCaseWrapper<?> wrappedTestCase : wrappedTestCases.values() )
+			{
+				report.addTestCase(wrappedTestCase);
+			}
 		}
 		catch ( TestResultSeekerException trse )
 		{
 			trse.printStackTrace( listener.fatalError( trse.getMessage() ) );
 			throw new AbortException(Messages.Results_ErrorToLookForTestResults( trse.getMessage() ));
 		}
-		
-		report.verifyBlockedTestCases( wrappedTestCases );
-		
-		report.updateReport( wrappedTestCases );
-		
-		this.updateBuildStatus( report.getTestsFailed(), build );
-		
-		// Update TestLink with test results and uploads attachments
-		try 
-		{
-			testLinkHandler.updateTestCasesAndUploadAttachments( wrappedTestCases );
-		} 
 		catch (TestLinkAPIException tlae) 
 		{
 			tlae.printStackTrace( listener.fatalError( Messages.TestLinkBuilder_FailedToUpdateTL(tlae.getMessage()) ) );
@@ -212,58 +213,44 @@ extends AbstractTestLinkBuilder
 		
 		final TestLinkResult result = new TestLinkResult(report, build);
         final TestLinkBuildAction buildAction = new TestLinkBuildAction(build, result);
-        
         build.addAction( buildAction );
+        
+        if ( report.getTestsFailed() > 0 )
+		{
+			if ( this.failedTestsMarkBuildAsFailure != null && this.failedTestsMarkBuildAsFailure )
+			{
+				build.setResult( Result.FAILURE );
+			}
+			else
+			{
+				build.setResult( Result.UNSTABLE );
+			}
+		}
 		
 		// end
 		return Boolean.TRUE;
 	}
-
-	/**
-	 * Creates the service class to interface with TestLink using its 
-	 * external API.
-	 */
-	protected TestLinkHandler createTestLinkHandler( 
-			String testProjectName, 
-			String testPlanName, 
-			String buildName, 
-			String buildNotes, 
-			BuildListener listener ) 
-	throws AbortException
-	{
-		final TestLinkHandler testLinkHandler;
-		
-		// TestLink installation.
-		listener.getLogger().println( Messages.TestLinkBuilder_PreparingTLAPI() );
-		
-		final TestLinkInstallation installation = 
-			DESCRIPTOR.getInstallationByTestLinkName( this.testLinkName );
-		if ( installation == null )
-		{
-			throw new AbortException( Messages.TestLinkBuilder_InvalidTLAPI() );
-		}
-		
-		listener.getLogger().println ( Messages.TestLinkBuilder_UsedTLURL( installation.getUrl()) );
-		listener.getLogger().println();
-		
-		TestLinkHelper.setTestLinkJavaAPIProperties( installation.getTestLinkJavaAPIProperties(), listener );
-		
-		final String testLinkUrl = installation.getUrl();
-		final String testLinkDevKey = installation.getDevKey();
-		
-		try
-		{
-			final URL url = new URL( testLinkUrl );
-			testLinkHandler = new TestLinkHandler( url, testLinkDevKey, testProjectName, testPlanName, buildName, buildNotes, listener );
-		}
-		catch (MalformedURLException mue) 
-		{
-			throw new AbortException( Messages.TestLinkBuilder_InvalidTLURL( testLinkUrl) );
-		}
-		
-		return testLinkHandler;
-	}
 	
+	/**
+	 * Gets object to interact with TestLink site.
+	 * @throws MalformedURLException
+	 */
+	public TestLinkSite getTestLinkSite(String testLinkUrl, String testLinkDevKey, String testProjectName, String testPlanName, String buildName, String buildNotes) 
+	throws MalformedURLException
+	{
+		final TestLinkAPI api;
+		final URL url = new URL( testLinkUrl );
+		api = new TestLinkAPI(url, testLinkDevKey);
+		
+		final TestProject testProject = api.getTestProjectByName(testProjectName);
+		
+		final TestPlan testPlan = api.getTestPlanByName(testPlanName, testProjectName);
+		
+		final Build build = api.createBuild( testPlan.getId(), buildName, buildNotes);
+		
+		return new TestLinkSite(api, testProject, testPlan, build);
+	}
+
 	/**
 	 * Executes the list of single build steps.
 	 * 
@@ -273,7 +260,7 @@ extends AbstractTestLinkBuilder
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	protected void executeSingleTestCommand(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener ) 
+	protected void executeSingleBuildSteps(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener ) 
 	throws IOException, InterruptedException
 	{
 		if( singleBuildSteps != null )
@@ -290,18 +277,18 @@ extends AbstractTestLinkBuilder
 	}
 	
 	/**
-	 * <p>Executes iterative test command. For each automated test case found in the 
-	 * array of automated test cases, this method executes the iterative command 
+	 * <p>Executes iterative build steps. For each automated test case found in the 
+	 * array of automated test cases, this method executes the iterative builds steps 
 	 * using Jenkins objects.</p>
 	 * 
-	 * @param automatedTestCases 
-	 * @param build Jenkins Build.
+	 * @param automatedTestCases  array of automated test cases
+	 * @param testLinkSite The TestLink Site object
 	 * @param launcher
 	 * @param listener
 	 * @throws InterruptedException 
 	 * @throws IOException 
 	 */
-	protected void executeIterativeTestCommand( TestCase[] automatedTestCases, TestProject project, TestPlan testPlan, Build testLinkBuild, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener ) 
+	protected void executeIterativeBuildSteps( TestCase[] automatedTestCases, TestLinkSite testLinkSite, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener ) 
 	throws IOException, InterruptedException 
 	{
 
@@ -327,7 +314,7 @@ extends AbstractTestLinkBuilder
 			{
 				if( iterativeBuildSteps != null ) 
 				{
-					final EnvVars iterativeEnvVars = TestLinkHelper.buildTestCaseEnvVars( automatedTestCase, project, testPlan, testLinkBuild, listener );
+					final EnvVars iterativeEnvVars = TestLinkHelper.buildTestCaseEnvVars( automatedTestCase, testLinkSite.getTestProject(), testLinkSite.getTestPlan(), testLinkSite.getBuild(), listener );
 
 					build.addAction(new EnvironmentContributingAction()
 					{
@@ -381,19 +368,19 @@ extends AbstractTestLinkBuilder
 	 * Inits a test results callable. For each test reports pattern, if not 
 	 * empty, a seeker is created and added to the results callable.
 	 * 
-	 * @param report TestLink report
+	 * @param automatedTestCases TestLink automated test cases
 	 * @param listener Jenkins Build listener
 	 */
-	private TestResultsCallable initTestResultsCallable( TestLinkReport report, BuildListener listener )
+	protected TestResultsCallable initTestResultsCallable( TestCase[] automatedTestCases, BuildListener listener )
 	{
-		final TestResultsCallable testResultsCallable = new TestResultsCallable(report, this.keyCustomField, listener);
+		final TestResultsCallable testResultsCallable = new TestResultsCallable(this.keyCustomField, listener);
 		
 		if ( StringUtils.isNotBlank( reportFilesPatterns.getJunitXmlReportFilesPattern() ) )
 		{
 			final TestResultSeeker<?> junitSuitesSeeker = 
 				new JUnitSuitesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestSuite>(
 						reportFilesPatterns.getJunitXmlReportFilesPattern(), 
-						report, 
+						automatedTestCases, 
 						this.keyCustomField, 
 						listener);
 			testResultsCallable.addTestResultSeeker(junitSuitesSeeker);
@@ -401,7 +388,7 @@ extends AbstractTestLinkBuilder
 			final TestResultSeeker<?> junitTestsSeeker = 
 				new JUnitTestCasesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestCase>(
 						reportFilesPatterns.getJunitXmlReportFilesPattern(), 
-						report, 
+						automatedTestCases, 
 						this.keyCustomField, 
 						listener);
 			testResultsCallable.addTestResultSeeker(junitTestsSeeker);
@@ -412,7 +399,7 @@ extends AbstractTestLinkBuilder
 			final TestResultSeeker<?> testNGSuitesSeeker = 
 				new TestNGSuitesTestResultSeeker<Suite>(
 						reportFilesPatterns.getTestNGXmlReportFilesPattern(), 
-						report, 
+						automatedTestCases, 
 						this.keyCustomField, 
 						listener);
 			testResultsCallable.addTestResultSeeker(testNGSuitesSeeker);
@@ -420,7 +407,7 @@ extends AbstractTestLinkBuilder
 			final TestResultSeeker<?> testNGTestsSeeker = 
 				new TestNGClassesTestResultSeeker<hudson.plugins.testlink.parser.testng.Class>(
 						reportFilesPatterns.getTestNGXmlReportFilesPattern(), 
-						report, 
+						automatedTestCases, 
 						this.keyCustomField, 
 						listener);
 			testResultsCallable.addTestResultSeeker(testNGTestsSeeker);
@@ -431,7 +418,7 @@ extends AbstractTestLinkBuilder
 			final TestResultSeeker<?> tapTestsSeeker = 
 				new TAPTestResultSeeker<TestSet>(
 						reportFilesPatterns.getTapStreamReportFilesPattern(), 
-						report, 
+						automatedTestCases, 
 						this.keyCustomField, 
 						listener);
 			testResultsCallable.addTestResultSeeker(tapTestsSeeker);

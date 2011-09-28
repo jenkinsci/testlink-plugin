@@ -26,7 +26,6 @@ package hudson.plugins.testlink.result.testng.issue9672;
 import hudson.model.BuildListener;
 import hudson.model.StreamBuildListener;
 import hudson.plugins.testlink.result.TestCaseWrapper;
-import hudson.plugins.testlink.result.TestLinkReport;
 import hudson.plugins.testlink.result.testng.TestNGClassesTestResultSeeker;
 
 import java.io.File;
@@ -52,33 +51,63 @@ public class TestIssue9672
 extends junit.framework.TestCase
 {
 
-	private static final long serialVersionUID = 854861980155890127L;
-
 	private TestNGClassesTestResultSeeker<hudson.plugins.testlink.parser.testng.Class> seeker;
-
-	private TestLinkReport report;
 
 	private final static String KEY_CUSTOM_FIELD = "testCustomField";
 
 	public void setUp()
 	{
-		this.report = new TestLinkReport();
 		BuildListener listener = new StreamBuildListener(new PrintStream(
 				System.out), Charset.defaultCharset());
+		
+		TestCase[] tcs = new TestCase[5];
+		
+		TestCase tc = new TestCase();
+		CustomField cf = new CustomField();
+		cf.setName( KEY_CUSTOM_FIELD );
+		cf.setValue("br.eti.kinoshita.TestA");
+		tc.getCustomFields().add(cf);
+		tc.setId(1);
+		tcs[0] = tc;
+		
+		tc = new TestCase();
+		cf = new CustomField();
+		cf.setName(KEY_CUSTOM_FIELD);
+		cf.setValue("br.eti.kinoshita.TestA, br.eti.kinoshita.TestB");
+		tc.getCustomFields().add(cf);
+		tc.setId(2);
+		tcs[1] = tc;
+		
+		tc = new TestCase();
+		cf = new CustomField();
+		cf.setName(KEY_CUSTOM_FIELD);
+		cf.setValue("br.eti.kinoshita.TestB, br.eti.kinoshita.Test2");
+		tc.getCustomFields().add(cf);
+		tc.setId(3);
+		tcs[2] = tc;
+		
+		tc = new TestCase();
+		cf = new CustomField();
+		cf.setName(KEY_CUSTOM_FIELD);
+		cf.setValue("br.eti.kinoshita.TestB, br.eti.kinoshita.TestK");
+		tc.getCustomFields().add(cf);
+		tc.setId(4);
+		tcs[3] = tc;
+		
+		tc = new TestCase();
+		cf = new CustomField();
+		cf.setName(KEY_CUSTOM_FIELD);
+		cf.setValue("br.eti.kinoshita.TestA, br.eti.kinoshita.Test3, br.eti.kinoshita.Test2");
+		tc.getCustomFields().add(cf);
+		tc.setId(5);
+		tcs[4] = tc;
+		
 		this.seeker = new TestNGClassesTestResultSeeker<hudson.plugins.testlink.parser.testng.Class>(
-				"testng-results*.xml", report, KEY_CUSTOM_FIELD, listener);
+				"testng-results*.xml", tcs, KEY_CUSTOM_FIELD, listener);
 	}
 
 	public void testOneTCtcA()
 	{
-		TestCase tc = new TestCase();
-		CustomField cf = new CustomField();
-		cf.setName(KEY_CUSTOM_FIELD);
-		cf.setValue("br.eti.kinoshita.TestA");
-		tc.getCustomFields().add(cf);
-		tc.setId(1);
-		this.report.getTestCases().put(tc.getId(), tc);
-
 		ClassLoader cl = TestIssue9672.class.getClassLoader();
 		URL url = cl
 				.getResource("hudson/plugins/testlink/result/testng/issue9672/");
@@ -86,22 +115,12 @@ extends junit.framework.TestCase
 		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> found = seeker
 				.seek(junitDir);
 		assertNotNull(found);
-		assertTrue(found.size() == 1);
-		assertTrue(found.get(tc.getId()).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED);
+		assertTrue(found.size() == 5);
+		assertTrue(found.get(1).getExecutionStatus() == ExecutionStatus.FAILED);
 	}
 
 	public void testTwoTCtcAAndtcB()
 	{
-		TestCase tc = new TestCase();
-		CustomField cf = new CustomField();
-		cf.setName(KEY_CUSTOM_FIELD);
-		cf.setValue("br.eti.kinoshita.TestA, br.eti.kinoshita.TestB");
-		tc.getCustomFields().add(cf);
-		tc.setId(2);
-		this.report.addTestCase(tc);
-
-		assertTrue(this.report.getTestCases().size() == 1);
-
 		ClassLoader cl = TestIssue9672.class.getClassLoader();
 		URL url = cl
 				.getResource("hudson/plugins/testlink/result/testng/issue9672");
@@ -109,22 +128,12 @@ extends junit.framework.TestCase
 		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> found = seeker
 				.seek(junitDir);
 		assertNotNull(found);
-		assertTrue(found.size() == 1);
-		assertTrue(found.get(2).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED);
+		assertTrue(found.size() == 5);
+		assertTrue(found.get(2).getExecutionStatus() == ExecutionStatus.FAILED);
 	}
 
 	public void testTwoTCtcBAndtc2()
 	{
-		TestCase tc = new TestCase();
-		CustomField cf = new CustomField();
-		cf.setName(KEY_CUSTOM_FIELD);
-		cf.setValue("br.eti.kinoshita.TestB, br.eti.kinoshita.Test2");
-		tc.getCustomFields().add(cf);
-		tc.setId(2);
-		this.report.addTestCase(tc);
-
-		assertTrue(this.report.getTestCases().size() == 1);
-
 		ClassLoader cl = TestIssue9672.class.getClassLoader();
 		URL url = cl
 				.getResource("hudson/plugins/testlink/result/testng/issue9672");
@@ -132,22 +141,12 @@ extends junit.framework.TestCase
 		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> found = seeker
 				.seek(junitDir);
 		assertNotNull(found);
-		assertTrue(found.size() == 1);
-		assertTrue(found.get(2).getTestCase().getExecutionStatus() == ExecutionStatus.PASSED);
+		assertTrue(found.size() == 5);
+		assertTrue(found.get(3).getExecutionStatus() == ExecutionStatus.PASSED);
 	}
 
 	public void testThreeTCtcAAndNonExistenttcK()
 	{
-		TestCase tc = new TestCase();
-		CustomField cf = new CustomField();
-		cf.setName(KEY_CUSTOM_FIELD);
-		cf.setValue("br.eti.kinoshita.TestB, br.eti.kinoshita.TestK");
-		tc.getCustomFields().add(cf);
-		tc.setId(2);
-		this.report.addTestCase(tc);
-
-		assertTrue(this.report.getTestCases().size() == 1);
-
 		ClassLoader cl = TestIssue9672.class.getClassLoader();
 		URL url = cl
 				.getResource("hudson/plugins/testlink/result/testng/issue9672");
@@ -155,22 +154,12 @@ extends junit.framework.TestCase
 		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> found = seeker
 				.seek(junitDir);
 		assertNotNull(found);
-		assertTrue(found.size() == 1);
-		assertTrue(found.get(2).getTestCase().getExecutionStatus() == ExecutionStatus.NOT_RUN);
+		assertTrue(found.size() == 5);
+		assertTrue(found.get(4).getExecutionStatus() == ExecutionStatus.NOT_RUN);
 	}
 
 	public void testThreeTCtcAAndtc3Andtc2()
 	{
-		TestCase tc = new TestCase();
-		CustomField cf = new CustomField();
-		cf.setName(KEY_CUSTOM_FIELD);
-		cf.setValue("br.eti.kinoshita.TestA, br.eti.kinoshita.Test3, br.eti.kinoshita.Test2");
-		tc.getCustomFields().add(cf);
-		tc.setId(2);
-		this.report.addTestCase(tc);
-
-		assertTrue(this.report.getTestCases().size() == 1);
-
 		ClassLoader cl = TestIssue9672.class.getClassLoader();
 		URL url = cl
 				.getResource("hudson/plugins/testlink/result/testng/issue9672");
@@ -178,8 +167,8 @@ extends junit.framework.TestCase
 		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> found = seeker
 				.seek(junitDir);
 		assertNotNull(found);
-		assertTrue(found.size() == 1);
-		assertTrue(found.get(2).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED);
+		assertTrue(found.size() == 5);
+		assertTrue(found.get(5).getExecutionStatus() == ExecutionStatus.FAILED);
 	}
 
 }

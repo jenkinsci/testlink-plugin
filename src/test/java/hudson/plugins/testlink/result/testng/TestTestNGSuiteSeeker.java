@@ -27,7 +27,6 @@ import hudson.model.BuildListener;
 import hudson.model.StreamBuildListener;
 import hudson.plugins.testlink.parser.testng.Suite;
 import hudson.plugins.testlink.result.TestCaseWrapper;
-import hudson.plugins.testlink.result.TestLinkReport;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -51,54 +50,53 @@ extends junit.framework.TestCase
 	
 	private TestNGSuitesTestResultSeeker<Suite> seeker;
 	
-	private TestLinkReport report;
-	
 	private final static String KEY_CUSTOM_FIELD = "testCustomField";
 	
 	public void setUp()
 	{
-		this.report = new TestLinkReport();
+		TestCase[] tcs = new TestCase[2];
+		
+		TestCase tc = new TestCase();
+		CustomField cf = new CustomField();
+		cf.setName( KEY_CUSTOM_FIELD );
+		cf.setValue("Command line suite");
+		tc.getCustomFields().add(cf);
+		tc.setId(1);
+		tcs[0] = tc;
+		
+		tc = new TestCase();
+		cf = new CustomField();
+		cf.setName( KEY_CUSTOM_FIELD );
+		cf.setValue("Command line suite2");
+		tc.getCustomFields().add(cf);
+		tc.setId(2);
+		tcs[1] = tc;
+		
 		BuildListener listener = new StreamBuildListener(new PrintStream(System.out), Charset.defaultCharset());
 		this.seeker = 
-			new TestNGSuitesTestResultSeeker<Suite>("testng*.xml", report, KEY_CUSTOM_FIELD, listener);
+			new TestNGSuitesTestResultSeeker<Suite>("testng*.xml", tcs, KEY_CUSTOM_FIELD, listener);
 	}
 
 	public void testTestResultSeekerTwoSuites()
 	{
-		TestCase tc = new TestCase();
-		CustomField cf = new CustomField();
-		cf.setName( KEY_CUSTOM_FIELD );
-		cf.setValue("Command line suite, Command line suite2");
-		tc.getCustomFields().add(cf);
-		tc.setId(1);
-		this.report.getTestCases().put( tc.getId(), tc );
-		
 		ClassLoader cl = TestTestNGSuiteSeeker.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/testng/");
 		File testNGDir = new File( url.getFile() );
 		Map<Integer, TestCaseWrapper<Suite>> found = seeker.seek( testNGDir );
 		assertNotNull( found );
-		assertTrue( found.size() == 1 );
-		assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
+		assertTrue( found.size() == 2 );
+		assertTrue( found.get(1).getExecutionStatus() == ExecutionStatus.FAILED );
 	}
 	
 	public void testTestResultSeekerTwoSuitesOneNonExistent()
 	{
-		TestCase tc = new TestCase();
-		CustomField cf = new CustomField();
-		cf.setName( KEY_CUSTOM_FIELD );
-		cf.setValue("Command line suite, Command line suite3");
-		tc.getCustomFields().add(cf);
-		tc.setId(1);
-		this.report.getTestCases().put( tc.getId(), tc );
-		
 		ClassLoader cl = TestTestNGSuiteSeeker.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/testng/");
 		File testNGDir = new File( url.getFile() );
 		Map<Integer, TestCaseWrapper<Suite>> found = seeker.seek( testNGDir );
 		assertNotNull( found );
-		assertTrue( found.size() == 1 );
-		assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.NOT_RUN );
+		assertTrue( found.size() == 2 );
+		assertTrue( found.get(1).getExecutionStatus() == ExecutionStatus.FAILED );
 	}
 	
 }

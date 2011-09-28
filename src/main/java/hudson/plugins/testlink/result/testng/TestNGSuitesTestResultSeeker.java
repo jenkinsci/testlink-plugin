@@ -30,14 +30,11 @@ import hudson.plugins.testlink.parser.testng.Test;
 import hudson.plugins.testlink.parser.testng.TestMethod;
 import hudson.plugins.testlink.parser.testng.TestNGParser;
 import hudson.plugins.testlink.result.TestCaseWrapper;
-import hudson.plugins.testlink.result.TestLinkReport;
 import hudson.plugins.testlink.result.TestResultSeekerException;
 import hudson.plugins.testlink.util.Messages;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,10 +63,10 @@ extends AbstractTestNGTestResultSeeker<Suite>
 	protected final Map<Integer, TestCaseWrapper<Suite>> results = new LinkedHashMap<Integer, TestCaseWrapper<Suite>>();
 	
 	public TestNGSuitesTestResultSeeker(String includePattern,
-			TestLinkReport report, String keyCustomFieldName,
+			TestCase[] automatedTestCases, String keyCustomFieldName,
 			BuildListener listener)
 	{
-		super(includePattern, report, keyCustomFieldName, listener);
+		super(includePattern, automatedTestCases, keyCustomFieldName, listener);
 	}
 
 	/* (non-Javadoc)
@@ -147,16 +144,11 @@ extends AbstractTestNGTestResultSeeker<Suite>
 		
 		if ( ! StringUtils.isBlank( suiteName ) )
 		{
-			final Collection<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
-				this.report.getTestCases().values();
-			
 			listener.getLogger().println( Messages.Results_TestNG_LookingForTestResults( keyCustomFieldName, suiteName ) );
 			listener.getLogger().println();
 			
-			final Iterator<br.eti.kinoshita.testlinkjavaapi.model.TestCase> iter = testLinkTestCases.iterator();
-			while( iter.hasNext() )
+			for(TestCase testLinkTestCase : automatedTestCases )
 			{
-				final br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase = iter.next();
 				listener.getLogger().println( Messages.Results_TestNG_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
 				
 				this.findTestResults( testNGSuite, testLinkTestCase, testNGFile );
@@ -220,7 +212,7 @@ extends AbstractTestNGTestResultSeeker<Suite>
 		final TestCaseWrapper<Suite> temp = this.results.get(testResult.getId());
 		
 		Suite origin = testResult.getOrigin();
-		listener.getLogger().println( Messages.Results_TestNG_TestResultsFound( testResult.getName(), testResult.getId(), origin, origin.getName(), testResult.getTestCase().getExecutionStatus().toString() ) );
+		listener.getLogger().println( Messages.Results_TestNG_TestResultsFound( testResult.getName(), testResult.getId(), origin, origin.getName(), testResult.getExecutionStatus().toString() ) );
 		
 		if ( temp == null )
 		{

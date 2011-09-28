@@ -30,7 +30,6 @@ import hudson.model.Result;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.plugins.testlink.result.ReportFilesPatterns;
-import hudson.plugins.testlink.result.TestLinkReport;
 import hudson.plugins.testlink.util.ExecutionOrderComparator;
 import hudson.tasks.BuildStep;
 import hudson.tasks.Builder;
@@ -40,11 +39,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
-
-import br.eti.kinoshita.testlinkjavaapi.model.Build;
-import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
-import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
-import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
 
 /**
  * Contains basic logic for a Builder for TestLink plug-in. This class was 
@@ -58,7 +52,7 @@ public class AbstractTestLinkBuilder
 extends Builder
 {
 
-/* --- Job properties --- */
+	/* --- Job properties --- */
 	
 	/**
 	 * The name of the TestLink installation.
@@ -88,8 +82,6 @@ extends Builder
 	/**
 	 * Name of the Key Custom Field. This must be one of the custom fields in 
 	 * the property customFields;
-	 * 
-	 * @see {@#customFields}
 	 */
 	protected final String keyCustomField;
 	
@@ -380,52 +372,6 @@ extends Builder
 		}
 		
 		return customFieldNamesArray;
-	}
-	
-	/**
-	 * Creates the report for the build execution. 
-	 * 
-	 * @param build TestLink build.
-	 * @param testPlan TestLink test plan. 
-	 * @param testProject TestLink test project.
-	 * @param automatedTestCases Array of TestLink automated test cases.
-	 * @return report.
-	 */
-	protected TestLinkReport createReport( Build build, TestPlan testPlan,
-			TestProject testProject, TestCase[] automatedTestCases )
-	{
-		final TestLinkReport report = new TestLinkReport( build, testPlan, testProject );
-		
-		for( int i = 0 ; automatedTestCases != null && i < automatedTestCases.length ; ++i )
-		{
-			final TestCase testCase = automatedTestCases [ i ];
-			report.addTestCase ( testCase );
-		}
-		
-		return report;
-	}
-	
-
-	/**
-	 * Updates Build status as UNSTABLE if it contains failed tests. If the 
-	 * user checks the option failed tests mark build as failure, then it updates 
-	 * Build status as FAILURE.
-	 * 
-	 * @param build Build.
-	 */
-	protected void updateBuildStatus( int testFailures, AbstractBuild<?, ?> build )
-	{
-		if ( testFailures > 0 )
-		{
-			if ( this.failedTestsMarkBuildAsFailure != null && this.failedTestsMarkBuildAsFailure )
-			{
-				build.setResult( Result.FAILURE );
-			}
-			else
-			{
-				build.setResult( Result.UNSTABLE );
-			}
-		}
 	}
 	
 }

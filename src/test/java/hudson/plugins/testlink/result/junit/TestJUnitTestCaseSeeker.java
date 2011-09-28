@@ -26,7 +26,6 @@ package hudson.plugins.testlink.result.junit;
 import hudson.model.BuildListener;
 import hudson.model.StreamBuildListener;
 import hudson.plugins.testlink.result.TestCaseWrapper;
-import hudson.plugins.testlink.result.TestLinkReport;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -50,46 +49,29 @@ extends junit.framework.TestCase
 	
 	private JUnitTestCasesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestCase> seeker;
 	
-	private TestLinkReport report;
-	
 	private final static String KEY_CUSTOM_FIELD = "testCustomField";
 	
 	public void setUp()
 	{
-		this.report = new TestLinkReport();
 		BuildListener listener = new StreamBuildListener(new PrintStream(System.out), Charset.defaultCharset());
-		this.seeker = 
-			new JUnitTestCasesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestCase>("TEST-*.xml", report, KEY_CUSTOM_FIELD, listener);
-	}
-
-	public void testTestResultSeekerJUnitOne()
-	{
+		
+		TestCase[] tcs = new TestCase[4];
+		
 		TestCase tc = new TestCase();
 		CustomField cf = new CustomField();
 		cf.setName( KEY_CUSTOM_FIELD );
 		cf.setValue("br.eti.kinoshita.Test");
 		tc.getCustomFields().add( cf );
 		tc.setId(1);
-		this.report.getTestCases().put( tc.getId(), tc );
+		tcs[0] = tc;
 		
-		ClassLoader cl = TestJUnitTestCaseSeeker.class.getClassLoader();
-		URL url = cl.getResource("hudson/plugins/testlink/result/junit/");
-		File junitDir = new File( url.getFile() );
-		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.junit.TestCase>> found = seeker.seek(junitDir);
-		assertNotNull( found );
-		assertTrue( found.size() == 1 );
-		assertTrue( found.get(tc.getId()).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
-	}
-	
-	public void testTestResultSeekerJUnitTwo()
-	{
-		TestCase tc = new TestCase();
-		CustomField cf = new CustomField();
+		tc = new TestCase();
+		cf = new CustomField();
 		cf.setName( KEY_CUSTOM_FIELD );
 		cf.setValue("br.eti.kinoshita.Test");
 		tc.getCustomFields().add(cf);
 		tc.setId(2);
-		this.report.addTestCase(tc);
+		tcs[1] = tc;
 		
 		tc = new TestCase();
 		cf = new CustomField();
@@ -97,38 +79,53 @@ extends junit.framework.TestCase
 		cf.setValue("br.eti.kinoshita.TestImmo");
 		tc.getCustomFields().add(cf);
 		tc.setId(3);
-		this.report.addTestCase(tc);
+		tcs[2] = tc;
 		
-		assertTrue( this.report.getTestCases().size() == 2 );
+		tc = new TestCase();
+		cf = new CustomField();
+		cf.setName( KEY_CUSTOM_FIELD );
+		cf.setValue("Consultation");
+		tc.getCustomFields().add(cf);
+		tc.setId(4);
+		tcs[3] = tc;
 		
+		this.seeker = 
+			new JUnitTestCasesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestCase>("TEST-*.xml", tcs, KEY_CUSTOM_FIELD, listener);
+	}
+
+	public void testTestResultSeekerJUnitOne()
+	{
 		ClassLoader cl = TestJUnitTestCaseSeeker.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/junit/");
 		File junitDir = new File( url.getFile() );
 		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.junit.TestCase>> found = seeker.seek(junitDir);
 		assertNotNull( found );
-		assertTrue( found.size() == 2 );
-		assertTrue( found.get(2).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED );
-		assertTrue( found.get(3).getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );
+		assertTrue( found.size() == 4 );
+		assertTrue( found.get(1).getExecutionStatus() == ExecutionStatus.FAILED );
+	}
+	
+	public void testTestResultSeekerJUnitTwo()
+	{
+		ClassLoader cl = TestJUnitTestCaseSeeker.class.getClassLoader();
+		URL url = cl.getResource("hudson/plugins/testlink/result/junit/");
+		File junitDir = new File( url.getFile() );
+		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.junit.TestCase>> found = seeker.seek(junitDir);
+		assertNotNull( found );
+		assertTrue( found.size() == 4 );
+		assertTrue( found.get(2).getExecutionStatus() == ExecutionStatus.FAILED );
+		assertTrue( found.get(3).getExecutionStatus() == ExecutionStatus.PASSED );
 	}
 	
 	public void testPoorJUnitSuiteXML()
 	{
-		TestCase tc = new TestCase();
-		CustomField cf = new CustomField();
-		cf.setName( KEY_CUSTOM_FIELD );
-		cf.setValue("Consultation");
-		tc.getCustomFields().add(cf);
-		tc.setId(1);
-		this.report.addTestCase(tc);
-		
 		ClassLoader cl = TestJUnitTestCaseSeeker.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/junit/");
 		File junitDir = new File( url.getFile() );
 		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.junit.TestCase>> found = seeker.seek(junitDir);
 		assertNotNull( found );
-		assertTrue( found.size() == 1 );
+		assertTrue( found.size() == 4 );
 		
-		assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );
+		assertTrue( found.get(4).getExecutionStatus() == ExecutionStatus.PASSED );
 	}
 	
 }

@@ -27,7 +27,6 @@ import hudson.model.BuildListener;
 import hudson.plugins.testlink.parser.ParserException;
 import hudson.plugins.testlink.parser.tap.TAPParser;
 import hudson.plugins.testlink.result.TestCaseWrapper;
-import hudson.plugins.testlink.result.TestLinkReport;
 import hudson.plugins.testlink.result.TestResultSeeker;
 import hudson.plugins.testlink.result.TestResultSeekerException;
 import hudson.plugins.testlink.util.Messages;
@@ -76,10 +75,10 @@ extends TestResultSeeker<TestSet>
 	 * @param keyCustomFieldName
 	 * @param listener
 	 */
-	public TAPTestResultSeeker(String includePattern, TestLinkReport report,
+	public TAPTestResultSeeker(String includePattern, TestCase[] automatedTestCases,
 			String keyCustomFieldName, BuildListener listener)
 	{
-		super(includePattern, report, keyCustomFieldName, listener);
+		super(includePattern, automatedTestCases, keyCustomFieldName, listener);
 	}
 	
 	/* (non-Javadoc)
@@ -182,7 +181,7 @@ extends TestResultSeeker<TestSet>
 		listener.getLogger().println( Messages.Results_TAP_LookingForTestResults( keyCustomFieldName, tapFileNameWithoutExtension ) );
 		listener.getLogger().println();
 		
-		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : this.report.getTestCases().values() )
+		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : automatedTestCases )
 		{
 			listener.getLogger().println( Messages.Results_TAP_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
 		
@@ -224,7 +223,7 @@ extends TestResultSeeker<TestSet>
 					
 					try
 					{
-						List<Attachment> tapAttachments = this.getTapAttachments( testResult.getTestCase().getVersionId(), tapFile, tapTestSet );
+						List<Attachment> tapAttachments = this.getTapAttachments( testResult.getVersionId(), tapFile, tapTestSet );
 						
 						for( Attachment attachment : tapAttachments )
 						{
@@ -259,7 +258,7 @@ extends TestResultSeeker<TestSet>
 		final TestCaseWrapper<TestSet> temp = this.results.get(testResult.getId());
 		
 		TestSet origin = testResult.getOrigin();
-		listener.getLogger().println( Messages.Results_JUnit_TestResultsFound( testResult.getName(), testResult.getId(), origin, tapFileNameWithoutExtension, testResult.getTestCase().getExecutionStatus().toString() ) );
+		listener.getLogger().println( Messages.Results_JUnit_TestResultsFound( testResult.getName(), testResult.getId(), origin, tapFileNameWithoutExtension, testResult.getExecutionStatus().toString() ) );
 		
 		if ( temp == null )
 		{
@@ -323,8 +322,8 @@ extends TestResultSeeker<TestSet>
 	}
 
 	/**
-	 * @param planDiagnostic
-	 * @return
+	 * @param diagnostic
+	 * @return TestLink Platform if present, {@code null} otherwise
 	 */
 	protected String extractPlatform( Map<String, Object> diagnostic )
 	{

@@ -24,10 +24,10 @@
   </f:entry>
   
   <f:entry title="${%CustomFields}" help="${rootURL}/../plugin/testlink/help-customFields.html">
-	  <f:textbox id="customFields" name="TestLinkBuilder.customFields" value="${instance.customFields}" />
+	  <f:textbox id="customFields" name="TestLinkBuilder.customFields" value="${instance.customFields}" onchange="createKeyCustomFields()" />
   </f:entry>
   
-  <f:entry title="${%Key Custom Field}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
+  <f:entry title="${%Key custom field}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
       <f:textbox id="keyCustomField" name="TestLinkBuilder.keyCustomField" value="${instance.keyCustomField}" />
   </f:entry>
   

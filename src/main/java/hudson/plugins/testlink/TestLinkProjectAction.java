@@ -25,7 +25,7 @@ package hudson.plugins.testlink;
 
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.plugins.testlink.result.TestLinkReport;
+import hudson.plugins.testlink.result.Report;
 import hudson.util.ChartUtil;
 import hudson.util.DataSetBuilder;
 
@@ -45,6 +45,9 @@ import org.kohsuke.stapler.StaplerResponse;
 public class TestLinkProjectAction 
 extends AbstractTestLinkProjectAction
 {
+	
+	private static final int DEFAULT_GRAPH_WIDTH  = 500;
+	private static final int DEFAULT_GRAPH_HEIGHT = 200;
 
 	private AbstractProject<?, ?> project;
 	
@@ -109,27 +112,25 @@ extends AbstractTestLinkProjectAction
 	 * Show CCM html report f the latest build. If no builds are associated 
 	 * with CCM , returns info page.
 	 * 
-	 * @param request
+	 * @param req
 	 *            Stapler request
-	 * @param response
+	 * @param res
 	 *            Stapler response
 	 * @throws IOException
 	 *             in case of an error
 	 */
-	public void doIndex( 
-			final StaplerRequest request, 
-			final StaplerResponse response ) 
+	public void doIndex( final StaplerRequest req, final StaplerResponse res ) 
 	throws IOException
 	{
 		AbstractBuild<?, ?> lastBuild = getLastBuildWithTestLink();
 		if (lastBuild == null)
 		{
-			response.sendRedirect2("nodata");
+			res.sendRedirect2("nodata");
 		}
 		else 
 		{
 			int buildNumber = lastBuild.getNumber();
-			response.sendRedirect2( String.format("../%d/%s", buildNumber,
+			res.sendRedirect2( String.format("../%d/%s", buildNumber,
 					TestLinkBuildAction.URL_NAME) );
 		}
 	}
@@ -160,10 +161,10 @@ extends AbstractTestLinkProjectAction
 		}.doPng(req, res);
 	}
 	
-	public void doGraphMap( final StaplerRequest req, StaplerResponse rsp )
+	public void doGraphMap( final StaplerRequest req, StaplerResponse res )
 			throws IOException
 	{
-		if (newGraphNotNeeded(req, rsp))
+		if (newGraphNotNeeded(req, res))
 		{
 			return;
 		}
@@ -178,7 +179,7 @@ extends AbstractTestLinkProjectAction
 			{
 				return GraphHelper.createChart(req, dataSetBuilder.build());
 			}
-		}.doMap(req, rsp);
+		}.doMap(req, res);
 	}
 	
 	/**
@@ -197,12 +198,12 @@ extends AbstractTestLinkProjectAction
 	 * no need to regenerate the graph. Browser should reuse it's cached image
 	 * 
 	 * @param req
-	 * @param rsp
+	 * @param res
 	 * @return true, if new image does NOT need to be generated, false otherwise
 	 */
-	private boolean newGraphNotNeeded( final StaplerRequest req,
-			StaplerResponse rsp )
+	private boolean newGraphNotNeeded( final StaplerRequest req, StaplerResponse res )
 	{
+		boolean newGraphNotNeeded = false;
 		Calendar t = getProject().getLastCompletedBuild().getTimestamp();
 		Integer prevNumBuilds = requestMap.get(req.getRequestURI());
 		int numBuilds = getProject().getBuilds().size();
@@ -220,22 +221,21 @@ extends AbstractTestLinkProjectAction
 			requestMap.clear();
 		}
 
-		if (prevNumBuilds == numBuilds && req.checkIfModified(t, rsp))
+		if (prevNumBuilds == numBuilds && req.checkIfModified(t, res))
 		{
 			/*
 			 * checkIfModified() is after '&&' because we want it evaluated only
 			 * if number of builds is different
 			 */
-			return true;
+			newGraphNotNeeded = true;
 		}
 
-		return false;
+		return newGraphNotNeeded;
 	}
 	
 	protected void populateDataSetBuilder(
 			DataSetBuilder<String, ChartUtil.NumberOnlyBuildLabel> dataset )
 	{
-
 		for (AbstractBuild<?, ?> build = getProject().getLastBuild(); build != null; build = build
 				.getPreviousBuild())
 		{
@@ -244,17 +244,12 @@ extends AbstractTestLinkProjectAction
 			TestLinkBuildAction action = build.getAction(getBuildActionClass());
 			if (action != null)
 			{
-				TestLinkResult result = action.getResult();
-				TestLinkReport report = result.getReport();
-
-				dataset.add(report.getTestsBlocked(),
-						"Blocked", label);
-				dataset.add(report.getTestsFailed(), "Failed",
-						label);
-				dataset.add(report.getTestsNotRun(),
-						"Not Run", label);
-				dataset.add(report.getTestsPassed(), "Passed",
-						label);
+				final TestLinkResult result = action.getResult();
+				final Report report = result.getReport();
+				dataset.add(report.getTestsBlocked(), "Blocked", label);
+				dataset.add(report.getTestsFailed(), "Failed", label);
+				dataset.add(report.getTestsNotRun(), "Not Run", label);
+				dataset.add(report.getTestsPassed(), "Passed", label);
 			}
 		}
 	}
@@ -266,7 +261,7 @@ extends AbstractTestLinkProjectAction
 	 */
 	public int getGraphWidth()
 	{
-		return 500;
+		return DEFAULT_GRAPH_WIDTH;
 	}
 
 	/**
@@ -276,7 +271,7 @@ extends AbstractTestLinkProjectAction
 	 */
 	public int getGraphHeight()
 	{
-		return 200;
+		return DEFAULT_GRAPH_HEIGHT;
 	}
 	
 }

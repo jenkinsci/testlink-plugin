@@ -29,15 +29,12 @@ import hudson.plugins.testlink.parser.junit.JUnitParser;
 import hudson.plugins.testlink.parser.junit.TestCase;
 import hudson.plugins.testlink.parser.junit.TestSuite;
 import hudson.plugins.testlink.result.TestCaseWrapper;
-import hudson.plugins.testlink.result.TestLinkReport;
 import hudson.plugins.testlink.result.TestResultSeekerException;
 import hudson.plugins.testlink.util.Messages;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,12 +80,12 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 	
 	public JUnitTestCasesTestResultSeeker(
 		String includePattern,
-		TestLinkReport report, 
+		br.eti.kinoshita.testlinkjavaapi.model.TestCase[] automatedTestCases, 
 		String keyCustomFieldName,
 		BuildListener listener
 	)
 	{
-		super(includePattern, report, keyCustomFieldName, listener);
+		super(includePattern, automatedTestCases, keyCustomFieldName, listener);
 	}
 	
 	/* (non-Javadoc)
@@ -188,22 +185,9 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 		
 		if ( ! StringUtils.isBlank( testClassOrTestName ) )
 		{
-			final Collection<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
-				this.report.getTestCases().values();
-			
-			//listener.getLogger().println();
-			//listener.getLogger().println( Messages.Results_JUnit_LookingForTestResults( keyCustomFieldName, testClassOrTestName ) );
-			//listener.getLogger().println();
-			
-			final Iterator<br.eti.kinoshita.testlinkjavaapi.model.TestCase> iter = testLinkTestCases.iterator();
-			while( iter.hasNext() )
+			for( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : automatedTestCases )
 			{
-				final br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase = iter.next();
-				//listener.getLogger().println( Messages.Results_JUnit_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
-				
 				this.findTestResults( junitTestCase, testClassOrTestName, testLinkTestCase, junitFile );
-				
-				//listener.getLogger().println();
 			}
 		}
 	}

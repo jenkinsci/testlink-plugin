@@ -1,6 +1,6 @@
 package hudson.plugins.testlink;
 
-import hudson.plugins.testlink.result.TestLinkReport;
+import hudson.plugins.testlink.result.Report;
 import hudson.util.ChartUtil.NumberOnlyBuildLabel;
 import hudson.util.ColorPalette;
 import hudson.util.ShiftedCategoryAxis;
@@ -102,7 +102,8 @@ public class GraphHelper
               NumberOnlyBuildLabel label = (NumberOnlyBuildLabel) dataset.getColumnKey(column);
               TestLinkBuildAction build = label.build.getAction(TestLinkBuildAction.class);
               TestLinkResult result = build.getResult();
-              TestLinkReport report = result.getReport();
+              Report report = result.getReport();
+              
               switch (row) {
                   case 0:
                 	  return String.valueOf(report.getTestsBlocked()) + " Blocked";

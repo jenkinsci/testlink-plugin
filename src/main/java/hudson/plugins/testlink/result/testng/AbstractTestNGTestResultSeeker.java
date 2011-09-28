@@ -24,7 +24,6 @@
 package hudson.plugins.testlink.result.testng;
 
 import hudson.model.BuildListener;
-import hudson.plugins.testlink.result.TestLinkReport;
 import hudson.plugins.testlink.result.TestResultSeeker;
 import hudson.plugins.testlink.util.Messages;
 
@@ -32,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
+import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
@@ -44,10 +44,10 @@ extends TestResultSeeker<T>
 	private static final long serialVersionUID = 8343628541429393341L;
 
 	public AbstractTestNGTestResultSeeker(String includePattern,
-			TestLinkReport report, String keyCustomFieldName,
+			TestCase[] automatedTestCases, String keyCustomFieldName,
 			BuildListener listener)
 	{
-		super(includePattern, report, keyCustomFieldName, listener);
+		super(includePattern, automatedTestCases, keyCustomFieldName, listener);
 	}
 	
 	/**

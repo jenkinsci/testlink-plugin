@@ -1,0 +1,193 @@
+/*
+ * The MIT License
+ *
+ * Copyright (c) <2011> <Bruno P. Kinoshita>
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+package hudson.plugins.testlink;
+
+import hudson.plugins.testlink.result.TestCaseWrapper;
+
+import java.util.Collection;
+import java.util.List;
+
+import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
+import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
+import br.eti.kinoshita.testlinkjavaapi.model.Build;
+import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
+import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
+import br.eti.kinoshita.testlinkjavaapi.model.ExecutionType;
+import br.eti.kinoshita.testlinkjavaapi.model.ReportTCResultResponse;
+import br.eti.kinoshita.testlinkjavaapi.model.ResponseDetails;
+import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
+import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
+import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
+
+/**
+ * Immutable object that represents the TestLink site with a Test Project, 
+ * a Test Plan and a Build.
+ * 
+ * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
+ * @since 3.0
+ */
+public class TestLinkSite
+{
+
+	private final TestLinkAPI api;
+	private final TestProject testProject;
+	private final TestPlan testPlan;
+	private final Build build;
+	
+	/**
+	 * @param api TestLink Java API object
+	 * @param testProject TestLink Test Project
+	 * @param testPlan TestLink Test Plan
+	 * @param build TestLink Build
+	 */
+	public TestLinkSite(TestLinkAPI api, TestProject testProject, TestPlan testPlan, Build build)
+	{
+		super();
+		this.api = api;
+		this.testProject = testProject;
+		this.testPlan = testPlan;
+		this.build = build;
+	}
+	
+	/**
+	 * @return the TestLink Java API object
+	 */
+	public TestLinkAPI getApi()
+	{
+		return api;
+	}
+
+	/**
+	 * @return the testProject
+	 */
+	public TestProject getTestProject()
+	{
+		return testProject;
+	}
+
+	/**
+	 * @return the testPlan
+	 */
+	public TestPlan getTestPlan()
+	{
+		return testPlan;
+	}
+
+	/**
+	 * @return the build
+	 */
+	public Build getBuild()
+	{
+		return build;
+	}
+
+	/**
+	 * @param customFieldsNames Array of custom fields names
+	 * @return Array of automated test cases with custom fields
+	 */
+	public TestCase[] getAutomatedTestCases( String[] customFieldsNames ) 
+	{
+		final TestCase[] testCases = this.api.getTestCasesForTestPlan(
+				getTestPlan().getId(), 
+				null, 
+				null, 
+				null, 
+				null,
+				null, 
+				null, 
+				null, 
+				ExecutionType.AUTOMATED, 
+				null);			
+
+		for( final TestCase testCase : testCases )
+		{
+			testCase.setTestProjectId(getTestProject().getId());
+			testCase.setExecutionStatus(ExecutionStatus.NOT_RUN);
+			if ( customFieldsNames != null )
+			{
+				for( String customFieldName : customFieldsNames )
+				{
+					final CustomField customField = 
+							this.api.getTestCaseCustomFieldDesignValue(
+									testCase.getId(), 
+									null, /* testCaseExternalId */ 
+									testCase.getVersion(), 
+									testCase.getTestProjectId(), 
+									customFieldName, 
+									ResponseDetails.FULL);
+					testCase.getCustomFields().add(customField);
+				}
+			}
+		}
+		
+		return testCases;
+	}
+	
+	/**
+	 * Updates the test cases status in TestLink (note and status) and 
+	 * uploads any existing attachments.
+	 * 
+	 * @param testCases Test Cases
+	 */
+	@SuppressWarnings("rawtypes")
+	public void updateTestCases( Collection<TestCaseWrapper> testCases ) 
+	{
+		// Update TestLink Test Status
+		for( TestCaseWrapper testCase : testCases )
+		{
+			if ( testCase.getExecutionStatus() != null || testCase.getExecutionStatus() != ExecutionStatus.NOT_RUN )
+			{
+				// Update Test Case status
+				final ReportTCResultResponse reportTCResultResponse = api.reportTCResult(
+						testCase.getId(), 
+						testCase.getInternalId(), 
+						testPlan.getId(), 
+						testCase.getExecutionStatus(), 
+						build.getId(), 
+						build.getName(), 
+						testCase.getNotes(), 
+						null, // guess
+						null, // bug id
+						null, // platform id 
+						testCase.getPlatform(), // platform name
+						null, // custom fields
+						null);
+				
+				@SuppressWarnings("unchecked")
+				List<Attachment> attachments = testCase.getAttachments();
+				for ( Attachment attachment :  attachments)
+				{
+					api.uploadExecutionAttachment(
+							reportTCResultResponse.getExecutionId(), 
+							attachment.getTitle(), 
+							attachment.getDescription(), 
+							attachment.getFileName(), 
+							attachment.getFileType(), 
+							attachment.getContent());
+				}
+			}
+		}
+	}
+	
+}

@@ -25,7 +25,8 @@ package hudson.plugins.testlink;
 
 import hudson.model.Action;
 import hudson.model.AbstractBuild;
-import hudson.plugins.testlink.result.TestLinkReport;
+import hudson.plugins.testlink.result.Report;
+import hudson.plugins.testlink.util.TestLinkHelper;
 
 import java.io.Serializable;
 
@@ -89,10 +90,10 @@ implements Action, Serializable, StaplerProxy
 	/**
 	 * @return Previous TestLink report
 	 */
-	private TestLinkReport getPreviousReport()
+	private Report getPreviousReport()
 	{
 		TestLinkResult previousResult = this.getPreviousResult();
-		TestLinkReport previousReport = null;
+		Report previousReport = null;
 		if ( previousResult != null )
 		{
 			previousReport = previousResult.getReport();
@@ -134,14 +135,14 @@ implements Action, Serializable, StaplerProxy
 	 * @return Report summary
 	 */
 	public String getSummary(){
-        return ResultsSummary.createReportSummary(result.getReport(), this.getPreviousReport());
+        return TestLinkHelper.createReportSummary(result.getReport(), this.getPreviousReport());
     }
 	
 	/**
 	 * @return Detailed Report summary
 	 */
     public String getDetails(){
-        return ResultsSummary.createReportSummaryDetails(result.getReport(), this.getPreviousReport());
+        return TestLinkHelper.createReportSummaryDetails(result.getReport(), this.getPreviousReport());
     }
 	
 }

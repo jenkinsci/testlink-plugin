@@ -25,6 +25,8 @@ package hudson.plugins.testlink.util;
 
 import hudson.EnvVars;
 import hudson.model.BuildListener;
+import hudson.plugins.testlink.TestLinkBuildAction;
+import hudson.plugins.testlink.result.Report;
 
 import java.util.HashMap;
 import java.util.List;
@@ -260,7 +262,6 @@ public final class TestLinkHelper
 	 * 
 	 * @param customField The custom field
 	 * @param testLinkEnvVar TestLink envVars
-	 * @return Formatted name for a environment variable
 	 */
 	public static void addCustomFieldEnvironmentVariableName(CustomField customField, Map<String, String> testLinkEnvVar) 
 	{
@@ -322,5 +323,112 @@ public final class TestLinkHelper
 		final EnvVars buildEnvironment = new EnvVars( testLinkEnvironmentVariables );
 		return buildEnvironment;
 	}
+	
+	/**
+	 * Creates Report Summary.
+	 * 
+	 * @param testLinkReport TestLink Report
+	 * @param previous Previous TestLink Report
+	 * @return Report Summary
+	 */
+	public static String createReportSummary(
+			Report testLinkReport,
+			Report previous) 
+	{
+		StringBuilder builder = new StringBuilder();
+		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildID(testLinkReport.getBuild().getId())+"</b></p>");
+		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildName(testLinkReport.getBuild().getName())+"</b></p>");
+		builder.append("<p><a href=\"" + TestLinkBuildAction.URL_NAME + "\">");
+		
+		Integer total = testLinkReport.getTestsTotal();
+		Integer previousTotal = previous != null ? previous.getTestsTotal() : total;
+		Integer passed = testLinkReport.getTestsPassed();
+		Integer previousPassed = previous != null ? previous.getTestsPassed() : passed;
+		Integer failed = testLinkReport.getTestsFailed();
+		Integer previousFailed = previous != null ? previous.getTestsFailed() : failed;
+		Integer blocked = testLinkReport.getTestsBlocked();
+		Integer previousBlocked = previous != null ? previous.getTestsBlocked() : blocked;
+		Integer notRun = testLinkReport.getTestsNotRun();
+		Integer previousNotRun = previous != null ? previous.getTestsNotRun() : notRun;
+		
+		builder.append( Messages.ReportSummary_Summary_Text(
+			 total + getPlusSignal(total, previousTotal), 
+			 passed + getPlusSignal(passed, previousPassed), 
+			 failed + getPlusSignal(failed, previousFailed), 
+			 blocked + getPlusSignal(blocked, previousBlocked), 
+			 notRun + getPlusSignal(notRun, previousNotRun)
+		) );
+		
+        builder.append("</p>");
+		
+		return builder.toString();
+	}
+
+	/**
+	 * Creates detailed Report Summary.
+	 * 
+	 * @param report TestLink report
+	 * @param previous Previous TestLink report
+	 * @return Detailed Report Summary
+	 */
+	public static String createReportSummaryDetails(
+			Report report,
+			Report previous) 
+	{
+		StringBuilder builder = new StringBuilder();
+
+		builder.append("<p>"+Messages.ReportSummary_Details_Header()+"</p>");
+		builder.append("<table border=\"1\">\n");
+		builder.append("<tr><th>");
+		builder.append(Messages.ReportSummary_Details_TestCaseId() );
+		builder.append("</th><th>");
+		builder.append(Messages.ReportSummary_Details_Version() );
+		builder.append("</th><th>");
+		builder.append(Messages.ReportSummary_Details_Name());
+		builder.append("</th><th>");
+		builder.append(Messages.ReportSummary_Details_TestProjectId());
+		builder.append("</th><th>");
+		builder.append(Messages.ReportSummary_Details_ExecutionStatus());
+		builder.append("</th></tr>\n");
+		
+        for(TestCase tc: report.getTestCases() )
+        {
+        	builder.append("<tr>\n");
+        	
+        	builder.append("<td>"+tc.getId()+"</td>");
+        	builder.append("<td>"+tc.getVersion()+"</td>");
+        	builder.append("<td>"+tc.getName()+"</td>");
+        	builder.append("<td>"+tc.getTestProjectId()+"</td>");
+    		builder.append("<td>"+TestLinkHelper.getExecutionStatusTextColored( tc.getExecutionStatus() )+"</td>\n");
+        	
+        	builder.append("</tr>\n");
+        }
+        
+        builder.append("</table>");
+        return builder.toString();
+	}
+
+	
+
+	/**
+	 * Prints the difference between two int values, showing a plus sign if the 
+	 * current number is greater than the previous. 
+	 * 
+	 * @param current Current value
+	 * @param previous Previous value
+	 */
+	protected static String getPlusSignal(int current, int previous) {
+		int difference = current - previous;
+        
+		if(difference > 0)
+        {
+			return " (+"+difference+")";
+        }
+		else
+		{
+			return "";
+		}
+        
+    }
 	
 }

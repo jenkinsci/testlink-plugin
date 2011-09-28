@@ -28,14 +28,11 @@ import hudson.plugins.testlink.parser.ParserException;
 import hudson.plugins.testlink.parser.junit.JUnitParser;
 import hudson.plugins.testlink.parser.junit.TestSuite;
 import hudson.plugins.testlink.result.TestCaseWrapper;
-import hudson.plugins.testlink.result.TestLinkReport;
 import hudson.plugins.testlink.result.TestResultSeekerException;
 import hudson.plugins.testlink.util.Messages;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,10 +61,10 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 	protected final Map<Integer, TestCaseWrapper<TestSuite>> results = new LinkedHashMap<Integer, TestCaseWrapper<TestSuite>>();
 
 	public JUnitSuitesTestResultSeeker(String includePattern,
-			TestLinkReport report, String keyCustomFieldName,
+			TestCase[] automatedTestCases, String keyCustomFieldName,
 			BuildListener listener)
 	{
-		super(includePattern, report, keyCustomFieldName, listener);
+		super(includePattern, automatedTestCases, keyCustomFieldName, listener);
 	}
 	
 	/*
@@ -123,9 +120,6 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 	{
 		for ( int i = 0 ; i < junitReports.length ; ++i )
 		{
-			//listener.getLogger().println( Messages.Results_JUnit_Parsing( junitReports[i] ) );
-			//listener.getLogger().println();
-			
 			final File junitFile = new File(directory, junitReports[i]);
 			
 			try
@@ -139,9 +133,7 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 			}
 			catch ( ParserException e )
 			{
-				//listener.getLogger().println( Messages.Results_JUnit_ParsingFail(junitFile, e.getMessage() ) );
 				e.printStackTrace( listener.getLogger() );
-				//listener.getLogger().println();
 			}
 		}
 	}
@@ -155,21 +147,9 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 		
 		if ( ! StringUtils.isBlank( suiteName ) )
 		{
-			final Collection<br.eti.kinoshita.testlinkjavaapi.model.TestCase> testLinkTestCases =
-				this.report.getTestCases().values();
-			
-			//listener.getLogger().println( Messages.Results_JUnit_LookingForTestResults( keyCustomFieldName, suiteName ) );
-			//listener.getLogger().println();
-			
-			final Iterator<br.eti.kinoshita.testlinkjavaapi.model.TestCase> iter = testLinkTestCases.iterator();
-			while( iter.hasNext() )
+			for( TestCase testCase : automatedTestCases ) 
 			{
-				final br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase = iter.next();
-				//listener.getLogger().println( Messages.Results_JUnit_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
-				
-				this.findTestResults( junitSuite, testLinkTestCase, junitFile );
-				
-				//listener.getLogger().println();
+				this.findTestResults( junitSuite, testCase, junitFile );
 			}
 		}
 		
@@ -266,7 +246,7 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 	 */
 	protected String getJUnitNotes( TestSuite testSuite )
 	{
-		StringBuilder notes = new StringBuilder();
+		final StringBuilder notes = new StringBuilder();
 		
 		notes.append(
 				Messages.Results_JUnit_NotesForTestSuite(

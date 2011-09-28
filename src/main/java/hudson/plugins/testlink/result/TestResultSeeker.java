@@ -42,6 +42,7 @@ import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.types.FileSet;
 
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
+import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**
  * Seeks for Test Results.
@@ -56,7 +57,7 @@ implements Serializable
 	private static final long serialVersionUID = 6476036912489515690L;
 	
 	protected final String includePattern;
-	protected final TestLinkReport report;
+	protected final TestCase[] automatedTestCases;
 	protected final String keyCustomFieldName;
 	protected final BuildListener listener;
 	
@@ -70,14 +71,14 @@ implements Serializable
 	 */
 	public TestResultSeeker( 
 			String includePattern, 
-		TestLinkReport report, 
+		TestCase[] automatedTestCases, 
 		String keyCustomFieldName, 
 		BuildListener listener)
 	{
 		super();
 		
 		this.includePattern = includePattern;
-		this.report = report;
+		this.automatedTestCases = automatedTestCases;
 		this.keyCustomFieldName = keyCustomFieldName;
 		this.listener = listener;
 	}

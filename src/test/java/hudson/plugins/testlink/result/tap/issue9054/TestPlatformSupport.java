@@ -23,19 +23,18 @@
  */
 package hudson.plugins.testlink.result.tap.issue9054;
 
+import hudson.model.BuildListener;
+import hudson.model.StreamBuildListener;
+import hudson.plugins.testlink.result.TestCaseWrapper;
+import hudson.plugins.testlink.result.TestResultsCallable;
+import hudson.plugins.testlink.result.tap.TAPTestResultSeeker;
+import hudson.plugins.testlink.result.tap.TestTestResultSeekerTAP;
+
 import java.io.File;
 import java.io.PrintStream;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
-
-import hudson.model.BuildListener;
-import hudson.model.StreamBuildListener;
-import hudson.plugins.testlink.result.TestCaseWrapper;
-import hudson.plugins.testlink.result.TestLinkReport;
-import hudson.plugins.testlink.result.TestResultsCallable;
-import hudson.plugins.testlink.result.tap.TAPTestResultSeeker;
-import hudson.plugins.testlink.result.tap.TestTestResultSeekerTAP;
 
 import org.jvnet.hudson.test.Bug;
 import org.tap4j.model.TestSet;
@@ -55,32 +54,29 @@ extends junit.framework.TestCase
 
 	private TestResultsCallable seeker;
 	
-	private TestLinkReport report;
-	
 	private final static String KEY_CUSTOM_FIELD = "testCustomField";
 
 	private String tapReportFilesPattern = "*.tap";
 	
 	public void setUp()
 	{
-		this.report = new TestLinkReport();
 		BuildListener listener = new StreamBuildListener(new PrintStream(System.out), Charset.defaultCharset());
 		this.seeker = 
-			new TestResultsCallable(report, KEY_CUSTOM_FIELD, listener);
+			new TestResultsCallable( KEY_CUSTOM_FIELD, listener);
 		
-		this.seeker.addTestResultSeeker( new TAPTestResultSeeker<TestSet>(tapReportFilesPattern, report, KEY_CUSTOM_FIELD, listener) );
-	}
-	
-	public void testPlatformSupport() 
-	{
+		TestCase[] tcs = new TestCase[1];
 		TestCase tc = new TestCase();
 		CustomField cf = new CustomField();
 		cf.setName( KEY_CUSTOM_FIELD );
 		cf.setValue("A");
 		tc.getCustomFields().add(cf);
 		tc.setId(1);
-		this.report.getTestCases().put( tc.getId(), tc );
-		
+		tcs[0] = tc;
+		this.seeker.addTestResultSeeker( new TAPTestResultSeeker<TestSet>(tapReportFilesPattern, tcs, KEY_CUSTOM_FIELD, listener) );
+	}
+	
+	public void testPlatformSupport() 
+	{
 		ClassLoader cl = TestTestResultSeekerTAP.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/tap/issue9054");
 		File tapDir = new File( url.getFile() );
@@ -88,7 +84,7 @@ extends junit.framework.TestCase
 		Map<Integer, TestCaseWrapper> found = seeker.seekTestResults(tapDir);
 		assertNotNull( found );
 		assertTrue( found.size() == 1 );
-		assertTrue( found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.PASSED );
+		assertTrue( found.get(1).getExecutionStatus() == ExecutionStatus.PASSED );
 		
 		assertEquals(found.get(1).getPlatform(), "EC1");
 	}
