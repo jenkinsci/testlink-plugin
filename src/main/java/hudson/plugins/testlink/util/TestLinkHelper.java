@@ -39,6 +39,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
+import br.eti.kinoshita.testlinkjavaapi.model.TestCaseStep;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
 
@@ -53,6 +54,7 @@ public final class TestLinkHelper
 	
 	// Environment Variables names.
 	private static final String TESTLINK_TESTCASE_PREFIX = "TESTLINK_TESTCASE_";
+	private static final String TESTLINK_TESTCASE_STEP_PREFIX = "TESTLINK_TESTCASE_STEP_";
 	private static final String TESTLINK_TESTCASE_ID_ENVVAR = "TESTLINK_TESTCASE_ID";
 	private static final String TESTLINK_TESTCASE_NAME_ENVVAR = "TESTLINK_TESTCASE_NAME";
 	private static final String TESTLINK_TESTCASE_TESTSUITE_ID_ENVVAR = "TESTLINK_TESTCASE_TESTSUITEID";
@@ -207,6 +209,19 @@ public final class TestLinkHelper
 		for ( CustomField customField : customFields )
 		{
 			addCustomFieldEnvironmentVariableName( customField, testLinkEnvVar );
+		}
+
+		List<TestCaseStep> steps = testCase.getSteps();
+		testLinkEnvVar.put(TESTLINK_TESTCASE_STEP_PREFIX + "TOTAL", Integer.toString(steps.size()));
+		for ( TestCaseStep step : steps )
+		{
+			String name = TESTLINK_TESTCASE_STEP_PREFIX + step.getNumber() + "_ACTION";
+			String action = step.getActions();
+			testLinkEnvVar.put(name, action);
+			
+			name = TESTLINK_TESTCASE_STEP_PREFIX + step.getNumber() + "_EXPECTED";
+			String expected = step.getExpectedResults();
+			testLinkEnvVar.put(name, expected);
 		}
 		
 		return testLinkEnvVar;

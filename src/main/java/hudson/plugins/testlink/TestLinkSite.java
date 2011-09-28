@@ -118,7 +118,7 @@ public class TestLinkSite
 				null, 
 				null, 
 				ExecutionType.AUTOMATED, 
-				null);			
+				Boolean.TRUE);			
 
 		for( final TestCase testCase : testCases )
 		{
