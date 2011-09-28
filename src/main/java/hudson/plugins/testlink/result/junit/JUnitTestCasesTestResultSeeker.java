@@ -95,12 +95,10 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 	throws TestResultSeekerException
 	{
 		listener.getLogger().println( Messages.Results_JUnit_LookingForTestClasses() );
-		listener.getLogger().println();
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip JUnit
 		{
 			listener.getLogger().println( Messages.Results_JUnit_NoPattern() );
-			listener.getLogger().println();
 		}
 		else
 		{
@@ -109,7 +107,6 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 				String[] junitReports = this.scan(directory, includePattern, listener);
 				
 				listener.getLogger().println( Messages.Results_JUnit_NumberOfReportsFound(junitReports.length ) );
-				listener.getLogger().println();
 				
 				this.processJUnitReports( directory, junitReports );
 			} 
@@ -137,9 +134,6 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 	{
 		for ( int i = 0 ; i < junitReports.length ; ++i )
 		{
-			//listener.getLogger().println( Messages.Results_JUnit_Parsing( junitReports[i] ) );
-			//listener.getLogger().println();
-			
 			final File junitFile = new File(directory, junitReports[i]);
 			
 			try
@@ -153,9 +147,7 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 			}
 			catch ( ParserException e )
 			{
-				//listener.getLogger().println( Messages.Results_JUnit_ParsingFail(junitFile, e.getMessage() ) );
 				e.printStackTrace( listener.getLogger() );
-				//listener.getLogger().println();
 			}
 		}
 	}
@@ -165,9 +157,6 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 	 */
 	protected void processJUnitSuite( TestSuite junitSuite, File junitFile )
 	{
-		//listener.getLogger().println( Messages.Results_JUnit_VerifyingJUnitSuite( junitSuite.getName(), junitSuite.getTests(), junitSuite.getFailures(), junitSuite.getErrors() ) );
-		//listener.getLogger().println();
-		
 		final List<TestCase> testCases = junitSuite.getTestCases();
 		
 		for ( TestCase testCase : testCases )

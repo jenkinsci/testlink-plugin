@@ -73,35 +73,6 @@ public final class TestLinkHelper
 	{
 		super();
 	}
-
-	/**
-	 * Retrieves the text for an execution status. If the plug-in supports 
-	 * the locale the text will be translated automatically.
-	 * 
-	 * @param executionStatus the execution status.
-	 * @return the text.
-	 */
-	public static String getExecutionStatusText( ExecutionStatus executionStatus ) 
-	{
-		String executionStatusText = Messages.TestLinkBuilder_ExecutionStatus_Undefined();
-		if ( executionStatus == ExecutionStatus.FAILED )
-		{
-			executionStatusText = Messages.TestLinkBuilder_ExecutionStatus_Failed();
-		}
-		if ( executionStatus == ExecutionStatus.PASSED )
-		{
-			executionStatusText = Messages.TestLinkBuilder_ExecutionStatus_Passed();
-		}
-		if ( executionStatus == ExecutionStatus.BLOCKED )
-		{
-			executionStatusText = Messages.TestLinkBuilder_ExecutionStatus_Blocked();
-		}
-		if ( executionStatus == ExecutionStatus.NOT_RUN )
-		{
-			executionStatusText = Messages.TestLinkBuilder_ExecutionStatus_NotRun();
-		}
-		return executionStatusText;
-	}
 	
 	/**
 	 * Retrieves the text for an execution status wrapped in html tags that add 
@@ -114,23 +85,22 @@ public final class TestLinkHelper
 	 */
 	public static String getExecutionStatusTextColored( ExecutionStatus executionStatus ) 
 	{
-		String executionStatusTextColored = 
-			Messages.TestLinkBuilder_ExecutionStatus_Undefined();
+		String executionStatusTextColored = "Undefined";
 		if ( executionStatus == ExecutionStatus.FAILED )
 		{
-			executionStatusTextColored = "<span style='color: red'>"+Messages.TestLinkBuilder_ExecutionStatus_Failed()+"</span>";
+			executionStatusTextColored = "<span style='color: red'>Failed</span>";
 		}
 		if ( executionStatus == ExecutionStatus.PASSED )
 		{
-			executionStatusTextColored = "<span style='color: green'>"+Messages.TestLinkBuilder_ExecutionStatus_Passed()+"</span>";
+			executionStatusTextColored = "<span style='color: green'>Passed</span>";
 		}
 		if ( executionStatus == ExecutionStatus.BLOCKED )
 		{
-			executionStatusTextColored = "<span style='color: yellow'>"+Messages.TestLinkBuilder_ExecutionStatus_Blocked()+"</span>";
+			executionStatusTextColored = "<span style='color: yellow'>Blocked</span>";
 		}
 		if ( executionStatus == ExecutionStatus.NOT_RUN )
 		{
-			executionStatusTextColored = "<span style='color: gray'>"+Messages.TestLinkBuilder_ExecutionStatus_NotRun()+"</span>";
+			executionStatusTextColored = "<span style='color: gray'>Not Run</span>";
 		}
 		return executionStatusTextColored;
 	}
@@ -313,12 +283,10 @@ public final class TestLinkHelper
 	public static EnvVars buildTestCaseEnvVars( TestCase testCase, TestProject testProject, TestPlan testPlan, Build build, BuildListener listener ) 
 	{
 		// Build environment variables list
-		listener.getLogger().println(Messages.TestLinkBuilder_CreatingEnvVars());
 		Map<String, String> testLinkEnvironmentVariables = TestLinkHelper.createTestLinkEnvironmentVariables( testCase, testProject, testPlan, build );
 
 		// Merge with build environment variables list
 		listener.getLogger().println(Messages.TestLinkBuilder_MergingEnvVars());
-		listener.getLogger().println();
 		
 		final EnvVars buildEnvironment = new EnvVars( testLinkEnvironmentVariables );
 		return buildEnvironment;

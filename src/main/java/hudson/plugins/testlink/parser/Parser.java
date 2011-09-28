@@ -89,16 +89,16 @@ implements Serializable
 			resultingObject = this.parse( fileInputStream );
 			if ( resultingObject == null )
 			{
-				throw new ParserException(Messages.TestLinkBuilder_Parser_InvalidFile( getName(), file.getAbsolutePath()));
+				throw new ParserException(Messages.Parser_Error(file, "Null"));
 			}
 		} 
 		catch (FileNotFoundException e) 
 		{
-			throw new ParserException(Messages.TestLinkBuilder_Parser_FileNotFound(file), e);
+			throw new ParserException(Messages.Parser_Error(file, e), e);
 		}
 		catch ( Throwable t )
 		{
-			throw new ParserException(Messages.TestLinkBuilder_Parser_UnknownError( t.getMessage() ), t);
+			throw new ParserException(Messages.Parser_Error( file, t.getMessage() ), t);
 		}
 		finally
 		{
@@ -110,7 +110,7 @@ implements Serializable
 				} 
 				catch (IOException e) 
 				{
-					throw new ParserException(Messages.TestLinkBuilder_Parser_FailedToCloseFile(), e);
+					throw new ParserException(Messages.Parser_Error(file, e), e);
 				}
 			}
 		}

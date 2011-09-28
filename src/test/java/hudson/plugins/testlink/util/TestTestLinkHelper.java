@@ -75,26 +75,6 @@ extends TestCase
 		}
 	}
 	
-	public void testExecutionStatusText()
-	{
-		ExecutionStatus status = ExecutionStatus.PASSED;
-		String text = TestLinkHelper.getExecutionStatusText(status); 
-		assertTrue( text.equals("Passed") );
-			
-		status = ExecutionStatus.FAILED;
-		text = TestLinkHelper.getExecutionStatusText(status); 
-		assertTrue( text.equals("Failed") );
-		
-		status = ExecutionStatus.NOT_RUN;
-		text = TestLinkHelper.getExecutionStatusText(status); 
-		assertTrue( text.equals("Not Run") );
-		
-		status = ExecutionStatus.BLOCKED;
-		text = TestLinkHelper.getExecutionStatusText(status); 
-		assertTrue( text.equals("Blocked") );
-		
-	}
-	
 	public void testColoredExecutionStatusText()
 	{
 		ExecutionStatus status = ExecutionStatus.PASSED;

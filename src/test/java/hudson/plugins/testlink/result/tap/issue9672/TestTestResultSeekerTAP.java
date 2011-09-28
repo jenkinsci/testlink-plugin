@@ -63,7 +63,7 @@ extends junit.framework.TestCase
 	{
 		BuildListener listener = new StreamBuildListener(new PrintStream(System.out), Charset.defaultCharset());
 		this.seeker = 
-			new TestResultsCallable( KEY_CUSTOM_FIELD, listener);
+			new TestResultsCallable();
 		
 		TestCase[] tcs = new TestCase[2];
 		TestCase tc = new TestCase();

@@ -78,12 +78,10 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 			throws TestResultSeekerException
 	{
 		listener.getLogger().println( Messages.Results_JUnit_LookingForTestSuites() );
-		listener.getLogger().println();
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip JUnit
 		{
 			listener.getLogger().println( Messages.Results_JUnit_NoPattern() );
-			listener.getLogger().println();
 		}
 		else
 		{
@@ -92,7 +90,6 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 				String[] junitReports = this.scan(directory, includePattern, listener);
 				
 				listener.getLogger().println( Messages.Results_JUnit_NumberOfReportsFound(junitReports.length ) );
-				listener.getLogger().println();
 				
 				this.processJUnitReports( directory, junitReports );
 				

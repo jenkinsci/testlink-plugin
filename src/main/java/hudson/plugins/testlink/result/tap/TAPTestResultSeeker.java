@@ -89,12 +89,10 @@ extends TestResultSeeker<TestSet>
 			throws TestResultSeekerException
 	{
 		listener.getLogger().println( Messages.Results_TAP_LookingForTestSets() );
-		listener.getLogger().println();
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip TAP
 		{
 			listener.getLogger().println( Messages.Results_TAP_NoPattern() );
-			listener.getLogger().println();
 		}
 		else
 		{
@@ -103,7 +101,6 @@ extends TestResultSeeker<TestSet>
 				String[] tapReports = this.scan(directory, includePattern, listener);
 				
 				listener.getLogger().println( Messages.Results_TAP_NumberOfReportsFound( tapReports.length ) );
-				listener.getLogger().println();
 				
 				this.doTAPReports( directory, tapReports );
 			} 
@@ -134,9 +131,6 @@ extends TestResultSeeker<TestSet>
 		
 		for ( int i = 0 ; i < tapReports.length ; ++i )
 		{
-			listener.getLogger().println( Messages.Results_TAP_Parsing( tapReports[i] ) );
-			listener.getLogger().println();
-			
 			File tapFile = new File(directory, tapReports[i]);
 			
 			try
@@ -147,9 +141,7 @@ extends TestResultSeeker<TestSet>
 			}
 			catch ( ParserException e )
 			{
-				listener.getLogger().println( Messages.Results_TAP_ParsingFail( tapFile, e.getMessage() ) );
 				e.printStackTrace( listener.getLogger() );
-				listener.getLogger().println();
 			}
 		}
 	}
@@ -167,9 +159,6 @@ extends TestResultSeeker<TestSet>
 		TestSet tapTestSet, 
 		File tapFile )
 	{
-		listener.getLogger().println( Messages.Results_TAP_VerifyingTapSet( tapTestSet.getNumberOfTestResults() ) );
-		listener.getLogger().println();
-		
 		String tapFileNameWithoutExtension = tapFile.getName();
 		
 		int extensionIndex = tapFileNameWithoutExtension.lastIndexOf('.');
@@ -178,16 +167,9 @@ extends TestResultSeeker<TestSet>
 			tapFileNameWithoutExtension = tapFileNameWithoutExtension.substring(0, tapFileNameWithoutExtension.lastIndexOf('.'));
 		}
 		
-		listener.getLogger().println( Messages.Results_TAP_LookingForTestResults( keyCustomFieldName, tapFileNameWithoutExtension ) );
-		listener.getLogger().println();
-		
 		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : automatedTestCases )
 		{
-			listener.getLogger().println( Messages.Results_TAP_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
-		
 			this.findTestResult( tapFileNameWithoutExtension, tapTestSet, testLinkTestCase, tapFile );
-		
-			listener.getLogger().println();
 		}
 		
 	}
@@ -203,7 +185,6 @@ extends TestResultSeeker<TestSet>
 	{
 		
 		final List<CustomField> customFields = testLinkTestCase.getCustomFields();
-		listener.getLogger().println( Messages.Results_TAP_ListOfCustomFields( customFields ) );
 		
 		final CustomField keyCustomField = this.getKeyCustomField( customFields );
 		if ( keyCustomField != null ) 
@@ -256,9 +237,6 @@ extends TestResultSeeker<TestSet>
 	protected void addOrUpdate( TestCaseWrapper<TestSet> testResult, String tapFileNameWithoutExtension )
 	{
 		final TestCaseWrapper<TestSet> temp = this.results.get(testResult.getId());
-		
-		TestSet origin = testResult.getOrigin();
-		listener.getLogger().println( Messages.Results_JUnit_TestResultsFound( testResult.getName(), testResult.getId(), origin, tapFileNameWithoutExtension, testResult.getExecutionStatus().toString() ) );
 		
 		if ( temp == null )
 		{
@@ -442,7 +420,7 @@ extends TestResultSeeker<TestSet>
 		
 		String fileContent = this.getBase64FileContent( tapReportFile );
 		attachment.setContent( fileContent );
-		attachment.setDescription( Messages.Results_TAP_AttachmentDescription( tapReportFile.getName() ) );
+		attachment.setDescription( "TAP file " + tapReportFile );
 		attachment.setFileName( tapReportFile.getName() );
 		attachment.setFileSize( tapReportFile.length() );
 		attachment.setTitle( tapReportFile.getName() );

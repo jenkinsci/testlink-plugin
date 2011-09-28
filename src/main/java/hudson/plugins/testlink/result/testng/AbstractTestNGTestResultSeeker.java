@@ -25,7 +25,6 @@ package hudson.plugins.testlink.result.testng;
 
 import hudson.model.BuildListener;
 import hudson.plugins.testlink.result.TestResultSeeker;
-import hudson.plugins.testlink.util.Messages;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,7 +64,7 @@ extends TestResultSeeker<T>
 		
 		String fileContent = this.getBase64FileContent(testNGReportFile );
 		attachment.setContent( fileContent );
-		attachment.setDescription( Messages.Results_TestNG_AttachmentDescription( testNGReportFile.getName() ) );
+		attachment.setDescription( "TestNG XML " + testNGReportFile.getName() );
 		attachment.setFileName( testNGReportFile.getName() );
 		attachment.setFileSize( testNGReportFile.length() );
 		attachment.setTitle( testNGReportFile.getName() );

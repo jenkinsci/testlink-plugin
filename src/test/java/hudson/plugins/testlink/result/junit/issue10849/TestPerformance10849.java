@@ -65,7 +65,7 @@ extends TestCase
 		br.eti.kinoshita.testlinkjavaapi.model.TestCase[] tcs = new br.eti.kinoshita.testlinkjavaapi.model.TestCase[0];
 		BuildListener listener = new StreamBuildListener(new PrintStream(
 				System.out), Charset.defaultCharset());
-		this.testResultsCallable = new TestResultsCallable(KEY_CUSTOM_FIELD, listener);
+		this.testResultsCallable = new TestResultsCallable();
 		final TestResultSeeker<?> junitSuitesSeeker = 
 				new JUnitSuitesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestSuite>(
 					JUNIT_XML_PATTERN, 

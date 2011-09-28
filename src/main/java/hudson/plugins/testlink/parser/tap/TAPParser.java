@@ -65,7 +65,7 @@ extends Parser<TestSet>
 	public TestSet parse( InputStream inputStream ) 
 	throws ParserException
 	{
-		throw new NotImplementedException( Messages.Results_TAP_TAPInputStreamError() );
+		throw new NotImplementedException();
 	}
 	
 	/* (non-Javadoc)
@@ -85,7 +85,7 @@ extends Parser<TestSet>
 		} 
 		catch ( TapConsumerException tce )
 		{
-			throw new ParserException( Messages.Results_TAP_ParsingFail( file, tce ) );
+			throw new ParserException( Messages.Parser_TAP_ParsingFail( file, tce ) );
 		}
 		
 		return testSet;

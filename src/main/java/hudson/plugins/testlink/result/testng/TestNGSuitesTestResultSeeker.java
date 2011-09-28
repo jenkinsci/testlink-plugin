@@ -77,12 +77,10 @@ extends AbstractTestNGTestResultSeeker<Suite>
 			throws TestResultSeekerException
 	{
 		listener.getLogger().println( Messages.Results_TestNG_LookingForTestSuites() );
-		listener.getLogger().println();
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip TestNG
 		{
 			listener.getLogger().println( Messages.Results_TestNG_NoPattern() );
-			listener.getLogger().println();
 		}
 		else
 		{
@@ -91,7 +89,6 @@ extends AbstractTestNGTestResultSeeker<Suite>
 				String[] testNGReports = this.scan(directory, includePattern, listener);
 				
 				listener.getLogger().println( Messages.Results_TestNG_NumberOfReportsFound( testNGReports.length ) );
-				listener.getLogger().println();
 				
 				this.processTestNGReports( directory, testNGReports );
 			} 
@@ -115,9 +112,6 @@ extends AbstractTestNGTestResultSeeker<Suite>
 	{
 		for ( int i = 0 ; i < testNGReports.length ; ++i )
 		{
-			listener.getLogger().println( Messages.Results_TestNG_Parsing( testNGReports[i] ) );
-			listener.getLogger().println();
-			
 			File testNGFile = new File(directory, testNGReports[i]);
 			
 			try
@@ -128,9 +122,7 @@ extends AbstractTestNGTestResultSeeker<Suite>
 			}
 			catch ( ParserException e )
 			{
-				listener.getLogger().println( Messages.Results_TestNG_ParsingFail( testNGFile, e.getMessage() ) );
 				e.printStackTrace( listener.getLogger() );
-				listener.getLogger().println();
 			}
 		}
 	}
@@ -144,16 +136,9 @@ extends AbstractTestNGTestResultSeeker<Suite>
 		
 		if ( ! StringUtils.isBlank( suiteName ) )
 		{
-			listener.getLogger().println( Messages.Results_TestNG_LookingForTestResults( keyCustomFieldName, suiteName ) );
-			listener.getLogger().println();
-			
 			for(TestCase testLinkTestCase : automatedTestCases )
 			{
-				listener.getLogger().println( Messages.Results_TestNG_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
-				
 				this.findTestResults( testNGSuite, testLinkTestCase, testNGFile );
-				
-				listener.getLogger().println();
 			}
 		}
 	}
@@ -165,8 +150,6 @@ extends AbstractTestNGTestResultSeeker<Suite>
 			File testNGFile )
 	{
 		final List<CustomField> customFields = testLinkTestCase.getCustomFields();
-		listener.getLogger().println( Messages.Results_TestNG_ListOfCustomFields( customFields ) );
-		
 		final CustomField keyCustomField = this.getKeyCustomField( customFields );
 		if ( keyCustomField != null ) 
 		{
@@ -210,9 +193,6 @@ extends AbstractTestNGTestResultSeeker<Suite>
 	protected void addOrUpdate( TestCaseWrapper<Suite> testResult )
 	{
 		final TestCaseWrapper<Suite> temp = this.results.get(testResult.getId());
-		
-		Suite origin = testResult.getOrigin();
-		listener.getLogger().println( Messages.Results_TestNG_TestResultsFound( testResult.getName(), testResult.getId(), origin, origin.getName(), testResult.getExecutionStatus().toString() ) );
 		
 		if ( temp == null )
 		{

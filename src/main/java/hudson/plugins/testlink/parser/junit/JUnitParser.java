@@ -152,12 +152,12 @@ extends Parser<List<TestSuite>>
 		
 		if ( foundFailures != failures )
 		{
-			throw new ParserException( Messages.TestLinkBuilder_Parser_JUnit_InvalidNumberOfFailures( failures, foundFailures ) );
+			throw new ParserException( Messages.Parser_JUnit_InvalidNumberOfFailures( failures, foundFailures ) );
 		}
 		
 		if ( foundErrors != errors)
 		{
-			throw new ParserException( Messages.TestLinkBuilder_Parser_JUnit_InvalidNumberOfErrors( errors, foundErrors ) );
+			throw new ParserException( Messages.Parser_JUnit_InvalidNumberOfErrors( errors, foundErrors ) );
 		}
 		
 	}

@@ -1,6 +1,6 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
-  <f:entry title="${%TestLinkVersion}" help="${rootURL}/../plugin/testlink/help-testlinkVersion.html">
+  <f:entry title="${%TestLink Version}" help="${rootURL}/../plugin/testlink/help-testlinkVersion.html">
   	<select class="setting-input" name="TestLinkBuilder.testLinkName">
       <option>(Default)</option>
       <j:forEach var="inst" items="${descriptor.installations}">
@@ -9,25 +9,25 @@
     </select>
   </f:entry>
   
-  <f:entry title="${%TestProjectName}" help="${rootURL}/../plugin/testlink/help-projectName.html">
+  <f:entry title="${%Test Project Name}" help="${rootURL}/../plugin/testlink/help-projectName.html">
 	  <f:textbox name="TestLinkBuilder.testProjectName" value="${instance.testProjectName}" 
 	  checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)" />
   </f:entry>
   
-  <f:entry title="${%TestPlanName}" help="${rootURL}/../plugin/testlink/help-planName.html">
+  <f:entry title="${%Test Plan Name}" help="${rootURL}/../plugin/testlink/help-planName.html">
 	  <f:textbox name="TestLinkBuilder.testPlanName" value="${instance.testPlanName}" 
 	  checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)"/>
   </f:entry>
   
-  <f:entry title="${%BuildName}" help="${rootURL}/../plugin/testlink/help-buildName.html">
+  <f:entry title="${%Build Name}" help="${rootURL}/../plugin/testlink/help-buildName.html">
 	  <f:textbox name="TestLinkBuilder.buildName" value="${instance.buildName}" />
   </f:entry>
   
-  <f:entry title="${%CustomFields}" help="${rootURL}/../plugin/testlink/help-customFields.html">
+  <f:entry title="${%Custom Fields}" help="${rootURL}/../plugin/testlink/help-customFields.html">
 	  <f:textbox id="customFields" name="TestLinkBuilder.customFields" value="${instance.customFields}" onchange="createKeyCustomFields()" />
   </f:entry>
   
-  <f:entry title="${%Key custom field}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
+  <f:entry title="${%Key Custom Field}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
       <f:textbox id="keyCustomField" name="TestLinkBuilder.keyCustomField" value="${instance.keyCustomField}" />
   </f:entry>
   
@@ -55,15 +55,15 @@
            addCaption="Add action" hasHeader="true"/>
   </f:entry>
 
-  <f:entry title="${%JUnitReportFilesPattern}" help="${rootURL}/../plugin/testlink/help-junitIncludePattern.html">
+  <f:entry title="${%JUnit Report Files Pattern}" help="${rootURL}/../plugin/testlink/help-junitIncludePattern.html">
 	  <f:textbox name="TestLinkBuilder.junitXmlReportFilesPattern" value="${instance.junitXmlReportFilesPattern}" />
   </f:entry>
   
-  <f:entry title="${%TestNGReportFilesPattern}" help="${rootURL}/../plugin/testlink/help-testNGIncludePattern.html">
+  <f:entry title="${%TestNG Report Files Pattern}" help="${rootURL}/../plugin/testlink/help-testNGIncludePattern.html">
 	  <f:textbox name="TestLinkBuilder.testNGXmlReportFilesPattern" value="${instance.testNGXmlReportFilesPattern}" />
   </f:entry>
   
-  <f:entry title="${%TAPReportFilesPattern}" help="${rootURL}/../plugin/testlink/help-tapIncludePattern.html">
+  <f:entry title="${%TAP Report Files Pattern}" help="${rootURL}/../plugin/testlink/help-tapIncludePattern.html">
 	  <f:textbox name="TestLinkBuilder.tapStreamReportFilesPattern" value="${instance.tapStreamReportFilesPattern}" />
   </f:entry>
   

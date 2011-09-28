@@ -25,7 +25,6 @@ package hudson.plugins.testlink.result;
 
 import hudson.Util;
 import hudson.model.BuildListener;
-import hudson.plugins.testlink.util.Messages;
 
 import java.io.File;
 import java.io.IOException;
@@ -163,7 +162,7 @@ implements Serializable
 			catch ( BuildException e ) 
 			{
 				e.printStackTrace( listener.getLogger() );
-				throw new IOException( Messages.TestLinkBuilder_Scanner_FailedToOpenBaseDirectory(e.getMessage()), e );
+				throw new IOException( e );
 			}
 		}
 		

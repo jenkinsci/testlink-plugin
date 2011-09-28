@@ -5,16 +5,16 @@
 		<st:include it="${it.owner}" page="sidepanel.jelly" />
 		<l:main-panel>
 
-			<h1>${%TestLinkResults}</h1>
+			<h1>${%TestLink Results}</h1>
 
 	        <!--st:include page="/tabview/main.jelly" /-->
 	        <table>
 	        <tr>
-	        <td>${%BuildId}: </td><td><b>${it.report.build.id}</b></td>
+	        <td>${%Build Id}: </td><td><b>${it.report.build.id}</b></td>
 	        </tr>
 	        
 	        <tr>
-	        <td>${%BuildName}: </td><td><b>${it.report.build.name}</b></td>
+	        <td>${%Build Name}: </td><td><b>${it.report.build.name}</b></td>
 	        </tr>
 	        
 	        <tr>

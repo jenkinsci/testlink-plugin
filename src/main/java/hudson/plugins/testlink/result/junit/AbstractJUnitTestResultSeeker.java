@@ -25,7 +25,6 @@ package hudson.plugins.testlink.result.junit;
 
 import hudson.model.BuildListener;
 import hudson.plugins.testlink.result.TestResultSeeker;
-import hudson.plugins.testlink.util.Messages;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +66,7 @@ extends TestResultSeeker<T>
 		
 		String fileContent = this.getBase64FileContent(junitReportFile );
 		attachment.setContent( fileContent );
-		attachment.setDescription( Messages.Results_JUnit_AttachmentDescription( junitReportFile.getName() ) );
+		attachment.setDescription( "JUnit XML" + junitReportFile.getName() );
 		attachment.setFileName( junitReportFile.getName() );
 		attachment.setFileSize( junitReportFile.length() );
 		attachment.setTitle( junitReportFile.getName() );

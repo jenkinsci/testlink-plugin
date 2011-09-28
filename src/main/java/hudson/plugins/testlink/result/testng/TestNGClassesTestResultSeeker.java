@@ -79,12 +79,10 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 			throws TestResultSeekerException
 	{
 		listener.getLogger().println( Messages.Results_TestNG_LookingForTestClasses() );
-		listener.getLogger().println();
 		
 		if ( StringUtils.isBlank(includePattern) ) // skip TestNG
 		{
 			listener.getLogger().println( Messages.Results_TestNG_NoPattern() );
-			listener.getLogger().println();
 		}
 		else
 		{
@@ -93,7 +91,6 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 				String[] testNGReports = this.scan(directory, includePattern, listener);
 				
 				listener.getLogger().println( Messages.Results_TestNG_NumberOfReportsFound( testNGReports.length ) );
-				listener.getLogger().println();
 				
 				this.processTestNGReports( directory, testNGReports );
 			} 
@@ -120,9 +117,6 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 		
 		for ( int i = 0 ; i < testNGReports.length ; ++i )
 		{
-			listener.getLogger().println( Messages.Results_TestNG_Parsing( testNGReports[i] ) );
-			listener.getLogger().println();
-			
 			final File testNGFile = new File(directory, testNGReports[i]);
 			
 			try
@@ -133,9 +127,7 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 			}
 			catch ( ParserException e )
 			{
-				listener.getLogger().println( Messages.Results_TestNG_ParsingFail( testNGFile, e.getMessage() ) );
 				e.printStackTrace( listener.getLogger() );
-				listener.getLogger().println();
 			}
 		}
 	}
@@ -148,17 +140,12 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 		File testNGFile
 	)
 	{
-		listener.getLogger().println( Messages.Results_TestNG_VerifyingTestNGTestSuite( testNGSuite.getName(), testNGSuite.getTests().size() ) );
-		listener.getLogger().println();
-		
 		final List<Test> testNGTests = testNGSuite.getTests();
 		
 		for( Test testNGTest : testNGTests )
 		{
 			this.processTestNGTest( testNGTest, testNGSuite, testNGFile );
 		}
-		
-		listener.getLogger().println();
 	}
 	
 	/**
@@ -169,14 +156,8 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 		final List<hudson.plugins.testlink.parser.testng.Class> classes = 
 			testNGTest.getClasses();
 		
-		listener.getLogger().println( Messages.Results_TestNG_VerifyingTestNGTest( testNGTest.getName(), classes.size() ));
-		listener.getLogger().println();
-		
 		for ( hudson.plugins.testlink.parser.testng.Class clazz : classes )
 		{
-			listener.getLogger().println( Messages.Results_TestNG_VerifyingTestNGTestClass( clazz.getName() ) );
-			listener.getLogger().println();
-			
 			this.processTestClass( clazz, testNGSuite, testNGFile );
 		}
 	}
@@ -190,16 +171,9 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 		
 		if ( ! StringUtils.isBlank( testNGTestClassName ) )
 		{
-			listener.getLogger().println( Messages.Results_TestNG_LookingForTestResults( keyCustomFieldName, testNGTestClassName ) );
-			listener.getLogger().println();
-			
 			for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : this.automatedTestCases )
 			{
-				listener.getLogger().println( Messages.Results_TestNG_VerifyingTestLinkTestCase( testLinkTestCase.getName(), testLinkTestCase.getId() ) );
-				
 				this.findTestResults( testNGSuite, clazz, testLinkTestCase, testNGFile );
-			
-				listener.getLogger().println();
 			}
 		}
 	}
@@ -210,8 +184,7 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 	protected void findTestResults( Suite testNGSuite, hudson.plugins.testlink.parser.testng.Class clazz, TestCase testLinkTestCase, File testNGFile )
 	{
 		final List<CustomField> customFields = testLinkTestCase.getCustomFields();
-		listener.getLogger().println( Messages.Results_TestNG_ListOfCustomFields( customFields ) );
-		
+
 		final CustomField keyCustomField = this.getKeyCustomField( customFields );
 		if ( keyCustomField != null )
 		{
@@ -255,9 +228,6 @@ extends AbstractTestNGTestResultSeeker<hudson.plugins.testlink.parser.testng.Cla
 	{
 		final TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class> temp = 
 			this.results.get(testResult.getId());
-		
-		hudson.plugins.testlink.parser.testng.Class origin = testResult.getOrigin();
-		listener.getLogger().println( Messages.Results_TestNG_TestResultsFound( testResult.getName(), testResult.getId(), origin, origin.getName(), testResult.getExecutionStatus().toString() ) );
 		
 		if ( temp == null )
 		{

@@ -24,8 +24,6 @@
 package hudson.plugins.testlink.result;
 
 import hudson.FilePath.FileCallable;
-import hudson.model.BuildListener;
-import hudson.plugins.testlink.util.Messages;
 import hudson.remoting.VirtualChannel;
 
 import java.io.File;
@@ -49,13 +47,8 @@ public class TestResultsCallable
 implements FileCallable<Map<Integer, TestCaseWrapper>>
 {
 
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * The Hudson Build listener.
-	 */
-	private BuildListener listener;
-	
+	private static final long serialVersionUID = -7027180358578453354L;
+
 	/**
 	 * List of test results seekers.
 	 */
@@ -80,14 +73,9 @@ implements FileCallable<Map<Integer, TestCaseWrapper>>
 	/**
 	 * Default constructor. 
 	 */
-	public TestResultsCallable( 
-		String keyCustomFieldName, 
-		BuildListener listener			
-	)
+	public TestResultsCallable()
 	{
 		super();
-		
-		this.listener = listener;
 		
 		this.testResultsSeekers = new LinkedList<TestResultSeeker<?>>();
 	}
@@ -112,17 +100,6 @@ implements FileCallable<Map<Integer, TestCaseWrapper>>
 			testResults.putAll( results );
 		}
 		
-		if ( testResults.size() > 0 )
-		{
-			listener.getLogger().println( Messages.TestLinkBuilder_ShowFoundTestResults(testResults.size()) );
-		}
-		else
-		{
-			listener.getLogger().println( Messages.TestLinkBuilder_NoTestResultsFound() );
-		}
-		
-		listener.getLogger().println();
-		
 		return testResults;
 	}
 
@@ -146,9 +123,6 @@ implements FileCallable<Map<Integer, TestCaseWrapper>>
 	public Map<Integer, TestCaseWrapper> invoke( File f, VirtualChannel channel )
 			throws IOException, InterruptedException
 	{
-		listener.getLogger().println( Messages.Results_LookingForTestResults() );
-		listener.getLogger().println();
-		
 		return this.seekTestResults(f);
 	}
 	
