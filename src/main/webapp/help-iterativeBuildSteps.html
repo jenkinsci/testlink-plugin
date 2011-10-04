@@ -1,8 +1,8 @@
 <div>
   <p>
-	TestLink Hudson Plug-in retrieves automated test cases data from TestLink. 
+	TestLink Jenkins Plug-in retrieves automated test cases data from TestLink. 
 	This data is then set as environment variables. Thus your iterative  
-	test command can make use of this information to execute your automated 
+	Build Steps can make use of this information to execute your automated 
 	tests.
   </p>
   <p>For instance, you could run ant passing a Test Class as parameter: <pre>/opt/java/apache-ant-1.8.0/bin/ant -DtestClass=$TESTLINK_TESTCASE_TEST_CLASS</pre></p>
@@ -23,7 +23,7 @@
   	</ul>
   </p>
   <p>
-  	For each Custom Field found, TestLink Hudson Plug-in defines an environment 
+  	For each Custom Field found, TestLink Jenkins Plug-in defines an environment 
   	variable for with its name and value, as shown above (%CUSTOM_FIELD_NAME%).
   	If the custom field name contains spaces the plug-in will convert them into 
   	_'s.

@@ -31,25 +31,25 @@
       <f:textbox id="keyCustomField" name="TestLinkBuilder.keyCustomField" value="${instance.keyCustomField}" />
   </f:entry>
   
-  <f:entry title="${%Single Test Build Steps}" help="${rootURL}/../plugin/testlink/help-singleTestCommand.html">
+  <f:entry title="${%Single Test Build Steps}" help="${rootURL}/../plugin/testlink/help-singleBuildSteps.html">
       <f:hetero-list name="singleBuildSteps" targetType="${descriptor.testLinkBuildType}"
            descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.singleBuildSteps}"
            addCaption="Add action" hasHeader="true"/>
   </f:entry>
   
-  <f:entry title="${%Before iterating all test cases Build Steps}" help="${rootURL}/../plugin/testlink/help-beforeIteratingAllTestCasesCommand.html">
+  <f:entry title="${%Before iterating all test cases Build Steps}" help="${rootURL}/../plugin/testlink/help-beforeIteratingAllTestCasesBuildSteps.html">
       <f:hetero-list name="beforeIteratingAllTestCasesBuildSteps" targetType="${descriptor.testLinkBuildType}"
            descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.beforeIteratingAllTestCasesBuildSteps}"
            addCaption="Add action" hasHeader="true"/>
   </f:entry>
   
-  <f:entry title="${%Iterative Test Build Steps}" help="${rootURL}/../plugin/testlink/help-iterativeTestCommand.html">
+  <f:entry title="${%Iterative Test Build Steps}" help="${rootURL}/../plugin/testlink/help-iterativeBuildSteps.html">
 	  <f:hetero-list name="iterativeBuildSteps" targetType="${descriptor.testLinkBuildType}"
            descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.iterativeBuildSteps}"
            addCaption="Add action" hasHeader="true"/>
   </f:entry>
   
-  <f:entry title="${%After iterating all test cases Build Steps}" help="${rootURL}/../plugin/testlink/help-afterIteratingAllTestCasesCommand.html">
+  <f:entry title="${%After iterating all test cases Build Steps}" help="${rootURL}/../plugin/testlink/help-afterIteratingAllTestCasesBuildSteps.html">
       <f:hetero-list name="afterIteratingAllTestCasesBuildSteps" targetType="${descriptor.testLinkBuildType}"
            descriptors="${descriptor.getApplicableBuildSteps(it)}" items="${instance.afterIteratingAllTestCasesBuildSteps}"
            addCaption="Add action" hasHeader="true"/>
