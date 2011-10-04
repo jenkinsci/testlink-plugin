@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -81,19 +82,28 @@
 				<role>developer</role>
 			</roles>
 		</developer>
+		<developer>
+			<id>OMerkel</id>
+			<name>Oliver Merkel</name>
+			<email>Merkel.Oliver@web.de</email>
+			<timezone>+2</timezone>
+			<roles>
+				<role>developer</role>
+			</roles>
+		</developer>
 	</developers>
 
 	<build>
 		<pluginManagement>
 			<plugins>
-                <plugin>
-                	<groupId>org.apache.maven.plugins</groupId>
-                	<artifactId>maven-surefire-plugin</artifactId>
-                	<executions>
-                	   
-                	</executions>
-                </plugin>
-                <plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<executions>
+
+					</executions>
+				</plugin>
+				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
 					<version>1.0.0</version>
