@@ -56,14 +56,6 @@ public class JUnitTestCasesTestResultSeeker<T extends TestCase>
 extends AbstractJUnitTestResultSeeker<TestCase>
 {
 	
-	private static final String LINE_SEPARATOR = "\n";
-	
-	private static final String NOTES_TIME_TOKEN = "time: ";
-	private static final String NOTES_FAILURES_TOKEN = "failures: ";
-	private static final String NOTS_ERRORS_TOKEN = "errors: ";
-	private static final String NOTES_CLASSNAME_TOKEN = "classname: ";
-	private static final String NOTES_NAME_TOKEN = "name: ";
-
 	private static final long serialVersionUID = 7775155353548789211L;
 
 	protected final JUnitParser parser = new JUnitParser();
@@ -311,24 +303,6 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 						testCase.getFailures().size(), 
 						testCase.getTime())
 		);
-		
-		notes.append( NOTES_NAME_TOKEN );
-		notes.append( testCase.getName() );
-		notes.append( NOTES_CLASSNAME_TOKEN );
-		notes.append( testCase.getClassName() );
-		notes.append( LINE_SEPARATOR );
-		
-		notes.append( NOTS_ERRORS_TOKEN );
-		notes.append( testCase.getErrors().size() );
-		notes.append( LINE_SEPARATOR );
-		
-		notes.append( NOTES_FAILURES_TOKEN );
-		notes.append( testCase.getFailures().size() );
-		notes.append( LINE_SEPARATOR );
-		
-		notes.append( NOTES_TIME_TOKEN );
-		notes.append( testCase.getTime() );
-		notes.append( LINE_SEPARATOR );
 		
 		return notes.toString();
 	}
