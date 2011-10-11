@@ -303,22 +303,27 @@ extends TestResultSeeker<TestSet>
 	 * @param diagnostic
 	 * @return TestLink Platform if present, {@code null} otherwise
 	 */
+	@SuppressWarnings("unchecked")
 	protected String extractPlatform( Map<String, Object> diagnostic )
 	{
 		String platform = null;
-		Object testlink = diagnostic.get( "TestLink" );
-		if ( testlink != null && testlink instanceof Map<?, ?>)
+		Object extensions = diagnostic.get( "extensions" );
+		if ( extensions != null && extensions instanceof Map<?, ?> )
 		{
-			@SuppressWarnings("unchecked")
-			Map<String, Object> testLinkInfo = (Map<String, Object>)testlink;
-			Object o = testLinkInfo.get("Platform");
-			if(o == null) 
+			Map<String, Object> extensionsInfo = (Map<String, Object>)extensions;
+			Object testlink = extensionsInfo.get( "TestLink" );
+			if ( testlink != null && testlink instanceof Map<?, ?>)
 			{
-				o = testLinkInfo.get("platform");
-			}
-			if ( o != null && o instanceof String )
-			{
-				platform = (String)o;
+				Map<String, Object> testLinkInfo = (Map<String, Object>)testlink;
+				Object o = testLinkInfo.get("Platform");
+				if(o == null) 
+				{
+					o = testLinkInfo.get("platform");
+				}
+				if ( o != null && o instanceof String )
+				{
+					platform = (String)o;
+				}
 			}
 		}
 		return platform;
