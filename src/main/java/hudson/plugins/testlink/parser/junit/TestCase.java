@@ -37,7 +37,7 @@ public class TestCase
 implements Serializable
 {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 
 	/**
 	 * The classname attribute.
@@ -53,6 +53,11 @@ implements Serializable
 	 * The time attribute.
 	 */
 	private String time;
+	
+	/**
+	 * If the test was ignored.
+	 */
+	private boolean skipped;
 	
 	/**
 	 * List of <failure> tags.
@@ -134,6 +139,26 @@ implements Serializable
 	public void setTime( String time ) 
 	{
 		this.time = time;
+	}
+	
+	/**
+	 * Retrieves whether the test was skipped or not.
+	 * 
+	 * @return skipped status.
+	 */
+	public boolean isSkipped()
+	{
+		return skipped;
+	}
+	
+	/**
+	 * Sets the skipped status to the test.
+	 * 
+	 * @param skipped true if the test was skipped, false otherwise.
+	 */
+	public void setSkipped(boolean skipped) 
+	{
+		this.skipped = skipped;
 	}
 
 	/**

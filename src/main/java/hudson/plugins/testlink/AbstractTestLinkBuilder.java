@@ -26,8 +26,6 @@ package hudson.plugins.testlink;
 import hudson.EnvVars;
 import hudson.Util;
 import hudson.model.Action;
-import hudson.model.Result;
-import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.plugins.testlink.result.ReportFilesPatterns;
 import hudson.plugins.testlink.util.ExecutionOrderComparator;

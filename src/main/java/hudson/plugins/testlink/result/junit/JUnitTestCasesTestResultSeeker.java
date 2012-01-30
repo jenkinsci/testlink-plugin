@@ -134,7 +134,10 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 				
 				for ( TestSuite junitSuite : junitSuites )
 				{
-					this.processJUnitSuite( junitSuite, junitFile );
+					if(! junitSuite.isDisabled()) 
+					{
+						this.processJUnitSuite( junitSuite, junitFile );
+					}
 				}
 			}
 			catch ( ParserException e )
@@ -153,7 +156,10 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 		
 		for ( TestCase testCase : testCases )
 		{
-			this.processJUnitTestCase( testCase, junitFile );
+			if( ! testCase.isSkipped() ) 
+			{
+				this.processJUnitTestCase( testCase, junitFile );
+			}
 		}
 	}
 		

@@ -121,6 +121,9 @@ implements Serializable
 			testSuite.setTests( attributes.getValue("tests") );
 			testSuite.setTime( attributes.getValue("time") );
 			testSuite.setTimestamp( attributes.getValue("timestamp") );
+			
+			String disabled = attributes.getValue("disabled");
+			this.setTestSuiteDisabled(testSuite, disabled);
 		}
 		else if ( "testcase".equals(qName) )
 		{
@@ -130,6 +133,13 @@ implements Serializable
 			testCase.setClassName( attributes.getValue("classname") );
 			testCase.setName( attributes.getValue("name") );
 			testCase.setTime( attributes.getValue("time") );
+		}
+		else if ( "skipped".equals(qName) ) 
+		{
+			if(testCase!=null) 
+			{
+				testCase.setSkipped(true);
+			}
 		}
 		else if ( "failure".equals(qName) )
 		{
@@ -152,6 +162,19 @@ implements Serializable
 		else if ( "system-err".equals(qName) )
 		{
 			tempVal = new StringBuilder();
+		}
+	}
+	
+	protected void setTestSuiteDisabled(TestSuite testSuite, String disabled) {
+		if(StringUtils.isNotBlank(disabled)) {
+			boolean disabledValue = false;
+			try {
+				int value = Integer.parseInt(disabled);
+				disabledValue = (value == 1);
+			} catch(NumberFormatException nfe) {
+				disabledValue = Boolean.parseBoolean(disabled);
+			}
+			testSuite.setDisabled(disabledValue);
 		}
 	}
 	

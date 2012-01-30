@@ -140,9 +140,7 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 	 */
 	protected void processJUnitSuite( TestSuite junitSuite, File junitFile )
 	{
-		final String suiteName = junitSuite.getName();
-		
-		if ( ! StringUtils.isBlank( suiteName ) )
+		if ( ! junitSuite.isDisabled() && ! StringUtils.isBlank( junitSuite.getName() )  )
 		{
 			for( TestCase testCase : automatedTestCases ) 
 			{

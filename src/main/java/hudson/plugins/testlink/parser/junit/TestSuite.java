@@ -100,6 +100,11 @@ implements Serializable
 	private List<Failure> failuresList;
 	
 	/**
+	 * Whether the test suite is disabled or not.
+	 */
+	private boolean disabled;
+	
+	/**
 	 * Default constructor. Initializes the list of <testcase> tags.
 	 */
 	public TestSuite() 
@@ -383,6 +388,22 @@ implements Serializable
 	public List<Failure> getFailuresList()
 	{
 		return this.failuresList;
+	}
+	
+	/**
+	 * @param disabled sets the disabled status in the test suite.
+	 */
+	public void setDisabled(boolean disabled) 
+	{
+		this.disabled = disabled;
+	}
+	
+	/**
+	 * @return true if the test suite is disabled, false otherwise.
+	 */
+	public boolean isDisabled() 
+	{
+		return disabled;
 	}
 	
 }
