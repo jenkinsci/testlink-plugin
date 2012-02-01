@@ -134,7 +134,7 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 				
 				for ( TestSuite junitSuite : junitSuites )
 				{
-					if(! junitSuite.isDisabled()) 
+					if( !junitSuite.isDisabled() && ! StringUtils.isBlank( junitSuite.getName() ) ) 
 					{
 						this.processJUnitSuite( junitSuite, junitFile );
 					}

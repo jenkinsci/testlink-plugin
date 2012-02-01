@@ -122,7 +122,7 @@ implements Serializable
 			testSuite.setTime( attributes.getValue("time") );
 			testSuite.setTimestamp( attributes.getValue("timestamp") );
 			
-			String disabled = attributes.getValue("disabled");
+			String disabled = (attributes.getValue("disabled")!=null?attributes.getValue("disabled"):attributes.getValue("skipped"));
 			this.setTestSuiteDisabled(testSuite, disabled);
 		}
 		else if ( "testcase".equals(qName) )

@@ -125,7 +125,10 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 				
 				for ( TestSuite junitSuite : junitSuites )
 				{
-					this.processJUnitSuite( junitSuite, junitFile );
+					if( !junitSuite.isDisabled() && ! StringUtils.isBlank( junitSuite.getName() ) ) 
+					{
+						this.processJUnitSuite( junitSuite, junitFile );
+					}
 				}
 			}
 			catch ( ParserException e )
@@ -140,14 +143,10 @@ extends AbstractJUnitTestResultSeeker<TestSuite>
 	 */
 	protected void processJUnitSuite( TestSuite junitSuite, File junitFile )
 	{
-		if ( ! junitSuite.isDisabled() && ! StringUtils.isBlank( junitSuite.getName() )  )
+		for( TestCase testCase : automatedTestCases ) 
 		{
-			for( TestCase testCase : automatedTestCases ) 
-			{
-				this.findTestResults( junitSuite, testCase, junitFile );
-			}
+			this.findTestResults( junitSuite, testCase, junitFile );
 		}
-		
 	}
 	
 	/**
