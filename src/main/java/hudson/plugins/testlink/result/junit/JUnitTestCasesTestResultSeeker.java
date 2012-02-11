@@ -39,6 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -50,6 +51,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
  * Seeks for test results of JUnit test cases.
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
+ * @author Oliver Merkel - Merkel.Oliver at web.de
  * @since 2.5
  */
 public class JUnitTestCasesTestResultSeeker<T extends TestCase> 
@@ -194,7 +196,7 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 			
 			for ( String value : commaSeparatedValues )
 			{
-				if ( testClassOrTestName.equals( value ) && ExecutionStatus.BLOCKED != testLinkTestCase.getExecutionStatus())
+				if ( doTestMatch(testClassOrTestName, value ) && ExecutionStatus.BLOCKED != testLinkTestCase.getExecutionStatus())
 				{
 					final TestCaseWrapper<TestCase> testResult = new TestCaseWrapper<TestCase>( testLinkTestCase, commaSeparatedValues, junitTestCase );
 					
@@ -222,6 +224,14 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 		}
 	}
 	
+	protected boolean doTestMatch(final String testClassOrTestName, final String value) {
+		String regex = value.replace("*", ".*");
+		if(!value.contains("#") && testClassOrTestName.contains("#")) { //Test class method not specified
+			regex += "#.*";
+		}
+		return Pattern.matches(regex, testClassOrTestName);
+	}
+
 	/**
 	 * Adds or updates test result.
 	 */
@@ -243,29 +253,38 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 			{
 				temp.addAttachment(attachment);
 			}
-			temp.getCustomFieldAndStatus().putAll( testResult.getCustomFieldAndStatus() );
+
+			final Map<String, ExecutionStatus> tempCustomFieldAndStatus = temp.getCustomFieldAndStatus();
+			final Map<String, ExecutionStatus> resultCustomFieldAndStatus = testResult.getCustomFieldAndStatus();
+
+			for(final String key : resultCustomFieldAndStatus.keySet()) {
+				final ExecutionStatus status = tempCustomFieldAndStatus.get(key);
+				if(status == null || status != ExecutionStatus.FAILED) {
+					tempCustomFieldAndStatus.put(key, resultCustomFieldAndStatus.get(key));
+				}
+			}
 		}
 	}
 
-	/**
-	 * Retrieves the key value for a JUnit test. First it tries to use the 
-	 * test class name. If it is <code>null</code>, then it returns the 
-	 * test name.
-	 * 
-	 * @param junitTestCase JUnit test.
-	 * @return Test Class or Test Name value.
-	 */
-	protected String getTestClassOrTestName( TestCase junitTestCase )
-	{
-		String keyValue = junitTestCase.getClassName();
-		
-		if ( StringUtils.isBlank( keyValue ) )
+		/**
+		 * Retrieves the key value for a JUnit test. In case of empty name and class name
+		 * an empty string is returned. If both class name and name exists for a test case
+		 * string class name hash name is returned. Else either the class name or the name
+		 * of the test case is returned by best effort.
+		 *
+		 * @param junitTestCase JUnit test.
+		 * @return Either TestClass#TestName or Test Class or Test Name value.
+		 */
+		protected String getTestClassOrTestName( final TestCase junitTestCase )
 		{
-			keyValue = junitTestCase.getName();
+			final String testCaseName = junitTestCase.getName();
+			final String testCaseClassName = junitTestCase.getClassName();
+			final String keyValue = StringUtils.isBlank( testCaseName ) ?
+				( StringUtils.isBlank( testCaseClassName) ? "" : testCaseClassName ) :
+				( StringUtils.isBlank( testCaseClassName) ? testCaseName : testCaseClassName + "#" + testCaseName );
+
+			return keyValue;
 		}
-		
-		return keyValue;
-	}
 
 	/**
 	 * Retrieves the Execution Status of the JUnit test.
