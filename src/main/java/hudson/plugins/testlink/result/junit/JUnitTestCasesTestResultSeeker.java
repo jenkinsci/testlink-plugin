@@ -50,6 +50,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
  * Seeks for test results of JUnit test cases.
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
+ * @author Oliver Merkel - Merkel.Oliver at web.de
  * @since 2.5
  */
 public class JUnitTestCasesTestResultSeeker<T extends TestCase> 
@@ -247,25 +248,25 @@ extends AbstractJUnitTestResultSeeker<TestCase>
 		}
 	}
 
-	/**
-	 * Retrieves the key value for a JUnit test. First it tries to use the 
-	 * test class name. If it is <code>null</code>, then it returns the 
-	 * test name.
-	 * 
-	 * @param junitTestCase JUnit test.
-	 * @return Test Class or Test Name value.
-	 */
-	protected String getTestClassOrTestName( TestCase junitTestCase )
-	{
-		String keyValue = junitTestCase.getClassName();
-		
-		if ( StringUtils.isBlank( keyValue ) )
-		{
-			keyValue = junitTestCase.getName();
-		}
-		
-		return keyValue;
-	}
+        /**
+         * Retrieves the key value for a JUnit test. In case of empty name and class name
+         * an empty string is returned. If both class name and name exists for a test case
+         * string class name dot name is returned. Else either the class name or the name
+         * of the test case is returned by best effort.
+         * 
+         * @param junitTestCase JUnit test.
+         * @return Either TestClass.TestName or Test Class or Test Name value.
+         */
+        protected String getTestClassOrTestName( TestCase junitTestCase )
+        {
+            String testCaseName = junitTestCase.getName();
+            String testCaseClassName = junitTestCase.getClassName()
+            String keyValue = StringUtils.isBlank( testCaseName ) ?
+                ( StringUtils.isBlank( testCaseClassName) ? "" : testCaseClassName ) :
+                ( StringUtils.isBlank( testCaseClassName) ? testCaseName : testCaseClassName + "." + testCaseName );
+
+            return keyValue;
+        }
 
 	/**
 	 * Retrieves the Execution Status of the JUnit test.
