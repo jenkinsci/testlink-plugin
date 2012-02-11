@@ -47,7 +47,7 @@ public class TestTestNGClassSeeker
 extends junit.framework.TestCase
 {
 	
-	private TestNGClassesTestResultSeeker<hudson.plugins.testlink.parser.testng.Class> seeker;
+	private TestNGClassesTestResultSeeker<hudson.plugins.testlink.testng.Class> seeker;
 	
 	private final static String KEY_CUSTOM_FIELD = "testCustomField";
 	
@@ -82,7 +82,7 @@ extends junit.framework.TestCase
 		tcs[2] = tc;
 		
 		this.seeker = 
-			new TestNGClassesTestResultSeeker<hudson.plugins.testlink.parser.testng.Class>("testng*.xml", tcs, KEY_CUSTOM_FIELD, listener);
+			new TestNGClassesTestResultSeeker<hudson.plugins.testlink.testng.Class>("testng*.xml", tcs, KEY_CUSTOM_FIELD, listener);
 	}
 
 	public void testTestResultSeekerTestNGOne()
@@ -90,7 +90,7 @@ extends junit.framework.TestCase
 		ClassLoader cl = TestTestNGClassSeeker.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/testng/");
 		File testNGDir = new File( url.getFile() );
-		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> found = seeker.seek( testNGDir );
+		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.testng.Class>> found = seeker.seek( testNGDir );
 		assertNotNull( found );
 		assertTrue( found.size() == 3 );
 		assertTrue( found.get(1).getExecutionStatus() == ExecutionStatus.FAILED );
@@ -101,7 +101,7 @@ extends junit.framework.TestCase
 		ClassLoader cl = TestTestNGClassSeeker.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/testng/");
 		File testNGDir = new File( url.getFile() );
-		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> found = seeker.seek(testNGDir);
+		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.testng.Class>> found = seeker.seek(testNGDir);
 		assertNotNull( found );
 		assertTrue( found.size() == 3 );
 		assertTrue( found.get(2).getExecutionStatus() == ExecutionStatus.FAILED );

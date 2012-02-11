@@ -23,8 +23,8 @@
  */
 package hudson.plugins.testlink.result.parser.junit.issue11442;
 
-import hudson.plugins.testlink.parser.junit.JUnitParser;
-import hudson.plugins.testlink.parser.junit.TestSuite;
+import hudson.plugins.testlink.testng.junit.JUnitParser;
+import hudson.plugins.testlink.testng.junit.TestSuite;
 
 import java.io.File;
 import java.net.URL;

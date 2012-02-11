@@ -27,7 +27,7 @@ import hudson.EnvVars;
 import hudson.Util;
 import hudson.model.Action;
 import hudson.model.AbstractProject;
-import hudson.plugins.testlink.result.ReportFilesPatterns;
+import hudson.plugins.testlink.result.ResultSeeker;
 import hudson.plugins.testlink.util.ExecutionOrderComparator;
 import hudson.tasks.BuildStep;
 import hudson.tasks.Builder;
@@ -78,12 +78,6 @@ extends Builder
 	protected final String customFields;
 	
 	/**
-	 * Name of the Key Custom Field. This must be one of the custom fields in 
-	 * the property customFields;
-	 */
-	protected final String keyCustomField;
-	
-	/**
 	 * List of build steps that are executed only once per job execution. 
 	 */
 	protected final List<BuildStep> singleBuildSteps;
@@ -121,11 +115,6 @@ extends Builder
 	 * iterative test command and after the test command.
 	 */
 	
-	/**
-	 * Report files patterns.
-	 */
-	protected final ReportFilesPatterns reportFilesPatterns;
-	
 	/* --- Other members --- */
 	
 	/**
@@ -137,6 +126,11 @@ extends Builder
 	 * Flag to check if any failure happened.
 	 */
 	protected boolean failure = false;
+
+	/**
+	 * Results seekers.
+	 */
+	private List<ResultSeeker> resultSeekers;
 	
 	/**
 	 * This constructor is bound to a stapler request. All parameters here are 
@@ -148,15 +142,12 @@ extends Builder
 	 * @param buildName TestLink Build name.
 	 * @param customFields TestLink comma-separated list of Custom Fields.
 	 * @param singleBuildSteps List of build steps to execute once for all automated test cases.
+	 * @param beforeIteratingAllTestCasesBuildSteps Command executed before iterating all test cases.
 	 * @param iterativeBuildSteps List of build steps to execute for each Automated Test Case.
-	 * @param keyCustomField Automated Test Case key custom field.
+	 * @param afterIteratingAllTestCasesBuildSteps Command executed after iterating all test cases.
 	 * @param transactional Whether the build's execution is transactional or not.
 	 * @param failedTestsMarkBuildAsUnstable Whether failed tests mark the build as unstable or not.
-	 * @param junitXmlReportFilesPattern Pattern for JUnit report files.
-	 * @param testNGXmlReportFilesPattern Pattern for TestNG report files.
-	 * @param tapStreamReportFilesPattern Pattern for TAP report files.
-	 * @param beforeIteratingAllTestCasesBuildSteps Command executed before iterating all test cases.
-	 * @param afterIteratingAllTestCasesBuildSteps Command executed after iterating all test cases.
+	 * @param resultSeekers List of result seekers.
 	 */
 	public AbstractTestLinkBuilder(
 		String testLinkName, 
@@ -164,36 +155,27 @@ extends Builder
 		String testPlanName, 
 		String buildName, 
 		String customFields, 
-		String keyCustomField, 
 		List<BuildStep> singleBuildSteps, 
 		List<BuildStep> beforeIteratingAllTestCasesBuildSteps, 
 		List<BuildStep> iterativeBuildSteps, 
 		List<BuildStep> afterIteratingAllTestCasesBuildSteps, 
 		Boolean transactional, 
 		Boolean failedTestsMarkBuildAsUnstable, 
-		String junitXmlReportFilesPattern, 
-		String testNGXmlReportFilesPattern, 
-		String tapStreamReportFilesPattern
-	)
-	{
+		List<ResultSeeker> resultSeekers
+	) {
 		super();
 		this.testLinkName = testLinkName;
 		this.testProjectName = testProjectName;
 		this.testPlanName = testPlanName;
 		this.buildName = buildName;
 		this.customFields = customFields;
-		this.keyCustomField = keyCustomField;
 		this.singleBuildSteps = singleBuildSteps;
 		this.beforeIteratingAllTestCasesBuildSteps = beforeIteratingAllTestCasesBuildSteps;
 		this.iterativeBuildSteps = iterativeBuildSteps;
 		this.afterIteratingAllTestCasesBuildSteps = afterIteratingAllTestCasesBuildSteps;
 		this.transactional = transactional;
 		this.failedTestsMarkBuildAsFailure = failedTestsMarkBuildAsUnstable;
-		
-		this.reportFilesPatterns = new ReportFilesPatterns(
-				junitXmlReportFilesPattern, 
-				testNGXmlReportFilesPattern, 
-				tapStreamReportFilesPattern);
+		this.resultSeekers = resultSeekers;
 	}
 	
 	public String getTestLinkName()
@@ -260,11 +242,6 @@ extends Builder
 		return this.customFields;
 	}
 	
-	public String getKeyCustomField() 
-	{
-		return keyCustomField;
-	}
-	
 	public List<BuildStep> getSingleBuildSteps()
 	{
 		return this.singleBuildSteps;
@@ -305,30 +282,19 @@ extends Builder
 	{
 		return failedTestsMarkBuildAsFailure;
 	}
-
+	
 	/**
-	 * Returns report files patterns for JUnit, TestNG and TAP.
-	 * 
-	 * @return Report files patterns.
+	 * @return the resultSeekers
 	 */
-	public ReportFilesPatterns getReportFilesPatterns() 
-	{
-		return reportFilesPatterns;
-	}
-
-	public String getJunitXmlReportFilesPattern()
-	{
-		return reportFilesPatterns.getJunitXmlReportFilesPattern();
+	public List<ResultSeeker> getResultSeekers() {
+		return resultSeekers;
 	}
 	
-	public String getTestNGXmlReportFilesPattern()
-	{
-		return reportFilesPatterns.getTestNGXmlReportFilesPattern();
-	}
-	
-	public String getTapStreamReportFilesPattern()
-	{
-		return reportFilesPatterns.getTapStreamReportFilesPattern();
+	/**
+	 * @param resultSeekers the resultSeekers to set
+	 */
+	public void setResultSeekers(List<ResultSeeker> resultSeekers) {
+		this.resultSeekers = resultSeekers;
 	}
 
 	/* (non-Javadoc)

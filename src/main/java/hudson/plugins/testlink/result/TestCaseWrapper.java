@@ -100,6 +100,10 @@ public class TestCaseWrapper<T> extends TestCase implements Serializable
 		this.attachments.add(attachment);
 	}
 
+	public String getKeyCustomFieldValue() {
+		return null;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

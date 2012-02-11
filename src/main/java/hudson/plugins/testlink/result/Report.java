@@ -24,12 +24,6 @@
 package hudson.plugins.testlink.result;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import br.eti.kinoshita.testlinkjavaapi.model.Build;
-import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 
 /**
  * Build Report.
@@ -37,87 +31,120 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
  */
-public class Report 
-implements Serializable
-{
-	
-	private static final long serialVersionUID = -7174933827533855528L;
-	
-	private final List<TestCaseWrapper<?>> testCases;
-	private final Build build;
-	
+public class Report implements Serializable {
+
+	private static final long serialVersionUID = -6536222071547639906L;
+
 	private int passed;
 	private int failed;
 	private int blocked;
 	private int notRun;
-	
-	public Report(Build build) 
-	{
-		super();
-		this.build = build;
-		this.testCases = new ArrayList<TestCaseWrapper<?>>();
-	}
-	
-	public Build getBuild() 
-	{
-		return this.build;
-	}
-	
-	public List<TestCaseWrapper<?>> getTestCases() 
-	{
-		return Collections.unmodifiableList(this.testCases);
-	}
-	
+
+	private int buildId;
+	private String buildName;
+
 	/**
-	 * Adds a Test Case into the list of automated Test Cases.
-	 * 
-	 * @param testCase the Test Case.
+	 * Default constructor.
 	 */
-	public void addTestCase(final TestCaseWrapper<?> testCase)
-	{
-		final ExecutionStatus status = testCase.getExecutionStatus();
-		if ( status == ExecutionStatus.PASSED )
-		{
-			this.passed += 1;
-		}
-		else if ( status == ExecutionStatus.FAILED ) 
-		{
-			this.failed += 1;
-		}
-		else if ( status == ExecutionStatus.BLOCKED )
-		{
-			this.blocked += 1;
-		}
-		else if ( status == ExecutionStatus.NOT_RUN )
-		{
-			this.notRun += 1;
-		}
-		this.testCases.add( testCase );
+	public Report() {
+		super();
 	}
 
-	public int getTestsTotal() 
-	{
-		return this.testCases.size();
+	/**
+	 * @return the tests total
+	 */
+	public int getTestsTotal() {
+		return passed + failed + blocked + notRun;
 	}
-	
-	public int getTestsPassed()
-	{
-		return this.passed;
+
+	/**
+	 * @return the passed
+	 */
+	public int getPassed() {
+		return passed;
 	}
-	
-	public int getTestsFailed()
-	{
-		return this.failed;
+
+	/**
+	 * @param passed
+	 *            the passed to set
+	 */
+	public void setPassed(int passed) {
+		this.passed = passed;
 	}
-	
-	public int getTestsBlocked()
-	{
-		return this.blocked;
+
+	/**
+	 * @return the failed
+	 */
+	public int getFailed() {
+		return failed;
 	}
-	
-	public int getTestsNotRun() 
-	{
-		return this.notRun;
+
+	/**
+	 * @param failed
+	 *            the failed to set
+	 */
+	public void setFailed(int failed) {
+		this.failed = failed;
 	}
-	
+
+	/**
+	 * @return the blocked
+	 */
+	public int getBlocked() {
+		return blocked;
+	}
+
+	/**
+	 * @param blocked
+	 *            the blocked to set
+	 */
+	public void setBlocked(int blocked) {
+		this.blocked = blocked;
+	}
+
+	/**
+	 * @return the notRun
+	 */
+	public int getNotRun() {
+		return notRun;
+	}
+
+	/**
+	 * @param notRun
+	 *            the notRun to set
+	 */
+	public void setNotRun(int notRun) {
+		this.notRun = notRun;
+	}
+
+	/**
+	 * @return the buildId
+	 */
+	public int getBuildId() {
+		return buildId;
+	}
+
+	/**
+	 * @param buildId
+	 *            the buildId to set
+	 */
+	public void setBuildId(int buildId) {
+		this.buildId = buildId;
+	}
+
+	/**
+	 * @return the buildName
+	 */
+	public String getBuildName() {
+		return buildName;
+	}
+
+	/**
+	 * @param buildName
+	 *            the buildName to set
+	 */
+	public void setBuildName(String buildName) {
+		this.buildName = buildName;
+	}
+
 }

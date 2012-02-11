@@ -28,7 +28,7 @@ package hudson.plugins.testlink.result;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.2
  */
-public class TestResultSeekerException extends RuntimeException
+public class ResultSeekerException extends RuntimeException
 {
 
 	private static final long serialVersionUID = -4208147723912449810L;
@@ -36,7 +36,7 @@ public class TestResultSeekerException extends RuntimeException
 	/**
 	 * Default constructor.
 	 */
-	public TestResultSeekerException()
+	public ResultSeekerException()
 	{
 		super();
 	}
@@ -45,7 +45,7 @@ public class TestResultSeekerException extends RuntimeException
 	 * @param message
 	 * @param exception
 	 */
-	public TestResultSeekerException(String message, Throwable exception)
+	public ResultSeekerException(String message, Throwable exception)
 	{
 		super(message, exception);
 	}
@@ -53,7 +53,7 @@ public class TestResultSeekerException extends RuntimeException
 	/**
 	 * @param message
 	 */
-	public TestResultSeekerException(String message)
+	public ResultSeekerException(String message)
 	{
 		super(message);
 	}
@@ -61,7 +61,7 @@ public class TestResultSeekerException extends RuntimeException
 	/**
 	 * @param exception
 	 */
-	public TestResultSeekerException(Throwable exception)
+	public ResultSeekerException(Throwable exception)
 	{
 		super(exception);
 	}

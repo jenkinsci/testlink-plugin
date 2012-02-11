@@ -23,7 +23,7 @@
  */
 package hudson.plugins.testlink.util;
 
-import hudson.plugins.testlink.parser.ParserException;
+import hudson.plugins.testlink.testng.ParserException;
 import junit.framework.TestCase;
 
 /**

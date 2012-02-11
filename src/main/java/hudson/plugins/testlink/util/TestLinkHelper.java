@@ -319,20 +319,20 @@ public final class TestLinkHelper
 			Report previous) 
 	{
 		StringBuilder builder = new StringBuilder();
-		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildID(testLinkReport.getBuild().getId())+"</b></p>");
-		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildName(testLinkReport.getBuild().getName())+"</b></p>");
+		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildID(testLinkReport.getBuildId())+"</b></p>");
+		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildName(testLinkReport.getBuildName())+"</b></p>");
 		builder.append("<p><a href=\"" + TestLinkBuildAction.URL_NAME + "\">");
 		
 		Integer total = testLinkReport.getTestsTotal();
 		Integer previousTotal = previous != null ? previous.getTestsTotal() : total;
-		Integer passed = testLinkReport.getTestsPassed();
-		Integer previousPassed = previous != null ? previous.getTestsPassed() : passed;
-		Integer failed = testLinkReport.getTestsFailed();
-		Integer previousFailed = previous != null ? previous.getTestsFailed() : failed;
-		Integer blocked = testLinkReport.getTestsBlocked();
-		Integer previousBlocked = previous != null ? previous.getTestsBlocked() : blocked;
-		Integer notRun = testLinkReport.getTestsNotRun();
-		Integer previousNotRun = previous != null ? previous.getTestsNotRun() : notRun;
+		Integer passed = testLinkReport.getPassed();
+		Integer previousPassed = previous != null ? previous.getPassed() : passed;
+		Integer failed = testLinkReport.getFailed();
+		Integer previousFailed = previous != null ? previous.getFailed() : failed;
+		Integer blocked = testLinkReport.getBlocked();
+		Integer previousBlocked = previous != null ? previous.getBlocked() : blocked;
+		Integer notRun = testLinkReport.getNotRun();
+		Integer previousNotRun = previous != null ? previous.getNotRun() : notRun;
 		
 		builder.append( Messages.ReportSummary_Summary_Text(
 			 total + getPlusSignal(total, previousTotal), 
@@ -374,18 +374,19 @@ public final class TestLinkHelper
 		builder.append(Messages.ReportSummary_Details_ExecutionStatus());
 		builder.append("</th></tr>\n");
 		
-        for(TestCase tc: report.getTestCases() )
-        {
-        	builder.append("<tr>\n");
-        	
-        	builder.append("<td>"+tc.getId()+"</td>");
-        	builder.append("<td>"+tc.getVersion()+"</td>");
-        	builder.append("<td>"+tc.getName()+"</td>");
-        	builder.append("<td>"+tc.getTestProjectId()+"</td>");
-    		builder.append("<td>"+TestLinkHelper.getExecutionStatusTextColored( tc.getExecutionStatus() )+"</td>\n");
-        	
-        	builder.append("</tr>\n");
-        }
+		// FIXME: find an alternative for this
+//        for(TestCase tc: report.getTestCases() )
+//        {
+//        	builder.append("<tr>\n");
+//        	
+//        	builder.append("<td>"+tc.getId()+"</td>");
+//        	builder.append("<td>"+tc.getVersion()+"</td>");
+//        	builder.append("<td>"+tc.getName()+"</td>");
+//        	builder.append("<td>"+tc.getTestProjectId()+"</td>");
+//    		builder.append("<td>"+TestLinkHelper.getExecutionStatusTextColored( tc.getExecutionStatus() )+"</td>\n");
+//        	
+//        	builder.append("</tr>\n");
+//        }
         
         builder.append("</table>");
         return builder.toString();

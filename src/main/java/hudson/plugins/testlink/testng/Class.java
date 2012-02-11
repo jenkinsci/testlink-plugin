@@ -21,104 +21,94 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.parser.junit;
+package hudson.plugins.testlink.testng;
 
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Represents the <failure> tag of the JUnit xml report. This tag is child of 
- * the <testcase> tag.
- *
+ * Represents the <class> tag. This tag is child of the <test> tag.
+ * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-public class Failure 
+public class Class 
 implements Serializable
 {
 
-	private static final long serialVersionUID = 583068401113333722L;
+	private static final long serialVersionUID = 882304891611257192L;
 	
 	/**
-	 * Message attribute.
+	 * The name attribute.
 	 */
-	private String message;
+	private String name;
 	
 	/**
-	 * Type attribute.
+	 * The list of <test-method> tags.
 	 */
-	private String type;
+	private List<TestMethod> testMethods;
 	
 	/**
-	 * The text of the tag.
+	 * Default constructor. Initializes the list of <test-method> tags.
 	 */
-	private String text;
-	
-	/**
-	 * Default constructor.
-	 */
-	public Failure() 
+	public Class()
 	{
 		super();
+		
+		this.testMethods = new LinkedList<TestMethod>();
 	}
 
 	/**
-	 * Retrieves the message.
+	 * Retrieves the name.
 	 * 
-	 * @return the message.
+	 * @return the name
 	 */
-	public String getMessage() 
+	public String getName() 
 	{
-		return message;
+		return name;
 	}
 
 	/**
-	 * Sets the message.
+	 * Sets the name.
 	 * 
-	 * @param message the message.
+	 * @param name the name to set
 	 */
-	public void setMessage( String message ) 
+	public void setName( String name ) 
 	{
-		this.message = message;
+		this.name = name;
 	}
 
 	/**
-	 * Retrieves the type.
+	 * Retrieves the list of <test-method> tags.
 	 * 
-	 * @return the type.
+	 * @return the testMethods
 	 */
-	public String getType() 
+	public List<TestMethod> getTestMethods() 
 	{
-		return type;
-	}
-
-	/**
-	 * Sets the type.
-	 * 
-	 * @param type the type.
-	 */
-	public void setType( String type ) 
-	{
-		this.type = type;
-	}
-
-	/**
-	 * Retrieves the text.
-	 * 
-	 * @return the text.
-	 */
-	public String getText() 
-	{
-		return text;
-	}
-
-	/**
-	 * Sets the text.
-	 * 
-	 * @param text the text.
-	 */
-	public void setText( String text ) 
-	{
-		this.text = text;
+		return testMethods;
 	}
 	
+	/**
+	 * Adds a test method into the list of <test-method> tags.
+	 * 
+	 * @param testMethod the test method.
+	 * @return true if added sucessfully, otherwise false.
+	 */
+	public boolean addTestMethod( TestMethod testMethod )
+	{
+		return this.testMethods.add( testMethod );
+	}
+	
+	/**
+	 * Removes a test method from the list of <test-method> tags.
+	 * 
+	 * @param testMethod the test method.
+	 * @return true if removed sucessfully, otherwise false.
+	 */
+	public boolean removeTestMethod( TestMethod testMethod )
+	{
+		return this.testMethods.remove( testMethod );
+	}
+
 }

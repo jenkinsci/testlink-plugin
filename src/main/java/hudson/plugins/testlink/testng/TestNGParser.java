@@ -21,10 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.parser.testng;
+package hudson.plugins.testlink.testng;
 
-import hudson.plugins.testlink.parser.Parser;
-import hudson.plugins.testlink.parser.ParserException;
 
 import java.io.IOException;
 import java.io.InputStream;

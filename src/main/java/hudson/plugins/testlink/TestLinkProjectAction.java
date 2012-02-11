@@ -246,10 +246,10 @@ extends AbstractTestLinkProjectAction
 			{
 				final TestLinkResult result = action.getResult();
 				final Report report = result.getReport();
-				dataset.add(report.getTestsBlocked(), "Blocked", label);
-				dataset.add(report.getTestsFailed(), "Failed", label);
-				dataset.add(report.getTestsNotRun(), "Not Run", label);
-				dataset.add(report.getTestsPassed(), "Passed", label);
+				dataset.add(report.getBlocked(), "Blocked", label);
+				dataset.add(report.getFailed(), "Failed", label);
+				dataset.add(report.getNotRun(), "Not Run", label);
+				dataset.add(report.getPassed(), "Passed", label);
 			}
 		}
 	}

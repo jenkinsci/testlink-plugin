@@ -23,11 +23,11 @@
  */
 package hudson.plugins.testlink.result;
 
-import hudson.plugins.testlink.parser.junit.TestSuite;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
+import br.eti.kinoshita.testlinkjavaapi.model.TestSuite;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br

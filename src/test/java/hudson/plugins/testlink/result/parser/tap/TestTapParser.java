@@ -23,8 +23,8 @@
  */
 package hudson.plugins.testlink.result.parser.tap;
 
-import hudson.plugins.testlink.parser.ParserException;
-import hudson.plugins.testlink.parser.tap.TAPParser;
+import hudson.plugins.testlink.testng.ParserException;
+import hudson.plugins.testlink.testng.tap.TAPParser;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

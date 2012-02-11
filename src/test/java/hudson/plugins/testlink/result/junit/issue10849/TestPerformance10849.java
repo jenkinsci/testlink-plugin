@@ -26,7 +26,7 @@ package hudson.plugins.testlink.result.junit.issue10849;
 import hudson.model.BuildListener;
 import hudson.model.StreamBuildListener;
 import hudson.plugins.testlink.result.TestCaseWrapper;
-import hudson.plugins.testlink.result.TestResultSeeker;
+import hudson.plugins.testlink.result.ResultSeeker;
 import hudson.plugins.testlink.result.TestResultsCallable;
 import hudson.plugins.testlink.result.junit.JUnitSuitesTestResultSeeker;
 import hudson.plugins.testlink.result.junit.JUnitTestCasesTestResultSeeker;
@@ -66,7 +66,7 @@ extends TestCase
 		BuildListener listener = new StreamBuildListener(new PrintStream(
 				System.out), Charset.defaultCharset());
 		this.testResultsCallable = new TestResultsCallable();
-		final TestResultSeeker<?> junitSuitesSeeker = 
+		final ResultSeeker<?> junitSuitesSeeker = 
 				new JUnitSuitesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestSuite>(
 					JUNIT_XML_PATTERN, 
 					tcs, 
@@ -74,7 +74,7 @@ extends TestCase
 					listener);
 		testResultsCallable.addTestResultSeeker(junitSuitesSeeker);
 			
-		final TestResultSeeker<?> junitTestsSeeker = 
+		final ResultSeeker<?> junitTestsSeeker = 
 			new JUnitTestCasesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestCase>(
 					JUNIT_XML_PATTERN, 
 					tcs, 

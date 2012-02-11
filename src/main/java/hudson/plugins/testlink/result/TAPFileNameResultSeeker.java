@@ -21,27 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.result.tap;
+package hudson.plugins.testlink.result;
 
+import hudson.Extension;
+import hudson.FilePath;
+import hudson.Launcher;
 import hudson.model.BuildListener;
-import hudson.plugins.testlink.parser.ParserException;
-import hudson.plugins.testlink.parser.tap.TAPParser;
-import hudson.plugins.testlink.result.TestCaseWrapper;
-import hudson.plugins.testlink.result.TestResultSeeker;
-import hudson.plugins.testlink.result.TestResultSeekerException;
-import hudson.plugins.testlink.util.Messages;
+import hudson.model.AbstractBuild;
+import hudson.plugins.testlink.TestLinkSite;
+import hudson.remoting.VirtualChannel;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.tap4j.consumer.TapConsumer;
+import org.tap4j.consumer.TapConsumerFactory;
 import org.tap4j.model.Directive;
 import org.tap4j.model.Plan;
 import org.tap4j.model.TestResult;
@@ -49,295 +51,106 @@ import org.tap4j.model.TestSet;
 import org.tap4j.util.DirectiveValues;
 
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
-import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
-import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**
- * Seeks for test results of TAP test sets.
+ * <p>Seeks for test results matching each TAP file name with the key 
+ * custom field.</p>
+ * 
+ * <p>Skips TAP Streams that were skipped.</p>
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 2.5
+ * @since 3.1
  */
-public class TAPTestResultSeeker<T extends TestSet> 
-extends TestResultSeeker<TestSet>
-{
+public class TAPFileNameResultSeeker extends ResultSeeker {
 	
-	private static final long serialVersionUID = -652872928488835064L;
-
-	protected final TAPParser parser = new TAPParser();
-	
-	protected final Map<Integer, TestCaseWrapper<TestSet>> results = new LinkedHashMap<Integer, TestCaseWrapper<TestSet>>();
+	private static final long serialVersionUID = 2227402366772835869L;
 	
 	/**
 	 * @param includePattern
-	 * @param report
-	 * @param keyCustomFieldName
-	 * @param listener
+	 * @param keyCustomField
 	 */
-	public TAPTestResultSeeker(String includePattern, TestCase[] automatedTestCases,
-			String keyCustomFieldName, BuildListener listener)
-	{
-		super(includePattern, automatedTestCases, keyCustomFieldName, listener);
+	@DataBoundConstructor
+	public TAPFileNameResultSeeker(String includePattern, String keyCustomField) {
+		super(includePattern, keyCustomField);
 	}
-	
+
+	@Extension
+	public static class DescriptorImpl extends ResultSeekerDescriptor {
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see hudson.model.Descriptor#getDisplayName()
+		 */
+		@Override
+		public String getDisplayName() {
+			return "TAP file name result seeker"; // TBD: i18n
+		}
+	}
+
 	/* (non-Javadoc)
-	 * @see hudson.plugins.testlink.result.TestResultSeeker#seek(java.io.File, java.lang.String)
+	 * @see hudson.plugins.testlink.result.ResultSeeker#seekAndUpdate(hudson.plugins.testlink.result.TestCaseWrapper<?>[], hudson.model.AbstractBuild, hudson.Launcher, hudson.model.BuildListener, hudson.plugins.testlink.TestLinkSite, hudson.plugins.testlink.result.Report)
 	 */
 	@Override
-	public Map<Integer, TestCaseWrapper<TestSet>> seek( File directory )
-			throws TestResultSeekerException
-	{
-		listener.getLogger().println( Messages.Results_TAP_LookingForTestSets() );
+	public void seekAndUpdate(final TestCaseWrapper<?>[] automatedTestCases,
+			AbstractBuild<?, ?> build, Launcher launcher,
+			final BuildListener listener, TestLinkSite testlink, Report report)
+			throws ResultSeekerException {
+		// TBD: it cannot be serialized easily... but it is possible. Your lazy bastard.
+		final TapConsumer tapConsumer = TapConsumerFactory.makeTap13YamlConsumer();
 		
-		if ( StringUtils.isBlank(includePattern) ) // skip TAP
-		{
-			listener.getLogger().println( Messages.Results_TAP_NoPattern() );
-		}
-		else
-		{
-			try
-			{
-				String[] tapReports = this.scan(directory, includePattern, listener);
-				
-				listener.getLogger().println( Messages.Results_TAP_NumberOfReportsFound( tapReports.length ) );
-				
-				this.doTAPReports( directory, tapReports );
-			} 
-			catch (IOException e)
-			{
-				throw new TestResultSeekerException( Messages.Results_TAP_IOException( includePattern, e.getMessage() ), e );
-			}
-			catch( Throwable t ) 
-			{
-				throw new TestResultSeekerException( Messages.Results_TAP_UnkownInternalError(), t );
-			}
-		}
-		
-		return results;
-	}
+		try {
+			final Map<String, TestSet> testSets = build.getWorkspace().act(new FilePath.FileCallable<Map<String, TestSet>>() {
+				private static final long serialVersionUID = 1L;
 
-	/**
-	 * Parses TAP report files to look for Test Results of TestLink 
-	 * Automated Test Cases.
-	 * 
-	 * @param directory Directory where to search for.
-	 * @param tapReports Array of TAP report files.
-	 */
-	protected void doTAPReports( 
-		File directory, 
-		String[] tapReports )
-	{
-		
-		for ( int i = 0 ; i < tapReports.length ; ++i )
-		{
-			File tapFile = new File(directory, tapReports[i]);
-			
-			try
-			{
-				final TestSet tapTestSet = parser.parse( tapFile );
+				private Map<String, TestSet> testSets;
 				
-				this.doTAPTestSet( tapTestSet, tapFile );
-			}
-			catch ( ParserException e )
-			{
-				e.printStackTrace( listener.getLogger() );
-			}
-		}
-	}
-	
-	/**
-	 * Inspects a TAP test set looking for test results for the automated 
-	 * test cases in TestLink. When it finds a test result, this test result 
-	 * is added to the List of Test Results.
-	 * 
-	 * @param tapTestSet TAP test set.
-	 * @param tapFile TAP file (added as an attachment for each test result 
-	 * 				    found).
-	 */
-	protected void doTAPTestSet( 
-		TestSet tapTestSet, 
-		File tapFile )
-	{
-		String tapFileNameWithoutExtension = tapFile.getName();
-		
-		int extensionIndex = tapFileNameWithoutExtension.lastIndexOf('.');
-		if ( extensionIndex != -1 )
-		{
-			tapFileNameWithoutExtension = tapFileNameWithoutExtension.substring(0, tapFileNameWithoutExtension.lastIndexOf('.'));
-		}
-		
-		for ( br.eti.kinoshita.testlinkjavaapi.model.TestCase testLinkTestCase : automatedTestCases )
-		{
-			this.findTestResult( tapFileNameWithoutExtension, tapTestSet, testLinkTestCase, tapFile );
-		}
-		
-	}
-	
-	/**
-	 * Looks for test results in a TAP Test Set test case.
-	 */
-	protected void findTestResult( 
-		String tapFileNameWithoutExtension,
-		TestSet tapTestSet, 
-		TestCase testLinkTestCase, 
-		File tapFile )
-	{
-		
-		final List<CustomField> customFields = testLinkTestCase.getCustomFields();
-		
-		final CustomField keyCustomField = this.getKeyCustomField( customFields );
-		if ( keyCustomField != null ) 
-		{
-			final String[] commaSeparatedValues = this.split ( keyCustomField.getValue() );
-			
-			for ( String value : commaSeparatedValues )
-			{
-				if ( tapFileNameWithoutExtension.equals(value) && ExecutionStatus.BLOCKED != testLinkTestCase.getExecutionStatus() )
-				{
-					final TestCaseWrapper<TestSet> testResult = new TestCaseWrapper<TestSet>( testLinkTestCase, commaSeparatedValues, tapTestSet );
+				public Map<String, TestSet> invoke(File workspace, VirtualChannel channel)
+						throws IOException, InterruptedException {
+					final String[] tapFiles = TAPFileNameResultSeeker.this.scan(workspace, includePattern, listener);
 					
-					final ExecutionStatus status = this.getTapExecutionStatus( tapTestSet );
-					testResult.addCustomFieldAndStatus(value, status);
+					testSets = new HashMap<String, TestSet>(tapFiles.length);
 					
-					String notes = this.getTapNotes( tapTestSet );
-					
-					try
-					{
-						List<Attachment> tapAttachments = this.getTapAttachments( testResult.getVersionId(), tapFile, tapTestSet );
+					for(String tapFile : tapFiles) {
+						final File input = new File(workspace, tapFile);
+						String tapFileNameWithoutExtension = input.getName();
 						
-						for( Attachment attachment : tapAttachments )
+						int extensionIndex = tapFileNameWithoutExtension.lastIndexOf('.');
+						if ( extensionIndex != -1 )
 						{
-							testResult.addAttachment( attachment );
+							tapFileNameWithoutExtension = tapFileNameWithoutExtension.substring(0, tapFileNameWithoutExtension.lastIndexOf('.'));
+						}
+						final TestSet testSet = tapConsumer.load(input);
+						testSets.put(tapFileNameWithoutExtension, testSet);
+					}
+					
+					return testSets;
+				}
+			});
+			
+			for(String key : testSets.keySet()) {
+				for(TestCaseWrapper<?> automatedTestCase : automatedTestCases) {
+					final String[] commaSeparatedValues = this.split(automatedTestCase.getKeyCustomFieldValue());
+					for(String value : commaSeparatedValues) {
+						if(key.equals(value)) {
+							ExecutionStatus status = this.getExecutionStatus(testSets.get(key));
+							automatedTestCase.addCustomFieldAndStatus(value, status);
 						}
 					}
-					catch ( IOException ioe )
-					{
-						notes += Messages.Results_TAP_AddAttachmentsFail( ioe.getMessage() );
-						ioe.printStackTrace( listener.getLogger() );
-					}
-					
-					testResult.appendNotes( notes );
-					
-					String platform = this.retrievePlatform( tapTestSet );
-					
-					testResult.setPlatform(platform);
-					
-					this.addOrUpdate( testResult, tapFileNameWithoutExtension );
-					
 				}
 			}
+		} catch (IOException e) {
+			throw new ResultSeekerException(e);
+		} catch (InterruptedException e) {
+			throw new ResultSeekerException(e);
 		}
 	}
 
 	/**
-	 * Adds a test result to the map of test results. If the entry already 
-	 * exists, then it is updated (notes, attachments and statuses).
+	 * @param testSet
+	 * @return
 	 */
-	protected void addOrUpdate( TestCaseWrapper<TestSet> testResult, String tapFileNameWithoutExtension )
-	{
-		final TestCaseWrapper<TestSet> temp = this.results.get(testResult.getId());
-		
-		if ( temp == null )
-		{
-			this.results.put(testResult.getId(), testResult);
-		}
-		else
-		{
-			temp.appendNotes( testResult.getNotes() );
-			for( Attachment attachment : testResult.getAttachments() )
-			{
-				temp.addAttachment(attachment);
-			}
-			temp.getCustomFieldAndStatus().putAll( testResult.getCustomFieldAndStatus() );
-		}
-	}
-
-	/**
-	 * Retrieves notes for a TAP test set.
-	 * 
-	 * @param testSet TAP test set.
-	 * @return notes for a TAP test set.
-	 */
-	protected String getTapNotes( TestSet testSet )
-	{
-		StringBuilder notes = new StringBuilder();
-		
-		notes.append( testSet.toString() );
-		
-		return notes.toString();
-	}
-	
-	/**
-	 * Retrieves the TestLink platform.
-	 * 
-	 * @param tapTestSet TAP test set.
-	 * @return TestLink platform.
-	 */
-	protected String retrievePlatform( TestSet tapTestSet )
-	{
-		String platform = null;
-		
-		Plan plan = tapTestSet.getPlan();
-		Map<String, Object> planDiagnostic = plan.getDiagnostic();
-		
-		platform = this.extractPlatform( planDiagnostic );
-		
-		if ( platform == null ) 
-		{
-			for ( TestResult testResult : tapTestSet.getTestResults() )
-			{
-				Map<String, Object> diagnostic = testResult.getDiagnostic();
-				platform = this.extractPlatform( diagnostic );
-				if ( platform != null )
-				{
-					break;
-				}
-			}
-		}
-		
-		return platform;
-	}
-
-	/**
-	 * @param diagnostic
-	 * @return TestLink Platform if present, {@code null} otherwise
-	 */
-	@SuppressWarnings("unchecked")
-	protected String extractPlatform( Map<String, Object> diagnostic )
-	{
-		String platform = null;
-		Object extensions = diagnostic.get( "extensions" );
-		if ( extensions != null && extensions instanceof Map<?, ?> )
-		{
-			Map<String, Object> extensionsInfo = (Map<String, Object>)extensions;
-			Object testlink = extensionsInfo.get( "TestLink" );
-			if ( testlink != null && testlink instanceof Map<?, ?>)
-			{
-				Map<String, Object> testLinkInfo = (Map<String, Object>)testlink;
-				Object o = testLinkInfo.get("Platform");
-				if(o == null) 
-				{
-					o = testLinkInfo.get("platform");
-				}
-				if ( o != null && o instanceof String )
-				{
-					platform = (String)o;
-				}
-			}
-		}
-		return platform;
-	}
-
-	/**
-	 * Retrieves the TestLink Execution Status from a TAP Test Set. Returns 
-	 * failed only when the test set contains at least one not ok statement.
-	 * 
-	 * @param testSet the TAP TestSet.
-	 * @return failed only when the test set contains at least one not ok statement, otherwise it will return passed.
-	 */
-	protected ExecutionStatus getTapExecutionStatus( TestSet testSet )
-	{
+	private ExecutionStatus getExecutionStatus(TestSet testSet) {
 		ExecutionStatus status = ExecutionStatus.PASSED;
 		
 		if ( isSkipped( testSet)  )
@@ -405,7 +218,83 @@ extends TestResultSeeker<TestSet>
 		
 		return r;
 	}
-
+	
+	/**
+	 * Retrieves notes for a TAP test set.
+	 * 
+	 * @param testSet TAP test set.
+	 * @return notes for a TAP test set.
+	 */
+	protected String getTapNotes( TestSet testSet )
+	{
+		StringBuilder notes = new StringBuilder();
+		
+		notes.append( testSet.toString() );
+		
+		return notes.toString();
+	}
+	
+	/**
+	 * Retrieves the TestLink platform.
+	 * 
+	 * @param tapTestSet TAP test set.
+	 * @return TestLink platform.
+	 */
+	protected String retrievePlatform( TestSet tapTestSet )
+	{
+		String platform = null;
+		
+		Plan plan = tapTestSet.getPlan();
+		Map<String, Object> planDiagnostic = plan.getDiagnostic();
+		
+		platform = this.extractPlatform( planDiagnostic );
+		
+		if ( platform == null ) 
+		{
+			for ( TestResult testResult : tapTestSet.getTestResults() )
+			{
+				Map<String, Object> diagnostic = testResult.getDiagnostic();
+				platform = this.extractPlatform( diagnostic );
+				if ( platform != null )
+				{
+					break;
+				}
+			}
+		}
+		
+		return platform;
+	}
+	
+	/**
+	 * @param diagnostic
+	 * @return TestLink Platform if present, {@code null} otherwise
+	 */
+	@SuppressWarnings("unchecked")
+	protected String extractPlatform( Map<String, Object> diagnostic )
+	{
+		String platform = null;
+		Object extensions = diagnostic.get( "extensions" );
+		if ( extensions != null && extensions instanceof Map<?, ?> )
+		{
+			Map<String, Object> extensionsInfo = (Map<String, Object>)extensions;
+			Object testlink = extensionsInfo.get( "TestLink" );
+			if ( testlink != null && testlink instanceof Map<?, ?>)
+			{
+				Map<String, Object> testLinkInfo = (Map<String, Object>)testlink;
+				Object o = testLinkInfo.get("Platform");
+				if(o == null) 
+				{
+					o = testLinkInfo.get("platform");
+				}
+				if ( o != null && o instanceof String )
+				{
+					platform = (String)o;
+				}
+			}
+		}
+		return platform;
+	}
+	
 	/**
 	 * Retrieves list of TAP Attachments. Besides the TAP stream file itself, 
 	 * this method also adds all extension / Files to this list.
@@ -460,7 +349,7 @@ extends TestResultSeeker<TestSet>
 		
 		return attachments;
 	}
-
+	
 	/**
 	 * Extracts attachments from a TAP diagnostic and adds into a list of 
 	 * attachments.
@@ -476,7 +365,7 @@ extends TestResultSeeker<TestSet>
 		) 
 	throws IOException
 	{
-		Object extensions = diagnostic.get( "extensions" );
+		final Object extensions = diagnostic.get( "extensions" );
 		if ( extensions != null && extensions instanceof Map<?, ?>)
 		{
 			Map<String, Object> extensionsMap = (Map<String, Object>)extensions;
@@ -563,5 +452,5 @@ extends TestResultSeeker<TestSet>
 			}
 		}
 	}
-	
+
 }

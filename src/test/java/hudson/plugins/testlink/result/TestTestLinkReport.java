@@ -23,11 +23,6 @@
  */
 package hudson.plugins.testlink.result;
 
-import br.eti.kinoshita.testlinkjavaapi.model.Build;
-import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
-import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
-import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
-
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
@@ -38,115 +33,57 @@ extends junit.framework.TestCase
 
 	private Report report;
 	
-	private Build build;
-	
 	public void setUp()
 	{
-		build = new Build();
-		build.setId(100);
-		this.report = new Report(build);
-		
-		assertNotNull ( this.report.getTestCases() );
-		assertTrue( this.report.getTestCases().size() == 0 );
+		this.report = new Report();
+		report.setBuildId(100);
 	}
 	
 	public void testTesLinkReportGettersAndSetters()
 	{
-		assertNotNull( this.report.getBuild() );
-		assertTrue( this.report.getBuild().getId() == 100 );
+		assertTrue( this.report.getBuildId() == 100 );
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void testReportNumbers()
 	{
-		assertTrue( report.getTestsBlocked() == 0 );
-		assertTrue( report.getTestsFailed() == 0 );
-		assertTrue( report.getTestsPassed() == 0 );
+		assertTrue( report.getBlocked() == 0 );
+		assertTrue( report.getFailed() == 0 );
+		assertTrue( report.getPassed() == 0 );
 		assertTrue( report.getTestsTotal() == 0 );
 		
-		TestCase testCase = new TestCase();
-		testCase.setId( 1 );
-		testCase.setExecutionStatus( ExecutionStatus.BLOCKED );
-		CustomField cf = new CustomField();
-		cf.setId(1);
-		cf.setName("cf1");
-		cf.setValue("");
-		testCase.getCustomFields().add(cf);
-		TestCaseWrapper<?> tcw1 = new TestCaseWrapper(testCase, new String[]{"cf1"}, null);
-		tcw1.addCustomFieldAndStatus("cf1", testCase.getExecutionStatus());
-		report.addTestCase( tcw1 );
+		report.setBlocked(1);
 		
-		assertTrue( report.getTestsBlocked() == 1 );
-		assertTrue( report.getTestsFailed() == 0 );
-		assertTrue( report.getTestsPassed() == 0 );
+		assertTrue( report.getBlocked() == 1 );
+		assertTrue( report.getFailed() == 0 );
+		assertTrue( report.getPassed() == 0 );
 		assertTrue( report.getTestsTotal() == 1 );
 		
-		testCase = new TestCase();
-		testCase.setId( 2 );
-		testCase.setExecutionStatus( ExecutionStatus.FAILED );
-		cf = new CustomField();
-		cf.setId(1);
-		cf.setName("cf1");
-		cf.setValue("");
-		testCase.getCustomFields().add(cf);
-		tcw1 = new TestCaseWrapper(testCase, new String[]{"cf1"}, null);
-		tcw1.addCustomFieldAndStatus("cf1", testCase.getExecutionStatus());
-		report.addTestCase( tcw1 );
+		report.setFailed(1);
 		
-		assertTrue( report.getTestsBlocked() == 1 );
-		assertTrue( report.getTestsFailed() == 1 );
-		assertTrue( report.getTestsPassed() == 0 );
+		assertTrue( report.getBlocked() == 1 );
+		assertTrue( report.getFailed() == 1 );
+		assertTrue( report.getPassed() == 0 );
 		assertTrue( report.getTestsTotal() == 2 );
 		
-		testCase = new TestCase();
-		testCase.setId( 3 );
-		testCase.setExecutionStatus( ExecutionStatus.PASSED );
-		cf = new CustomField();
-		cf.setId(1);
-		cf.setName("cf1");
-		cf.setValue("");
-		testCase.getCustomFields().add(cf);
-		tcw1 = new TestCaseWrapper(testCase, new String[]{"cf1"}, null);
-		tcw1.addCustomFieldAndStatus("cf1", testCase.getExecutionStatus());
-		report.addTestCase( tcw1 );
+		report.setPassed(1);
 		
-		assertTrue( report.getTestsBlocked() == 1 );
-		assertTrue( report.getTestsFailed() == 1 );
-		assertTrue( report.getTestsPassed() == 1 );
+		assertTrue( report.getBlocked() == 1 );
+		assertTrue( report.getFailed() == 1 );
+		assertTrue( report.getPassed() == 1 );
 		assertTrue( report.getTestsTotal() == 3 );
 		
-		testCase = new TestCase();
-		testCase.setId( 4 );
-		testCase.setExecutionStatus( ExecutionStatus.PASSED);
-		cf = new CustomField();
-		cf.setId(1);
-		cf.setName("cf1");
-		cf.setValue("");
-		testCase.getCustomFields().add(cf);
-		tcw1 = new TestCaseWrapper(testCase, new String[]{"cf1"}, null);
-		tcw1.addCustomFieldAndStatus("cf1", testCase.getExecutionStatus());
-		report.addTestCase( tcw1 );
+		report.setPassed(report.getPassed()+1);
 		
-		assertTrue( report.getTestsBlocked() == 1 );
-		assertTrue( report.getTestsFailed() == 1 );
-		assertTrue( report.getTestsPassed() == 2 );
+		assertTrue( report.getBlocked() == 1 );
+		assertTrue( report.getFailed() == 1 );
+		assertTrue( report.getPassed() == 2 );
 		assertTrue( report.getTestsTotal() == 4 );
 		
-		testCase = new TestCase();
-		testCase.setId( 5 );
-		testCase.setExecutionStatus( ExecutionStatus.PASSED);
-		cf = new CustomField();
-		cf.setId(1);
-		cf.setName("cf1");
-		cf.setValue("");
-		testCase.getCustomFields().add(cf);
-		tcw1 = new TestCaseWrapper(testCase, new String[]{"cf1"}, null);
-		tcw1.addCustomFieldAndStatus("cf1", testCase.getExecutionStatus());
-		report.addTestCase( tcw1 );
+		report.setPassed(report.getPassed()+1);
 		
-		assertTrue( report.getTestsBlocked() == 1 );
-		assertTrue( report.getTestsFailed() == 1 );
-		assertTrue( report.getTestsPassed() == 3 );
+		assertTrue( report.getBlocked() == 1 );
+		assertTrue( report.getFailed() == 1 );
+		assertTrue( report.getPassed() == 3 );
 		assertTrue( report.getTestsTotal() == 5 );
 	}
 }

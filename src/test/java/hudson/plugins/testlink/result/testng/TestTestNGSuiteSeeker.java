@@ -25,8 +25,8 @@ package hudson.plugins.testlink.result.testng;
 
 import hudson.model.BuildListener;
 import hudson.model.StreamBuildListener;
-import hudson.plugins.testlink.parser.testng.Suite;
 import hudson.plugins.testlink.result.TestCaseWrapper;
+import hudson.plugins.testlink.testng.Suite;
 
 import java.io.File;
 import java.io.PrintStream;

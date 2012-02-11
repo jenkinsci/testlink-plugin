@@ -21,23 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.parser.testng;
+package hudson.plugins.testlink.testng;
 
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Represents the <suite> tag. 
+ * Represents the <test> tag. This tag is child of the <suite> tag.
  *
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-public class Suite 
+public class Test
 implements Serializable
 {
 
-	private static final long serialVersionUID = 4396701906087157712L;
+	private static final long serialVersionUID = 7310326353515207431L;
 	
 	/**
 	 * The name attribute.
@@ -60,18 +60,18 @@ implements Serializable
 	private String finishedAt;
 	
 	/**
-	 * List of <test> tags.
+	 * The list of <class> tags.
 	 */
-	private List<Test> tests;
+	private List<Class> classes;
 	
 	/**
-	 * Default constructor. Initializes the list of <test> tags.
+	 * Default constructor. Initializes the list of <class> tags.
 	 */
-	public Suite()
+	public Test()
 	{
 		super();
 		
-		this.tests = new LinkedList<Test>();
+		this.classes = new LinkedList<Class>();
 	}
 
 	/**
@@ -79,7 +79,7 @@ implements Serializable
 	 * 
 	 * @return the name
 	 */
-	public String getName()
+	public String getName() 
 	{
 		return name;
 	}
@@ -89,17 +89,17 @@ implements Serializable
 	 * 
 	 * @param name the name to set
 	 */
-	public void setName( String name )
+	public void setName( String name ) 
 	{
 		this.name = name;
 	}
-
+	
 	/**
 	 * Retrieves the duration in ms.
 	 * 
-	 * @return the durationMs
+	 * @return the duration in ms
 	 */
-	public String getDurationMs()
+	public String getDurationMs() 
 	{
 		return durationMs;
 	}
@@ -107,83 +107,83 @@ implements Serializable
 	/**
 	 * Sets the duration in ms.
 	 * 
-	 * @param durationMs the durationMs to set
+	 * @param durationMs the duration to set
 	 */
-	public void setDurationMs( String durationMs )
+	public void setDurationMs( String durationMs ) 
 	{
 		this.durationMs = durationMs;
 	}
-
+	
 	/**
-	 * Retrieves the started at.
+	 * Retrieves the startedAt.
 	 * 
 	 * @return the startedAt
 	 */
-	public String getStartedAt()
+	public String getStartedAt() 
 	{
 		return startedAt;
 	}
 
 	/**
-	 * Sets the started at.
+	 * Sets the startedAt.
 	 * 
 	 * @param startedAt the startedAt to set
 	 */
-	public void setStartedAt( String startedAt )
+	public void setStartedAt( String startedAt ) 
 	{
 		this.startedAt = startedAt;
 	}
 
 	/**
-	 * Retrieves the finished at.
+	 * Retrieves the finishedAt.
 	 * 
 	 * @return the finishedAt
 	 */
-	public String getFinishedAt()
+	public String getFinishedAt() 
 	{
 		return finishedAt;
 	}
 
 	/**
-	 * Sets the finished at.
+	 * Sets the finishedAt.
 	 * 
 	 * @param finishedAt the finishedAt to set
 	 */
-	public void setFinishedAt( String finishedAt )
+	public void setFinishedAt( String finishedAt ) 
 	{
 		this.finishedAt = finishedAt;
 	}
 
 	/**
-	 * Retrieves the list of <test> tags.
+	 * Retrieves the list of <class> tags.
 	 * 
-	 * @return the tests
+	 * @return the classes
 	 */
-	public List<Test> getTests()
+	public List<Class> getClasses() 
 	{
-		return tests;
+		return classes;
 	}
 	
 	/**
-	 * Adds a test into the list of <test> tags.
+	 * Adds a class into the list of <class> tags.
 	 * 
-	 * @param test the test.
+	 * @param clazz the class
 	 * @return true if added sucessfully, otherwise false.
 	 */
-	public boolean addTest( Test test )
+	public boolean addClass( Class clazz )
 	{
-		return this.tests.add( test );
+		return this.classes.add ( clazz );
 	}
-
+	
 	/**
-	 * Removes a test from the list of <test> tags.
+	 * Removes a class from the list of <class> tags.
 	 * 
-	 * @param test the test.
+	 * @param clazz the class
 	 * @return true if removed sucessfully, otherwise false.
 	 */
-	public boolean removeTest( Test test )
+	public boolean removeClass( Class clazz )
 	{
-		return this.tests.remove ( test );
+		return this.classes.remove ( clazz );
 	}
 	
 }

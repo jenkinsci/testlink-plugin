@@ -106,13 +106,13 @@ public class GraphHelper
               
               switch (row) {
                   case 0:
-                	  return String.valueOf(report.getTestsBlocked()) + " Blocked";
+                	  return String.valueOf(report.getBlocked()) + " Blocked";
                   case 1:
-                	  return String.valueOf(report.getTestsFailed()) + " Failed";
+                	  return String.valueOf(report.getFailed()) + " Failed";
                   case 2:
-                	  return String.valueOf(report.getTestsNotRun()) + " Not Run";
+                	  return String.valueOf(report.getNotRun()) + " Not Run";
                   case 3:
-                	  return String.valueOf(report.getTestsPassed()) + " Passed";
+                	  return String.valueOf(report.getPassed()) + " Passed";
                   default:
                      return "";
               }

@@ -51,7 +51,7 @@ public class TestIssue9672
 extends junit.framework.TestCase
 {
 
-	private TestNGClassesTestResultSeeker<hudson.plugins.testlink.parser.testng.Class> seeker;
+	private TestNGClassesTestResultSeeker<hudson.plugins.testlink.testng.Class> seeker;
 
 	private final static String KEY_CUSTOM_FIELD = "testCustomField";
 
@@ -102,7 +102,7 @@ extends junit.framework.TestCase
 		tc.setId(5);
 		tcs[4] = tc;
 		
-		this.seeker = new TestNGClassesTestResultSeeker<hudson.plugins.testlink.parser.testng.Class>(
+		this.seeker = new TestNGClassesTestResultSeeker<hudson.plugins.testlink.testng.Class>(
 				"testng-results*.xml", tcs, KEY_CUSTOM_FIELD, listener);
 	}
 
@@ -112,7 +112,7 @@ extends junit.framework.TestCase
 		URL url = cl
 				.getResource("hudson/plugins/testlink/result/testng/issue9672/");
 		File junitDir = new File(url.getFile());
-		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> found = seeker
+		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.testng.Class>> found = seeker
 				.seek(junitDir);
 		assertNotNull(found);
 		assertTrue(found.size() == 5);
@@ -125,7 +125,7 @@ extends junit.framework.TestCase
 		URL url = cl
 				.getResource("hudson/plugins/testlink/result/testng/issue9672");
 		File junitDir = new File(url.getFile());
-		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> found = seeker
+		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.testng.Class>> found = seeker
 				.seek(junitDir);
 		assertNotNull(found);
 		assertTrue(found.size() == 5);
@@ -138,7 +138,7 @@ extends junit.framework.TestCase
 		URL url = cl
 				.getResource("hudson/plugins/testlink/result/testng/issue9672");
 		File junitDir = new File(url.getFile());
-		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> found = seeker
+		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.testng.Class>> found = seeker
 				.seek(junitDir);
 		assertNotNull(found);
 		assertTrue(found.size() == 5);
@@ -151,7 +151,7 @@ extends junit.framework.TestCase
 		URL url = cl
 				.getResource("hudson/plugins/testlink/result/testng/issue9672");
 		File junitDir = new File(url.getFile());
-		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> found = seeker
+		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.testng.Class>> found = seeker
 				.seek(junitDir);
 		assertNotNull(found);
 		assertTrue(found.size() == 5);
@@ -164,7 +164,7 @@ extends junit.framework.TestCase
 		URL url = cl
 				.getResource("hudson/plugins/testlink/result/testng/issue9672");
 		File junitDir = new File(url.getFile());
-		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.testng.Class>> found = seeker
+		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.testng.Class>> found = seeker
 				.seek(junitDir);
 		assertNotNull(found);
 		assertTrue(found.size() == 5);

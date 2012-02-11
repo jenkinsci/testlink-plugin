@@ -24,15 +24,9 @@
 package hudson.plugins.testlink.util;
 
 import hudson.plugins.testlink.result.Report;
-import hudson.plugins.testlink.result.TestCaseWrapper;
 
 import java.lang.reflect.Constructor;
 import java.util.Locale;
-
-import br.eti.kinoshita.testlinkjavaapi.model.Build;
-import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
-import br.eti.kinoshita.testlinkjavaapi.model.ExecutionType;
-import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**
  * Tests the ReportSummary class.
@@ -42,7 +36,6 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
 public class TestReportSummary 
 extends junit.framework.TestCase
 {
@@ -91,24 +84,16 @@ extends junit.framework.TestCase
 	 */
 	public void testSummary()
 	{
-		Build build = new Build(1, 1, "My build", "Notes about my build");
+		Report report = new Report();
 		
-		Report report = new Report(build);
+		report.setBuildId(1);
+		report.setBuildName("My build");
 		
-		TestCase testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 1, 1, false, null, 1, 1, null, null, ExecutionStatus.PASSED );
-		TestCaseWrapper tcw1 = new TestCaseWrapper(testCase1, new String[]{"cf1"}, null);
-		tcw1.addCustomFieldAndStatus("cf1", testCase1.getExecutionStatus());
-		report.addTestCase( tcw1 );
+		report.setPassed(1);
 		
-		TestCase testCase2 = new TestCase(2, "tc2", 2, 2, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 2, 2, false, null, 2, 2, null, null, ExecutionStatus.FAILED );
-		TestCaseWrapper tcw2 = new TestCaseWrapper(testCase2, new String[]{"cf1"}, null);
-		tcw2.addCustomFieldAndStatus("cf1", testCase2.getExecutionStatus());
-		report.addTestCase( tcw2 );
+		report.setFailed(1);
 		
-		TestCase testCase3 = new TestCase(3, "tc3", 3, 3, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 3, 3, false, null, 3, 3, null, null, ExecutionStatus.BLOCKED );
-		TestCaseWrapper tcw3 = new TestCaseWrapper(testCase3, new String[]{"cf1"}, null);
-		tcw3.addCustomFieldAndStatus("cf1", testCase3.getExecutionStatus());
-		report.addTestCase( tcw3 );
+		report.setBlocked(1);
 		
 		String reportSummary = TestLinkHelper.createReportSummary(report, null);
 		assertNotNull(reportSummary);
@@ -120,36 +105,21 @@ extends junit.framework.TestCase
 	 */
 	public void testSummaryWithPrevious()
 	{
-		Build build = new Build(1, 1, "My build", "Notes about my build");
+		Report report = new Report();
 		
-		Report report = new Report(build);
+		report.setBuildId(1);
+		report.setBuildName("My build");
 		
-		TestCase testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 1, 1, false, null, 1, 1, null, null, ExecutionStatus.PASSED );
-		TestCaseWrapper tcw1 = new TestCaseWrapper(testCase1, new String[]{"cf1"}, null);
-		tcw1.addCustomFieldAndStatus("cf1", testCase1.getExecutionStatus());
-		report.addTestCase( tcw1 );
+		report.setPassed(1);
+		report.setFailed(1);
+		report.setBlocked(1);
 		
-		TestCase testCase2 = new TestCase(2, "tc2", 2, 2, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 2, 2, false, null, 2, 2, null, null, ExecutionStatus.FAILED );
-		TestCaseWrapper tcw2 = new TestCaseWrapper(testCase2, new String[]{"cf1"}, null);
-		tcw2.addCustomFieldAndStatus("cf1", testCase2.getExecutionStatus());
-		report.addTestCase( tcw2 );
+		Report previous = new Report();
+		report.setBuildId(1);
+		report.setBuildName("My build");
 		
-		TestCase testCase3 = new TestCase(3, "tc3", 3, 3, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 3, 3, false, null, 3, 3, null, null, ExecutionStatus.BLOCKED );
-		TestCaseWrapper tcw3 = new TestCaseWrapper(testCase3, new String[]{"cf1"}, null);
-		tcw3.addCustomFieldAndStatus("cf1", testCase3.getExecutionStatus());
-		report.addTestCase( tcw3 );
-		
-		Report previous = new Report(build);
-		
-		testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 1, 1, false, null, 1, 1, null, null, ExecutionStatus.PASSED );
-		tcw1 = new TestCaseWrapper(testCase1, new String[]{"cf1"}, null);
-		tcw1.addCustomFieldAndStatus("cf1", testCase1.getExecutionStatus());
-		previous.addTestCase( tcw1 );
-		
-		testCase2 = new TestCase(2, "tc2", 2, 2, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 2, 2, false, null, 2, 2, null, null, ExecutionStatus.FAILED );
-		tcw2 = new TestCaseWrapper(testCase2, new String[]{"cf1"}, null);
-		tcw2.addCustomFieldAndStatus("cf1", testCase2.getExecutionStatus());
-		previous.addTestCase( tcw2 );
+		report.setPassed(1);
+		report.setFailed(1);
 		
 		String reportSummary = TestLinkHelper.createReportSummary(report, previous);
 		assertNotNull(reportSummary);
@@ -161,36 +131,16 @@ extends junit.framework.TestCase
 	 */
 	public void testSummaryDetails()
 	{
-		Build build = new Build(1, 1, "My build", "Notes about my build");
+		Report report = new Report();
 		
-		Report report = new Report(build);
+		report.setPassed(1);
+		report.setFailed(1);
+		report.setBlocked(1);
 		
-		TestCase testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 1, 1, false, null, 1, 1, null, null, ExecutionStatus.PASSED );
-		TestCaseWrapper tcw1 = new TestCaseWrapper(testCase1, new String[]{"cf1"}, null);
-		tcw1.addCustomFieldAndStatus("cf1", testCase1.getExecutionStatus());
-		report.addTestCase( tcw1 );
+		Report previous = new Report();
 		
-		TestCase testCase2 = new TestCase(2, "tc2", 2, 2, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 2, 2, false, null, 2, 2, null, null, ExecutionStatus.FAILED );
-		TestCaseWrapper tcw2 = new TestCaseWrapper(testCase2, new String[]{"cf1"}, null);
-		tcw2.addCustomFieldAndStatus("cf1", testCase2.getExecutionStatus());
-		report.addTestCase( tcw2 );
-		
-		TestCase testCase3 = new TestCase(3, "tc3", 3, 3, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 3, 3, false, null, 3, 3, null, null, ExecutionStatus.BLOCKED );
-		TestCaseWrapper tcw3 = new TestCaseWrapper(testCase3, new String[]{"cf1"}, null);
-		tcw3.addCustomFieldAndStatus("cf1", testCase3.getExecutionStatus());
-		report.addTestCase( tcw3 );
-		
-		Report previous = new Report(build);
-		
-		testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 1, 1, false, null, 1, 1, null, null, ExecutionStatus.PASSED );
-		tcw1 = new TestCaseWrapper(testCase1, new String[]{"cf1"}, null);
-		tcw1.addCustomFieldAndStatus("cf1", testCase1.getExecutionStatus());
-		previous.addTestCase( tcw1 );
-		
-		testCase2 = new TestCase(2, "tc2", 2, 2, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 2, 2, false, null, 2, 2, null, null, ExecutionStatus.FAILED );
-		tcw2 = new TestCaseWrapper(testCase2, new String[]{"cf1"}, null);
-		tcw2.addCustomFieldAndStatus("cf1", testCase2.getExecutionStatus());
-		previous.addTestCase( tcw2 );
+		report.setPassed(1);
+		report.setFailed(1);
 		
 		String reportSummaryDetails = TestLinkHelper.createReportSummaryDetails(report, previous);
 		assertNotNull(reportSummaryDetails);

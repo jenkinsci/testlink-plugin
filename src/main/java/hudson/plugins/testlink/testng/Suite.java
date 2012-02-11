@@ -21,31 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.parser.testng;
+package hudson.plugins.testlink.testng;
 
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Represents the <test-method> tag. This tag is child of the <class> tag.
- * 
+ * Represents the <suite> tag. 
+ *
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-public class TestMethod 
+public class Suite 
 implements Serializable
 {
 
-	private static final long serialVersionUID = 196237635867018108L;
-	
-	/**
-	 * The status attribute.
-	 */
-	private String status;
-	
-	/**
-	 * The signature attribute.
-	 */
-	private String signature;
+	private static final long serialVersionUID = 4396701906087157712L;
 	
 	/**
 	 * The name attribute.
@@ -53,12 +45,7 @@ implements Serializable
 	private String name;
 	
 	/**
-	 * The is-config attribute.
-	 */
-	private String isConfig;
-	
-	/**
-	 * The duration attribute.
+	 * The duration-ms attribute.
 	 */
 	private String durationMs;
 	
@@ -73,51 +60,18 @@ implements Serializable
 	private String finishedAt;
 	
 	/**
-	 * Default constructor.
+	 * List of <test> tags.
 	 */
-	public TestMethod()
+	private List<Test> tests;
+	
+	/**
+	 * Default constructor. Initializes the list of <test> tags.
+	 */
+	public Suite()
 	{
 		super();
-	}
-
-	/**
-	 * Retrieves the status.
-	 * 
-	 * @return the status
-	 */
-	public String getStatus() 
-	{
-		return status;
-	}
-
-	/**
-	 * Sets the status.
-	 * 
-	 * @param status the status to set
-	 */
-	public void setStatus( String status ) 
-	{
-		this.status = status;
-	}
-
-	/**
-	 * Retrieves the signature.
-	 * 
-	 * @return the signature
-	 */
-	public String getSignature() 
-	{
-		return signature;
-	}
-
-	/**
-	 * Sets the signature.
-	 * 
-	 * @param signature the signature to set
-	 */
-	public void setSignature( String signature )
-	{
-		this.signature = signature;
+		
+		this.tests = new LinkedList<Test>();
 	}
 
 	/**
@@ -125,7 +79,7 @@ implements Serializable
 	 * 
 	 * @return the name
 	 */
-	public String getName() 
+	public String getName()
 	{
 		return name;
 	}
@@ -135,37 +89,17 @@ implements Serializable
 	 * 
 	 * @param name the name to set
 	 */
-	public void setName( String name ) 
+	public void setName( String name )
 	{
 		this.name = name;
 	}
 
 	/**
-	 * Retrieves the isConfig.
-	 * 
-	 * @return the isConfig
-	 */
-	public String getIsConfig() 
-	{
-		return isConfig;
-	}
-
-	/**
-	 * Sets the isConfig.
-	 * 
-	 * @param isConfig the isConfig to set
-	 */
-	public void setIsConfig( String isConfig ) 
-	{
-		this.isConfig = isConfig;
-	}
-
-	/**
 	 * Retrieves the duration in ms.
 	 * 
-	 * @return the duration in ms.
+	 * @return the durationMs
 	 */
-	public String getDurationMs() 
+	public String getDurationMs()
 	{
 		return durationMs;
 	}
@@ -173,52 +107,83 @@ implements Serializable
 	/**
 	 * Sets the duration in ms.
 	 * 
-	 * @param durationMs the duration in ms to set.
+	 * @param durationMs the durationMs to set
 	 */
-	public void setDurationMs( String durationMs ) 
+	public void setDurationMs( String durationMs )
 	{
 		this.durationMs = durationMs;
 	}
 
 	/**
-	 * Retrieves the startedAt.
+	 * Retrieves the started at.
 	 * 
 	 * @return the startedAt
 	 */
-	public String getStartedAt() 
+	public String getStartedAt()
 	{
 		return startedAt;
 	}
 
 	/**
-	 * Sets the startedAt.
+	 * Sets the started at.
 	 * 
 	 * @param startedAt the startedAt to set
 	 */
-	public void setStartedAt( String startedAt ) 
+	public void setStartedAt( String startedAt )
 	{
 		this.startedAt = startedAt;
 	}
 
 	/**
-	 * Retrieves the finishedAt.
+	 * Retrieves the finished at.
 	 * 
 	 * @return the finishedAt
 	 */
-	public String getFinishedAt() 
+	public String getFinishedAt()
 	{
 		return finishedAt;
 	}
 
 	/**
-	 * Sets the finishedAt.
+	 * Sets the finished at.
 	 * 
 	 * @param finishedAt the finishedAt to set
 	 */
-	public void setFinishedAt( String finishedAt ) 
+	public void setFinishedAt( String finishedAt )
 	{
 		this.finishedAt = finishedAt;
 	}
-	
 
+	/**
+	 * Retrieves the list of <test> tags.
+	 * 
+	 * @return the tests
+	 */
+	public List<Test> getTests()
+	{
+		return tests;
+	}
+	
+	/**
+	 * Adds a test into the list of <test> tags.
+	 * 
+	 * @param test the test.
+	 * @return true if added sucessfully, otherwise false.
+	 */
+	public boolean addTest( Test test )
+	{
+		return this.tests.add( test );
+	}
+
+	/**
+	 * Removes a test from the list of <test> tags.
+	 * 
+	 * @param test the test.
+	 * @return true if removed sucessfully, otherwise false.
+	 */
+	public boolean removeTest( Test test )
+	{
+		return this.tests.remove ( test );
+	}
+	
 }
