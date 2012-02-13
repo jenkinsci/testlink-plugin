@@ -172,7 +172,7 @@ extends AbstractTestLinkBuilder
 			listener.getLogger().println( Messages.Results_LookingForTestResults() );
 			
 			for(ResultSeeker resultSeeker : getResultSeekers()) {
-				resultSeeker.seekAndUpdate(null, build, launcher, listener, testLinkSite, report);
+				resultSeeker.seek(null, build, launcher, listener, testLinkSite, report);
 			}
 			
 //			listener.getLogger().println( Messages.TestLinkBuilder_ShowFoundTestResults(wrappedTestCases.size()) );

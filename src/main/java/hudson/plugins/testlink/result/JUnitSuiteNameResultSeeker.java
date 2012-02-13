@@ -90,13 +90,13 @@ public class JUnitSuiteNameResultSeeker extends ResultSeeker {
 	 * hudson.plugins.testlink.result.Report)
 	 */
 	@Override
-	public void seekAndUpdate(TestCaseWrapper<?>[] automatedTestCases,AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestLinkSite testlink, Report report)	throws ResultSeekerException {
+	public void seek(TestCaseWrapper[] automatedTestCases,AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestLinkSite testlink, Report report)	throws ResultSeekerException {
 		listener.getLogger().println( Messages.Results_JUnit_LookingForTestSuites() );
 		try {
 			final TestResult testResult = parser.parse(this.includePattern, build, launcher, listener);
 			
 			for(SuiteResult suiteResult : testResult.getSuites()) {
-				for(TestCaseWrapper<?> automatedTestCase : automatedTestCases) {
+				for(TestCaseWrapper automatedTestCase : automatedTestCases) {
 					final String[] commaSeparatedValues = this.split(automatedTestCase.getKeyCustomFieldValue());
 					for(String value : commaSeparatedValues) {
 						if(suiteResult.getName().equals(value)) {

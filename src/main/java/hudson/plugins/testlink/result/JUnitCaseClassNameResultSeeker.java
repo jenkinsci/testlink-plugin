@@ -84,7 +84,7 @@ public class JUnitCaseClassNameResultSeeker extends ResultSeeker {
 	 * @see hudson.plugins.testlink.result.ResultSeeker#seekAndUpdate(hudson.plugins.testlink.result.TestCaseWrapper<?>[], hudson.model.AbstractBuild, hudson.Launcher, hudson.model.BuildListener, hudson.plugins.testlink.TestLinkSite, hudson.plugins.testlink.result.Report)
 	 */
 	@Override
-	public void seekAndUpdate(TestCaseWrapper<?>[] automatedTestCases,
+	public void seek(TestCaseWrapper[] automatedTestCases,
 			AbstractBuild<?, ?> build, Launcher launcher,
 			BuildListener listener, TestLinkSite testlink, Report report)
 			throws ResultSeekerException {
@@ -94,7 +94,7 @@ public class JUnitCaseClassNameResultSeeker extends ResultSeeker {
 			
 			for(SuiteResult suiteResult : testResult.getSuites()) {
 				for(CaseResult caseResult : suiteResult.getCases()) {
-					for(TestCaseWrapper<?> automatedTestCase : automatedTestCases) {
+					for(TestCaseWrapper automatedTestCase : automatedTestCases) {
 						final String[] commaSeparatedValues = this.split(automatedTestCase.getKeyCustomFieldValue());
 						for(String value : commaSeparatedValues) {
 							if(caseResult.getClassName().equals(value)) {

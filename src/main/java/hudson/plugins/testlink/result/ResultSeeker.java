@@ -121,9 +121,6 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	 * <p>For each result found, it is automatically updated in TestLink, and 
 	 * the Report is updated.</p>
 	 * 
-	 * <p>Please, do not confuse this method with Seek and Destroy, which is 
-	 * the name of a great song, by the way.</p>
-	 * 
 	 * @param automatedTestcases Automated test cases
 	 * @param workspace Build workspace, used when looking for results using the include pattern
 	 * @param listener Build listener for logging
@@ -131,7 +128,7 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	 * @param report Report used to display the summary in Build screen
 	 * @throws ResultSeekerException
 	 */
-	public abstract void seekAndUpdate(TestCaseWrapper<?>[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestLinkSite testlink, Report report) throws ResultSeekerException;
+	public abstract void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestLinkSite testlink, Report report) throws ResultSeekerException;
 
 	/**
 	 * Retrieves the file content encoded in Base64.

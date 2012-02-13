@@ -87,7 +87,7 @@ public class TestNGClassNameResultSeeker extends ResultSeeker {
 	 * @see hudson.plugins.testlink.result.ResultSeeker#seekAndUpdate(hudson.plugins.testlink.result.TestCaseWrapper<?>[], hudson.model.AbstractBuild, hudson.Launcher, hudson.model.BuildListener, hudson.plugins.testlink.TestLinkSite, hudson.plugins.testlink.result.Report)
 	 */
 	@Override
-	public void seekAndUpdate(TestCaseWrapper<?>[] automatedTestCases,
+	public void seek(TestCaseWrapper[] automatedTestCases,
 			AbstractBuild<?, ?> build, Launcher launcher,
 			final BuildListener listener, TestLinkSite testlink, Report report)
 			throws ResultSeekerException {
@@ -114,7 +114,7 @@ public class TestNGClassNameResultSeeker extends ResultSeeker {
 			for(Suite suite : suites) {
 				for(Test test : suite.getTests() ) {
 					for(hudson.plugins.testlink.testng.Class  clazz : test.getClasses()) {
-						for(TestCaseWrapper<?> automatedTestCase : automatedTestCases) {
+						for(TestCaseWrapper automatedTestCase : automatedTestCases) {
 							final String[] commaSeparatedValues = this.split(automatedTestCase.getKeyCustomFieldValue());
 							for(String value : commaSeparatedValues) {
 								if(clazz.getName().equals(value)) {

@@ -41,7 +41,7 @@ extends TestCase
 
 	public void testTestLinkResult()
 	{
-		Report report = new Report(null);
+		Report report = new Report();
 		AbstractBuild<?, ?> build = null;
 		TestLinkResult tlr = new TestLinkResult(report, build);
 		

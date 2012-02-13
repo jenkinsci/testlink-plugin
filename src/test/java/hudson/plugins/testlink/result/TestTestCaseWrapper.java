@@ -27,7 +27,6 @@ import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
-import br.eti.kinoshita.testlinkjavaapi.model.TestSuite;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
@@ -41,9 +40,7 @@ extends junit.framework.TestCase
 	protected Build build;
 	protected TestPlan testPlan;
 	
-	protected TestCaseWrapper<TestSuite> testResult;
-	
-	private final String suiteName = "Sample junit test suite.";
+	protected TestCaseWrapper testResult;
 	
 	private String[] customFieldsNames = new String[]{"nz", "au"};
 	
@@ -56,11 +53,7 @@ extends junit.framework.TestCase
 		testPlan = new TestPlan();
 		testPlan.setId( 100 );
 		
-		TestSuite junitTestSuite = new TestSuite();
-		
-		junitTestSuite.setName( suiteName );
-		
-		testResult = new TestCaseWrapper<TestSuite>(testCase, customFieldsNames, junitTestSuite );
+		testResult = new TestCaseWrapper(testCase, customFieldsNames);
 	}
 	
 	public void testTestResultTestCaseId()
@@ -93,17 +86,6 @@ extends junit.framework.TestCase
 		testResult.addAttachment( attachment );
 		
 		assertEquals( testResult.getAttachments().size(), 2 );
-	}
-	
-	public void testTestResultOrigin()
-	{
-		assertNotNull( testResult.getOrigin() );
-		
-		assertTrue( testResult.getOrigin() instanceof TestSuite );
-		
-		TestSuite origin = testResult.getOrigin();
-		
-		assertEquals( origin.getName(), suiteName );
 	}
 	
 	public void testTestResultsCustomFields()

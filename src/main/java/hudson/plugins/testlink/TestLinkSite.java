@@ -25,7 +25,6 @@ package hudson.plugins.testlink;
 
 import hudson.plugins.testlink.result.TestCaseWrapper;
 
-import java.util.Collection;
 import java.util.List;
 
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
@@ -150,42 +149,36 @@ public class TestLinkSite
 	 * 
 	 * @param testCases Test Cases
 	 */
-	@SuppressWarnings("rawtypes")
-	public void updateTestCases( Collection<TestCaseWrapper> testCases ) 
+	public void updateTestCase( TestCaseWrapper testCase ) 
 	{
-		// Update TestLink Test Status
-		for( TestCaseWrapper testCase : testCases )
+		if ( testCase.getExecutionStatus() != null || testCase.getExecutionStatus() != ExecutionStatus.NOT_RUN )
 		{
-			if ( testCase.getExecutionStatus() != null || testCase.getExecutionStatus() != ExecutionStatus.NOT_RUN )
+			// Update Test Case status
+			final ReportTCResultResponse reportTCResultResponse = api.reportTCResult(
+					testCase.getId(), 
+					testCase.getInternalId(), 
+					testPlan.getId(), 
+					testCase.getExecutionStatus(), 
+					build.getId(), 
+					build.getName(), 
+					testCase.getNotes(), 
+					null, // guess
+					null, // bug id
+					null, // platform id 
+					testCase.getPlatform(), // platform name
+					null, // custom fields
+					null);
+			
+			List<Attachment> attachments = testCase.getAttachments();
+			for ( Attachment attachment :  attachments)
 			{
-				// Update Test Case status
-				final ReportTCResultResponse reportTCResultResponse = api.reportTCResult(
-						testCase.getId(), 
-						testCase.getInternalId(), 
-						testPlan.getId(), 
-						testCase.getExecutionStatus(), 
-						build.getId(), 
-						build.getName(), 
-						testCase.getNotes(), 
-						null, // guess
-						null, // bug id
-						null, // platform id 
-						testCase.getPlatform(), // platform name
-						null, // custom fields
-						null);
-				
-				@SuppressWarnings("unchecked")
-				List<Attachment> attachments = testCase.getAttachments();
-				for ( Attachment attachment :  attachments)
-				{
-					api.uploadExecutionAttachment(
-							reportTCResultResponse.getExecutionId(), 
-							attachment.getTitle(), 
-							attachment.getDescription(), 
-							attachment.getFileName(), 
-							attachment.getFileType(), 
-							attachment.getContent());
-				}
+				api.uploadExecutionAttachment(
+						reportTCResultResponse.getExecutionId(), 
+						attachment.getTitle(), 
+						attachment.getDescription(), 
+						attachment.getFileName(), 
+						attachment.getFileType(), 
+						attachment.getContent());
 			}
 		}
 	}
