@@ -57,6 +57,7 @@ public class TestLinkSiteFake extends TestLinkSite {
 	@Override
 	public void updateTestCase(TestCaseWrapper testCase) {
 		// OK, do nothing
+		System.out.println("Updating test case " + testCase.getName() + " execution status  " + testCase.getExecutionStatus());
 		testCases.add(testCase);
 	}
 	

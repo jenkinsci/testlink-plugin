@@ -35,12 +35,12 @@ public class Report implements Serializable {
 
 	private static final long serialVersionUID = -6536222071547639906L;
 
-	private int passed;
-	private int failed;
-	private int blocked;
-	private int notRun;
+	private int passed 	= 0;
+	private int failed 	= 0;
+	private int blocked	= 0;
+	private int notRun	= 0;
 
-	private int buildId;
+	private int buildId	= 0;
 	private String buildName;
 
 	/**
