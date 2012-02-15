@@ -23,6 +23,7 @@
  */
 package hudson.plugins.testlink;
 
+import hudson.plugins.testlink.result.Report;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 
 import java.util.List;
@@ -49,10 +50,11 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
 public class TestLinkSite
 {
 
-	private final TestLinkAPI api;
-	private final TestProject testProject;
-	private final TestPlan testPlan;
-	private final Build build;
+	protected final TestLinkAPI api;
+	protected final TestProject testProject;
+	protected final TestPlan testPlan;
+	protected final Build build;
+	protected final Report report;
 	
 	/**
 	 * @param api TestLink Java API object
@@ -67,6 +69,8 @@ public class TestLinkSite
 		this.testProject = testProject;
 		this.testPlan = testPlan;
 		this.build = build;
+		
+		report = new Report();
 	}
 	
 	/**
@@ -99,6 +103,13 @@ public class TestLinkSite
 	public Build getBuild()
 	{
 		return build;
+	}
+	
+	/**
+	 * @return the report
+	 */
+	public Report getReport() {
+		return report;
 	}
 
 	/**
@@ -179,6 +190,18 @@ public class TestLinkSite
 						attachment.getFileName(), 
 						attachment.getFileType(), 
 						attachment.getContent());
+			}
+			
+			switch(testCase.getExecutionStatus()) {
+			case PASSED:
+				report.setPassed(report.getPassed()+1);
+				break;
+			case FAILED:
+				report.setFailed(report.getFailed()+1);
+				break;
+			case BLOCKED:
+				report.setBlocked(report.getBlocked()+1);
+				break;
 			}
 		}
 	}

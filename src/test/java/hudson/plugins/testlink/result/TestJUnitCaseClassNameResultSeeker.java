@@ -26,12 +26,12 @@ package hudson.plugins.testlink.result;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 
 /**
- * Tests ResultSeeker with JUnit case result name.
+ * Tests ResultSeeker with JUnit class name.
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-public class TestJUnitCaseNameResultSeeker extends ResultSeekerTestCase {
+public class TestJUnitCaseClassNameResultSeeker extends ResultSeekerTestCase {
 
 	private static final String KEY_CUSTOM_FIELD = "testCustomField";
 	
@@ -56,7 +56,7 @@ public class TestJUnitCaseNameResultSeeker extends ResultSeekerTestCase {
 	 */
 	@Override
 	public ResultSeeker getResultSeeker() {
-		return new JUnitCaseNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD);
+		return new JUnitCaseClassNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD);
 	}
 
 	/*
@@ -68,27 +68,18 @@ public class TestJUnitCaseNameResultSeeker extends ResultSeekerTestCase {
 	 */
 	@Override
 	public TestCaseWrapper[] getAutomatedTestCases() {
-		final TestCaseWrapper[] tcs = new TestCaseWrapper[2];
+		final TestCaseWrapper[] tcs = new TestCaseWrapper[1];
 
 		TestCaseWrapper tc = new TestCaseWrapper(
 				new String[] { KEY_CUSTOM_FIELD });
 		CustomField cf = new CustomField();
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
-		cf.setValue("testVoid");
+		cf.setValue("br.eti.kinoshita.TestImmo");
 		tc.getCustomFields().add(cf);
 		tc.setId(1);
 		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[0] = tc;
-
-		tc = new TestCaseWrapper(new String[] { KEY_CUSTOM_FIELD });
-		cf = new CustomField();
-		cf.setName(KEY_CUSTOM_FIELD);
-		cf.setValue("Consultation");
-		tc.getCustomFields().add(cf);
-		tc.setId(2);
-		tc.setKeyCustomFieldValue(cf.getValue());
-		tcs[1] = tc;
 
 		return tcs;
 	}
@@ -96,7 +87,7 @@ public class TestJUnitCaseNameResultSeeker extends ResultSeekerTestCase {
 	public void testJUnitCaseNameResultSeeker() throws Exception {
 		buildAndAssertSuccess(project);
 
-		assertEquals(3, testlink.getReport().getTestsTotal());
+		assertEquals(1, testlink.getReport().getTestsTotal());
 		// TODO organize directories, XMLs and rewrite this test
 	}
 

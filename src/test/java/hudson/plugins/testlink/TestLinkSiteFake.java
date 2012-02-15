@@ -28,11 +28,6 @@ import hudson.plugins.testlink.result.TestCaseWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
-import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
-import br.eti.kinoshita.testlinkjavaapi.model.Build;
-import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
-import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
-
 /**
  * Fake TestLinkSite, used for testing.
  * 
@@ -42,13 +37,9 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
 public class TestLinkSiteFake extends TestLinkSite {
 
 	protected List<TestCaseWrapper> testCases = new LinkedList<TestCaseWrapper>();
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public TestLinkSiteFake(TestLinkAPI api, TestProject testProject,
-			TestPlan testPlan, Build build) {
-		super(api, testProject, testPlan, build);
+
+	public TestLinkSiteFake() {
+		super(null, null, null, null);
 	}
 
 	/* (non-Javadoc)
@@ -59,6 +50,17 @@ public class TestLinkSiteFake extends TestLinkSite {
 		// OK, do nothing
 		System.out.println("Updating test case " + testCase.getName() + " execution status  " + testCase.getExecutionStatus());
 		testCases.add(testCase);
+		switch(testCase.getExecutionStatus()) {
+		case PASSED:
+			report.setPassed(report.getPassed()+1);
+			break;
+		case FAILED:
+			report.setFailed(report.getFailed()+1);
+			break;
+		case BLOCKED:
+			report.setBlocked(report.getBlocked()+1);
+			break;
+		}
 	}
 	
 	/**

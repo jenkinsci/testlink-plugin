@@ -100,6 +100,9 @@ public class JUnitCaseClassNameResultSeeker extends ResultSeeker {
 							if(caseResult.getClassName().equals(value)) {
 								ExecutionStatus status = this.getExecutionStatus(caseResult);
 								automatedTestCase.addCustomFieldAndStatus(value, status);
+								if(automatedTestCase.getExecutionStatus() != ExecutionStatus.NOT_RUN) {
+									testlink.updateTestCase(automatedTestCase);
+								}
 							}
 						}
 					}

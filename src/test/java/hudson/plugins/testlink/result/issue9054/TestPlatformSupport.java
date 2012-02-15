@@ -27,7 +27,7 @@ import hudson.model.BuildListener;
 import hudson.model.StreamBuildListener;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 import hudson.plugins.testlink.result.TestResultsCallable;
-import hudson.plugins.testlink.result.TestTestResultSeekerTAP;
+import hudson.plugins.testlink.result.TestTAPFileNameResultSeeker;
 import hudson.plugins.testlink.result.tap.TAPTestResultSeeker;
 
 import java.io.File;
@@ -77,7 +77,7 @@ extends junit.framework.TestCase
 	
 	public void testPlatformSupport() 
 	{
-		ClassLoader cl = TestTestResultSeekerTAP.class.getClassLoader();
+		ClassLoader cl = TestTAPFileNameResultSeeker.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/tap/issue9054");
 		File tapDir = new File( url.getFile() );
 		@SuppressWarnings("rawtypes")

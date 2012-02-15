@@ -102,17 +102,6 @@ public class JUnitCaseNameResultSeeker extends ResultSeeker {
 								automatedTestCase.addCustomFieldAndStatus(value, status);
 								if(automatedTestCase.getExecutionStatus() != ExecutionStatus.NOT_RUN) {
 									testlink.updateTestCase(automatedTestCase);
-									switch(automatedTestCase.getExecutionStatus()) {
-										case PASSED:
-											report.setPassed(report.getPassed()+1);
-											break;
-										case FAILED:
-											report.setFailed(report.getFailed()+1);
-											break;
-										case BLOCKED:
-											report.setBlocked(report.getBlocked()+1);
-											break;
-									}
 								}
 							}
 						}

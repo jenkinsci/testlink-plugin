@@ -46,7 +46,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-public class TestTestResultSeekerTAP 
+public class TestTAPFileNameResultSeeker 
 extends junit.framework.TestCase
 {
 	
@@ -94,7 +94,7 @@ extends junit.framework.TestCase
 	@SuppressWarnings("rawtypes")
 	public void testTestResultSeekerTAPOne()
 	{
-		ClassLoader cl = TestTestResultSeekerTAP.class.getClassLoader();
+		ClassLoader cl = TestTAPFileNameResultSeeker.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/tap/");
 		File tapDir = new File( url.getFile() );
 		Map<Integer, TestCaseWrapper> found = seeker.seekTestResults(tapDir);
@@ -106,7 +106,7 @@ extends junit.framework.TestCase
 	@SuppressWarnings("rawtypes")
 	public void testTestResultSeekerTAPThree()
 	{
-		ClassLoader cl = TestTestResultSeekerTAP.class.getClassLoader();
+		ClassLoader cl = TestTAPFileNameResultSeeker.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/tap/");
 		File tapDir = new File( url.getFile() );
 		Map<Integer, TestCaseWrapper> found = seeker.seekTestResults(tapDir);
