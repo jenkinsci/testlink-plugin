@@ -23,26 +23,15 @@
  */
 package hudson.plugins.testlink.result.issue9672;
 
-import hudson.Launcher;
-import hudson.model.BuildListener;
-import hudson.model.FreeStyleBuild;
-import hudson.model.StreamBuildListener;
-import hudson.plugins.testlink.result.JUnitCaseNameResultSeeker;
-import hudson.plugins.testlink.result.Report;
+import hudson.plugins.testlink.result.JUnitCaseClassNameResultSeeker;
+import hudson.plugins.testlink.result.ResultSeeker;
+import hudson.plugins.testlink.result.ResultSeekerTestCase;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 
-import java.io.File;
-import java.io.PrintStream;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.Map;
-
 import org.jvnet.hudson.test.Bug;
-import org.jvnet.hudson.test.HudsonTestCase;
 
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
-import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**
  * Tests for issue 9672.
@@ -51,119 +40,127 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
  * @since 2.5
  */
 @Bug(9672)
-public class TestIssue9672 
-extends HudsonTestCase
-{
-	
-	private JUnitCaseNameResultSeeker seeker;
+public class TestIssue9672 extends ResultSeekerTestCase {
+
 	private final static String KEY_CUSTOM_FIELD = "testCustomField";
-	
-	private TestCase[] tcs = new TestCase[5];
-	
-	private Report report = new Report();
-	
-	public void setUp() {
-		TestCase tc = new TestCase();
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hudson.plugins.testlink.result.ResultSeekerTestCase#getResultsPattern()
+	 */
+	@Override
+	public String getResultsPattern() {
+		return "TEST-*.xml";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hudson.plugins.testlink.result.ResultSeekerTestCase#getResultsDirectory()
+	 */
+	@Override
+	public String getResultsDirectory() {
+		return "hudson/plugins/testlink/result/junit/issue9672/";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hudson.plugins.testlink.result.ResultSeekerTestCase#getResultSeeker()
+	 */
+	@Override
+	public ResultSeeker getResultSeeker() {
+		return new JUnitCaseClassNameResultSeeker(getResultsPattern(),
+				KEY_CUSTOM_FIELD);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hudson.plugins.testlink.result.ResultSeekerTestCase#getAutomatedTestCases
+	 * ()
+	 */
+	@Override
+	public TestCaseWrapper[] getAutomatedTestCases() {
+		final TestCaseWrapper[] tcs = new TestCaseWrapper[5];
+
+		TestCaseWrapper tc = new TestCaseWrapper(
+				new String[] { KEY_CUSTOM_FIELD });
 		CustomField cf = new CustomField();
-		cf.setName( KEY_CUSTOM_FIELD );
+		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("tcA");
-		tc.getCustomFields().add( cf );
+		tc.getCustomFields().add(cf);
 		tc.setId(1);
+		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[0] = tc;
-		
-		tc = new TestCase();
+
+		tc = new TestCaseWrapper(
+				new String[] { KEY_CUSTOM_FIELD });
 		cf = new CustomField();
-		cf.setName( KEY_CUSTOM_FIELD );
+		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("tcA, tcB");
 		tc.getCustomFields().add(cf);
 		tc.setId(2);
+		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[1] = tc;
-		
-		tc = new TestCase();
+
+		tc = new TestCaseWrapper(
+				new String[] { KEY_CUSTOM_FIELD });
 		cf = new CustomField();
-		cf.setName( KEY_CUSTOM_FIELD );
+		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("nameA, nameB");
 		tc.getCustomFields().add(cf);
 		tc.setId(3);
+		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[2] = tc;
-		
-		tc = new TestCase();
+
+		tc = new TestCaseWrapper(
+				new String[] { KEY_CUSTOM_FIELD });
 		cf = new CustomField();
-		cf.setName( KEY_CUSTOM_FIELD );
+		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("tcA, tcK");
 		tc.getCustomFields().add(cf);
 		tc.setId(4);
+		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[3] = tc;
-		
-		tc = new TestCase();
+
+		tc = new TestCaseWrapper(
+				new String[] { KEY_CUSTOM_FIELD });
 		cf = new CustomField();
-		cf.setName( KEY_CUSTOM_FIELD );
+		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("tcA, nameA, sampleTestImmo");
 		tc.getCustomFields().add(cf);
 		tc.setId(5);
+		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[4] = tc;
 		
-		this.seeker = new JUnitCaseNameResultSeeker("TEST-*.xml", KEY_CUSTOM_FIELD);
+		return tcs;
 	}
 
-	public void testOneTCtcA()
-	{
-		ClassLoader cl = TestIssue9672.class.getClassLoader();
-		URL url = cl.getResource("hudson/plugins/testlink/result/junit/issue9672/");
-		File junitDir = new File( url.getFile() );
+	public void testOneTCtcA() throws Exception {
+		buildAndAssertSuccess(project);
 		
-		FreeStyleBuild build = createFreeStyleProject().createExecutable();
-		Launcher launcher = createLocalLauncher();
+		assertEquals(4, testlink.getReport().getTestsTotal());
+		assertEquals(ExecutionStatus.FAILED, testlink.getTestCases().get(0).getExecutionStatus());
+	}
+
+	public void testTwoTCtcAAndtcK() throws Exception {
+		buildAndAssertSuccess(project);
 		
-		seeker.seek(tcs, build, launcher, launcher.getListener(), junitDir, report);
+		assertEquals(4, testlink.getReport().getTestsTotal());
+		assertEquals(ExecutionStatus.FAILED, testlink.getTestCases().get(2).getExecutionStatus());
+	}
+
+	public void testTwoTCtcAAndtcSampleTestImmo() throws Exception {
+		buildAndAssertSuccess(project);
 		
-		assertNotNull( found );
-		assertTrue( found.size() == 5 );
-		assertTrue( found.get(1).getExecutionStatus() == ExecutionStatus.FAILED );
+		assertEquals(4, testlink.getReport().getTestsTotal());
+		assertEquals(ExecutionStatus.NOT_RUN, testlink.getTestCases().get(3).getExecutionStatus());
 	}
-	
-	public void testTwoTCtcAAndtcB()
-	{
-		ClassLoader cl = TestIssue9672.class.getClassLoader();
-		URL url = cl.getResource("hudson/plugins/testlink/result/junit/issue9672");
-		File junitDir = new File( url.getFile() );
-		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.junit.TestCase>> found = seeker.seek(junitDir);
-		assertNotNull( found );
-		assertTrue( found.size() == 5 );
-		assertTrue( found.get(2).getExecutionStatus() == ExecutionStatus.FAILED );
-	}
-	
-	public void testTwoTCtcBAndtcC()
-	{
-		ClassLoader cl = TestIssue9672.class.getClassLoader();
-		URL url = cl.getResource("hudson/plugins/testlink/result/junit/issue9672");
-		File junitDir = new File( url.getFile() );
-		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.junit.TestCase>> found = seeker.seek(junitDir);
-		assertNotNull( found );
-		assertTrue( found.size() == 5 );
-		assertTrue( found.get(3).getExecutionStatus() == ExecutionStatus.PASSED );
-	}
-	
-	public void testThreeTCtcAAndNonExistenttcK()
-	{
-		ClassLoader cl = TestIssue9672.class.getClassLoader();
-		URL url = cl.getResource("hudson/plugins/testlink/result/junit/issue9672");
-		File junitDir = new File( url.getFile() );
-		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.junit.TestCase>> found = seeker.seek(junitDir);
-		assertNotNull( found );
-		assertTrue( found.size() == 5 );
-		assertTrue( found.get(4).getExecutionStatus() == ExecutionStatus.NOT_RUN );
-	}
-	
-	public void testThreeTCtcAAndnameAAndsampleTestImmo()
-	{
-		ClassLoader cl = TestIssue9672.class.getClassLoader();
-		URL url = cl.getResource("hudson/plugins/testlink/result/junit/issue9672");
-		File junitDir = new File( url.getFile() );
-		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.junit.TestCase>> found = seeker.seek(junitDir);
-		assertNotNull( found );
-		assertTrue( found.size() == 5 );
-		assertTrue( found.get(5).getExecutionStatus() == ExecutionStatus.FAILED );
-	}
-	
+
 }

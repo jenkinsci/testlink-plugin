@@ -118,6 +118,9 @@ public class TestNGSuiteNameResultSeeker extends ResultSeeker {
 						if(suite.getName().equals(value)) {
 							ExecutionStatus status = this.getExecutionStatus(suite);
 							automatedTestCase.addCustomFieldAndStatus(value, status);
+							if(automatedTestCase.getExecutionStatus() != ExecutionStatus.NOT_RUN) {
+								testlink.updateTestCase(automatedTestCase);
+							}
 						}
 					}
 				}

@@ -135,6 +135,11 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 						if(key.equals(value)) {
 							ExecutionStatus status = this.getExecutionStatus(testSets.get(key));
 							automatedTestCase.addCustomFieldAndStatus(value, status);
+							if(automatedTestCase.getExecutionStatus() != ExecutionStatus.NOT_RUN) {
+								testlink.updateTestCase(automatedTestCase);
+								String platform = this.retrievePlatform(testSets.get(key));
+								automatedTestCase.setPlatform(platform);
+							}
 						}
 					}
 				}

@@ -120,6 +120,9 @@ public class TestNGClassNameResultSeeker extends ResultSeeker {
 								if(clazz.getName().equals(value)) {
 									ExecutionStatus status = this.getExecutionStatus(clazz);
 									automatedTestCase.addCustomFieldAndStatus(value, status);
+									if(automatedTestCase.getExecutionStatus() != ExecutionStatus.NOT_RUN) {
+										testlink.updateTestCase(automatedTestCase);
+									}
 								}
 							}
 						}

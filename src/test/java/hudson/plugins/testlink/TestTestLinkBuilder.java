@@ -23,7 +23,6 @@
  */
 package hudson.plugins.testlink;
 
-import hudson.plugins.testlink.result.ReportFilesPatterns;
 import hudson.tasks.BuildStep;
 import hudson.tasks.Shell;
 
@@ -44,10 +43,6 @@ extends HudsonTestCase
 
 	private TestLinkBuilder builder = null;	
 	
-	private String junitXmlReportFilesPattern = "**/TEST-*.xml";
-	private String testNgXmlReportFilesPattern = "**/testng-results.xml";
-	private String tapReportFilesPattern = "**/*.tap";
-	
 	public void setUp() 
 	throws Exception
 	{
@@ -59,32 +54,13 @@ extends HudsonTestCase
 				"No plan", 
 				"No build", 
 				"class, time", 
-				"dir",
 				null, 
 				null, 
 				null, 
 				null, 
 				Boolean.FALSE, 
 				Boolean.FALSE,  
-				junitXmlReportFilesPattern,
-				testNgXmlReportFilesPattern, 
-				tapReportFilesPattern);
-	}
-	
-	/**
-	 * Tests the ReportPatterns object.
-	 */
-	public void testReportPatterns() 
-	throws Exception
-	{
-		ReportFilesPatterns reportPatterns = builder.getReportFilesPatterns();
-		assertNotNull(reportPatterns);
-		assertEquals(reportPatterns.getJunitXmlReportFilesPattern(),
-				junitXmlReportFilesPattern);
-		assertEquals(reportPatterns.getTestNGXmlReportFilesPattern(),
-				testNgXmlReportFilesPattern);
-		assertEquals(reportPatterns.getTapStreamReportFilesPattern(),
-				tapReportFilesPattern);
+				null);
 	}
 	
 	/**
@@ -102,7 +78,7 @@ extends HudsonTestCase
 	
 	public void testNull()
 	{
-		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null );
+		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null );
 		
 		assertNotNull( builder );
 		
@@ -126,15 +102,6 @@ extends HudsonTestCase
 		
 		assertNull( builder.getTransactional() );
 		
-		assertNull( builder.getKeyCustomField() );
-		
-		assertNotNull( builder.getReportFilesPatterns() );
-		
-		assertNull( builder.getReportFilesPatterns().getJunitXmlReportFilesPattern() );
-		
-		assertNull( builder.getReportFilesPatterns().getTestNGXmlReportFilesPattern() );
-		
-		assertNull( builder.getReportFilesPatterns().getTapStreamReportFilesPattern() );
 	}
 	
 	/**
@@ -153,16 +120,13 @@ extends HudsonTestCase
 			"No plan", 
 			"No build", 
 			"class, time", 
-			"dir",
 			singleBuildSteps, 
 			null, 
 			null, 
 			null, 
 			Boolean.FALSE, 
 			Boolean.FALSE,  
-			junitXmlReportFilesPattern,
-			testNgXmlReportFilesPattern, 
-			tapReportFilesPattern);
+			null);
 		
 		assertNotNull( hudson );
 		//FreeStyleProject project = new FreeStyleProject(hudson, "No project");
@@ -189,17 +153,6 @@ extends HudsonTestCase
 		
 		assertFalse( builder.getTransactional() );
 		
-		assertNotNull( builder.getKeyCustomField() );
-		assertEquals( builder.getKeyCustomField(), "dir" );
-		
-		assertNotNull( builder.getReportFilesPatterns().getJunitXmlReportFilesPattern());
-		assertEquals( builder.getReportFilesPatterns().getJunitXmlReportFilesPattern(), "**/TEST-*.xml" );
-		
-		assertNotNull( builder.getReportFilesPatterns().getTestNGXmlReportFilesPattern() );
-		assertEquals( builder.getReportFilesPatterns().getTestNGXmlReportFilesPattern(), "**/testng-results.xml" );
-		
-		assertNotNull( builder.getReportFilesPatterns().getTapStreamReportFilesPattern() );
-		assertEquals( builder.getReportFilesPatterns().getTapStreamReportFilesPattern(), "**/*.tap" );
 	}
 
 }

@@ -23,67 +23,78 @@
  */
 package hudson.plugins.testlink.result.issue9229;
 
-import hudson.model.BuildListener;
-import hudson.model.StreamBuildListener;
+import hudson.plugins.testlink.result.JUnitCaseClassNameResultSeeker;
+import hudson.plugins.testlink.result.ResultSeeker;
+import hudson.plugins.testlink.result.ResultSeekerTestCase;
 import hudson.plugins.testlink.result.TestCaseWrapper;
-import hudson.plugins.testlink.result.TestJUnitCaseNameResultSeeker;
-import hudson.plugins.testlink.result.junit.JUnitTestCasesTestResultSeeker;
-
-import java.io.File;
-import java.io.PrintStream;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.Map;
 
 import org.jvnet.hudson.test.Bug;
 
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
-import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 1.0
  */
 @Bug(9229)
-public class TestIssue9229 
-extends junit.framework.TestCase
-{
-	
-	private JUnitTestCasesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestCase> seeker;
-	
+public class TestIssue9229 extends ResultSeekerTestCase {
+
 	private final static String KEY_CUSTOM_FIELD = "testCustomField";
-	
-	public void setUp()
-	{
-		BuildListener listener = new StreamBuildListener(new PrintStream(System.out), Charset.defaultCharset());
-		
-		TestCase[] tcs = new TestCase[1];
-		
-		TestCase tc = new TestCase();
-		CustomField cf = new CustomField();
-		cf.setName( KEY_CUSTOM_FIELD );
-		cf.setValue( "br.eti.kinoshita.junit.SampleTest" );
-		tc.setId( 1 );
-		tc.setName( "TC for issue 9229" );
-		tc.getCustomFields().add(cf);
-		tcs[0] = tc;
-		
-		this.seeker = 
-			new JUnitTestCasesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestCase>("TEST-*.xml", tcs, KEY_CUSTOM_FIELD, listener);
+
+	/* (non-Javadoc)
+	 * @see hudson.plugins.testlink.result.ResultSeekerTestCase#getResultsPattern()
+	 */
+	@Override
+	public String getResultsPattern() {
+		return "TEST-*.xml";
 	}
 	
-	public void testTestResultSeekerJUnitIssue9229()
-	{
-		ClassLoader cl = TestJUnitCaseNameResultSeeker.class.getClassLoader();
-		URL url = cl.getResource("hudson/plugins/testlink/result/junit/issue9229/");
-		File junitDir = new File( url.getFile() );
-		Map<Integer, TestCaseWrapper<hudson.plugins.testlink.parser.junit.TestCase>> found = seeker.seek(junitDir);
-		assertNotNull( found );
-		assertTrue( found.size() == 1 );
+	/* (non-Javadoc)
+	 * @see hudson.plugins.testlink.result.ResultSeekerTestCase#getResultsDirectory()
+	 */
+	@Override
+	public String getResultsDirectory() {
+		return "hudson/plugins/testlink/result/junit/issue9229/";
+	}
+	
+	/* (non-Javadoc)
+	 * @see hudson.plugins.testlink.result.ResultSeekerTestCase#getResultSeeker()
+	 */
+	@Override
+	public ResultSeeker getResultSeeker() {
+		return new JUnitCaseClassNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hudson.plugins.testlink.result.ResultSeekerTestCase#getAutomatedTestCases
+	 * ()
+	 */
+	@Override
+	public TestCaseWrapper[] getAutomatedTestCases() {
+		final TestCaseWrapper[] tcs = new TestCaseWrapper[1];
+
+		TestCaseWrapper tc = new TestCaseWrapper(new String[]{KEY_CUSTOM_FIELD});
+		CustomField cf = new CustomField();
+		cf.setName(KEY_CUSTOM_FIELD);
+		cf.setValue("br.eti.kinoshita.junit.SampleTest");
+		tc.setId(1);
+		tc.setName("TC for issue 9229");
+		tc.getCustomFields().add(cf);
+		tc.setKeyCustomFieldValue(cf.getValue());
+		tcs[0] = tc;
 		
-		assertTrue( found.get(1).getExecutionStatus() == ExecutionStatus.FAILED );
+		return tcs;
+	}
+
+	public void testTestResultSeekerJUnitIssue9229() throws Exception {
+		buildAndAssertSuccess(project);	
 		
+		assertEquals(3, testlink.getReport().getTestsTotal());
+		assertEquals(ExecutionStatus.PASSED, testlink.getTestCases().get(0).getExecutionStatus());
 	}
 
 }

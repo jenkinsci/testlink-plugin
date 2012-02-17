@@ -23,22 +23,10 @@
  */
 package hudson.plugins.testlink.result.issue10849;
 
-import hudson.model.BuildListener;
-import hudson.model.StreamBuildListener;
-import hudson.plugins.testlink.result.TestCaseWrapper;
+import hudson.plugins.testlink.result.JUnitCaseNameResultSeeker;
 import hudson.plugins.testlink.result.ResultSeeker;
-import hudson.plugins.testlink.result.TestJUnitCaseNameResultSeeker;
-import hudson.plugins.testlink.result.TestResultsCallable;
-import hudson.plugins.testlink.result.junit.JUnitSuitesTestResultSeeker;
-import hudson.plugins.testlink.result.junit.JUnitTestCasesTestResultSeeker;
-
-import java.io.File;
-import java.io.PrintStream;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.Map;
-
-import junit.framework.TestCase;
+import hudson.plugins.testlink.result.ResultSeekerTestCase;
+import hudson.plugins.testlink.result.TestCaseWrapper;
 
 import org.junit.Assert;
 import org.jvnet.hudson.test.Bug;
@@ -51,68 +39,78 @@ import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
  * @author Bruno P. Kinoshita
  */
 @Bug(10849)
-public class TestPerformance10849 
-extends TestCase
-{
-	
-	private TestResultsCallable testResultsCallable;
-	
-	private static final String KEY_CUSTOM_FIELD = "testCustomField";
-	private static final String JUNIT_XML_PATTERN = "**/TEST*.xml";
+public class TestPerformance10849 extends ResultSeekerTestCase {
 
-	public void setUp()
-	{
-		br.eti.kinoshita.testlinkjavaapi.model.TestCase[] tcs = new br.eti.kinoshita.testlinkjavaapi.model.TestCase[0];
-		BuildListener listener = new StreamBuildListener(new PrintStream(
-				System.out), Charset.defaultCharset());
-		this.testResultsCallable = new TestResultsCallable();
-		final ResultSeeker<?> junitSuitesSeeker = 
-				new JUnitSuitesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestSuite>(
-					JUNIT_XML_PATTERN, 
-					tcs, 
-					KEY_CUSTOM_FIELD, 
-					listener);
-		testResultsCallable.addTestResultSeeker(junitSuitesSeeker);
-			
-		final ResultSeeker<?> junitTestsSeeker = 
-			new JUnitTestCasesTestResultSeeker<hudson.plugins.testlink.parser.junit.TestCase>(
-					JUNIT_XML_PATTERN, 
-					tcs, 
-					KEY_CUSTOM_FIELD, 
-					listener);
-		testResultsCallable.addTestResultSeeker(junitTestsSeeker);
+	private static final String KEY_CUSTOM_FIELD = "testCustomField";
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hudson.plugins.testlink.result.ResultSeekerTestCase#getResultsPattern()
+	 */
+	@Override
+	public String getResultsPattern() {
+		return "**/TEST*.xml";
 	}
 
-	public void testPerformance10849()
-	{
-		long start = System.currentTimeMillis();
-		br.eti.kinoshita.testlinkjavaapi.model.TestCase[] tcs = new br.eti.kinoshita.testlinkjavaapi.model.TestCase[100];
-		for( int i = 0 ; i < 100 ; ++i )
-		{
-			br.eti.kinoshita.testlinkjavaapi.model.TestCase tc = new br.eti.kinoshita.testlinkjavaapi.model.TestCase();
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hudson.plugins.testlink.result.ResultSeekerTestCase#getResultsDirectory()
+	 */
+	@Override
+	public String getResultsDirectory() {
+		return "hudson/plugins/testlink/result/junit/issue10849/";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hudson.plugins.testlink.result.ResultSeekerTestCase#getResultSeeker()
+	 */
+	@Override
+	public ResultSeeker getResultSeeker() {
+		return new JUnitCaseNameResultSeeker(getResultsPattern(),
+				KEY_CUSTOM_FIELD);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hudson.plugins.testlink.result.ResultSeekerTestCase#getAutomatedTestCases
+	 * ()
+	 */
+	@Override
+	public TestCaseWrapper[] getAutomatedTestCases() {
+		TestCaseWrapper[] tcs = new TestCaseWrapper[100];
+		for (int i = 0; i < 100; ++i) {
+			TestCaseWrapper tc = new TestCaseWrapper(
+					new String[] { KEY_CUSTOM_FIELD });
 			CustomField cf = new CustomField();
 			cf.setName(KEY_CUSTOM_FIELD);
-			cf.setValue("br.eti.kinoshita.junit.SampleTest");
-			tc.setId( (i+1) );
+			cf.setValue("testAOPLogging"); // TBD: create a AlwaysAddResultSeeker or something similar
+			tc.setId((i + 1));
 			tc.setName("TC for issue 10849");
-			tc.getCustomFields().add( cf );
+			tc.getCustomFields().add(cf);
+			tc.setKeyCustomFieldValue(cf.getValue());
 			tcs[i] = tc;
 		}
-		
-		ClassLoader cl = TestJUnitCaseNameResultSeeker.class.getClassLoader();
-		URL url = cl
-				.getResource("hudson/plugins/testlink/result/junit/issue10849/");
-		@SuppressWarnings("rawtypes")
-		final Map<Integer, TestCaseWrapper> wrappedTestCases = testResultsCallable.seekTestResults(new File(url.getFile()));
-		//assertTrue(found.size() == 1);
-
-		//assertTrue(found.get(1).getTestCase().getExecutionStatus() == ExecutionStatus.FAILED);
-		assertTrue( wrappedTestCases != null );
-		long end = System.currentTimeMillis();
-		
-		System.out.println("Took: " + (end - start));
-		
-		Assert.assertTrue((end-start) < 5000);
+		return tcs;
 	}
-	
+
+	public void testPerformance10849() throws Exception {
+		long start = System.currentTimeMillis();
+		buildAndAssertSuccess(project);
+		assertTrue(testlink.getReport().getTestsTotal() > 0);
+		long end = System.currentTimeMillis();
+
+		System.out.println("Took: " + (end - start));
+
+		Assert.assertTrue((end - start) < 5000);
+	}
+
 }

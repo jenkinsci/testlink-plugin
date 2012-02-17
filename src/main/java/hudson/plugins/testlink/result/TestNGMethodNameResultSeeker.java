@@ -116,11 +116,15 @@ public class TestNGMethodNameResultSeeker extends ResultSeeker {
 					for(hudson.plugins.testlink.testng.Class  clazz : test.getClasses()) {
 						for(TestMethod method : clazz.getTestMethods()) {
 							for(TestCaseWrapper automatedTestCase : automatedTestCases) {
+								final String qualifiedName = clazz.getName()+'#'+method.getName();
 								final String[] commaSeparatedValues = this.split(automatedTestCase.getKeyCustomFieldValue());
 								for(String value : commaSeparatedValues) {
-									if(method.getName().equals(value)) {
+									if(qualifiedName.equals(value)) {
 										ExecutionStatus status = this.getExecutionStatus(method);
 										automatedTestCase.addCustomFieldAndStatus(value, status);
+										if(automatedTestCase.getExecutionStatus() != ExecutionStatus.NOT_RUN) {
+											testlink.updateTestCase(automatedTestCase);
+										}
 									}
 								}
 							}

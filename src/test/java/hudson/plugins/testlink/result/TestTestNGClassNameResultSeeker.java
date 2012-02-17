@@ -24,39 +24,50 @@
 package hudson.plugins.testlink.result;
 
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
+import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 
 /**
- * Tests ResultSeeker with JUnit case result name.
+ * Tests ResultSeeker with TestNG class name.
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
- * @since 2.1
+ * @since 2.5
  */
-public class TestJUnitCaseNameResultSeeker extends ResultSeekerTestCase {
+public class TestTestNGClassNameResultSeeker extends ResultSeekerTestCase {
 
-	private static final String KEY_CUSTOM_FIELD = "testCustomField";
-	
-	/* (non-Javadoc)
-	 * @see hudson.plugins.testlink.result.ResultSeekerTestCase#getResultsPattern()
-	 */
-	@Override
-	public String getResultsPattern() {
-		return "TEST-*.xml";
-	}
-	
-	/* (non-Javadoc)
-	 * @see hudson.plugins.testlink.result.ResultSeekerTestCase#getResultsDirectory()
+	private final static String KEY_CUSTOM_FIELD = "testCustomField";
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hudson.plugins.testlink.result.ResultSeekerTestCase#getResultsDirectory()
 	 */
 	@Override
 	public String getResultsDirectory() {
-		return "hudson/plugins/testlink/result/junit/";
+		return "hudson/plugins/testlink/result/testng/";
 	}
-	
-	/* (non-Javadoc)
-	 * @see hudson.plugins.testlink.result.ResultSeekerTestCase#getResultSeeker()
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hudson.plugins.testlink.result.ResultSeekerTestCase#getResultsPattern()
+	 */
+	@Override
+	public String getResultsPattern() {
+		return "testng*.xml";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * hudson.plugins.testlink.result.ResultSeekerTestCase#getResultSeeker()
 	 */
 	@Override
 	public ResultSeeker getResultSeeker() {
-		return new JUnitCaseNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD);
+		return new TestNGClassNameResultSeeker(getResultsPattern(),
+				KEY_CUSTOM_FIELD);
 	}
 
 	/*
@@ -68,14 +79,13 @@ public class TestJUnitCaseNameResultSeeker extends ResultSeekerTestCase {
 	 */
 	@Override
 	public TestCaseWrapper[] getAutomatedTestCases() {
-		final TestCaseWrapper[] tcs = new TestCaseWrapper[2];
+		final TestCaseWrapper[] tcs = new TestCaseWrapper[3];
 
 		TestCaseWrapper tc = new TestCaseWrapper(
 				new String[] { KEY_CUSTOM_FIELD });
 		CustomField cf = new CustomField();
-		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
-		cf.setValue("testVoid");
+		cf.setValue("br.eti.kinoshita.Test");
 		tc.getCustomFields().add(cf);
 		tc.setId(1);
 		tc.setKeyCustomFieldValue(cf.getValue());
@@ -84,20 +94,37 @@ public class TestJUnitCaseNameResultSeeker extends ResultSeekerTestCase {
 		tc = new TestCaseWrapper(new String[] { KEY_CUSTOM_FIELD });
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
-		cf.setValue("Consultation");
+		cf.setValue("br.eti.kinoshita.Test2");
 		tc.getCustomFields().add(cf);
 		tc.setId(2);
 		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[1] = tc;
 
+		tc = new TestCaseWrapper(new String[] { KEY_CUSTOM_FIELD });
+		cf = new CustomField();
+		cf.setName(KEY_CUSTOM_FIELD);
+		cf.setValue("br.eti.kinoshita.TestImmo");
+		tc.getCustomFields().add(cf);
+		tc.setId(3);
+		tc.setKeyCustomFieldValue(cf.getValue());
+		tcs[2] = tc;
+
 		return tcs;
 	}
 
-	public void testJUnitCaseNameResultSeeker() throws Exception {
+	public void testTestResultSeekerTestNGOne() throws Exception {
 		buildAndAssertSuccess(project);
 
 		assertEquals(3, testlink.getReport().getTestsTotal());
-		// TODO organize directories, XMLs and rewrite this test
+		assertEquals(ExecutionStatus.FAILED, testlink.getTestCases().get(1).getExecutionStatus());
+	}
+
+	public void testTestResultSeekerTestNGTwo() throws Exception {
+		buildAndAssertSuccess(project);
+
+		assertEquals(3, testlink.getReport().getTestsTotal());
+		assertEquals(ExecutionStatus.FAILED, testlink.getTestCases().get(1).getExecutionStatus());
+		assertEquals(ExecutionStatus.PASSED, testlink.getTestCases().get(2).getExecutionStatus());
 	}
 
 }
