@@ -33,6 +33,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
+import br.eti.kinoshita.testlinkjavaapi.model.TestCaseStep;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
@@ -66,56 +67,25 @@ public class TestCaseWrapper implements Serializable {
 	private String platform = null;
 
 	/**
-	 * Array of custom fields names retrieved from TestLink.
-	 */
-	private final String[] customFieldsNames;
-
-	/**
 	 * Wrapped Automated Test Case.
 	 */
 	private TestCase testCase;
 
 	private String keyCustomFieldValue;
 
-	/**
-	 * @param customFieldsNames
-	 *            array of custom fields names.
-	 */
-	public TestCaseWrapper(String[] customFieldsNames) {
-		this.testCase = new TestCase();
-		this.notes = new StringBuilder();
-		this.attachments = new LinkedList<Attachment>();
-		this.customFieldAndStatus = new HashMap<String, ExecutionStatus>();
-		if (customFieldsNames == null) {
-			this.customFieldsNames = new String[0];
-		} else {
-			this.customFieldsNames = customFieldsNames;
-		}
+	public TestCaseWrapper() {
+		this(new TestCase());
 	}
 	
 	/**
 	 * @param testCase
 	 *            wrapped automated test case.
-	 * @param customFieldsNames
-	 *            array of custom fields names.
 	 */
-	public TestCaseWrapper(TestCase testCase, String[] customFieldsNames) {
+	public TestCaseWrapper(TestCase testCase) {
 		this.testCase = testCase;
 		this.notes = new StringBuilder();
 		this.attachments = new LinkedList<Attachment>();
 		this.customFieldAndStatus = new HashMap<String, ExecutionStatus>();
-		if (customFieldsNames == null) {
-			this.customFieldsNames = new String[0];
-		} else {
-			this.customFieldsNames = customFieldsNames;
-		}
-	}
-
-	/**
-	 * @return array of custom fields names
-	 */
-	public String[] getCustomFieldsNames() {
-		return this.customFieldsNames;
 	}
 
 	/**
@@ -182,6 +152,12 @@ public class TestCaseWrapper implements Serializable {
 
 	public ExecutionStatus getExecutionStatus() {
 		ExecutionStatus status = ExecutionStatus.NOT_RUN;
+		String[] customFieldsNames = new String[this.testCase.getCustomFields().size()];
+		int i = 0;
+		for(CustomField cf : this.testCase.getCustomFields()) {
+			customFieldsNames[i] = cf.getName();
+			i++;
+		}
 		if (customFieldAndStatus.size() > 0
 				&& customFieldAndStatus.size() == customFieldsNames.length) {
 			status = ExecutionStatus.PASSED;
@@ -234,6 +210,54 @@ public class TestCaseWrapper implements Serializable {
 	
 	public void setInternalId(Integer internalId) {
 		this.testCase.setInternalId(internalId);
+	}
+	
+	public Integer getExecutionOrder() {
+		return this.testCase.getExecutionOrder();
+	}
+	
+	public void setExecutionOrder(Integer executionOrder) {
+		this.testCase.setExecutionOrder(executionOrder);
+	}
+	
+	public Integer getTestSuiteId() {
+		return this.testCase.getTestSuiteId();
+	}
+	
+	public void setTestSuiteId(Integer testSuiteId) {
+		this.testCase.setTestSuiteId(testSuiteId);
+	}
+	
+	public Integer getTestProjectId() {
+		return this.testCase.getTestProjectId();
+	}
+	
+	public void setTestProjectId(Integer testProjectId) {
+		this.testCase.setTestProjectId(testProjectId);
+	}
+	
+	public String getAuthorLogin() {
+		return this.testCase.getAuthorLogin();
+	}
+	
+	public void setAuthorLogin(String authorLogin) {
+		this.testCase.setAuthorLogin(authorLogin);
+	}
+	
+	public String getSummary() {
+		return this.testCase.getSummary();
+	}
+	
+	public void setSummary(String summary) {
+		this.testCase.setSummary(summary);
+	}
+	
+	public List<TestCaseStep> getSteps() {
+		return this.testCase.getSteps();
+	}
+	
+	public void setSteps(List<TestCaseStep> steps) {
+		this.testCase.setSteps(steps);
 	}
 
 }

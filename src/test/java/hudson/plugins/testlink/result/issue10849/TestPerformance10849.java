@@ -88,8 +88,7 @@ public class TestPerformance10849 extends ResultSeekerTestCase {
 	public TestCaseWrapper[] getAutomatedTestCases() {
 		TestCaseWrapper[] tcs = new TestCaseWrapper[100];
 		for (int i = 0; i < 100; ++i) {
-			TestCaseWrapper tc = new TestCaseWrapper(
-					new String[] { KEY_CUSTOM_FIELD });
+			TestCaseWrapper tc = new TestCaseWrapper();
 			CustomField cf = new CustomField();
 			cf.setName(KEY_CUSTOM_FIELD);
 			cf.setValue("testAOPLogging"); // TBD: create a AlwaysAddResultSeeker or something similar

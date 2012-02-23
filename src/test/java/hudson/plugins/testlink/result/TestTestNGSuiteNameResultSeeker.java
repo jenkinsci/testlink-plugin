@@ -81,8 +81,7 @@ public class TestTestNGSuiteNameResultSeeker extends ResultSeekerTestCase {
 	public TestCaseWrapper[] getAutomatedTestCases() {
 		final TestCaseWrapper[] tcs = new TestCaseWrapper[2];
 
-		TestCaseWrapper tc = new TestCaseWrapper(
-				new String[] { KEY_CUSTOM_FIELD });
+		TestCaseWrapper tc = new TestCaseWrapper();
 		CustomField cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("Command line suite");
@@ -91,7 +90,7 @@ public class TestTestNGSuiteNameResultSeeker extends ResultSeekerTestCase {
 		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[0] = tc;
 
-		tc = new TestCaseWrapper(new String[] { KEY_CUSTOM_FIELD });
+		tc = new TestCaseWrapper();
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("Command line suite2");

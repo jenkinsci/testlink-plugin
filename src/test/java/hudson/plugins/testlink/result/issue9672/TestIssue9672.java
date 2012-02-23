@@ -89,8 +89,7 @@ public class TestIssue9672 extends ResultSeekerTestCase {
 	public TestCaseWrapper[] getAutomatedTestCases() {
 		final TestCaseWrapper[] tcs = new TestCaseWrapper[5];
 
-		TestCaseWrapper tc = new TestCaseWrapper(
-				new String[] { KEY_CUSTOM_FIELD });
+		TestCaseWrapper tc = new TestCaseWrapper();
 		CustomField cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("tcA");
@@ -99,8 +98,7 @@ public class TestIssue9672 extends ResultSeekerTestCase {
 		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[0] = tc;
 
-		tc = new TestCaseWrapper(
-				new String[] { KEY_CUSTOM_FIELD });
+		tc = new TestCaseWrapper();
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("tcA, tcB");
@@ -109,8 +107,7 @@ public class TestIssue9672 extends ResultSeekerTestCase {
 		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[1] = tc;
 
-		tc = new TestCaseWrapper(
-				new String[] { KEY_CUSTOM_FIELD });
+		tc = new TestCaseWrapper();
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("nameA, nameB");
@@ -119,8 +116,7 @@ public class TestIssue9672 extends ResultSeekerTestCase {
 		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[2] = tc;
 
-		tc = new TestCaseWrapper(
-				new String[] { KEY_CUSTOM_FIELD });
+		tc = new TestCaseWrapper();
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("tcA, tcK");
@@ -129,8 +125,7 @@ public class TestIssue9672 extends ResultSeekerTestCase {
 		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[3] = tc;
 
-		tc = new TestCaseWrapper(
-				new String[] { KEY_CUSTOM_FIELD });
+		tc = new TestCaseWrapper();
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("tcA, nameA, sampleTestImmo");
@@ -138,29 +133,32 @@ public class TestIssue9672 extends ResultSeekerTestCase {
 		tc.setId(5);
 		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[4] = tc;
-		
+
 		return tcs;
 	}
 
 	public void testOneTCtcA() throws Exception {
 		buildAndAssertSuccess(project);
-		
+
 		assertEquals(4, testlink.getReport().getTestsTotal());
-		assertEquals(ExecutionStatus.FAILED, testlink.getTestCases().get(0).getExecutionStatus());
+		assertEquals(ExecutionStatus.FAILED, testlink.getTestCases().get(0)
+				.getExecutionStatus());
 	}
 
 	public void testTwoTCtcAAndtcK() throws Exception {
 		buildAndAssertSuccess(project);
-		
+
 		assertEquals(4, testlink.getReport().getTestsTotal());
-		assertEquals(ExecutionStatus.FAILED, testlink.getTestCases().get(2).getExecutionStatus());
+		assertEquals(ExecutionStatus.FAILED, testlink.getTestCases().get(2)
+				.getExecutionStatus());
 	}
 
 	public void testTwoTCtcAAndtcSampleTestImmo() throws Exception {
 		buildAndAssertSuccess(project);
-		
+
 		assertEquals(4, testlink.getReport().getTestsTotal());
-		assertEquals(ExecutionStatus.NOT_RUN, testlink.getTestCases().get(3).getExecutionStatus());
+		assertEquals(ExecutionStatus.NOT_RUN, testlink.getTestCases().get(3)
+				.getExecutionStatus());
 	}
 
 }

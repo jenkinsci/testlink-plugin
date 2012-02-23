@@ -27,6 +27,7 @@ import hudson.EnvVars;
 import hudson.model.BuildListener;
 import hudson.plugins.testlink.TestLinkBuildAction;
 import hudson.plugins.testlink.result.Report;
+import hudson.plugins.testlink.result.TestCaseWrapper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +39,6 @@ import org.apache.commons.lang.StringUtils;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
-import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCaseStep;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
@@ -191,7 +191,7 @@ public final class TestLinkHelper
 	 * @param build TestLink Build.
 	 * @return Map (name, value) of environment variables.
 	 */
-	public static Map<String, String> createTestLinkEnvironmentVariables( TestCase testCase, TestProject testProject, TestPlan testPlan, Build build ) 
+	public static Map<String, String> createTestLinkEnvironmentVariables( TestCaseWrapper testCase, TestProject testProject, TestPlan testPlan, Build build ) 
 	{
 		Map<String, String> testLinkEnvVar = new HashMap<String, String>();
 		
@@ -295,7 +295,7 @@ public final class TestLinkHelper
 	 * @param listener Hudson Build Listener
 	 * @return EnvVars (environment variables)
 	 */
-	public static EnvVars buildTestCaseEnvVars( TestCase testCase, TestProject testProject, TestPlan testPlan, Build build, BuildListener listener ) 
+	public static EnvVars buildTestCaseEnvVars( TestCaseWrapper testCase, TestProject testProject, TestPlan testPlan, Build build, BuildListener listener ) 
 	{
 		// Build environment variables list
 		Map<String, String> testLinkEnvironmentVariables = TestLinkHelper.createTestLinkEnvironmentVariables( testCase, testProject, testPlan, build );

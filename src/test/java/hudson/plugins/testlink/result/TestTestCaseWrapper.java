@@ -25,6 +25,7 @@ package hudson.plugins.testlink.result;
 
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
+import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 
@@ -42,8 +43,6 @@ extends junit.framework.TestCase
 	
 	protected TestCaseWrapper testResult;
 	
-	private String[] customFieldsNames = new String[]{"nz", "au"};
-	
 	protected void setUp()
 	{
 		testCase = new TestCase();
@@ -53,7 +52,15 @@ extends junit.framework.TestCase
 		testPlan = new TestPlan();
 		testPlan.setId( 100 );
 		
-		testResult = new TestCaseWrapper(testCase, customFieldsNames);
+		testResult = new TestCaseWrapper(testCase);
+		
+		CustomField cf = new CustomField();
+		cf.setName("nz");
+		testResult.getCustomFields().add(cf);
+		
+		cf = new CustomField();
+		cf.setName("au");
+		testResult.getCustomFields().add(cf);
 	}
 	
 	public void testTestResultTestCaseId()
@@ -86,13 +93,6 @@ extends junit.framework.TestCase
 		testResult.addAttachment( attachment );
 		
 		assertEquals( testResult.getAttachments().size(), 2 );
-	}
-	
-	public void testTestResultsCustomFields()
-	{
-		assertNotNull( testResult.getCustomFieldsNames() );
-		
-		assertEquals( testResult.getCustomFieldsNames().length, 2 );
 	}
 	
 	public void testTestResultCustomFieldAndStatus()

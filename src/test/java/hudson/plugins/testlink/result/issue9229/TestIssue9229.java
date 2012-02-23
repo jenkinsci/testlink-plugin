@@ -77,7 +77,7 @@ public class TestIssue9229 extends ResultSeekerTestCase {
 	public TestCaseWrapper[] getAutomatedTestCases() {
 		final TestCaseWrapper[] tcs = new TestCaseWrapper[1];
 
-		TestCaseWrapper tc = new TestCaseWrapper(new String[]{KEY_CUSTOM_FIELD});
+		TestCaseWrapper tc = new TestCaseWrapper();
 		CustomField cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("br.eti.kinoshita.junit.SampleTest");

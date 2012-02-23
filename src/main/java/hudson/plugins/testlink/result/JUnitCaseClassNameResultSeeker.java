@@ -76,7 +76,7 @@ public class JUnitCaseClassNameResultSeeker extends ResultSeeker {
 		 */
 		@Override
 		public String getDisplayName() {
-			return "JUnit case class name result seeker"; // TBD: i18n
+			return "JUnit class name"; // TBD: i18n
 		}
 	}
 

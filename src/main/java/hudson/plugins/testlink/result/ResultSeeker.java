@@ -29,6 +29,7 @@ import hudson.Util;
 import hudson.model.BuildListener;
 import hudson.model.Describable;
 import hudson.model.AbstractBuild;
+import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.model.Node;
 import hudson.plugins.testlink.TestLinkSite;
@@ -54,7 +55,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.2
  */
-public abstract class ResultSeeker implements Serializable, Describable<ResultSeeker> {
+public abstract class ResultSeeker implements Serializable, Describable<ResultSeeker>, Comparable<ResultSeeker> {
 
 	private static final long serialVersionUID = 3609106615463455486L;
 	
@@ -101,13 +102,13 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 		return (ResultSeekerDescriptor) Hudson.getInstance().getDescriptor(getClass());
 	}
 
-	public DescriptorExtensionList<ResultSeeker, ResultSeekerDescriptor> all() {
-		return Hudson.getInstance().<ResultSeeker, ResultSeekerDescriptor> getDescriptorList(ResultSeeker.class);
+	public static DescriptorExtensionList<ResultSeeker, Descriptor<ResultSeeker>> all() {
+		return Hudson.getInstance().<ResultSeeker, Descriptor<ResultSeeker>> getDescriptorList(ResultSeeker.class);
 	}
 
-	public DescriptorExtensionList<ResultSeeker, ResultSeekerDescriptor> allExcept(
+	public static DescriptorExtensionList<ResultSeeker, Descriptor<ResultSeeker>> allExcept(
 			Node current) {
-		return Hudson.getInstance().<ResultSeeker, ResultSeekerDescriptor> getDescriptorList(ResultSeeker.class);
+		return Hudson.getInstance().<ResultSeeker, Descriptor<ResultSeeker>> getDescriptorList(ResultSeeker.class);
 	}
 
 	/**
@@ -212,6 +213,13 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 
 		}
 		return customField;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	public int compareTo(ResultSeeker o) {
+		return o != null ? this.getDescriptor().getDisplayName().compareTo(o.getDescriptor().getDisplayName()) : 0;
 	}
 
 }

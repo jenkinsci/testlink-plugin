@@ -189,14 +189,15 @@ extends Builder
 	}
 	
 	/**
-	 * Expands test project name job configuration property, replacing environment 
-	 * variables with Jenkins+System values.
+	 * Expands a text variable like BUILD-$VAR replacing the $VAR part with 
+	 * a environment variable that matches its name, minus $.
 	 * 
 	 * @param variableResolver Jenkins Build Variable Resolver.
 	 * @param envVars Jenkins Build Environment Variables.
+	 * @param variable Variable value (includes mask).
 	 * @return Expanded test project name job configuration property.
 	 */
-	public String expandTestProjectName( VariableResolver<String> variableResolver, EnvVars envVars )
+	public String expandVariable( VariableResolver<String> variableResolver, EnvVars envVars, String variable )
 	{
 		return Util.replaceMacro(envVars.expand(getTestProjectName()), variableResolver);
 	}
@@ -206,35 +207,9 @@ extends Builder
 		return this.testPlanName;
 	}
 	
-	/**
-	 * Expands test plan name job configuration property, replacing environment 
-	 * variables with Jenkins+System values.
-	 * 
-	 * @param variableResolver Jenkins Build Variable Resolver.
-	 * @param envVars Jenkins Build Environment Variables.
-	 * @return Expanded test plan name job configuration property.
-	 */
-	public String expandTestPlanName( VariableResolver<String> variableResolver, EnvVars envVars )
-	{
-		return Util.replaceMacro(envVars.expand(getTestPlanName()), variableResolver);
-	}
-	
 	public String getBuildName()
 	{
 		return this.buildName;
-	}
-	
-	/**
-	 * Expands build name job configuration property, replacing environment 
-	 * variables with Jenkins+System values.
-	 * 
-	 * @param variableResolver Jenkins Build Variable Resolver.
-	 * @param envVars Jenkins Build Environment Variables.
-	 * @return Expanded build name job configuration property.
-	 */
-	public String expandBuildName( VariableResolver<String> variableResolver, EnvVars envVars )
-	{
-		return Util.replaceMacro(envVars.expand(getBuildName()), variableResolver);
 	}
 	
 	public String getCustomFields()

@@ -84,7 +84,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 		 */
 		@Override
 		public String getDisplayName() {
-			return "TAP file name result seeker"; // TBD: i18n
+			return "TAP file name"; // TBD: i18n
 		}
 	}
 

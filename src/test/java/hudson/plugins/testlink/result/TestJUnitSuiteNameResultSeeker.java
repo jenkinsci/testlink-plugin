@@ -58,7 +58,7 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 	public TestCaseWrapper[] getAutomatedTestCases() {
 		TestCaseWrapper[] tcs = new TestCaseWrapper[9];
 
-		TestCaseWrapper tc = new TestCaseWrapper(new String[]{KEY_CUSTOM_FIELD});
+		TestCaseWrapper tc = new TestCaseWrapper();
 		CustomField cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("suiteA");
@@ -67,7 +67,7 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[0] = tc;
 
-		tc = new TestCaseWrapper(new String[]{KEY_CUSTOM_FIELD});
+		tc = new TestCaseWrapper();
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("suiteA, suiteB");
@@ -76,7 +76,7 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[1] = tc;
 
-		tc = new TestCaseWrapper(new String[]{KEY_CUSTOM_FIELD});
+		tc = new TestCaseWrapper();
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("suiteB, suiteC");
@@ -85,7 +85,7 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[2] = tc;
 
-		tc = new TestCaseWrapper(new String[]{KEY_CUSTOM_FIELD});
+		tc = new TestCaseWrapper();
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("suiteA, suiteB, suiteC");
@@ -94,7 +94,7 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[3] = tc;
 
-		tc = new TestCaseWrapper(new String[]{KEY_CUSTOM_FIELD});
+		tc = new TestCaseWrapper();
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("suiteA, suiteB, suiteD");
@@ -103,7 +103,7 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[4] = tc;
 
-		tc = new TestCaseWrapper(new String[]{KEY_CUSTOM_FIELD});
+		tc = new TestCaseWrapper();
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("suiteA, suiteB, suiteC");
@@ -112,7 +112,7 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[5] = tc;
 
-		tc = new TestCaseWrapper(new String[]{KEY_CUSTOM_FIELD});
+		tc = new TestCaseWrapper();
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("suiteC, suiteY");
@@ -121,7 +121,7 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[6] = tc;
 
-		tc = new TestCaseWrapper(new String[]{KEY_CUSTOM_FIELD});
+		tc = new TestCaseWrapper();
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("suiteA, suiteX");
@@ -130,7 +130,7 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[7] = tc;
 
-		tc = new TestCaseWrapper(new String[]{KEY_CUSTOM_FIELD});
+		tc = new TestCaseWrapper();
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("suiteA, suiteK");

@@ -79,7 +79,7 @@ public class TestNGClassNameResultSeeker extends ResultSeeker {
 		 */
 		@Override
 		public String getDisplayName() {
-			return "TestNG class name result seeker"; // TBD: i18n
+			return "TestNG class name"; // TBD: i18n
 		}
 	}
 

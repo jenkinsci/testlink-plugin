@@ -77,7 +77,7 @@ public class JUnitSuiteNameResultSeeker extends ResultSeeker {
 		 */
 		@Override
 		public String getDisplayName() {
-			return "JUnit suite name result seeker"; // TBD: i18n
+			return "JUnit suite name"; // TBD: i18n
 		}
 	}
 

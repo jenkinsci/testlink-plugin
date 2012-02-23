@@ -31,6 +31,6 @@ import hudson.model.Descriptor;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 3.1
  */
-public abstract class ResultSeekerDescriptor extends Descriptor<ResultSeeker>{
+public abstract class ResultSeekerDescriptor extends Descriptor<ResultSeeker> {
 	
 }

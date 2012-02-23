@@ -23,9 +23,9 @@
  */
 package hudson.plugins.testlink.util;
 
-import java.util.Comparator;
+import hudson.plugins.testlink.result.TestCaseWrapper;
 
-import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
+import java.util.Comparator;
 
 /**
  * Compares Test Cases by its execution order. Returns the array in ASC order.
@@ -33,26 +33,17 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.2
  */
-public class ExecutionOrderComparator 
-implements Comparator<TestCase>
-{
+public class ExecutionOrderComparator implements Comparator<TestCaseWrapper> {
 
-	public int compare( TestCase o1, TestCase o2 )
-	{
-		if ( o1 != null && o2 != null )
-		{
-			if ( o1.getExecutionOrder() > o2.getExecutionOrder() )
-			{
+	public int compare(TestCaseWrapper o1, TestCaseWrapper o2) {
+		if (o1 != null && o2 != null) {
+			if (o1.getExecutionOrder() > o2.getExecutionOrder()) {
 				return 1;
-			}
-			else if ( o1.getExecutionOrder() < o2.getExecutionOrder() )
-			{
+			} else if (o1.getExecutionOrder() < o2.getExecutionOrder()) {
 				return -1;
 			}
 		}
 		return 0;
 	}
 
-	
-	
 }

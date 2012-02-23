@@ -27,6 +27,7 @@ import hudson.CopyOnWrite;
 import hudson.model.AbstractProject;
 import hudson.model.Descriptor;
 import hudson.model.FreeStyleProject;
+import hudson.plugins.testlink.result.ResultSeeker;
 import hudson.plugins.testlink.util.Messages;
 import hudson.tasks.BuildStep;
 import hudson.tasks.BuildStepDescriptor;
@@ -35,6 +36,7 @@ import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import net.sf.json.JSONObject;
@@ -113,6 +115,14 @@ extends Descriptor<Builder>
 	// exposed for Jelly
     public List<Descriptor<? extends BuildStep>> getApplicableBuildSteps(AbstractProject<?,?> p) {
         return getBuildSteps();
+    }
+    
+    public List<Descriptor<? extends ResultSeeker>> getApplicableResultSeekers(AbstractProject<?, ?> p) {
+    	List<Descriptor<? extends ResultSeeker>> list = new LinkedList<Descriptor<? extends ResultSeeker>>();
+    	for(Descriptor<? extends ResultSeeker> rs : ResultSeeker.all()) {
+    		list.add(rs);
+    	}
+    	return list;
     }
 	
     public static List<Descriptor<? extends BuildStep>> getBuildSteps()

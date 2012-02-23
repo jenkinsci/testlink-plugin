@@ -23,6 +23,8 @@
  */
 package hudson.plugins.testlink.util;
 
+import hudson.plugins.testlink.result.TestCaseWrapper;
+
 import java.util.Arrays;
 
 import junit.framework.Assert;
@@ -32,69 +34,56 @@ import junit.framework.TestCase;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 1.0
  */
-public class TestExecutionOrderComparator
-extends TestCase
-{
-	
+public class TestExecutionOrderComparator extends TestCase {
+
 	private ExecutionOrderComparator comparator;
-	
-	private br.eti.kinoshita.testlinkjavaapi.model.TestCase tc1 = 
-		new br.eti.kinoshita.testlinkjavaapi.model.TestCase();
-	
-	private br.eti.kinoshita.testlinkjavaapi.model.TestCase tc2 = 
-		new br.eti.kinoshita.testlinkjavaapi.model.TestCase();
-	
-	private br.eti.kinoshita.testlinkjavaapi.model.TestCase tc3 = 
-		new br.eti.kinoshita.testlinkjavaapi.model.TestCase();
-	
-	br.eti.kinoshita.testlinkjavaapi.model.TestCase[] arr =
-		new br.eti.kinoshita.testlinkjavaapi.model.TestCase[3];
-	
-	public void setUp()
-	{
+
+	private TestCaseWrapper tc1 = new TestCaseWrapper();
+
+	private TestCaseWrapper tc2 = new TestCaseWrapper();
+
+	private TestCaseWrapper tc3 = new TestCaseWrapper();
+
+	TestCaseWrapper[] arr = new TestCaseWrapper[3];
+
+	public void setUp() {
 		this.comparator = new ExecutionOrderComparator();
-		
+
 		tc1.setExecutionOrder(1);
 		tc2.setExecutionOrder(1);
 		tc3.setExecutionOrder(1);
-		
+
 		this.arr[0] = tc1;
 		this.arr[1] = tc2;
 		this.arr[2] = tc3;
 	}
-	
-	public void testOrderingNulls()
-	{
-		br.eti.kinoshita.testlinkjavaapi.model.TestCase[] arrOfNulls = 
-			new br.eti.kinoshita.testlinkjavaapi.model.TestCase[2];
-		try
-		{
-			Arrays.sort( arrOfNulls, this.comparator );
-		}
-		catch ( NullPointerException npe )
-		{
-			Assert.assertTrue( System.currentTimeMillis() > 0 );
+
+	public void testOrderingNulls() {
+		TestCaseWrapper[] arrOfNulls = new TestCaseWrapper[2];
+		try {
+			Arrays.sort(arrOfNulls, this.comparator);
+		} catch (NullPointerException npe) {
+			Assert.assertTrue(System.currentTimeMillis() > 0);
 		}
 	}
-	
-	public void testOrdering()
-	{
-		Arrays.sort( arr, this.comparator );
-		
-		Assert.assertEquals( arr[0], tc1 );
-		Assert.assertEquals( arr[1], tc2 );
-		Assert.assertEquals( arr[2], tc3 );
-		
+
+	public void testOrdering() {
+		Arrays.sort(arr, this.comparator);
+
+		Assert.assertEquals(arr[0], tc1);
+		Assert.assertEquals(arr[1], tc2);
+		Assert.assertEquals(arr[2], tc3);
+
 		tc2.setExecutionOrder(1);
 		tc1.setExecutionOrder(2);
 		tc3.setExecutionOrder(3);
-		
-		Arrays.sort( arr, this.comparator );
-		
-		Assert.assertEquals( arr[0], tc2 );
-		Assert.assertEquals( arr[1], tc1 );
-		Assert.assertEquals( arr[2], tc3 );
-		
+
+		Arrays.sort(arr, this.comparator);
+
+		Assert.assertEquals(arr[0], tc2);
+		Assert.assertEquals(arr[1], tc1);
+		Assert.assertEquals(arr[2], tc3);
+
 	}
 
 }
