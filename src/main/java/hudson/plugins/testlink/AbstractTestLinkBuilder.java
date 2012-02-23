@@ -141,6 +141,7 @@ extends Builder
 	 * @param testPlanName TestLink Test Plan name.
 	 * @param buildName TestLink Build name.
 	 * @param customFields TestLink comma-separated list of Custom Fields.
+	 * @param keyCustomField Key custom field.
 	 * @param singleBuildSteps List of build steps to execute once for all automated test cases.
 	 * @param beforeIteratingAllTestCasesBuildSteps Command executed before iterating all test cases.
 	 * @param iterativeBuildSteps List of build steps to execute for each Automated Test Case.
