@@ -25,14 +25,17 @@ package hudson.plugins.testlink.result;
 
 import hudson.Extension;
 import hudson.FilePath;
+import hudson.FilePath.FileCallable;
 import hudson.Launcher;
 import hudson.model.BuildListener;
+import hudson.model.Result;
 import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.TestLinkSite;
 import hudson.remoting.VirtualChannel;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -50,6 +53,7 @@ import org.tap4j.model.TestResult;
 import org.tap4j.model.TestSet;
 import org.tap4j.util.DirectiveValues;
 
+import br.eti.kinoshita.testlinkjavaapi.TestLinkAPIException;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 
@@ -65,14 +69,39 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 public class TAPFileNameResultSeeker extends ResultSeeker {
 	
 	private static final long serialVersionUID = 2227402366772835869L;
+
+	protected static final String TEXT_PLAIN_CONTENT_TYPE = "text/plain";
+	
+	private boolean attachTAPStream = false;
+	private boolean attachYAMLishAttachments = false;
 	
 	/**
 	 * @param includePattern
 	 * @param keyCustomField
+	 * @param attachTAPStream
+	 * @param attachYAMLishAttachments
 	 */
 	@DataBoundConstructor
-	public TAPFileNameResultSeeker(String includePattern, String keyCustomField) {
+	public TAPFileNameResultSeeker(String includePattern, String keyCustomField, boolean attachTAPStream, boolean attachYAMLishAttachments) {
 		super(includePattern, keyCustomField);
+		this.attachTAPStream = attachTAPStream;
+		this.attachYAMLishAttachments = attachYAMLishAttachments;
+	}
+	
+	public void setAttachTAPStream(boolean attachTAPStream) {
+		this.attachTAPStream = attachTAPStream;
+	}
+	
+	public boolean isAttachTAPStream() {
+		return attachTAPStream;
+	}
+	
+	public void setAttachYAMLishAttachments(boolean attachYAMLishAttachments) {
+		this.attachYAMLishAttachments = attachYAMLishAttachments;
+	}
+	
+	public boolean isAttachYAMLishAttachments() {
+		return attachYAMLishAttachments;
 	}
 
 	@Extension
@@ -135,11 +164,8 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 						if(key.equals(value)) {
 							ExecutionStatus status = this.getExecutionStatus(testSets.get(key));
 							automatedTestCase.addCustomFieldAndStatus(value, status);
-							if(automatedTestCase.getExecutionStatus() != ExecutionStatus.NOT_RUN) {
-								testlink.updateTestCase(automatedTestCase);
-								String platform = this.retrievePlatform(testSets.get(key));
-								automatedTestCase.setPlatform(platform);
-							}
+							
+							this.handleResult(automatedTestCase, build, listener, testlink, status, testSets, key);
 						}
 					}
 				}
@@ -148,6 +174,60 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 			throw new ResultSeekerException(e);
 		} catch (InterruptedException e) {
 			throw new ResultSeekerException(e);
+		}
+	}
+
+	private void handleResult(TestCaseWrapper automatedTestCase, final AbstractBuild<?, ?> build, BuildListener listener, TestLinkSite testlink, ExecutionStatus status, final Map<String, TestSet> testSets, final String key) {
+		if(automatedTestCase.getExecutionStatus() != ExecutionStatus.NOT_RUN) {
+			String platform = this.retrievePlatform(testSets.get(key));
+			automatedTestCase.setPlatform(platform);
+			
+			try {
+				final int executionId = testlink.updateTestCase(automatedTestCase);
+				
+				if(executionId > 0 && this.isAttachTAPStream()) {
+					List<Attachment> attachments = build.getWorkspace().act( new FileCallable<List<Attachment>>() {
+						
+						private static final long serialVersionUID = -5411683541842375558L;
+
+						List<Attachment> attachments = new ArrayList<Attachment>();
+						
+						public List<Attachment> invoke(File f,
+								VirtualChannel channel)
+								throws IOException,
+								InterruptedException {
+							
+							File reportFile = new File(build.getWorkspace().getRemote(), key);
+							final Attachment attachment = new Attachment();
+							attachment.setContent(TAPFileNameResultSeeker.this.getBase64FileContent(reportFile));
+							attachment.setDescription(reportFile.getName());
+							attachment.setFileName(reportFile.getName());
+							attachment.setFileSize(reportFile.length());
+							attachment.setFileType(TEXT_PLAIN_CONTENT_TYPE);
+							attachment.setTitle(reportFile.getName());
+							attachments.add(attachment);
+							
+							if(TAPFileNameResultSeeker.this.isAttachYAMLishAttachments()) {
+								attachments.addAll(TAPFileNameResultSeeker.this.retrieveListOfTapAttachments(testSets.get(key)));
+							}
+							
+							return attachments;
+						}
+					});
+					for(Attachment attachment : attachments) {
+						testlink.uploadAttachment(executionId, attachment);
+					}
+				}
+			} catch ( TestLinkAPIException te ) {
+				build.setResult(Result.UNSTABLE);
+				te.printStackTrace(listener.getLogger());
+			} catch (IOException e) {
+				build.setResult(Result.UNSTABLE);
+				e.printStackTrace(listener.getLogger());
+			} catch (InterruptedException e) {
+				build.setResult(Result.UNSTABLE);
+				e.printStackTrace(listener.getLogger());
+			}
 		}
 	}
 
@@ -304,12 +384,11 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 	 * Retrieves list of TAP Attachments. Besides the TAP stream file itself, 
 	 * this method also adds all extension / Files to this list.
 	 * 
-	 * @param versionId TestLink TestCase version id.
 	 * @param tapReportFile TAP Report file.
 	 * @param testSet TAP Test Set.
 	 * @return TAP Attachments.
 	 */
-	protected List<Attachment> getTapAttachments( Integer versionId, File tapReportFile, TestSet testSet )
+	protected List<Attachment> getTapAttachments( File tapReportFile, TestSet testSet )
 	throws IOException
 	{
 		

@@ -74,8 +74,7 @@ public class TestTestResultSeekerTAP extends ResultSeekerTestCase {
 	 */
 	@Override
 	public ResultSeeker getResultSeeker() {
-		return new TAPFileNameResultSeeker(getResultsPattern(),
-				KEY_CUSTOM_FIELD);
+		return new TAPFileNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD, false, false);
 	}
 
 	/*
