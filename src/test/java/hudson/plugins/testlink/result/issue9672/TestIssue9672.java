@@ -75,7 +75,7 @@ public class TestIssue9672 extends ResultSeekerTestCase {
 	@Override
 	public ResultSeeker getResultSeeker() {
 		return new JUnitCaseClassNameResultSeeker(getResultsPattern(),
-				KEY_CUSTOM_FIELD);
+				KEY_CUSTOM_FIELD, false);
 	}
 
 	/*

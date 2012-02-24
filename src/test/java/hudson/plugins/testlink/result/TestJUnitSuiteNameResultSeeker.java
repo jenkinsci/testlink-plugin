@@ -147,7 +147,7 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 	 */
 	@Override
 	public ResultSeeker getResultSeeker() {
-		return new JUnitSuiteNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD);
+		return new JUnitSuiteNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD, false);
 	}
 
 	public void testOneSuiteSuiteA() throws Exception {

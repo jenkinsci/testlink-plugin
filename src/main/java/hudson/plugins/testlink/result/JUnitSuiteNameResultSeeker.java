@@ -29,7 +29,6 @@ import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.TestLinkSite;
 import hudson.plugins.testlink.util.Messages;
-import hudson.tasks.junit.JUnitParser;
 import hudson.tasks.junit.SuiteResult;
 import hudson.tasks.junit.TestResult;
 import hudson.tasks.junit.CaseResult;
@@ -50,22 +49,17 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 3.1
  */
-public class JUnitSuiteNameResultSeeker extends ResultSeeker {
+public class JUnitSuiteNameResultSeeker extends AbstractJUnitResultSeeker {
 
 	private static final long serialVersionUID = 1208667419295218347L;
 	
-	/**
-	 * JUnit parser.
-	 */
-	private final JUnitParser parser = new JUnitParser(false);
-
 	/**
 	 * @param includePattern Include pattern used when looking for results
 	 * @param keyCustomField Key custom field to match against the results
 	 */
 	@DataBoundConstructor
-	public JUnitSuiteNameResultSeeker(String includePattern, String keyCustomField) {
-		super(includePattern, keyCustomField);
+	public JUnitSuiteNameResultSeeker(String includePattern, String keyCustomField, boolean attachJUnitXML) {
+		super(includePattern, keyCustomField, attachJUnitXML);
 	}
 
 	@Extension
@@ -102,9 +96,8 @@ public class JUnitSuiteNameResultSeeker extends ResultSeeker {
 						if(suiteResult.getName().equals(value)) {
 							ExecutionStatus status = this.getExecutionStatus(suiteResult);
 							automatedTestCase.addCustomFieldAndStatus(value, status);
-							if(automatedTestCase.getExecutionStatus() != ExecutionStatus.NOT_RUN) {
-								testlink.updateTestCase(automatedTestCase);
-							}
+							
+							super.handleResult(automatedTestCase, build, listener, testlink, status, suiteResult);
 						}
 					}
 				}

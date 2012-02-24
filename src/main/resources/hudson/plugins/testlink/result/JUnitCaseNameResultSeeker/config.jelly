@@ -1,15 +1,15 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
     <f:entry title="${%Include Pattern}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
-        <f:textbox id="includePattern" name="JUnitCaseClassNameResultSeeker.includePattern" value="${instance.includePattern}" />
+        <f:textbox id="includePattern" name="JUnitCaseNameResultSeeker.includePattern" value="${instance.includePattern}" />
     </f:entry>
 
     <f:entry title="${%Key Custom Field}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
-        <f:textbox id="keyCustomField" name="JUnitCaseClassNameResultSeeker.keyCustomField" value="${instance.keyCustomField}" />
+        <f:textbox id="keyCustomField" name="JUnitCaseNameResultSeeker.keyCustomField" value="${instance.keyCustomField}" />
     </f:entry>
     
     <f:entry title="${%Attach JUnit XML}" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
-        <f:checkbox name="JUnitCaseClassNameResultSeeker.attachJUnitXML" value="${instance.attachJUnitXML}" checked="${instance.attachJUnitXML}" />
+        <f:checkbox name="JUnitCaseNameResultSeeker.attachJUnitXML" value="${instance.attachJUnitXML}" checked="${instance.attachJUnitXML}" />
     </f:entry>
 
 </j:jelly>

@@ -160,8 +160,10 @@ public class TestLinkSite
 	 * 
 	 * @param testCases Test Cases
 	 */
-	public void updateTestCase( TestCaseWrapper testCase ) 
+	public int updateTestCase( TestCaseWrapper testCase ) 
 	{
+		int executionId = 0;
+		
 		if ( testCase.getExecutionStatus() != null || testCase.getExecutionStatus() != ExecutionStatus.NOT_RUN )
 		{
 			// Update Test Case status
@@ -180,18 +182,6 @@ public class TestLinkSite
 					null, // custom fields
 					null);
 			
-			List<Attachment> attachments = testCase.getAttachments();
-			for ( Attachment attachment :  attachments)
-			{
-				api.uploadExecutionAttachment(
-						reportTCResultResponse.getExecutionId(), 
-						attachment.getTitle(), 
-						attachment.getDescription(), 
-						attachment.getFileName(), 
-						attachment.getFileType(), 
-						attachment.getContent());
-			}
-			
 			switch(testCase.getExecutionStatus()) {
 			case PASSED:
 				report.setPassed(report.getPassed()+1);
@@ -203,7 +193,21 @@ public class TestLinkSite
 				report.setBlocked(report.getBlocked()+1);
 				break;
 			}
+			
+			executionId = reportTCResultResponse.getExecutionId();
 		}
+		
+		return executionId;
+	}
+	
+	public void uploadAttachment(int executionId, Attachment attachment) {
+		api.uploadExecutionAttachment(
+				executionId, 
+				attachment.getTitle(), 
+				attachment.getDescription(), 
+				attachment.getFileName(), 
+				attachment.getFileType(), 
+				attachment.getContent());
 	}
 	
 }

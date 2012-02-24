@@ -46,7 +46,7 @@ public class TestLinkSiteFake extends TestLinkSite {
 	 * @see hudson.plugins.testlink.TestLinkSite#updateTestCases(java.util.Collection)
 	 */
 	@Override
-	public void updateTestCase(TestCaseWrapper testCase) {
+	public int updateTestCase(TestCaseWrapper testCase) {
 		// OK, do nothing
 		System.out.println("Updating test case " + testCase.getName() + " execution status  " + testCase.getExecutionStatus());
 		testCases.add(testCase);
@@ -61,6 +61,7 @@ public class TestLinkSiteFake extends TestLinkSite {
 			report.setBlocked(report.getBlocked()+1);
 			break;
 		}
+		return 1;
 	}
 	
 	/**
