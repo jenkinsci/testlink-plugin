@@ -25,9 +25,6 @@ package hudson.plugins.testlink;
 
 import hudson.plugins.testlink.result.Report;
 import hudson.plugins.testlink.result.TestCaseWrapper;
-
-import java.util.List;
-
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;

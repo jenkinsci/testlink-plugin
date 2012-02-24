@@ -55,19 +55,20 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 3.1
  */
-public class TestNGMethodNameResultSeeker extends ResultSeeker {
+public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 
-	private static final long serialVersionUID = 7901481622132967214L;
+	private static final long serialVersionUID = 3299323955206953910L;
 	
 	private final TestNGParser parser = new TestNGParser();
 	
 	/**
 	 * @param includePattern
 	 * @param keyCustomField
+	 * @param attachTestNGXML
 	 */
 	@DataBoundConstructor
-	public TestNGMethodNameResultSeeker(String includePattern, String keyCustomField) {
-		super(includePattern, keyCustomField);
+	public TestNGMethodNameResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML) {
+		super(includePattern, keyCustomField, attachTestNGXML);
 	}
 	
 	@Extension
@@ -122,9 +123,8 @@ public class TestNGMethodNameResultSeeker extends ResultSeeker {
 									if(qualifiedName.equals(value)) {
 										ExecutionStatus status = this.getExecutionStatus(method);
 										automatedTestCase.addCustomFieldAndStatus(value, status);
-										if(automatedTestCase.getExecutionStatus() != ExecutionStatus.NOT_RUN) {
-											testlink.updateTestCase(automatedTestCase);
-										}
+										
+										super.handleResult(automatedTestCase, build, listener, testlink, status, suite);
 									}
 								}
 							}

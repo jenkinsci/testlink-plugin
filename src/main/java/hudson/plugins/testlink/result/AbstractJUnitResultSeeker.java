@@ -59,6 +59,7 @@ public abstract class AbstractJUnitResultSeeker extends ResultSeeker {
 	/**
 	 * @param includePattern
 	 * @param keyCustomField
+	 * @param attachJunitXML
 	 */
 	public AbstractJUnitResultSeeker(String includePattern, String keyCustomField, boolean attachJunitXML) {
 		super(includePattern, keyCustomField);

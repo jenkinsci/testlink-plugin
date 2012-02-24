@@ -59,8 +59,6 @@ extends TestCase
 	
 	public void testTestNGParser()
 	{
-		assertEquals(this.parser.getName(), "TestNG");
-		
 		ClassLoader cl = TestTestNGParser.class.getClassLoader();
 		URL url = cl.getResource("hudson/plugins/testlink/result/parser/testng/testng-results.xml");
 		File file = new File( url.getFile() );
@@ -126,9 +124,9 @@ extends TestCase
 		{
 			this.parser.parse( file );
 		}
-		catch (ParserException p) 
+		catch (Throwable t) 
 		{
-			assertNotNull(p);
+			assertNotNull(t);
 		}
 		
 	}

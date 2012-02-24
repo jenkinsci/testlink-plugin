@@ -32,7 +32,6 @@ import hudson.plugins.testlink.TestLinkSite;
 import hudson.plugins.testlink.testng.Suite;
 import hudson.plugins.testlink.testng.Test;
 import hudson.plugins.testlink.testng.TestMethod;
-import hudson.plugins.testlink.testng.TestNGParser;
 import hudson.plugins.testlink.util.Messages;
 import hudson.remoting.VirtualChannel;
 
@@ -55,19 +54,18 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 3.1
  */
-public class TestNGClassNameResultSeeker extends ResultSeeker {
+public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 
 	private static final long serialVersionUID = 3812045713427474101L;
-	
-	private final TestNGParser parser = new TestNGParser();
 	
 	/**
 	 * @param includePattern
 	 * @param keyCustomField
+	 * @param attachTestNGXML
 	 */
 	@DataBoundConstructor
-	public TestNGClassNameResultSeeker(String includePattern, String keyCustomField) {
-		super(includePattern, keyCustomField);
+	public TestNGClassNameResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML) {
+		super(includePattern, keyCustomField, attachTestNGXML);
 	}
 	
 	@Extension
@@ -120,9 +118,8 @@ public class TestNGClassNameResultSeeker extends ResultSeeker {
 								if(clazz.getName().equals(value)) {
 									ExecutionStatus status = this.getExecutionStatus(clazz);
 									automatedTestCase.addCustomFieldAndStatus(value, status);
-									if(automatedTestCase.getExecutionStatus() != ExecutionStatus.NOT_RUN) {
-										testlink.updateTestCase(automatedTestCase);
-									}
+									
+									super.handleResult(automatedTestCase, build, listener, testlink, status, suite);
 								}
 							}
 						}

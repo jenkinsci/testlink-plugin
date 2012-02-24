@@ -24,8 +24,12 @@
 package hudson.plugins.testlink.testng;
 
 
+import hudson.plugins.testlink.util.Messages;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Serializable;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -36,43 +40,29 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 
 /**
- *
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  */
-public class TestNGParser 
-extends Parser<Suite>
-{
+public class TestNGParser implements Serializable {
 
-	/**
-	 * 
-	 */
+	private static final long serialVersionUID = -6714585408222816355L;
+
 	private static final String APACHE_EXT_DTD = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
 
-	private static final String NAME = "TestNG";
-
-	private static final long serialVersionUID = -7538241225523763422L;
-	
 	/**
-	 * The TestNG XML Handler.
+	 * Parses the content of an input stream and returns a Suite.
+	 *   
+	 * @param inputStream the input stream.
+	 * @return Resulting object.
+	 * @throws SAXException
+	 * @throws IOException
+	 * @throws ParserConfigurationException
 	 */
-	private TestNGXmlHandler handler;
-	
-	/**
-	 * Default constructor. Initializes the TestNG XML Handler.
-	 */
-	public TestNGParser()
-	{
-		super();
-		this.handler = new TestNGXmlHandler();
-	}
-	
-	/* (non-Javadoc)
-	 * @see hudson.plugins.testlink.parser.Parser#parse(java.io.InputStream)
-	 */
-	@Override
-	public Suite parse( InputStream inputStream ) 
-	throws ParserException
-	{
+	public Suite parse( File file ) throws ParserException {
+		
+		FileInputStream fileInputStream = null;
+		final TestNGXmlHandler handler = new TestNGXmlHandler();
+		final Suite suite;
+		
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		factory.setValidating(false);
 		try {
@@ -84,36 +74,25 @@ extends Parser<Suite>
         
         SAXParser parser = null; 
         	
-        try
-        {
+        try {
+        	fileInputStream = new FileInputStream( file );
 	        parser = factory.newSAXParser();
-	        parser.parse(inputStream, this.handler );
-        } 
-        catch (ParserConfigurationException e) 
-		{
+	        parser.parse(fileInputStream, handler );
+	        
+	        suite = handler.getSuite();
+	        if ( suite == null ) {
+				throw new ParserException(Messages.Parser_Error(file, "Null"));
+			}
+	        suite.setFile(file.getAbsolutePath());
+        } catch (ParserConfigurationException e) {
 			throw new ParserException( e );
-		}	
-    	catch (SAXException e) 
-		{
+		} catch (SAXException e) {
     		throw new ParserException( e );
-		} 
-		catch (IOException e) 
-		{
+		} catch (IOException e) {
 			throw new ParserException( e );
 		}
-        
-        Suite suite = this.handler.getSuite();
         
         return suite;
 	}
 	
-	/* (non-Javadoc)
-	 * @see hudson.plugins.testlink.parser.Parser#getName()
-	 */
-	@Override
-	public String getName() 
-	{
-		return NAME;
-	}
-
 }

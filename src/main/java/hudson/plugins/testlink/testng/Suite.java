@@ -37,8 +37,8 @@ public class Suite
 implements Serializable
 {
 
-	private static final long serialVersionUID = 4396701906087157712L;
-	
+	private static final long serialVersionUID = 6740442155551062650L;
+
 	/**
 	 * The name attribute.
 	 */
@@ -63,6 +63,11 @@ implements Serializable
 	 * List of <test> tags.
 	 */
 	private List<Test> tests;
+	
+	/**
+	 * Absolute path to parsed file.
+	 */
+	private String file;
 	
 	/**
 	 * Default constructor. Initializes the list of <test> tags.
@@ -184,6 +189,14 @@ implements Serializable
 	public boolean removeTest( Test test )
 	{
 		return this.tests.remove ( test );
+	}
+
+	public void setFile(String file) {
+		this.file = file;
+	}
+	
+	public String getFile() {
+		return this.file;
 	}
 	
 }
