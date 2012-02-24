@@ -208,8 +208,8 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		build.addAction(buildAction);
 
 		if (report.getFailed() > 0) {
-			if (this.failedTestsMarkBuildAsFailure != null
-					&& this.failedTestsMarkBuildAsFailure) {
+			if (this.failedTestsMarkBuildAsUnstable != null
+					&& this.failedTestsMarkBuildAsUnstable) {
 				build.setResult(Result.FAILURE);
 			} else {
 				build.setResult(Result.UNSTABLE);
