@@ -95,7 +95,6 @@ public class TestIssue9672 extends ResultSeekerTestCase {
 		cf.setValue("tcA");
 		tc.getCustomFields().add(cf);
 		tc.setId(1);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[0] = tc;
 
 		tc = new TestCaseWrapper();
@@ -104,7 +103,6 @@ public class TestIssue9672 extends ResultSeekerTestCase {
 		cf.setValue("tcA, tcB");
 		tc.getCustomFields().add(cf);
 		tc.setId(2);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[1] = tc;
 
 		tc = new TestCaseWrapper();
@@ -113,7 +111,6 @@ public class TestIssue9672 extends ResultSeekerTestCase {
 		cf.setValue("nameA, nameB");
 		tc.getCustomFields().add(cf);
 		tc.setId(3);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[2] = tc;
 
 		tc = new TestCaseWrapper();
@@ -122,7 +119,6 @@ public class TestIssue9672 extends ResultSeekerTestCase {
 		cf.setValue("tcA, tcK");
 		tc.getCustomFields().add(cf);
 		tc.setId(4);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[3] = tc;
 
 		tc = new TestCaseWrapper();
@@ -131,7 +127,6 @@ public class TestIssue9672 extends ResultSeekerTestCase {
 		cf.setValue("tcA, nameA, sampleTestImmo");
 		tc.getCustomFields().add(cf);
 		tc.setId(5);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[4] = tc;
 
 		return tcs;

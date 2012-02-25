@@ -114,7 +114,7 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 			});
 			for(Suite suite : suites) {
 				for(TestCaseWrapper automatedTestCase : automatedTestCases) {
-					final String[] commaSeparatedValues = this.split(automatedTestCase.getKeyCustomFieldValue());
+					final String[] commaSeparatedValues = this.split(this.getKeyCustomFieldValue(automatedTestCase.getCustomFields(), this.keyCustomField));
 					for(String value : commaSeparatedValues) {
 						if(suite.getName().equals(value)) {
 							ExecutionStatus status = this.getExecutionStatus(suite);

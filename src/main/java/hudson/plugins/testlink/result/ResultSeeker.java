@@ -93,6 +93,17 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	public String getKeyCustomField() {
 		return keyCustomField;
 	}
+	
+	protected String getKeyCustomFieldValue(List<CustomField> customFields, String keyCustomFieldName) {
+		String keyCustomFieldValue = null;
+		for(CustomField customField : customFields) {
+			if(customField.getName().equals(keyCustomFieldName)) {
+				keyCustomFieldValue = customField.getValue();
+				break;
+			}
+		}
+		return keyCustomFieldValue;
+	}
 
 	/*
 	 * (non-Javadoc)

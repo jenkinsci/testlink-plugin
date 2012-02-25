@@ -41,7 +41,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCaseStep;
  */
 public class TestCaseWrapper implements Serializable {
 
-	private static final long serialVersionUID = 6109763747785922349L;
+	private static final long serialVersionUID = -1071107752030147906L;
 
 	/**
 	 * A list of custom field and status, used to allow the user to use a comma
@@ -71,8 +71,6 @@ public class TestCaseWrapper implements Serializable {
 	 */
 	private TestCase testCase;
 
-	private String keyCustomFieldValue;
-
 	public TestCaseWrapper() {
 		this(new TestCase());
 	}
@@ -86,17 +84,6 @@ public class TestCaseWrapper implements Serializable {
 		this.notes = new StringBuilder();
 		this.attachments = new LinkedList<Attachment>();
 		this.customFieldAndStatus = new HashMap<String, ExecutionStatus>();
-	}
-
-	/**
-	 * @return value of key custom field
-	 */
-	public String getKeyCustomFieldValue() {
-		return this.keyCustomFieldValue;
-	}
-	
-	public void setKeyCustomFieldValue(String keyCustomFieldValue) {
-		this.keyCustomFieldValue = keyCustomFieldValue;
 	}
 
 	/**

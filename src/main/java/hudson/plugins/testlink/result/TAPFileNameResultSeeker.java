@@ -159,7 +159,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 			
 			for(String key : testSets.keySet()) {
 				for(TestCaseWrapper automatedTestCase : automatedTestCases) {
-					final String[] commaSeparatedValues = this.split(automatedTestCase.getKeyCustomFieldValue());
+					final String[] commaSeparatedValues = this.split(this.getKeyCustomFieldValue(automatedTestCase.getCustomFields(), this.keyCustomField));
 					for(String value : commaSeparatedValues) {
 						if(key.equals(value)) {
 							ExecutionStatus status = this.getExecutionStatus(testSets.get(key));

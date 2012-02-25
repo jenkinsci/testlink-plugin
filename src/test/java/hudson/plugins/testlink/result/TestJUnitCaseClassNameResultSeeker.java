@@ -77,7 +77,6 @@ public class TestJUnitCaseClassNameResultSeeker extends ResultSeekerTestCase {
 		cf.setValue("br.eti.kinoshita.TestImmo");
 		tc.getCustomFields().add(cf);
 		tc.setId(1);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[0] = tc;
 
 		return tcs;

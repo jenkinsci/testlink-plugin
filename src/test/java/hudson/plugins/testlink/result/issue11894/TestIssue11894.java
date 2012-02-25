@@ -94,7 +94,6 @@ public class TestIssue11894 extends ResultSeekerTestCase {
 		cf.setValue("unit.testng.TestAccountCreation#test1");
 		tc.getCustomFields().add(cf);
 		tc.setId(1);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[0] = tc;
 
 		tc = new TestCaseWrapper();
@@ -103,7 +102,6 @@ public class TestIssue11894 extends ResultSeekerTestCase {
 		cf.setValue("unit.testng.TestAccountCreation#test2");
 		tc.getCustomFields().add(cf);
 		tc.setId(2);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[1] = tc;
 		
 		tc = new TestCaseWrapper();
@@ -112,7 +110,6 @@ public class TestIssue11894 extends ResultSeekerTestCase {
 		cf.setValue("unit.testng.TestAccountCreation#test3");
 		tc.getCustomFields().add(cf);
 		tc.setId(3);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[2] = tc;
 
 		return tcs;

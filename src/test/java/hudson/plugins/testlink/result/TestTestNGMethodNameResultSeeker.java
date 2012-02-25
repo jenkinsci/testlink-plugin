@@ -86,7 +86,6 @@ public class TestTestNGMethodNameResultSeeker extends ResultSeekerTestCase {
 		cf.setValue("br.eti.kinoshita.Test#testVoid");
 		tc.getCustomFields().add(cf);
 		tc.setId(1);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[0] = tc;
 
 		tc = new TestCaseWrapper();
@@ -95,7 +94,6 @@ public class TestTestNGMethodNameResultSeeker extends ResultSeekerTestCase {
 		cf.setValue("br.eti.kinoshita.Test2#testVoid");
 		tc.getCustomFields().add(cf);
 		tc.setId(2);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[1] = tc;
 		
 		tc = new TestCaseWrapper();
@@ -104,7 +102,6 @@ public class TestTestNGMethodNameResultSeeker extends ResultSeekerTestCase {
 		cf.setValue("br.eti.kinoshita.TestImmo#testVoid");
 		tc.getCustomFields().add(cf);
 		tc.setId(3);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[2] = tc;
 
 		return tcs;

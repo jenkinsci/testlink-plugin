@@ -84,7 +84,6 @@ public class TestIssue9229 extends ResultSeekerTestCase {
 		tc.setId(1);
 		tc.setName("TC for issue 9229");
 		tc.getCustomFields().add(cf);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[0] = tc;
 		
 		return tcs;

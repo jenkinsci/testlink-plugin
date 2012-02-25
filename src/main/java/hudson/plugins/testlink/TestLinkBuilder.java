@@ -102,66 +102,50 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			throw new AbortException(Messages.TestLinkBuilder_InvalidTLAPI());
 		}
 
-		TestLinkHelper.setTestLinkJavaAPIProperties(
-				installation.getTestLinkJavaAPIProperties(), listener);
+		TestLinkHelper.setTestLinkJavaAPIProperties(installation.getTestLinkJavaAPIProperties(), listener);
 
 		final TestLinkSite testLinkSite;
 		final TestCaseWrapper[] automatedTestCases;
 		final String testLinkUrl = installation.getUrl();
 		final String testLinkDevKey = installation.getDevKey();
-		listener.getLogger().println(
-				Messages.TestLinkBuilder_UsedTLURL(testLinkUrl));
+		listener.getLogger().println(Messages.TestLinkBuilder_UsedTLURL(testLinkUrl));
 
 		try {
-			final String testProjectName = expandVariable(
-					build.getBuildVariableResolver(),
+			final String testProjectName = expandVariable(build.getBuildVariableResolver(),
 					build.getEnvironment(listener), getTestProjectName());
-			final String testPlanName = expandVariable(
-					build.getBuildVariableResolver(),
+			final String testPlanName = expandVariable(build.getBuildVariableResolver(),
 					build.getEnvironment(listener), getTestPlanName());
-			final String buildName = expandVariable(
-					build.getBuildVariableResolver(),
+			final String buildName = expandVariable(build.getBuildVariableResolver(),
 					build.getEnvironment(listener), getBuildName());
 			final String buildNotes = Messages.TestLinkBuilder_Build_Notes();
 			// TestLink Site object
-			testLinkSite = this.getTestLinkSite(testLinkUrl, testLinkDevKey,
-					testProjectName, testPlanName, buildName, buildNotes);
-			final String[] customFieldsNames = this
-					.createArrayOfCustomFieldsNames();
+			testLinkSite = this.getTestLinkSite(testLinkUrl, testLinkDevKey, testProjectName, testPlanName, buildName, buildNotes);
+			final String[] customFieldsNames = this.createArrayOfCustomFieldsNames();
 			// Array of automated test cases
-			TestCase[] testCases = testLinkSite
-					.getAutomatedTestCases(customFieldsNames);
+			TestCase[] testCases = testLinkSite.getAutomatedTestCases(customFieldsNames);
 
 			// Transforms test cases into test case wrappers
 			automatedTestCases = this.transform(testCases);
 
-			listener.getLogger()
-					.println(
-							Messages.TestLinkBuilder_ShowFoundAutomatedTestCases(automatedTestCases.length));
+			listener.getLogger().println(Messages.TestLinkBuilder_ShowFoundAutomatedTestCases(automatedTestCases.length));
 
 			// Sorts test cases by each execution order (this info comes from
 			// TestLink)
-			listener.getLogger().println(
-					Messages.TestLinkBuilder_SortingTestCases());
+			listener.getLogger().println(Messages.TestLinkBuilder_SortingTestCases());
 			Arrays.sort(automatedTestCases, this.executionOrderComparator);
 		} catch (MalformedURLException mue) {
 			mue.printStackTrace(listener.fatalError(mue.getMessage()));
-			throw new AbortException(
-					Messages.TestLinkBuilder_InvalidTLURL(testLinkUrl));
+			throw new AbortException(Messages.TestLinkBuilder_InvalidTLURL(testLinkUrl));
 		} catch (TestLinkAPIException e) {
 			e.printStackTrace(listener.fatalError(e.getMessage()));
-			throw new AbortException(
-					Messages.TestLinkBuilder_TestLinkCommunicationError());
+			throw new AbortException(Messages.TestLinkBuilder_TestLinkCommunicationError());
 		}
 
-		listener.getLogger().println(
-				Messages.TestLinkBuilder_ExecutingSingleBuildSteps());
+		listener.getLogger().println(Messages.TestLinkBuilder_ExecutingSingleBuildSteps());
 		this.executeSingleBuildSteps(build, launcher, listener);
 
-		listener.getLogger().println(
-				Messages.TestLinkBuilder_ExecutingIterativeBuildSteps());
-		this.executeIterativeBuildSteps(automatedTestCases, testLinkSite,
-				build, launcher, listener);
+		listener.getLogger().println(Messages.TestLinkBuilder_ExecutingIterativeBuildSteps());
+		this.executeIterativeBuildSteps(automatedTestCases, testLinkSite, build, launcher, listener);
 
 		// This report is used to generate the graphs and to store the list of
 		// test cases with each found status.
@@ -170,12 +154,10 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		// that
 		// contains attachments, platform and notes.
 		try {
-			listener.getLogger().println(
-					Messages.Results_LookingForTestResults());
+			listener.getLogger().println(Messages.Results_LookingForTestResults());
 
 			for (ResultSeeker resultSeeker : getResultSeekers()) {
-				resultSeeker.seek(null, build, launcher, listener,
-						testLinkSite, report);
+				resultSeeker.seek(automatedTestCases, build, launcher, listener, testLinkSite, report);
 			}
 
 			// listener.getLogger().println(
@@ -193,13 +175,10 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			// }
 		} catch (ResultSeekerException trse) {
 			trse.printStackTrace(listener.fatalError(trse.getMessage()));
-			throw new AbortException(
-					Messages.Results_ErrorToLookForTestResults(trse
-							.getMessage()));
+			throw new AbortException(Messages.Results_ErrorToLookForTestResults(trse.getMessage()));
 		} catch (TestLinkAPIException tlae) {
 			tlae.printStackTrace(listener.fatalError(tlae.getMessage()));
-			throw new AbortException(
-					Messages.TestLinkBuilder_FailedToUpdateTL(tlae.getMessage()));
+			throw new AbortException(Messages.TestLinkBuilder_FailedToUpdateTL(tlae.getMessage()));
 		}
 
 		final TestLinkResult result = new TestLinkResult(report, build);

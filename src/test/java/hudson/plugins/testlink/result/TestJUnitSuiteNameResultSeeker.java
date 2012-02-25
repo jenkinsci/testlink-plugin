@@ -64,7 +64,6 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		cf.setValue("suiteA");
 		tc.getCustomFields().add(cf);
 		tc.setId(1);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[0] = tc;
 
 		tc = new TestCaseWrapper();
@@ -73,7 +72,6 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		cf.setValue("suiteA, suiteB");
 		tc.getCustomFields().add(cf);
 		tc.setId(2);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[1] = tc;
 
 		tc = new TestCaseWrapper();
@@ -82,7 +80,6 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		cf.setValue("suiteB, suiteC");
 		tc.getCustomFields().add(cf);
 		tc.setId(3);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[2] = tc;
 
 		tc = new TestCaseWrapper();
@@ -91,7 +88,6 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		cf.setValue("suiteA, suiteB, suiteC");
 		tc.getCustomFields().add(cf);
 		tc.setId(4);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[3] = tc;
 
 		tc = new TestCaseWrapper();
@@ -100,7 +96,6 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		cf.setValue("suiteA, suiteB, suiteD");
 		tc.getCustomFields().add(cf);
 		tc.setId(5);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[4] = tc;
 
 		tc = new TestCaseWrapper();
@@ -109,7 +104,6 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		cf.setValue("suiteA, suiteB, suiteC");
 		tc.getCustomFields().add(cf);
 		tc.setId(6);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[5] = tc;
 
 		tc = new TestCaseWrapper();
@@ -118,7 +112,6 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		cf.setValue("suiteC, suiteY");
 		tc.getCustomFields().add(cf);
 		tc.setId(7);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[6] = tc;
 
 		tc = new TestCaseWrapper();
@@ -127,7 +120,6 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		cf.setValue("suiteA, suiteX");
 		tc.getCustomFields().add(cf);
 		tc.setId(8);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[7] = tc;
 
 		tc = new TestCaseWrapper();
@@ -136,7 +128,6 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		cf.setValue("suiteA, suiteK");
 		tc.getCustomFields().add(cf);
 		tc.setId(9);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[8] = tc;
 		
 		return tcs;

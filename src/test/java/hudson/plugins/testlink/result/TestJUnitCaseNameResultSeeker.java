@@ -77,7 +77,6 @@ public class TestJUnitCaseNameResultSeeker extends ResultSeekerTestCase {
 		cf.setValue("testVoid");
 		tc.getCustomFields().add(cf);
 		tc.setId(1);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[0] = tc;
 
 		tc = new TestCaseWrapper();
@@ -86,7 +85,6 @@ public class TestJUnitCaseNameResultSeeker extends ResultSeekerTestCase {
 		cf.setValue("Consultation");
 		tc.getCustomFields().add(cf);
 		tc.setId(2);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[1] = tc;
 
 		return tcs;

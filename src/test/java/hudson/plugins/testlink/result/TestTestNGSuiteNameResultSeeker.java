@@ -86,7 +86,6 @@ public class TestTestNGSuiteNameResultSeeker extends ResultSeekerTestCase {
 		cf.setValue("Command line suite");
 		tc.getCustomFields().add(cf);
 		tc.setId(1);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[0] = tc;
 
 		tc = new TestCaseWrapper();
@@ -95,7 +94,6 @@ public class TestTestNGSuiteNameResultSeeker extends ResultSeekerTestCase {
 		cf.setValue("Command line suite2");
 		tc.getCustomFields().add(cf);
 		tc.setId(2);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[1] = tc;
 
 		return tcs;

@@ -95,7 +95,6 @@ public class TestPerformance10849 extends ResultSeekerTestCase {
 			tc.setId((i + 1));
 			tc.setName("TC for issue 10849");
 			tc.getCustomFields().add(cf);
-			tc.setKeyCustomFieldValue(cf.getValue());
 			tcs[i] = tc;
 		}
 		return tcs;

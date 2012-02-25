@@ -78,7 +78,6 @@ public class TestTAPFileNameResultSeeker extends ResultSeekerTestCase
 		cf.setValue("br.eti.kinoshita.tap.SampleTest");
 		tc.getCustomFields().add(cf);
 		tc.setId(1);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[0] = tc;
 		
 		
@@ -88,7 +87,6 @@ public class TestTAPFileNameResultSeeker extends ResultSeekerTestCase
 		cf.setValue("br.eti.kinoshita.tap.SampleTest2");
 		tc.getCustomFields().add(cf);
 		tc.setId(2);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[1] = tc;
 		
 		tc = new TestCaseWrapper();
@@ -97,7 +95,6 @@ public class TestTAPFileNameResultSeeker extends ResultSeekerTestCase
 		cf.setValue("br.eti.kinoshita.tap.SampleTest3");
 		tc.getCustomFields().add(cf);
 		tc.setId(3);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[2] = tc;
 		
 		return tcs;

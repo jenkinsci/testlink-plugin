@@ -94,7 +94,6 @@ public class TestTestResultSeekerTAP extends ResultSeekerTestCase {
 		cf.setValue("A, B");
 		tc.getCustomFields().add(cf);
 		tc.setId(1);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[0] = tc;
 
 		tc = new TestCaseWrapper();
@@ -103,7 +102,6 @@ public class TestTestResultSeekerTAP extends ResultSeekerTestCase {
 		cf.setValue("A, K");
 		tc.getCustomFields().add(cf);
 		tc.setId(2);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[1] = tc;
 
 		return tcs;

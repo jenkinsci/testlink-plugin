@@ -83,7 +83,6 @@ public class TestPlatformSupport extends ResultSeekerTestCase {
 		cf.setValue("A");
 		tc.getCustomFields().add(cf);
 		tc.setId(1);
-		tc.setKeyCustomFieldValue(cf.getValue());
 		tcs[0] = tc;
 		
 		return tcs;
