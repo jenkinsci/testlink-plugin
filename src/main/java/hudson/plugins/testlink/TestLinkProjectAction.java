@@ -25,7 +25,6 @@ package hudson.plugins.testlink;
 
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.plugins.testlink.result.Report;
 import hudson.util.ChartUtil;
 import hudson.util.DataSetBuilder;
 

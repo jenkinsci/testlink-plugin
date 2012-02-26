@@ -137,10 +137,9 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	 * @param workspace Build workspace, used when looking for results using the include pattern
 	 * @param listener Build listener for logging
 	 * @param testlink TestLink site for updating test status
-	 * @param report Report used to display the summary in Build screen
 	 * @throws ResultSeekerException
 	 */
-	public abstract void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestLinkSite testlink, Report report) throws ResultSeekerException;
+	public abstract void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestLinkSite testlink) throws ResultSeekerException;
 
 	/**
 	 * Retrieves the file content encoded in Base64.

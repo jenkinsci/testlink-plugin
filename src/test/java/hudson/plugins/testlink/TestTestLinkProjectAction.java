@@ -25,7 +25,6 @@ package hudson.plugins.testlink;
 
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
-import hudson.plugins.testlink.result.Report;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -91,14 +90,14 @@ extends HudsonTestCase
 		{
 			hudsonBuild1 = project.createExecutable();
 			hudsonBuild1.number = 1;
-			Report report = new Report();
+			Report report = new Report(1, null);
 			TestLinkResult result = new TestLinkResult(report, hudsonBuild1);
 			TestLinkBuildAction buildAction = new TestLinkBuildAction(hudsonBuild1, result);
 			hudsonBuild1.addAction(buildAction);
 			hudsonBuild1.run();
 			
 			hudsonBuild2 = project.createExecutable();
-			Report report2 = new Report();
+			Report report2 = new Report(1, null);
 			TestLinkResult result2 = new TestLinkResult(report2, hudsonBuild1);
 			TestLinkBuildAction buildAction2 = new TestLinkBuildAction(hudsonBuild1, result2);
 			hudsonBuild2.addAction(buildAction2);

@@ -10,27 +10,27 @@
 	        <!--st:include page="/tabview/main.jelly" /-->
 	        <table>
 	        <tr>
-	        <td>${%Build Id}: </td><td><b>${it.report.build.id}</b></td>
+	        <td>${%Build Id}: </td><td><b>${it.report.buildId}</b></td>
 	        </tr>
 	        
 	        <tr>
-	        <td>${%Build Name}: </td><td><b>${it.report.build.name}</b></td>
+	        <td>${%Build Name}: </td><td><b>${it.report.buildName}</b></td>
 	        </tr>
 	        
 	        <tr>
-	        <td>${%Passed}: </td><td><b>${it.report.testsPassed}</b></td>
+	        <td>${%Passed}: </td><td><b>${it.report.passed}</b></td>
 	        </tr>
 	        
 	        <tr>
-	        <td>${%Failed}: </td><td><b>${it.report.testsFailed}</b></td>
+	        <td>${%Failed}: </td><td><b>${it.report.failed}</b></td>
 	        </tr>
 	        
 	        <tr>
-	        <td>${%Blocked}: </td><td><b>${it.report.testsBlocked}</b></td>
+	        <td>${%Blocked}: </td><td><b>${it.report.blocked}</b></td>
 	        </tr>
 	        
 	        <tr>
-            <td>${%Not Run}: </td><td><b>${it.report.testsNotRun}</b></td>
+            <td>${%Not Run}: </td><td><b>${it.report.notRun}</b></td>
             </tr>
 	        
 	        <tr>

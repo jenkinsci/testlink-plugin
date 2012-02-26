@@ -247,4 +247,8 @@ public class TestCaseWrapper implements Serializable {
 		this.testCase.setSteps(steps);
 	}
 
+	public Integer getVersion() {
+		return testCase.getVersion();
+	}
+
 }

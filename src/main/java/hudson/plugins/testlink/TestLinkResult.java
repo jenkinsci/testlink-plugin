@@ -24,7 +24,6 @@
 package hudson.plugins.testlink;
 
 import hudson.model.AbstractBuild;
-import hudson.plugins.testlink.result.Report;
 
 import java.io.Serializable;
 

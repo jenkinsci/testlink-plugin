@@ -23,7 +23,6 @@
  */
 package hudson.plugins.testlink;
 
-import hudson.plugins.testlink.result.Report;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
@@ -66,8 +65,8 @@ public class TestLinkSite
 		this.testProject = testProject;
 		this.testPlan = testPlan;
 		this.build = build;
-		
-		report = new Report();
+		// TODO: handle null build
+		report = new Report(build.getId() == null ? 0 : build.getId(), build.getName());
 	}
 	
 	/**
@@ -192,6 +191,7 @@ public class TestLinkSite
 			}
 			
 			executionId = reportTCResultResponse.getExecutionId();
+			report.addTestCase(testCase);
 		}
 		
 		return executionId;

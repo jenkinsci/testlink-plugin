@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.util;
+package hudson.plugins.testlink;
 
-import hudson.plugins.testlink.result.Report;
+import hudson.plugins.testlink.util.TestLinkHelper;
 
 import java.lang.reflect.Constructor;
 import java.util.Locale;
@@ -84,10 +84,7 @@ extends junit.framework.TestCase
 	 */
 	public void testSummary()
 	{
-		Report report = new Report();
-		
-		report.setBuildId(1);
-		report.setBuildName("My build");
+		Report report = new Report(1, "My build");
 		
 		report.setPassed(1);
 		
@@ -105,18 +102,13 @@ extends junit.framework.TestCase
 	 */
 	public void testSummaryWithPrevious()
 	{
-		Report report = new Report();
-		
-		report.setBuildId(1);
-		report.setBuildName("My build");
+		Report report = new Report(1, "My build");
 		
 		report.setPassed(1);
 		report.setFailed(1);
 		report.setBlocked(1);
 		
-		Report previous = new Report();
-		previous.setBuildId(1);
-		previous.setBuildName("My build");
+		Report previous = new Report(1, "My build");
 		
 		previous.setPassed(1);
 		previous.setFailed(1);
@@ -131,13 +123,13 @@ extends junit.framework.TestCase
 	 */
 	public void testSummaryDetails()
 	{
-		Report report = new Report();
+		Report report = new Report(1, null);
 		
 		report.setPassed(1);
 		report.setFailed(1);
 		report.setBlocked(1);
 		
-		Report previous = new Report();
+		Report previous = new Report(1, null);
 		
 		previous.setPassed(1);
 		previous.setFailed(1);

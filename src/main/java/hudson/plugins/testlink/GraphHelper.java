@@ -1,6 +1,5 @@
 package hudson.plugins.testlink;
 
-import hudson.plugins.testlink.result.Report;
 import hudson.util.ChartUtil.NumberOnlyBuildLabel;
 import hudson.util.ColorPalette;
 import hudson.util.ShiftedCategoryAxis;

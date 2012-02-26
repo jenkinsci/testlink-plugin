@@ -28,6 +28,8 @@ import hudson.plugins.testlink.result.TestCaseWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
+import br.eti.kinoshita.testlinkjavaapi.model.Build;
+
 /**
  * Fake TestLinkSite, used for testing.
  * 
@@ -39,7 +41,7 @@ public class TestLinkSiteFake extends TestLinkSite {
 	protected List<TestCaseWrapper> testCases = new LinkedList<TestCaseWrapper>();
 
 	public TestLinkSiteFake() {
-		super(null, null, null, null);
+		super(null, null, null, new Build(1, 1, "Fake build", "Fake notes"));
 	}
 
 	/* (non-Javadoc)

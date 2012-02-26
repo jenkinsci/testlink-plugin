@@ -116,7 +116,6 @@ class ResultSeekerBuilder extends Builder implements Serializable {
 	private ResultSeeker seeker;
 	private TestCaseWrapper[] tcs;
 	private TestLinkSiteFake testlink;
-	private Report report;
 	
 	public ResultSeekerBuilder(ResultSeeker seeker, TestCaseWrapper[] tcs, TestLinkSiteFake testlink) {
 		this.seeker = seeker;
@@ -135,7 +134,7 @@ class ResultSeekerBuilder extends Builder implements Serializable {
             f.touch(System.currentTimeMillis());
         }
 		
-        seeker.seek(tcs, build, launcher, listener, testlink, report);
+        seeker.seek(tcs, build, launcher, listener, testlink);
         return (seeker != null);
 	}
 }

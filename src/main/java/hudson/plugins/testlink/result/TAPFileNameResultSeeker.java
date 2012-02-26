@@ -121,10 +121,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 	 * @see hudson.plugins.testlink.result.ResultSeeker#seekAndUpdate(hudson.plugins.testlink.result.TestCaseWrapper<?>[], hudson.model.AbstractBuild, hudson.Launcher, hudson.model.BuildListener, hudson.plugins.testlink.TestLinkSite, hudson.plugins.testlink.result.Report)
 	 */
 	@Override
-	public void seek(final TestCaseWrapper[] automatedTestCases,
-			AbstractBuild<?, ?> build, Launcher launcher,
-			final BuildListener listener, TestLinkSite testlink, Report report)
-			throws ResultSeekerException {
+	public void seek(final TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, final BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
 		// TBD: it cannot be serialized easily... but it is possible. Your lazy bastard.
 		final TapConsumer tapConsumer = TapConsumerFactory.makeTap13YamlConsumer();
 		

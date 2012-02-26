@@ -25,8 +25,8 @@ package hudson.plugins.testlink.util;
 
 import hudson.EnvVars;
 import hudson.model.BuildListener;
+import hudson.plugins.testlink.Report;
 import hudson.plugins.testlink.TestLinkBuildAction;
-import hudson.plugins.testlink.result.Report;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 
 import java.util.HashMap;
@@ -374,19 +374,18 @@ public final class TestLinkHelper
 		builder.append(Messages.ReportSummary_Details_ExecutionStatus());
 		builder.append("</th></tr>\n");
 		
-		// FIXME: find an alternative for this
-//        for(TestCase tc: report.getTestCases() )
-//        {
-//        	builder.append("<tr>\n");
-//        	
-//        	builder.append("<td>"+tc.getId()+"</td>");
-//        	builder.append("<td>"+tc.getVersion()+"</td>");
-//        	builder.append("<td>"+tc.getName()+"</td>");
-//        	builder.append("<td>"+tc.getTestProjectId()+"</td>");
-//    		builder.append("<td>"+TestLinkHelper.getExecutionStatusTextColored( tc.getExecutionStatus() )+"</td>\n");
-//        	
-//        	builder.append("</tr>\n");
-//        }
+        for(TestCaseWrapper tc: report.getTestCases() )
+        {
+        	builder.append("<tr>\n");
+        	
+        	builder.append("<td>"+tc.getId()+"</td>");
+        	builder.append("<td>"+tc.getVersion()+"</td>");
+        	builder.append("<td>"+tc.getName()+"</td>");
+        	builder.append("<td>"+tc.getTestProjectId()+"</td>");
+    		builder.append("<td>"+TestLinkHelper.getExecutionStatusTextColored( tc.getExecutionStatus() )+"</td>\n");
+        	
+        	builder.append("</tr>\n");
+        }
         
         builder.append("</table>");
         return builder.toString();
@@ -401,7 +400,7 @@ public final class TestLinkHelper
 	 * @param current Current value
 	 * @param previous Previous value
 	 */
-	protected static String getPlusSignal(int current, int previous) {
+	public static String getPlusSignal(int current, int previous) {
 		int difference = current - previous;
         
 		if(difference > 0)

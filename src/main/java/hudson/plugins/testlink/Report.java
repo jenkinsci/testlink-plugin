@@ -21,9 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.result;
+package hudson.plugins.testlink;
+
+import hudson.plugins.testlink.result.TestCaseWrapper;
 
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Build Report.
@@ -33,21 +37,26 @@ import java.io.Serializable;
  */
 public class Report implements Serializable {
 
-	private static final long serialVersionUID = -6536222071547639906L;
-
+	private static final long serialVersionUID = 3686192971774873173L;
+	
 	private int passed 	= 0;
 	private int failed 	= 0;
 	private int blocked	= 0;
 	private int notRun	= 0;
 
-	private int buildId	= 0;
-	private String buildName;
+	private final int buildId;
+	private final String buildName;
+
+	private final List<TestCaseWrapper> testCases;
 
 	/**
 	 * Default constructor.
 	 */
-	public Report() {
+	Report(int buildId, String buildName) {
 		super();
+		this.buildId = buildId;
+		this.buildName = buildName;
+		this.testCases = new LinkedList<TestCaseWrapper>();
 	}
 
 	/**
@@ -125,14 +134,6 @@ public class Report implements Serializable {
 	}
 
 	/**
-	 * @param buildId
-	 *            the buildId to set
-	 */
-	public void setBuildId(int buildId) {
-		this.buildId = buildId;
-	}
-
-	/**
 	 * @return the buildName
 	 */
 	public String getBuildName() {
@@ -140,11 +141,17 @@ public class Report implements Serializable {
 	}
 
 	/**
-	 * @param buildName
-	 *            the buildName to set
+	 * @param testCase
 	 */
-	public void setBuildName(String buildName) {
-		this.buildName = buildName;
+	public void addTestCase(TestCaseWrapper testCase) {
+		this.testCases.add(testCase);
+	}
+	
+	/**
+	 * @return the testCases
+	 */
+	public List<TestCaseWrapper> getTestCases() {
+		return testCases;
 	}
 
 }

@@ -84,7 +84,7 @@ public class JUnitSuiteNameResultSeeker extends AbstractJUnitResultSeeker {
 	 * hudson.plugins.testlink.result.Report)
 	 */
 	@Override
-	public void seek(TestCaseWrapper[] automatedTestCases,AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestLinkSite testlink, Report report)	throws ResultSeekerException {
+	public void seek(TestCaseWrapper[] automatedTestCases,AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
 		listener.getLogger().println( Messages.Results_JUnit_LookingForTestSuites() );
 		try {
 			final TestResult testResult = parser.parse(this.includePattern, build, launcher, listener);

@@ -21,7 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package hudson.plugins.testlink.result;
+package hudson.plugins.testlink;
+
+import hudson.plugins.testlink.Report;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
@@ -35,8 +37,7 @@ extends junit.framework.TestCase
 	
 	public void setUp()
 	{
-		this.report = new Report();
-		report.setBuildId(100);
+		this.report = new Report(100, null);
 	}
 	
 	public void testTesLinkReportGettersAndSetters()

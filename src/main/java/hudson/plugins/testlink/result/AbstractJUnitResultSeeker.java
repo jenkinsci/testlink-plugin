@@ -28,6 +28,7 @@ import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.TestLinkSite;
+import hudson.plugins.testlink.util.Messages;
 import hudson.remoting.VirtualChannel;
 import hudson.tasks.junit.JUnitParser;
 import hudson.tasks.junit.SuiteResult;
@@ -83,6 +84,7 @@ public abstract class AbstractJUnitResultSeeker extends ResultSeeker {
 	protected void handleResult(TestCaseWrapper automatedTestCase, AbstractBuild<?, ?> build, BuildListener listener, TestLinkSite testlink, ExecutionStatus status, final SuiteResult suiteResult) {
 		if(automatedTestCase.getExecutionStatus() != ExecutionStatus.NOT_RUN) {
 			try {
+				listener.getLogger().println( Messages.TestLinkBuilder_Update_AutomatedTestCases() );
 				final int executionId = testlink.updateTestCase(automatedTestCase);
 				
 				if(executionId > 0 && this.isAttachJUnitXML()) {

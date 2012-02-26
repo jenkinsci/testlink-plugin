@@ -31,7 +31,6 @@ import hudson.model.BuildListener;
 import hudson.model.EnvironmentContributingAction;
 import hudson.model.Result;
 import hudson.model.AbstractBuild;
-import hudson.plugins.testlink.result.Report;
 import hudson.plugins.testlink.result.ResultSeeker;
 import hudson.plugins.testlink.result.ResultSeekerException;
 import hudson.plugins.testlink.result.TestCaseWrapper;
@@ -126,6 +125,8 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 
 			// Transforms test cases into test case wrappers
 			automatedTestCases = this.transform(testCases);
+			
+			testCases = null;
 
 			listener.getLogger().println(Messages.TestLinkBuilder_ShowFoundAutomatedTestCases(automatedTestCases.length));
 
@@ -147,9 +148,6 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		listener.getLogger().println(Messages.TestLinkBuilder_ExecutingIterativeBuildSteps());
 		this.executeIterativeBuildSteps(automatedTestCases, testLinkSite, build, launcher, listener);
 
-		// This report is used to generate the graphs and to store the list of
-		// test cases with each found status.
-		final Report report = new Report();
 		// Here we search for test results. The return if a wrapped Test Case
 		// that
 		// contains attachments, platform and notes.
@@ -157,22 +155,8 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			listener.getLogger().println(Messages.Results_LookingForTestResults());
 
 			for (ResultSeeker resultSeeker : getResultSeekers()) {
-				resultSeeker.seek(automatedTestCases, build, launcher, listener, testLinkSite, report);
+				resultSeeker.seek(automatedTestCases, build, launcher, listener, testLinkSite);
 			}
-
-			// listener.getLogger().println(
-			// Messages.TestLinkBuilder_ShowFoundTestResults(wrappedTestCases.size())
-			// );
-			// // Update TestLink with test results and uploads attachments
-			// listener.getLogger().println(
-			// Messages.TestLinkBuilder_Update_AutomatedTestCases() );
-			// testLinkSite.updateTestCases( wrappedTestCases.values() );
-			// report = new Report(testLinkSite.getBuild());
-			// for(TestCaseWrapper<?> wrappedTestCase :
-			// wrappedTestCases.values() )
-			// {
-			// report.addTestCase(wrappedTestCase);
-			// }
 		} catch (ResultSeekerException trse) {
 			trse.printStackTrace(listener.fatalError(trse.getMessage()));
 			throw new AbortException(Messages.Results_ErrorToLookForTestResults(trse.getMessage()));
@@ -181,14 +165,18 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			throw new AbortException(Messages.TestLinkBuilder_FailedToUpdateTL(tlae.getMessage()));
 		}
 
+		// This report is used to generate the graphs and to store the list of
+		// test cases with each found status.
+		final Report report = testLinkSite.getReport();
+		
+		listener.getLogger().println(Messages.TestLinkBuilder_ShowFoundTestResults(report.getTestsTotal()));
+		
 		final TestLinkResult result = new TestLinkResult(report, build);
-		final TestLinkBuildAction buildAction = new TestLinkBuildAction(build,
-				result);
+		final TestLinkBuildAction buildAction = new TestLinkBuildAction(build, result);
 		build.addAction(buildAction);
 
 		if (report.getFailed() > 0) {
-			if (this.failedTestsMarkBuildAsUnstable != null
-					&& this.failedTestsMarkBuildAsUnstable) {
+			if (this.failedTestsMarkBuildAsUnstable != null && this.failedTestsMarkBuildAsUnstable) {
 				build.setResult(Result.FAILURE);
 			} else {
 				build.setResult(Result.UNSTABLE);

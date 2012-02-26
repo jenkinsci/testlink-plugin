@@ -85,10 +85,7 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * @see hudson.plugins.testlink.result.ResultSeeker#seekAndUpdate(hudson.plugins.testlink.result.TestCaseWrapper<?>[], hudson.model.AbstractBuild, hudson.Launcher, hudson.model.BuildListener, hudson.plugins.testlink.TestLinkSite, hudson.plugins.testlink.result.Report)
 	 */
 	@Override
-	public void seek(TestCaseWrapper[] automatedTestCases,
-			AbstractBuild<?, ?> build, Launcher launcher,
-			final BuildListener listener, TestLinkSite testlink, Report report)
-			throws ResultSeekerException {
+	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, final BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
 		listener.getLogger().println( Messages.Results_TestNG_LookingForTestSuites() );
 		try {
 			final List<Suite> suites = build.getWorkspace().act(new FilePath.FileCallable<List<Suite>>() {
