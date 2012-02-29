@@ -76,7 +76,7 @@ public abstract class AbstractJUnitResultSeeker extends ResultSeeker {
 	}
 
 	protected void handleResult(TestCaseWrapper automatedTestCase, AbstractBuild<?, ?> build, BuildListener listener, TestLinkSite testlink, ExecutionStatus status, final SuiteResult suiteResult) {
-		if(automatedTestCase.getExecutionStatus() != ExecutionStatus.NOT_RUN) {
+		if(automatedTestCase.getExecutionStatus(this.keyCustomField) != ExecutionStatus.NOT_RUN) {
 			try {
 				listener.getLogger().println( Messages.TestLinkBuilder_Update_AutomatedTestCases() );
 				final int executionId = testlink.updateTestCase(automatedTestCase);

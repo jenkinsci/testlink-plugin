@@ -89,7 +89,7 @@ public class JUnitCaseClassNameResultSeeker extends AbstractJUnitResultSeeker {
 			for(final SuiteResult suiteResult : testResult.getSuites()) {
 				for(CaseResult caseResult : suiteResult.getCases()) {
 					for(TestCaseWrapper automatedTestCase : automatedTestCases) {
-						final String[] commaSeparatedValues = this.split(this.getKeyCustomFieldValue(automatedTestCase.getCustomFields(), this.keyCustomField));
+						final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
 						for(String value : commaSeparatedValues) {
 							if(! caseResult.isSkipped() && caseResult.getClassName().equals(value)) {
 								final ExecutionStatus status = this.getExecutionStatus(caseResult);

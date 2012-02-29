@@ -38,7 +38,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -93,17 +92,6 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	public String getKeyCustomField() {
 		return keyCustomField;
 	}
-	
-	protected String getKeyCustomFieldValue(List<CustomField> customFields, String keyCustomFieldName) {
-		String keyCustomFieldValue = null;
-		for(CustomField customField : customFields) {
-			if(customField.getName().equals(keyCustomFieldName)) {
-				keyCustomFieldValue = customField.getValue();
-				break;
-			}
-		}
-		return keyCustomFieldValue;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -152,25 +140,6 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	protected String getBase64FileContent(File file) throws IOException {
 		byte[] fileData = FileUtils.readFileToByteArray(file);
 		return Base64.encodeBase64String(fileData);
-	}
-
-	/**
-	 * Splits a String by comma and gets an array of Strings.
-	 */
-	protected String[] split(String input) {
-		if (StringUtils.isBlank(input)) {
-			return new String[0];
-		}
-
-		StringTokenizer tokenizer = new StringTokenizer(input, ",");
-
-		String[] values = new String[tokenizer.countTokens()];
-
-		for (int i = 0; tokenizer.hasMoreTokens(); i++) {
-			values[i] = tokenizer.nextToken().trim();
-		}
-
-		return values;
 	}
 
 	/**

@@ -107,19 +107,11 @@ public class TestTestResultSeekerTAP extends ResultSeekerTestCase {
 		return tcs;
 	}
 
-	public void testTwoTestSetsAandB() throws Exception {
+	public void testTwoTestSetsAAndBAndMissingK() throws Exception {
 		buildAndAssertSuccess(project);
 
-		assertEquals(2, testlink.getReport().getTestsTotal());
-		assertEquals(ExecutionStatus.NOT_RUN, testlink.getTestCases().get(0)
-				.getExecutionStatus());
-	}
-
-	public void testTwoTestSetsAandNonExistentK() throws Exception {
-		buildAndAssertSuccess(project);
-
-		assertEquals(2, testlink.getReport().getTestsTotal());
-		assertEquals(ExecutionStatus.PASSED, testlink.getTestCases().get(1)
+		assertEquals(1, testlink.getReport().getTestsTotal());
+		assertEquals(ExecutionStatus.FAILED, testlink.getTestCases().get(0)
 				.getExecutionStatus());
 	}
 

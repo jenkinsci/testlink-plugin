@@ -110,7 +110,7 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 				for(Test test : suite.getTests() ) {
 					for(hudson.plugins.testlink.testng.Class  clazz : test.getClasses()) {
 						for(TestCaseWrapper automatedTestCase : automatedTestCases) {
-							final String[] commaSeparatedValues = this.split(this.getKeyCustomFieldValue(automatedTestCase.getCustomFields(), this.keyCustomField));
+							final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
 							for(String value : commaSeparatedValues) {
 								if(clazz.getName().equals(value)) {
 									ExecutionStatus status = this.getExecutionStatus(clazz);

@@ -156,7 +156,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 			
 			for(String key : testSets.keySet()) {
 				for(TestCaseWrapper automatedTestCase : automatedTestCases) {
-					final String[] commaSeparatedValues = this.split(this.getKeyCustomFieldValue(automatedTestCase.getCustomFields(), this.keyCustomField));
+					final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
 					for(String value : commaSeparatedValues) {
 						if(key.equals(value)) {
 							ExecutionStatus status = this.getExecutionStatus(testSets.get(key));
@@ -175,7 +175,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 	}
 
 	private void handleResult(TestCaseWrapper automatedTestCase, final AbstractBuild<?, ?> build, BuildListener listener, TestLinkSite testlink, ExecutionStatus status, final Map<String, TestSet> testSets, final String key) {
-		if(automatedTestCase.getExecutionStatus() != ExecutionStatus.NOT_RUN) {
+		if(automatedTestCase.getExecutionStatus(this.keyCustomField) != ExecutionStatus.NOT_RUN) {
 			String platform = this.retrievePlatform(testSets.get(key));
 			automatedTestCase.setPlatform(platform);
 			

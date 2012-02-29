@@ -28,6 +28,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
+
+import org.apache.commons.lang.StringUtils;
 
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
@@ -41,7 +44,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCaseStep;
  */
 public class TestCaseWrapper implements Serializable {
 
-	private static final long serialVersionUID = -1071107752030147906L;
+	private static final long serialVersionUID = 7997733027050911729L;
 
 	/**
 	 * A list of custom field and status, used to allow the user to use a comma
@@ -138,24 +141,29 @@ public class TestCaseWrapper implements Serializable {
 	}
 
 	public ExecutionStatus getExecutionStatus() {
+		return this.testCase.getExecutionStatus() == null ? ExecutionStatus.NOT_RUN : this.testCase.getExecutionStatus();
+	}
+	
+	/**
+	 * Calculates the new value of this wrapped test case execution status, 
+	 * given a number of custom fields.
+	 * @param numberOfCustomFields
+	 * @return new value of this wrapped test case execution status
+	 */
+	public ExecutionStatus getExecutionStatus(String keyCustomFieldName) {
+		String[] keyCustomFieldValues = this.getKeyCustomFieldValues(keyCustomFieldName);
+		int numberOfCustomFields = keyCustomFieldValues != null ? keyCustomFieldValues.length : 0;
 		ExecutionStatus status = ExecutionStatus.NOT_RUN;
-		String[] customFieldsNames = new String[this.testCase.getCustomFields().size()];
-		int i = 0;
-		for(CustomField cf : this.testCase.getCustomFields()) {
-			customFieldsNames[i] = cf.getName();
-			i++;
-		}
-		if (customFieldAndStatus.size() > 0
-				&& customFieldAndStatus.size() == customFieldsNames.length) {
+		if (customFieldAndStatus.size() > 0 && customFieldAndStatus.size() == numberOfCustomFields) {
 			status = ExecutionStatus.PASSED;
 			for (ExecutionStatus reportedStatus : customFieldAndStatus.values()) {
-				if (reportedStatus == ExecutionStatus.FAILED
-						|| reportedStatus == ExecutionStatus.BLOCKED) {
+				if (reportedStatus == ExecutionStatus.FAILED || reportedStatus == ExecutionStatus.BLOCKED) {
 					status = reportedStatus;
 					break;
 				}
 			}
 		}
+		this.testCase.setExecutionStatus(status);
 		return status;
 	}
 
@@ -179,6 +187,36 @@ public class TestCaseWrapper implements Serializable {
 	
 	public List<CustomField> getCustomFields() {
 		return this.testCase.getCustomFields();
+	}
+	
+	public String[] getKeyCustomFieldValues(final String keyCustomFieldName) {
+		String keyCustomFieldValue = null;
+		for(CustomField customField : this.getCustomFields()) {
+			if(customField.getName().equals(keyCustomFieldName)) {
+				keyCustomFieldValue = customField.getValue();
+				break;
+			}
+		}
+		return this.split(keyCustomFieldValue);
+	}
+	
+	/**
+	 * Splits a String by comma and gets an array of Strings.
+	 */
+	protected String[] split(String input) {
+		if (StringUtils.isBlank(input)) {
+			return new String[0];
+		}
+
+		StringTokenizer tokenizer = new StringTokenizer(input, ",");
+
+		String[] values = new String[tokenizer.countTokens()];
+
+		for (int i = 0; tokenizer.hasMoreTokens(); i++) {
+			values[i] = tokenizer.nextToken().trim();
+		}
+
+		return values;
 	}
 
 	public void setExecutionStatus(ExecutionStatus executionStatus) {

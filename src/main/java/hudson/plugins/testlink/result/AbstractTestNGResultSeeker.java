@@ -67,7 +67,7 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	}
 	
 	protected void handleResult(TestCaseWrapper automatedTestCase, AbstractBuild<?, ?> build, BuildListener listener, TestLinkSite testlink, ExecutionStatus status, final Suite suiteResult) {
-		if(automatedTestCase.getExecutionStatus() != ExecutionStatus.NOT_RUN) {
+		if(automatedTestCase.getExecutionStatus(this.keyCustomField) != ExecutionStatus.NOT_RUN) {
 			try {
 				final int executionId = testlink.updateTestCase(automatedTestCase);
 				

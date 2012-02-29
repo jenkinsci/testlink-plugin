@@ -115,7 +115,7 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 						for(TestMethod method : clazz.getTestMethods()) {
 							for(TestCaseWrapper automatedTestCase : automatedTestCases) {
 								final String qualifiedName = clazz.getName()+'#'+method.getName();
-								final String[] commaSeparatedValues = this.split(this.getKeyCustomFieldValue(automatedTestCase.getCustomFields(), this.keyCustomField));
+								final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
 								for(String value : commaSeparatedValues) {
 									if(qualifiedName.equals(value)) {
 										ExecutionStatus status = this.getExecutionStatus(method);

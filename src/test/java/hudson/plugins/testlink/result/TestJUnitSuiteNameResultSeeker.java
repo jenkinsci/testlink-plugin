@@ -141,46 +141,17 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		return new JUnitSuiteNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD, false);
 	}
 
-	public void testOneSuiteSuiteA() throws Exception {
-		buildAndAssertSuccess(project);
-
-		assertTrue("Wrong number of results", testlink.getReport().getTestsTotal() == 9);
-		//assertTrue(testlink.getReport().get(1).getExecutionStatus() == ExecutionStatus.FAILED);
-	}
-
-	public void testTwoSuitesSuiteAAndB() throws Exception {
-		buildAndAssertSuccess(project);
-		
-		assertTrue("Wrong number of results", testlink.getReport().getTestsTotal() == 9);
-		//assertTrue(found.get(2).getExecutionStatus() == ExecutionStatus.FAILED);
-	}
-
-	public void testTwoSuitesSuiteBAndC() throws Exception {
-		buildAndAssertSuccess(project);
-		
-		assertTrue("Wrong number of results", testlink.getReport().getTestsTotal() == 9);
-		//assertTrue(found.get(3).getExecutionStatus() == ExecutionStatus.PASSED);
-	}
-
-	public void testThreeSuitesSuiteAAndBAndC() throws Exception {
-		buildAndAssertSuccess(project);
-		
-		assertTrue("Wrong number of results", testlink.getReport().getTestsTotal() == 9);
-		//assertTrue(found.get(4).getExecutionStatus() == ExecutionStatus.FAILED);
-	}
-
-	public void testThreeSuitesSuiteAAndBAndNonExistentD() throws Exception {
-		buildAndAssertSuccess(project);
-		
-		assertTrue("Wrong number of results", testlink.getReport().getTestsTotal() == 9);
-		//assertTrue(found.get(5).getExecutionStatus() == ExecutionStatus.NOT_RUN);
-	}
-
 	public void testManyTestLinkTestCaseWrappersToManyJUnitSuitesInManyFiles() throws Exception {
 		buildAndAssertSuccess(project);
 		
-		assertTrue("Wrong number of results", testlink.getReport().getTestsTotal() == 9);
+		assertTrue("Wrong number of results", testlink.getReport().getTestsTotal() == 7);
 
+		//assertTrue(testlink.getReport().get(1).getExecutionStatus() == ExecutionStatus.FAILED);
+
+		//assertTrue(found.get(2).getExecutionStatus() == ExecutionStatus.FAILED);
+		//assertTrue(found.get(3).getExecutionStatus() == ExecutionStatus.PASSED);
+		//assertTrue(found.get(4).getExecutionStatus() == ExecutionStatus.FAILED);
+		//assertTrue(found.get(5).getExecutionStatus() == ExecutionStatus.NOT_RUN);
 		//assertTrue(found.get(6).getExecutionStatus() == ExecutionStatus.FAILED);
 		//assertTrue(found.get(7).getExecutionStatus() == ExecutionStatus.PASSED);
 		//assertTrue(found.get(8).getExecutionStatus() == ExecutionStatus.FAILED);
