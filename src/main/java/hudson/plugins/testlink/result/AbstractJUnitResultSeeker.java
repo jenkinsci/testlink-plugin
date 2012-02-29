@@ -30,7 +30,6 @@ import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.TestLinkSite;
 import hudson.plugins.testlink.util.Messages;
 import hudson.remoting.VirtualChannel;
-import hudson.tasks.junit.JUnitParser;
 import hudson.tasks.junit.SuiteResult;
 
 import java.io.File;
@@ -49,11 +48,6 @@ public abstract class AbstractJUnitResultSeeker extends ResultSeeker {
 	private static final long serialVersionUID = -942821218286222278L;
 	
 	private static final String TEXT_XML_CONTENT_TYPE = "text/xml";
-	
-	/**
-	 * JUnit parser.
-	 */
-	protected final JUnitParser parser = new JUnitParser(false);
 	
 	private boolean attachJUnitXML = false;
 	

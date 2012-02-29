@@ -25,8 +25,8 @@ package hudson.plugins.testlink.result.issue9672;
 
 import hudson.plugins.testlink.result.ResultSeeker;
 import hudson.plugins.testlink.result.ResultSeekerTestCase;
-import hudson.plugins.testlink.result.TAPFileNameResultSeeker;
 import hudson.plugins.testlink.result.TestCaseWrapper;
+import hudson.plugins.testlink.result.TAPFileNameResultSeeker;
 
 import org.jvnet.hudson.test.Bug;
 

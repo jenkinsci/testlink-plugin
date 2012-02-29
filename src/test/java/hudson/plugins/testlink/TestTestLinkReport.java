@@ -23,7 +23,6 @@
  */
 package hudson.plugins.testlink;
 
-import hudson.plugins.testlink.Report;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br

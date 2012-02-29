@@ -29,6 +29,7 @@ import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.TestLinkSite;
 import hudson.plugins.testlink.util.Messages;
+import hudson.tasks.junit.JUnitParser;
 import hudson.tasks.junit.SuiteResult;
 import hudson.tasks.junit.TestResult;
 import hudson.tasks.junit.CaseResult;
@@ -82,6 +83,7 @@ public class JUnitCaseNameResultSeeker extends AbstractJUnitResultSeeker {
 	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
 		listener.getLogger().println( Messages.Results_JUnit_LookingForTestClasses() ); // i18n
 		try {
+			final JUnitParser parser = new JUnitParser(false);
 			final TestResult testResult = parser.parse(this.includePattern, build, launcher, listener);
 			
 			for(SuiteResult suiteResult : testResult.getSuites()) {
@@ -89,7 +91,7 @@ public class JUnitCaseNameResultSeeker extends AbstractJUnitResultSeeker {
 					for(TestCaseWrapper automatedTestCase : automatedTestCases) {
 						final String[] commaSeparatedValues = this.split(this.getKeyCustomFieldValue(automatedTestCase.getCustomFields(), this.keyCustomField));
 						for(String value : commaSeparatedValues) {
-							if(caseResult.getName().equals(value)) {
+							if(! caseResult.isSkipped() && caseResult.getName().equals(value)) {
 								ExecutionStatus status = this.getExecutionStatus(caseResult);
 								automatedTestCase.addCustomFieldAndStatus(value, status);
 								
