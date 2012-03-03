@@ -90,6 +90,15 @@
 				<role>developer</role>
 			</roles>
 		</developer>
+		<developer>
+            <id>yachoor</id>
+            <name>Janusz Chorko</name>
+            <email>jchorko@gmail.com</email>
+            <timezone>+1</timezone>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
 	</developers>
 
 	<build>

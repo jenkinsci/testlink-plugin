@@ -47,6 +47,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
  * <p>Skips JUnit Case Results that were disabled.</p>
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
+ * @author Oliver Merkel - Merkel.Oliver at web.de
  * @since 3.1
  */
 public class JUnitCaseClassNameResultSeeker extends AbstractJUnitResultSeeker {
