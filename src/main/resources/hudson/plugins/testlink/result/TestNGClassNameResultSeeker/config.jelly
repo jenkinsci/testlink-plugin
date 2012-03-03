@@ -1,6 +1,6 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
-    <f:entry title="${%Include Pattern}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
+    <f:entry title="${%Include Pattern}" help="${rootURL}/../plugin/testlink/help-testNGIncludePattern.html">
         <f:textbox id="includePattern" name="TestNGClassNameResultSeeker.includePattern" value="${instance.includePattern}" />
     </f:entry>
 
@@ -8,7 +8,7 @@
         <f:textbox id="keyCustomField" name="TestNGClassNameResultSeeker.keyCustomField" value="${instance.keyCustomField}" />
     </f:entry>
     
-    <f:entry title="${%Attach TestNG XML}" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
+    <f:entry title="${%Attach TestNG XML}" help="${rootURL}/../plugin/testlink/help-attachResult.html">
         <f:checkbox name="TestNGClassNameResultSeeker.attachTestNGXML" value="${instance.attachTestNGXML}" checked="${instance.attachTestNGXML}" />
     </f:entry>
 

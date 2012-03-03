@@ -1,6 +1,6 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
-    <f:entry title="${%Include Pattern}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
+    <f:entry title="${%Include Pattern}" help="${rootURL}/../plugin/testlink/help-tapIncludePattern.html">
         <f:textbox id="includePattern" name="TAPFileNameResultSeeker.includePattern" value="${instance.includePattern}" />
     </f:entry>
 
@@ -8,11 +8,11 @@
         <f:textbox id="keyCustomField" name="TAPFileNameResultSeeker.keyCustomField" value="${instance.keyCustomField}" />
     </f:entry>
     
-    <f:entry title="${%Attach TAP Stream}" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
+    <f:entry title="${%Attach TAP Stream}" help="${rootURL}/../plugin/testlink/help-attachResult.html">
         <f:checkbox name="TAPFileNameResultSeeker.attachTAPStream" value="${instance.attachTAPStream}" checked="${instance.attachTAPStream}" />
     </f:entry>
     
-    <f:entry title="${%Attach TAP YAMLish attachments}" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
+    <f:entry title="${%Attach TAP YAMLish attachments}" help="${rootURL}/../plugin/testlink/help-attachYAMLishResult.html">
         <f:checkbox name="TAPFileNameResultSeeker.attachYAMLishAttachments" value="${instance.attachYAMLishAttachments}" checked="${instance.attachYAMLishAttachments}" />
     </f:entry>
 

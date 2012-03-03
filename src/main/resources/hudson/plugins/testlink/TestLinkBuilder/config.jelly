@@ -68,7 +68,7 @@
   </f:section>
 
   <f:section title="Result Seeking Strategy">
-    <f:entry title="${%Test Result Seeking Strategies}" help="${rootURL}/../plugin/testlink/help-iterativeBuildSteps.html">
+    <f:entry title="${%Test Result Seeking Strategies}" help="${rootURL}/../plugin/testlink/help-resultSeekingStrategy.html">
       <f:hetero-list name="resultSeekers" targetType="${descriptor.testLinkBuildType}"
            descriptors="${descriptor.getApplicableResultSeekers(it)}" items="${instance.resultSeekers}"
            addCaption="Add strategy" hasHeader="true"/>
