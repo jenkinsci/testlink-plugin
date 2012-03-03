@@ -65,8 +65,12 @@ public class TestLinkSite
 		this.testProject = testProject;
 		this.testPlan = testPlan;
 		this.build = build;
-		// TODO: handle null build
-		report = new Report(build.getId() == null ? 0 : build.getId(), build.getName());
+		if(build != null) 
+		{
+			report = new Report(build.getId() == null ? 0 : build.getId(), build.getName());
+		} else {
+			report = new Report(0, null);
+		}
 	}
 	
 	/**

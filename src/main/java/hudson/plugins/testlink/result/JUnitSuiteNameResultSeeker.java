@@ -99,6 +99,9 @@ public class JUnitSuiteNameResultSeeker extends AbstractJUnitResultSeeker {
 							ExecutionStatus status = this.getExecutionStatus(suiteResult);
 							automatedTestCase.addCustomFieldAndStatus(value, status);
 							
+							final String notes = this.getJUnitNotes(suiteResult);
+							automatedTestCase.setSummary(notes);
+							
 							super.handleResult(automatedTestCase, build, listener, testlink, status, suiteResult);
 						}
 					}
@@ -121,22 +124,18 @@ public class JUnitSuiteNameResultSeeker extends AbstractJUnitResultSeeker {
 		return ExecutionStatus.PASSED;
 	}
 	
-	protected String getJUnitNotes( SuiteResult testSuite )
+	private String getJUnitNotes( SuiteResult testSuite )
 	{
 		final StringBuilder notes = new StringBuilder();
-		// FIXME: fix the notes
 		notes.append(
 				Messages.Results_JUnit_NotesForTestSuite(
-						"", //testSuite.getHostname(), 
 						testSuite.getName(), 
 						testSuite.getStderr(), 
 						testSuite.getStdout(), 
-						0, //testSuite.getTotal?, 
-						testSuite.getDuration(), 
-						testSuite.getTimestamp(), 
-						0, //testSuite.getErrors(), 
-						0) //testSuite.getFailures())
-		);
+						Integer.toString(testSuite.getCases().size()), 
+						Double.toString(testSuite.getDuration()), 
+						testSuite.getTimestamp()
+		));
 		
 		return notes.toString();
 	}

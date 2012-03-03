@@ -159,8 +159,11 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 					final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
 					for(String value : commaSeparatedValues) {
 						if(key.equals(value)) {
-							ExecutionStatus status = this.getExecutionStatus(testSets.get(key));
+							final ExecutionStatus status = this.getExecutionStatus(testSets.get(key));
 							automatedTestCase.addCustomFieldAndStatus(value, status);
+							
+							final String notes = this.getTapNotes(testSets.get(key));
+							automatedTestCase.setSummary(notes);
 							
 							this.handleResult(automatedTestCase, build, listener, testlink, status, testSets, key);
 						}
@@ -307,7 +310,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 	 * @param testSet TAP test set.
 	 * @return notes for a TAP test set.
 	 */
-	protected String getTapNotes( TestSet testSet )
+	private String getTapNotes( TestSet testSet )
 	{
 		StringBuilder notes = new StringBuilder();
 		
@@ -322,7 +325,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 	 * @param tapTestSet TAP test set.
 	 * @return TestLink platform.
 	 */
-	protected String retrievePlatform( TestSet tapTestSet )
+	private String retrievePlatform( TestSet tapTestSet )
 	{
 		String platform = null;
 		
@@ -352,7 +355,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 	 * @return TestLink Platform if present, {@code null} otherwise
 	 */
 	@SuppressWarnings("unchecked")
-	protected String extractPlatform( Map<String, Object> diagnostic )
+	private String extractPlatform( Map<String, Object> diagnostic )
 	{
 		String platform = null;
 		Object extensions = diagnostic.get( "extensions" );
@@ -378,35 +381,6 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 	}
 	
 	/**
-	 * Retrieves list of TAP Attachments. Besides the TAP stream file itself, 
-	 * this method also adds all extension / Files to this list.
-	 * 
-	 * @param tapReportFile TAP Report file.
-	 * @param testSet TAP Test Set.
-	 * @return TAP Attachments.
-	 */
-	protected List<Attachment> getTapAttachments( File tapReportFile, TestSet testSet )
-	throws IOException
-	{
-		
-		List<Attachment> attachments = this.retrieveListOfTapAttachments( testSet );
-		
-		Attachment attachment = new Attachment();
-		
-		String fileContent = this.getBase64FileContent( tapReportFile );
-		attachment.setContent( fileContent );
-		attachment.setDescription( "TAP file " + tapReportFile );
-		attachment.setFileName( tapReportFile.getName() );
-		attachment.setFileSize( tapReportFile.length() );
-		attachment.setTitle( tapReportFile.getName() );
-		attachment.setFileType("text/plan");
-		
-		attachments.add( attachment );
-		
-		return attachments;
-	}
-	
-	/**
 	 * Retrieves list of attachments from a TAP Test Set by 
 	 * using its YAMLish data.
 	 * 
@@ -414,7 +388,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 	 * @return List of attachments.
 	 * @throws IOException 
 	 */
-	protected List<Attachment> retrieveListOfTapAttachments( TestSet testSet ) throws IOException
+	private List<Attachment> retrieveListOfTapAttachments( TestSet testSet ) throws IOException
 	{
 		List<Attachment> attachments = new LinkedList<Attachment>();
 		
@@ -440,7 +414,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 	 * @throws IOException 
 	 */
 	@SuppressWarnings("unchecked")
-	protected void extractAttachments( 
+	private void extractAttachments( 
 		List<Attachment> attachments,
 		Map<String, Object> diagnostic 
 		) 

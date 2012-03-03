@@ -116,6 +116,9 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 									ExecutionStatus status = this.getExecutionStatus(clazz);
 									automatedTestCase.addCustomFieldAndStatus(value, status);
 									
+									final String notes = this.getTestNGNotes(suite);
+									automatedTestCase.setSummary(notes);
+									
 									super.handleResult(automatedTestCase, build, listener, testlink, status, suite);
 								}
 							}
@@ -149,7 +152,7 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * @param suite TestNG suite.
 	 * @return notes for TestNG suite and test class.
 	 */
-	protected String getTestNGNotes( Suite suite )
+	private String getTestNGNotes( Suite suite )
 	{
 		StringBuilder notes = new StringBuilder();
 		

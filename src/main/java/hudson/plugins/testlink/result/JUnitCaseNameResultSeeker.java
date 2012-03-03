@@ -96,6 +96,9 @@ public class JUnitCaseNameResultSeeker extends AbstractJUnitResultSeeker {
 								ExecutionStatus status = this.getExecutionStatus(caseResult);
 								automatedTestCase.addCustomFieldAndStatus(value, status);
 								
+								final String notes = this.getJUnitNotes(caseResult);
+								automatedTestCase.setSummary(notes);
+								
 								super.handleResult(automatedTestCase, build, listener, testlink, status, suiteResult);
 							}
 						}
@@ -129,10 +132,9 @@ public class JUnitCaseNameResultSeeker extends AbstractJUnitResultSeeker {
 	 * @param testCase JUnit test.
 	 * @return Notes about the JUnit test.
 	 */
-	protected String getJUnitNotes( CaseResult testCase )
+	private String getJUnitNotes( CaseResult testCase )
 	{
 		StringBuilder notes = new StringBuilder();
-		// FIXME: fix the notes
 		notes.append( 
 				Messages.Results_JUnit_NotesForTestCase(
 						testCase.getName(), 

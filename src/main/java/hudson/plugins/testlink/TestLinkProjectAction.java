@@ -170,7 +170,6 @@ extends AbstractTestLinkProjectAction
 
 		final DataSetBuilder<String, ChartUtil.NumberOnlyBuildLabel> dataSetBuilder = new DataSetBuilder<String, ChartUtil.NumberOnlyBuildLabel>();
 
-		// TODO: optimize by using cache
 		populateDataSetBuilder(dataSetBuilder);
 		new hudson.util.Graph(-1, getGraphWidth(), getGraphHeight())
 		{

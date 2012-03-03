@@ -94,7 +94,6 @@ public class TestJUnitCaseNameResultSeeker extends ResultSeekerTestCase {
 		buildAndAssertSuccess(project);
 
 		assertEquals(3, testlink.getReport().getTestsTotal());
-		// TODO organize directories, XMLs and rewrite this test
 	}
 
 }

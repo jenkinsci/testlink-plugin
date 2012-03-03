@@ -23,10 +23,15 @@
  */
 package hudson.plugins.testlink;
 
+import hudson.plugins.testlink.result.TestCaseWrapper;
 import hudson.plugins.testlink.util.TestLinkHelper;
 
 import java.lang.reflect.Constructor;
 import java.util.Locale;
+
+import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
+import br.eti.kinoshita.testlinkjavaapi.model.ExecutionType;
+import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**
  * Tests the ReportSummary class.
@@ -125,14 +130,22 @@ extends junit.framework.TestCase
 	{
 		Report report = new Report(1, null);
 		
-		report.setPassed(1);
-		report.setFailed(1);
-		report.setBlocked(1);
+		TestCase testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 1, 1, false, null, 1, 1, null, null, ExecutionStatus.PASSED );
+		TestCase testCase2 = new TestCase(2, "tc2", 2, 2, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 2, 2, false, null, 2, 2, null, null, ExecutionStatus.FAILED );
+		TestCase testCase3 = new TestCase(3, "tc3", 3, 3, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 3, 3, false, null, 3, 3, null, null, ExecutionStatus.BLOCKED );
+		
+		TestCaseWrapper tc1 = new TestCaseWrapper(testCase1);
+		TestCaseWrapper tc2 = new TestCaseWrapper(testCase2);
+		TestCaseWrapper tc3 = new TestCaseWrapper(testCase3);
+		
+		report.addTestCase(tc1);
+		report.addTestCase(tc2);
+		report.addTestCase(tc3);
 		
 		Report previous = new Report(1, null);
 		
-		previous.setPassed(1);
-		previous.setFailed(1);
+		previous.addTestCase(tc1);
+		previous.addTestCase(tc2);
 		
 		String reportSummaryDetails = TestLinkHelper.createReportSummaryDetails(report, previous);
 		assertNotNull(reportSummaryDetails);
@@ -151,7 +164,7 @@ extends junit.framework.TestCase
 "</tr>\n" +
 "</table>";
 		
-		//FIXME: assertEquals(expectedDetails, reportSummaryDetails);
+		assertEquals(expectedDetails, reportSummaryDetails);
 	}
 	
 }
