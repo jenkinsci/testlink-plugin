@@ -76,13 +76,13 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			List<BuildStep> beforeIteratingAllTestCasesBuildSteps,
 			List<BuildStep> iterativeBuildSteps,
 			List<BuildStep> afterIteratingAllTestCasesBuildSteps,
-			Boolean transactional, Boolean failedTestsMarkBuildAsUnstable,
+			Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
 			List<ResultSeeker> resultSeekers) {
 		super(testLinkName, testProjectName, testPlanName, buildName,
 				customFields, singleBuildSteps,
 				beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
 				afterIteratingAllTestCasesBuildSteps, transactional,
-				failedTestsMarkBuildAsUnstable, resultSeekers);
+				failedTestsMarkBuildAsFailure, resultSeekers);
 	}
 
 	/**
@@ -176,7 +176,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		build.addAction(buildAction);
 
 		if (report.getFailed() > 0) {
-			if (this.failedTestsMarkBuildAsUnstable != null && this.failedTestsMarkBuildAsUnstable) {
+			if (this.failedTestsMarkBuildAsFailure != null && this.failedTestsMarkBuildAsFailure) {
 				build.setResult(Result.FAILURE);
 			} else {
 				build.setResult(Result.UNSTABLE);

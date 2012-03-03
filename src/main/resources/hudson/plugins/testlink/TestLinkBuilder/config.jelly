@@ -60,8 +60,8 @@
       <f:entry title="${%Transactional}" help="${rootURL}/../plugin/testlink/help-transactionalExecution.html">
           <f:checkbox name="TestLinkBuilder.transactional" value="${instance.transactional}" checked="${instance.transactional}" />
       </f:entry>
-      <f:entry title="${%Failed tests mark build as unstable}" help="${rootURL}/../plugin/testlink/help-failedTestsMarkBuildAsFailure.html">
-          <f:checkbox name="TestLinkBuilder.failedTestsMarkBuildAsUnstable" value="${instance.failedTestsMarkBuildAsUnstable}" checked="${instance.failedTestsMarkBuildAsUnstable}" />
+      <f:entry title="${%Failed tests mark build as failure}" help="${rootURL}/../plugin/testlink/help-failedTestsMarkBuildAsFailure.html">
+          <f:checkbox name="TestLinkBuilder.failedTestsMarkBuildAsFailure" value="${instance.failedTestsMarkBuildAsFailure}" checked="${instance.failedTestsMarkBuildAsFailure}" />
       </f:entry>
    
     </f:advanced>

@@ -104,10 +104,10 @@ extends Builder
 	protected final Boolean transactional;
 	
 	/**
-	 * If the plug-in should mark the Build in Jenkins as unstable if it 
+	 * If the plug-in should mark the Build in Jenkins as failure if it 
 	 * contains failed tests.
 	 */
-	protected final Boolean failedTestsMarkBuildAsUnstable;
+	protected final Boolean failedTestsMarkBuildAsFailure;
 	
 	/*
 	 * Test life cycle commands. With these hooks you can execute command before 
@@ -147,7 +147,7 @@ extends Builder
 	 * @param iterativeBuildSteps List of build steps to execute for each Automated Test Case.
 	 * @param afterIteratingAllTestCasesBuildSteps Command executed after iterating all test cases.
 	 * @param transactional Whether the build's execution is transactional or not.
-	 * @param failedTestsMarkBuildAsUnstable Whether failed tests mark the build as unstable or not.
+	 * @param failedTestsMarkBuildAsFailure Whether failed tests mark the build as failure or not.
 	 * @param resultSeekers List of result seekers.
 	 */
 	public AbstractTestLinkBuilder(
@@ -161,7 +161,7 @@ extends Builder
 		List<BuildStep> iterativeBuildSteps, 
 		List<BuildStep> afterIteratingAllTestCasesBuildSteps, 
 		Boolean transactional, 
-		Boolean failedTestsMarkBuildAsUnstable, 
+		Boolean failedTestsMarkBuildAsFailure, 
 		List<ResultSeeker> resultSeekers
 	) {
 		super();
@@ -175,7 +175,7 @@ extends Builder
 		this.iterativeBuildSteps = iterativeBuildSteps;
 		this.afterIteratingAllTestCasesBuildSteps = afterIteratingAllTestCasesBuildSteps;
 		this.transactional = transactional;
-		this.failedTestsMarkBuildAsUnstable = failedTestsMarkBuildAsUnstable;
+		this.failedTestsMarkBuildAsFailure = failedTestsMarkBuildAsFailure;
 		this.resultSeekers = resultSeekers;
 	}
 	
@@ -256,7 +256,7 @@ extends Builder
 	 */
 	public Boolean getFailedTestsMarkBuildAsUnstable()
 	{
-		return failedTestsMarkBuildAsUnstable;
+		return failedTestsMarkBuildAsFailure;
 	}
 	
 	/**
