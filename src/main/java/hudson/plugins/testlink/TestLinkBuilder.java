@@ -153,9 +153,11 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		// contains attachments, platform and notes.
 		try {
 			listener.getLogger().println(Messages.Results_LookingForTestResults());
-
-			for (ResultSeeker resultSeeker : getResultSeekers()) {
-				resultSeeker.seek(automatedTestCases, build, launcher, listener, testLinkSite);
+			
+			if(getResultSeekers() != null) {
+				for (ResultSeeker resultSeeker : getResultSeekers()) {
+					resultSeeker.seek(automatedTestCases, build, launcher, listener, testLinkSite);
+				}
 			}
 		} catch (ResultSeekerException trse) {
 			trse.printStackTrace(listener.fatalError(trse.getMessage()));
