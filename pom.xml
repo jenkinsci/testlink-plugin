@@ -100,6 +100,19 @@
             </roles>
         </developer>
 	</developers>
+	
+	<contributors>
+	   <contributor>
+            <name>Bozenka Miljkovic</name>
+            <email>kbozenka@yahoo.com</email>
+            <timezone>+1</timezone>
+       </contributor>
+	   <contributor>
+            <name>Jaroslavas</name>
+            <email>j.daskevicius@gmail.com</email>
+            <timezone>+2</timezone>
+	   </contributor>
+	</contributors>
 
 	<build>
 		<pluginManagement>
