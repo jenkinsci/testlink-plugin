@@ -26,7 +26,7 @@
       </f:entry>
       
       <f:entry title="${%Custom Fields}" help="${rootURL}/../plugin/testlink/help-customFields.html">
-    	  <f:textbox id="customFields" name="TestLinkBuilder.customFields" value="${instance.customFields}" onchange="createKeyCustomFields()" />
+    	  <f:textbox id="customFields" name="TestLinkBuilder.customFields" value="${instance.customFields}" />
       </f:entry>
       
   </f:section>
