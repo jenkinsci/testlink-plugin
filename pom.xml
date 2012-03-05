@@ -112,6 +112,11 @@
             <email>j.daskevicius@gmail.com</email>
             <timezone>+2</timezone>
 	   </contributor>
+	   <contributor>
+            <name>Vignesh Senapathy</name>
+            <email>vigneshsenapathy@gmail.com</email>
+            <timezone>+5</timezone>
+       </contributor>
 	</contributors>
 
 	<build>
