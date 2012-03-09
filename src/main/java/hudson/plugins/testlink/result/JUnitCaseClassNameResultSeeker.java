@@ -141,7 +141,7 @@ public class JUnitCaseClassNameResultSeeker extends AbstractJUnitResultSeeker {
 						testCase.getClassName(), 
 						testCase.getSkipCount(), 
 						testCase.getFailCount(), 
-						testCase.getSuiteResult().getTimestamp())
+						(testCase.getSuiteResult() != null ? testCase.getSuiteResult().getTimestamp() : null))
 		);
 		
 		return notes.toString();
