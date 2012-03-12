@@ -90,7 +90,7 @@ public class JUnitCaseMethodNameResultSeeker extends AbstractJUnitResultSeeker {
 			
 			for(final SuiteResult suiteResult : testResult.getSuites()) {
 				for(CaseResult caseResult : suiteResult.getCases()) {
-					final String methodName = caseResult.getClassName() + "." + caseResult.getName();
+					final String methodName = caseResult.getClassName() + "#" + caseResult.getName();
 					for(TestCaseWrapper automatedTestCase : automatedTestCases) {
 						final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
 						for(String value : commaSeparatedValues) {
