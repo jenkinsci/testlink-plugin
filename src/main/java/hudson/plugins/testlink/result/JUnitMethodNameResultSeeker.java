@@ -51,7 +51,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
  * @author Michael van der Westhuizen - r1mikey at gmail.com
  * @since 3.3
  */
-public class JUnitCaseMethodNameResultSeeker extends AbstractJUnitResultSeeker {
+public class JUnitMethodNameResultSeeker extends AbstractJUnitResultSeeker {
 
 	private static final long serialVersionUID = -4509186062258198342L;
 
@@ -61,7 +61,7 @@ public class JUnitCaseMethodNameResultSeeker extends AbstractJUnitResultSeeker {
 	 * @param attachJunitXML Bit that enables attaching result file to TestLink
 	 */
 	@DataBoundConstructor
-	public JUnitCaseMethodNameResultSeeker(String includePattern, String keyCustomField, boolean attachJUnitXML) {
+	public JUnitMethodNameResultSeeker(String includePattern, String keyCustomField, boolean attachJUnitXML) {
 		super(includePattern, keyCustomField, attachJUnitXML);
 	}
 	
