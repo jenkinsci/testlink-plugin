@@ -6,6 +6,7 @@
   <testcase time="0" classname="tcA" name="testVoid">
   	<failure type="junit.framework.AssertionFailedError" message="null">junit....</failure>
   </testcase>
+  <testcase time="0" classname="tcA" name="testVoid2" />
   <testcase time="0" classname="tcB" name="testVoid" />
   <testcase time="0" classname="tcC" name="testVoid" />
   <testcase time="0" name="nameA" />

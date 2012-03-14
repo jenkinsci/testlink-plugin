@@ -99,7 +99,7 @@ public class JUnitCaseNameResultSeeker extends AbstractJUnitResultSeeker {
 								final String notes = this.getJUnitNotes(caseResult);
 								automatedTestCase.setSummary(notes);
 								
-								super.handleResult(automatedTestCase, build, listener, testlink, status, suiteResult);
+								super.handleResult(automatedTestCase, build, listener, testlink, suiteResult);
 							}
 						}
 					}

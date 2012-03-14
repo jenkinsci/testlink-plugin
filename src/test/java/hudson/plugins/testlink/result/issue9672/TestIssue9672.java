@@ -51,7 +51,7 @@ public class TestIssue9672 extends ResultSeekerTestCase {
 	 */
 	@Override
 	public String getResultsPattern() {
-		return "TEST-*.xml";
+		return "TEST-br*.xml";
 	}
 
 	/*
@@ -86,7 +86,7 @@ public class TestIssue9672 extends ResultSeekerTestCase {
 	 */
 	@Override
 	public TestCaseWrapper[] getAutomatedTestCases() {
-		final TestCaseWrapper[] tcs = new TestCaseWrapper[5];
+		final TestCaseWrapper[] tcs = new TestCaseWrapper[2];
 
 		TestCaseWrapper tc = new TestCaseWrapper();
 		CustomField cf = new CustomField();
@@ -103,30 +103,6 @@ public class TestIssue9672 extends ResultSeekerTestCase {
 		tc.getCustomFields().add(cf);
 		tc.setId(2);
 		tcs[1] = tc;
-
-		tc = new TestCaseWrapper();
-		cf = new CustomField();
-		cf.setName(KEY_CUSTOM_FIELD);
-		cf.setValue("nameA, nameB");
-		tc.getCustomFields().add(cf);
-		tc.setId(3);
-		tcs[2] = tc;
-
-		tc = new TestCaseWrapper();
-		cf = new CustomField();
-		cf.setName(KEY_CUSTOM_FIELD);
-		cf.setValue("tcA, tcK");
-		tc.getCustomFields().add(cf);
-		tc.setId(4);
-		tcs[3] = tc;
-
-		tc = new TestCaseWrapper();
-		cf = new CustomField();
-		cf.setName(KEY_CUSTOM_FIELD);
-		cf.setValue("tcA, nameA, sampleTestImmo");
-		tc.getCustomFields().add(cf);
-		tc.setId(5);
-		tcs[4] = tc;
 
 		return tcs;
 	}

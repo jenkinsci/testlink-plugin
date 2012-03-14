@@ -91,9 +91,9 @@ public class TestIssue9229 extends ResultSeekerTestCase {
 
 	public void testTestResultSeekerJUnitIssue9229() throws Exception {
 		buildAndAssertSuccess(project);	
-		
-		assertEquals(3, testlink.getReport().getTestsTotal());
-		assertEquals(ExecutionStatus.PASSED, testlink.getTestCases().get(0).getExecutionStatus());
+
+		assertEquals(1, testlink.getReport().getTestsTotal());
+		assertEquals(ExecutionStatus.FAILED, testlink.getTestCases().get(0).getExecutionStatus());
 	}
 
 }

@@ -75,7 +75,7 @@ public abstract class AbstractJUnitResultSeeker extends ResultSeeker {
 		return attachJUnitXML;
 	}
 
-	protected void handleResult(TestCaseWrapper automatedTestCase, AbstractBuild<?, ?> build, BuildListener listener, TestLinkSite testlink, ExecutionStatus status, final SuiteResult suiteResult) {
+	protected void handleResult(TestCaseWrapper automatedTestCase, AbstractBuild<?, ?> build, BuildListener listener, TestLinkSite testlink, final SuiteResult suiteResult) {
 		if(automatedTestCase.getExecutionStatus(this.keyCustomField) != ExecutionStatus.NOT_RUN) {
 			try {
 				listener.getLogger().println( Messages.TestLinkBuilder_Update_AutomatedTestCases() );

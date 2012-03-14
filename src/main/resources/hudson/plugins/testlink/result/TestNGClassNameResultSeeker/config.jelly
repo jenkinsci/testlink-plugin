@@ -11,5 +11,9 @@
     <f:entry title="${%Attach TestNG XML}" help="${rootURL}/../plugin/testlink/help-attachResult.html">
         <f:checkbox name="TestNGClassNameResultSeeker.attachTestNGXML" value="${instance.attachTestNGXML}" checked="${instance.attachTestNGXML}" />
     </f:entry>
+    
+    <f:entry title="${%Mark skipped test as Blocked}" help="${rootURL}/../plugin/testlink/help-markSkippedTestAsBlocked.html">
+        <f:checkbox name="TestNGClassNameResultSeeker.markSkippedTestAsBlocked" value="${instance.markSkippedTestAsBlocked}" checked="${instance.markSkippedTestAsBlocked}" />
+    </f:entry>
 
 </j:jelly>

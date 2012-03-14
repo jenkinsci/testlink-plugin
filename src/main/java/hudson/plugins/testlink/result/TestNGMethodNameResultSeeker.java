@@ -57,7 +57,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
  */
 public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 
-	private static final long serialVersionUID = 3299323955206953910L;
+	private static final long serialVersionUID = 6344411033025796715L;
 	
 	private final TestNGParser parser = new TestNGParser();
 	
@@ -65,10 +65,11 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * @param includePattern
 	 * @param keyCustomField
 	 * @param attachTestNGXML
+	 * @param markSkippedTestAsBlocked
 	 */
 	@DataBoundConstructor
-	public TestNGMethodNameResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML) {
-		super(includePattern, keyCustomField, attachTestNGXML);
+	public TestNGMethodNameResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean markSkippedTestAsBlocked) {
+		super(includePattern, keyCustomField, attachTestNGXML, markSkippedTestAsBlocked);
 	}
 	
 	@Extension
@@ -119,7 +120,9 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 								for(String value : commaSeparatedValues) {
 									if(qualifiedName.equals(value)) {
 										ExecutionStatus status = this.getExecutionStatus(method);
-										automatedTestCase.addCustomFieldAndStatus(value, status);
+										if(status != ExecutionStatus.NOT_RUN) {
+											automatedTestCase.addCustomFieldAndStatus(value, status);
+										}
 										
 										final String notes = this.getTestNGNotes(suite);
 										automatedTestCase.setSummary(notes);
@@ -144,11 +147,18 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * @return
 	 */
 	private ExecutionStatus getExecutionStatus(TestMethod method) {
-		if ( StringUtils.isNotBlank(method.getStatus()) && !method.getStatus().equals("PASS")) {
-			return ExecutionStatus.FAILED; // It's enough, one single failed is enough to invalidate a test suite
-		} else {
-			return ExecutionStatus.PASSED;
+		if ( StringUtils.isNotBlank(method.getStatus()) ) {
+			if(method.getStatus().equals(FAIL)) {
+				return ExecutionStatus.FAILED; 
+			} else if(method.getStatus().equals(SKIP)) {
+				if(this.isMarkSkippedTestAsBlocked()) { 
+					return ExecutionStatus.BLOCKED;
+				} else {
+					return ExecutionStatus.NOT_RUN;
+				}
+			}
 		}
+		return ExecutionStatus.PASSED;
 	}
 
 	/**

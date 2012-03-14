@@ -41,7 +41,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
@@ -57,7 +56,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
  */
 public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 
-	private static final long serialVersionUID = 4365426180066442738L;
+	private static final long serialVersionUID = 6157213418831164850L;
 	
 	private final TestNGParser parser = new TestNGParser();
 	
@@ -65,10 +64,11 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * @param includePattern
 	 * @param keyCustomField
 	 * @param attachTestNGXML
+	 * @param markSkippedTestAsBlocked
 	 */
 	@DataBoundConstructor
-	public TestNGSuiteNameResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML) {
-		super(includePattern, keyCustomField, attachTestNGXML);
+	public TestNGSuiteNameResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean markSkippedTestAsBlocked) {
+		super(includePattern, keyCustomField, attachTestNGXML, markSkippedTestAsBlocked);
 	}
 	
 	@Extension
@@ -115,7 +115,9 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 					for(String value : commaSeparatedValues) {
 						if(suite.getName().equals(value)) {
 							ExecutionStatus status = this.getExecutionStatus(suite);
-							automatedTestCase.addCustomFieldAndStatus(value, status);
+							if(status != ExecutionStatus.NOT_RUN) {
+								automatedTestCase.addCustomFieldAndStatus(value, status);
+							}
 							
 							final String notes = this.getTestNGNotes(suite);
 							automatedTestCase.setSummary(notes);
@@ -140,8 +142,14 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 		for( Test test : suite.getTests() )	{
 			for( hudson.plugins.testlink.testng.Class clazz : test.getClasses() ) {
 				for( TestMethod method : clazz.getTestMethods() ) {
-					if ( StringUtils.isNotBlank(method.getStatus()) && !method.getStatus().equals("PASS")) {
-						return ExecutionStatus.FAILED; // It's enough, one single failed is enough to invalidate a test suite
+					if(method.getStatus().equals(FAIL)) {
+						return ExecutionStatus.FAILED; 
+					} else if(method.getStatus().equals(SKIP)) {
+						if(this.isMarkSkippedTestAsBlocked()) { 
+							return ExecutionStatus.BLOCKED;
+						} else {
+							return ExecutionStatus.NOT_RUN;
+						}
 					}
 				}
 			}

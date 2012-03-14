@@ -35,6 +35,12 @@ import hudson.tasks.junit.TestResult;
 import hudson.tasks.junit.CaseResult;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -88,27 +94,91 @@ public class JUnitCaseClassNameResultSeeker extends AbstractJUnitResultSeeker {
 			final TestResult testResult = parser.parse(this.includePattern, build, launcher, listener);
 			
 			for(final SuiteResult suiteResult : testResult.getSuites()) {
-				for(CaseResult caseResult : suiteResult.getCases()) {
+				
+				final List<CaseResult> caseResults = this.filter(suiteResult.getCases()); 
+				
+				// We need this map because a class has many case results, so we create a map by class name
+				final Map<String, TestCaseWrapper> classNameTestCase = new HashMap<String, TestCaseWrapper>();
+				
+				for(CaseResult caseResult : caseResults) {
 					for(TestCaseWrapper automatedTestCase : automatedTestCases) {
 						final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
 						for(String value : commaSeparatedValues) {
 							if(! caseResult.isSkipped() && caseResult.getClassName().equals(value)) {
+								// A class can have many case results, so we check if the class has failed anywhere
+								//final ExecutionStatus previousStatus = automatedTestCase.getCustomFieldAndStatus().get(value);
 								final ExecutionStatus status = this.getExecutionStatus(caseResult);
 								automatedTestCase.addCustomFieldAndStatus(value, status);
 								
 								final String notes = this.getJUnitNotes(caseResult);
 								automatedTestCase.setSummary(notes);
-								
-								super.handleResult(automatedTestCase, build, listener, testlink, status, suiteResult);
+								classNameTestCase.put(Integer.valueOf(automatedTestCase.getId())+"#"+Arrays.toString(commaSeparatedValues), automatedTestCase);
 							}
 						}
 					}
 				}
+				
+				// Here we update testlink with our findings
+				for(Map.Entry<String, TestCaseWrapper> entry : classNameTestCase.entrySet()) {
+					super.handleResult(entry.getValue(), build, listener, testlink, suiteResult);
+				}
 			}
+			
 		} catch (IOException e) {
 			throw new ResultSeekerException(e);
 		} catch (InterruptedException e) {
 			throw new ResultSeekerException(e);
+		}
+	}
+
+	/**
+	 * @param cases
+	 * @return
+	 */
+	private List<CaseResult> filter(List<CaseResult> cases) {
+		final List<CaseResult> filtered = new LinkedList<CaseResult>();
+		
+		for(CaseResult caseResult : cases) {
+			final CaseResult c = this.find(filtered, caseResult);
+			if(c != null) {
+				if(c.getFailCount()<=0) { // didn't fail
+					this.remove(filtered, c);
+					filtered.add(caseResult);
+				}
+			} else {
+				filtered.add(caseResult);
+			}
+		}
+		
+		return filtered;
+	}
+
+	/**
+	 * @param filtered
+	 * @param caseResult
+	 * @return
+	 */
+	private CaseResult find(List<CaseResult> filtered, CaseResult caseResult) {
+		for(CaseResult c : filtered) {
+			if(c.getClassName().equals(caseResult.getClassName())) {
+				return c;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * @param filtered
+	 * @param caseResult
+	 * @return
+	 */
+	private void remove(List<CaseResult> filtered, CaseResult caseResult) {
+		final Iterator<CaseResult> iterator = filtered.iterator();
+		while(iterator.hasNext()) {
+			CaseResult c = iterator.next();
+			if(c.getClassName().equals(caseResult.getClassName())) {
+				iterator.remove();
+			}
 		}
 	}
 
@@ -119,10 +189,10 @@ public class JUnitCaseClassNameResultSeeker extends AbstractJUnitResultSeeker {
 	private ExecutionStatus getExecutionStatus(CaseResult caseResult) {
 		if(caseResult.isSkipped()) {
 			return ExecutionStatus.NOT_RUN;
-		} else if(caseResult.isPassed()) {
-			return ExecutionStatus.PASSED;
-		} else {
+		} else if(caseResult.getFailCount() > 0) {
 			return ExecutionStatus.FAILED;
+		} else {
+			return ExecutionStatus.PASSED;
 		}
 	}
 	
@@ -136,11 +206,8 @@ public class JUnitCaseClassNameResultSeeker extends AbstractJUnitResultSeeker {
 	{
 		StringBuilder notes = new StringBuilder();
 		notes.append( 
-				Messages.Results_JUnit_NotesForTestCase(
-						testCase.getName(), 
+				Messages.Results_JUnit_NotesForTestClass(
 						testCase.getClassName(), 
-						testCase.getSkipCount(), 
-						testCase.getFailCount(), 
 						(testCase.getSuiteResult() != null ? testCase.getSuiteResult().getTimestamp() : null))
 		);
 		

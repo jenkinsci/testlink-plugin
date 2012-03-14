@@ -47,15 +47,22 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 
 	private static final long serialVersionUID = -5069755890860922333L;
 	
+	protected static final String PASS = "PASS";
+	protected static final String FAIL = "FAIL";
+	protected static final String SKIP = "SKIP";
+	
 	private static final String TEXT_XML_CONTENT_TYPE = "text/xml";
 
 	protected final TestNGParser parser = new TestNGParser();
 	
 	private boolean attachTestNGXML = false;
 	
-	public AbstractTestNGResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML) {
+	private boolean markSkippedTestAsBlocked = false;
+	
+	public AbstractTestNGResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean markSkippedTestAsBlocked) {
 		super(includePattern, keyCustomField);
 		this.attachTestNGXML = attachTestNGXML;
+		this.markSkippedTestAsBlocked = markSkippedTestAsBlocked;
 	}
 
 	public void setAttachTestNGXML(boolean attachTestNGXML) {
@@ -64,6 +71,14 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	
 	public boolean isAttachTestNGXML() {
 		return attachTestNGXML;
+	}
+	
+	public void setMarkSkippedTestAsBlocked(boolean markSkippedTestAsBlocked) {
+		this.markSkippedTestAsBlocked = markSkippedTestAsBlocked;
+	}
+	
+	public boolean isMarkSkippedTestAsBlocked() {
+		return markSkippedTestAsBlocked;
 	}
 	
 	protected void handleResult(TestCaseWrapper automatedTestCase, AbstractBuild<?, ?> build, BuildListener listener, TestLinkSite testlink, ExecutionStatus status, final Suite suiteResult) {
