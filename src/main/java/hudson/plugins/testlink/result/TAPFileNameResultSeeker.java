@@ -163,7 +163,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 							automatedTestCase.addCustomFieldAndStatus(value, status);
 							
 							final String notes = this.getTapNotes(testSets.get(key));
-							automatedTestCase.setSummary(notes);
+							automatedTestCase.appendNotes(notes);
 							
 							this.handleResult(automatedTestCase, build, listener, testlink, status, testSets, key);
 						}

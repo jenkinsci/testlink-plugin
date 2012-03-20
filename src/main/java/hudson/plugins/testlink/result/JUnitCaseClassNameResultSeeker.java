@@ -111,7 +111,7 @@ public class JUnitCaseClassNameResultSeeker extends AbstractJUnitResultSeeker {
 								automatedTestCase.addCustomFieldAndStatus(value, status);
 								
 								final String notes = this.getJUnitNotes(caseResult);
-								automatedTestCase.setSummary(notes);
+								automatedTestCase.appendNotes(notes);
 								classNameTestCase.put(Integer.valueOf(automatedTestCase.getId())+"#"+Arrays.toString(commaSeparatedValues), automatedTestCase);
 							}
 						}

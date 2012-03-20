@@ -120,7 +120,7 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 									}
 									
 									final String notes = this.getTestNGNotes(suite);
-									automatedTestCase.setSummary(notes);
+									automatedTestCase.appendNotes(notes);
 									
 									super.handleResult(automatedTestCase, build, listener, testlink, status, suite);
 								}
@@ -174,6 +174,7 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 	 */
 	private String getTestNGNotes( Suite suite )
 	{
+		List<Test> tests = suite.getTests();
 		StringBuilder notes = new StringBuilder();
 		
 		notes.append( 

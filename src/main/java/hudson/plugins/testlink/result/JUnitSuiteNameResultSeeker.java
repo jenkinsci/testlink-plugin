@@ -100,7 +100,7 @@ public class JUnitSuiteNameResultSeeker extends AbstractJUnitResultSeeker {
 							automatedTestCase.addCustomFieldAndStatus(value, status);
 							
 							final String notes = this.getJUnitNotes(suiteResult);
-							automatedTestCase.setSummary(notes);
+							automatedTestCase.appendNotes(notes);
 							
 							super.handleResult(automatedTestCase, build, listener, testlink, suiteResult);
 						}
