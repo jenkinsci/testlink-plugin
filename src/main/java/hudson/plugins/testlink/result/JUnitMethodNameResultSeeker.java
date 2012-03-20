@@ -138,7 +138,7 @@ public class JUnitMethodNameResultSeeker extends AbstractJUnitResultSeeker {
 	{
 		StringBuilder notes = new StringBuilder();
 		notes.append( 
-				Messages.Results_JUnit_NotesForTestCase(
+				Messages.Results_JUnit_NotesForTestMethod(
 						testCase.getName(), 
 						testCase.getClassName(), 
 						testCase.getSkipCount(), 

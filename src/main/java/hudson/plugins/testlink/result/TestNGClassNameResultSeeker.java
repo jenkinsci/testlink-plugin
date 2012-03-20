@@ -29,6 +29,7 @@ import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.TestLinkSite;
+import hudson.plugins.testlink.testng.Class;
 import hudson.plugins.testlink.testng.Suite;
 import hudson.plugins.testlink.testng.Test;
 import hudson.plugins.testlink.testng.TestMethod;
@@ -119,7 +120,7 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 										automatedTestCase.addCustomFieldAndStatus(value, status);
 									}
 									
-									final String notes = this.getTestNGNotes(suite);
+									final String notes = this.getTestNGNotes(suite, clazz);
 									automatedTestCase.appendNotes(notes);
 									
 									super.handleResult(automatedTestCase, build, listener, testlink, status, suite);
@@ -170,19 +171,21 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * Retrieves notes for TestNG suite.
 	 * 
 	 * @param suite TestNG suite.
+	 * @param clazz TestNG test class.
 	 * @return notes for TestNG suite and test class.
 	 */
-	private String getTestNGNotes( Suite suite )
+	private String getTestNGNotes( Suite suite, Class clazz )
 	{
-		List<Test> tests = suite.getTests();
 		StringBuilder notes = new StringBuilder();
 		
 		notes.append( 
-				Messages.Results_TestNG_NotesForSuite(
+				Messages.Results_TestNG_NotesForSuiteAndClass(
 						suite.getName(), 
 						suite.getDurationMs(), 
 						suite.getStartedAt(), 
-						suite.getFinishedAt(), suite.getTests().size() 
+						suite.getFinishedAt(), suite.getTests().size(), 
+						clazz.getName(), 
+						clazz.getTestMethods().size()
 				)
 		);
 		

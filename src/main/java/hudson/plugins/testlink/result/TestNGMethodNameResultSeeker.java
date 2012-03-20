@@ -124,7 +124,7 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 											automatedTestCase.addCustomFieldAndStatus(value, status);
 										}
 										
-										final String notes = this.getTestNGNotes(suite);
+										final String notes = this.getTestNGNotes(method);
 										automatedTestCase.appendNotes(notes);
 										
 										super.handleResult(automatedTestCase, build, listener, testlink, status, suite);
@@ -164,19 +164,22 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 	/**
 	 * Retrieves notes for TestNG suite.
 	 * 
-	 * @param suite TestNG suite.
+	 * @param method TestNG test method.
 	 * @return notes for TestNG suite and test class.
 	 */
-	private String getTestNGNotes( Suite suite )
+	private String getTestNGNotes( TestMethod method )
 	{
 		StringBuilder notes = new StringBuilder();
 		
 		notes.append( 
-				Messages.Results_TestNG_NotesForSuite(
-						suite.getName(), 
-						suite.getDurationMs(), 
-						suite.getStartedAt(), 
-						suite.getFinishedAt(), suite.getTests().size() 
+				Messages.Results_TestNG_NotesForMethods(
+						method.getName(), 
+						method.getIsConfig(), 
+						method.getSignature(), 
+						method.getStatus(), 
+						method.getDurationMs(), 
+						method.getStartedAt(), 
+						method.getFinishedAt()
 				)
 		);
 		
