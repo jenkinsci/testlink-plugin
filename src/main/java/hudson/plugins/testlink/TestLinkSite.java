@@ -128,7 +128,8 @@ public class TestLinkSite
 				null, 
 				null, 
 				ExecutionType.AUTOMATED, 
-				Boolean.TRUE);			
+				Boolean.TRUE,
+				null);			
 
 		for( final TestCase testCase : testCases )
 		{
