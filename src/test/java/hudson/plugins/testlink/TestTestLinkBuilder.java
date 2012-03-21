@@ -23,12 +23,16 @@
  */
 package hudson.plugins.testlink;
 
+import hudson.EnvVars;
 import hudson.tasks.BuildStep;
 import hudson.tasks.Shell;
+import hudson.util.VariableResolver;
+import hudson.util.VariableResolver.ByMap;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.HudsonTestCase;
 
 /**
@@ -53,7 +57,7 @@ extends HudsonTestCase
 				"No project",
 				"No plan", 
 				"No build", 
-				"class, time", 
+				"class, time, sample-job-$BUILD_ID", 
 				null, 
 				null, 
 				null, 
@@ -66,14 +70,21 @@ extends HudsonTestCase
 	/**
 	 * Tests the generated list of custom fields.
 	 */
+	@Bug(1)
 	public void testListOfCustomFields()
 	{
-		String[] customFieldsNames = builder.createArrayOfCustomFieldsNames();
+		EnvVars envVars = new EnvVars();
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		VariableResolver<String> varRes = new ByMap.ByMap(envVars);
+		
+		envVars.put("BUILD_ID", "1");
+		String[] customFieldsNames = builder.createArrayOfCustomFieldsNames(varRes, envVars);
 		
 		assertNotNull( customFieldsNames );
-		assertTrue( customFieldsNames.length == 2 );
+		assertTrue( customFieldsNames.length == 3 );
 		assertEquals( customFieldsNames[0], "class" );
 		assertEquals( customFieldsNames[1], "time" );
+		assertEquals( customFieldsNames[2], "sample-job-1" );
 	}
 	
 	public void testNull()

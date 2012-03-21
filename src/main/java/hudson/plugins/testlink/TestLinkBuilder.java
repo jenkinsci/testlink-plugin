@@ -119,7 +119,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			final String buildNotes = Messages.TestLinkBuilder_Build_Notes();
 			// TestLink Site object
 			testLinkSite = this.getTestLinkSite(testLinkUrl, testLinkDevKey, testProjectName, testPlanName, buildName, buildNotes);
-			final String[] customFieldsNames = this.createArrayOfCustomFieldsNames();
+			final String[] customFieldsNames = this.createArrayOfCustomFieldsNames(build.getBuildVariableResolver(), build.getEnvironment(listener));
 			// Array of automated test cases
 			TestCase[] testCases = testLinkSite.getAutomatedTestCases(customFieldsNames);
 

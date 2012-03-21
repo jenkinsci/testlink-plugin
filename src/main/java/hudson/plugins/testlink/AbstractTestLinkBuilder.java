@@ -53,6 +53,11 @@ extends Builder
 	/* --- Job properties --- */
 	
 	/**
+	 * Comma constant for custom fields separated with delimiter.
+	 */
+	private static final String COMMA = ",";
+
+	/**
 	 * The name of the TestLink installation.
 	 */
 	protected final String testLinkName;
@@ -286,17 +291,19 @@ extends Builder
 
 	/**
 	 * Creates array of custom fields names using the Job configuration data.
+	 * @param variableResolver Jenkins variable resolver
+	 * @param envVars Jenkins environment variables
 	 * 
 	 * @return Array of custom fields names.
 	 */
-	protected String[] createArrayOfCustomFieldsNames()
+	protected String[] createArrayOfCustomFieldsNames(final VariableResolver<String> variableResolver, final EnvVars envVars)
 	{
 		String[] customFieldNamesArray = new String[0];
-		String customFields = this.getCustomFields();
+		String customFields = expandVariable(variableResolver, envVars, this.getCustomFields());
 		
 		if( StringUtils.isNotBlank( customFields ) )
 		{
-			StringTokenizer tokenizer = new StringTokenizer(customFields, ",");
+			StringTokenizer tokenizer = new StringTokenizer(customFields, COMMA);
 			if ( tokenizer.countTokens() > 0 )
 			{
 				customFieldNamesArray = new String[ tokenizer.countTokens() ];
