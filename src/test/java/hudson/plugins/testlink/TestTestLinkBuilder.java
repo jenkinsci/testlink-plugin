@@ -70,7 +70,7 @@ extends HudsonTestCase
 	/**
 	 * Tests the generated list of custom fields.
 	 */
-	@Bug(1)
+	@Bug(13173)
 	public void testListOfCustomFields()
 	{
 		EnvVars envVars = new EnvVars();
