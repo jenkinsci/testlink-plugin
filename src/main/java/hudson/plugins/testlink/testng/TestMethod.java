@@ -73,6 +73,11 @@ implements Serializable
 	private String finishedAt;
 	
 	/**
+	 * The data-provider.
+	 */
+	private String dataProvider;
+	
+	/**
 	 * Default constructor.
 	 */
 	public TestMethod()
@@ -220,5 +225,18 @@ implements Serializable
 		this.finishedAt = finishedAt;
 	}
 	
+	/**
+	 * @return the dataProvider
+	 */
+	public String getDataProvider() {
+		return dataProvider == null ? "" : dataProvider;
+	}
+	
+	/**
+	 * @param dataProvider the dataProvider to set
+	 */
+	public void setDataProvider(String dataProvider) {
+		this.dataProvider = dataProvider;
+	}
 
 }

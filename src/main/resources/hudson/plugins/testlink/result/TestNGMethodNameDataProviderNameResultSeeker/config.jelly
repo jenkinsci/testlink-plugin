@@ -1,0 +1,23 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+    <f:entry title="${%Include Pattern}" help="${rootURL}/../plugin/testlink/help-testNGIncludePattern.html">
+        <f:textbox id="includePattern" name="TestNGMethodNameDataProviderNameResultSeeker.includePattern" value="${instance.includePattern}" />
+    </f:entry>
+
+    <f:entry title="${%TestNG method name Key Custom Field}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
+        <f:textbox id="methodNameKeyCustomField" name="TestNGMethodNameDataProviderNameResultSeeker.methodNameKeyCustomField" value="${instance.methodNameKeyCustomField}" />
+    </f:entry>
+    
+    <f:entry title="${%TestNG data provider name Key Custom Field}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
+        <f:textbox id="dataProviderNameKeyCustomField" name="TestNGMethodNameDataProviderNameResultSeeker.dataProviderNameKeyCustomField" value="${instance.dataProviderNameKeyCustomField}" />
+    </f:entry>
+    
+    <f:entry title="${%Attach TestNG XML}" help="${rootURL}/../plugin/testlink/help-attachResult.html">
+        <f:checkbox name="TestNGMethodNameDataProviderNameResultSeeker.attachTestNGXML" value="${instance.attachTestNGXML}" checked="${instance.attachTestNGXML}" />
+    </f:entry>
+    
+    <f:entry title="${%Mark skipped test as Blocked}" help="${rootURL}/../plugin/testlink/help-markSkippedTestAsBlocked.html">
+        <f:checkbox name="TestNGMethodNameDataProviderNameResultSeeker.markSkippedTestAsBlocked" value="${instance.markSkippedTestAsBlocked}" checked="${instance.markSkippedTestAsBlocked}" />
+    </f:entry>
+
+</j:jelly>

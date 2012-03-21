@@ -51,6 +51,7 @@ implements Serializable
 	private static final String STARTED_AT = "started-at";
 	private static final String FINISHED_AT = "finished-at";
 	private static final String DURATION_MS = "duration-ms";
+	private static final String DATA_PROVIDER = "data-provider";
 
 	private static final long serialVersionUID = -7393574325643071292L;
 
@@ -113,6 +114,7 @@ implements Serializable
 			testMethod.setIsConfig( attributes.getValue( IS_CONFIG ) );
 			testMethod.setSignature( attributes.getValue( SIGNATURE ) );
 			testMethod.setStatus( attributes.getValue( STATUS ) );
+			testMethod.setDataProvider( attributes.getValue( DATA_PROVIDER ) );
 		}
 	}
 	

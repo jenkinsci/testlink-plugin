@@ -200,6 +200,17 @@ public class TestCaseWrapper implements Serializable {
 		return this.split(keyCustomFieldValue);
 	}
 	
+	public String getKeyCustomFieldValue(final String keyCustomFieldName) {
+		String keyCustomFieldValue = null;
+		for(CustomField customField : this.getCustomFields()) {
+			if(customField.getName().equals(keyCustomFieldName)) {
+				keyCustomFieldValue = customField.getValue();
+				break;
+			}
+		}
+		return keyCustomFieldValue;
+	}
+	
 	/**
 	 * Splits a String by comma and gets an array of Strings.
 	 */

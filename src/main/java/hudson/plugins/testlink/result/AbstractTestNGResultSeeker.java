@@ -47,11 +47,11 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 
 	private static final long serialVersionUID = -5069755890860922333L;
 	
-	protected static final String PASS = "PASS";
-	protected static final String FAIL = "FAIL";
-	protected static final String SKIP = "SKIP";
+	public static final String PASS = "PASS";
+	public static final String FAIL = "FAIL";
+	public static final String SKIP = "SKIP";
 	
-	private static final String TEXT_XML_CONTENT_TYPE = "text/xml";
+	public static final String TEXT_XML_CONTENT_TYPE = "text/xml";
 
 	protected final TestNGParser parser = new TestNGParser();
 	

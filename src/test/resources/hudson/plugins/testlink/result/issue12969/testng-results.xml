@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results skipped="0" failed="0" total="1" passed="1">
+  <reporter-output>
+  </reporter-output>
+  <suite name="Default suite" duration-ms="5550" started-at="2012-03-21T15:39:49Z" finished-at="2012-03-21T15:39:54Z">
+    <groups>
+      <group name="GoogleTest">
+        <method signature="TestGoogle.testGoogle(java.lang.String, java.lang.String, org.testng.ITestContext, java.lang.reflect.Method)[pri:0, instance:br.eti.kinoshita.selenium.TestGoogle@4585572a]" name="testGoogle" class="br.eti.kinoshita.selenium.TestGoogle"/>
+      </group> <!-- GoogleTest -->
+    </groups>
+    <test name="Default test" duration-ms="5550" started-at="2012-03-21T15:39:49Z" finished-at="2012-03-21T15:39:54Z">
+      <class name="br.eti.kinoshita.selenium.TestGoogle">
+        <test-method status="PASS" signature="setUp()[pri:0, instance:br.eti.kinoshita.selenium.TestGoogle@4585572a]" name="setUp" is-config="true" duration-ms="2491" started-at="2012-03-21T15:39:49Z" finished-at="2012-03-21T15:39:51Z">
+        </test-method> <!-- setUp -->
+        <test-method status="PASS" signature="testGoogle(java.lang.String, java.lang.String, org.testng.ITestContext, java.lang.reflect.Method)[pri:0, instance:br.eti.kinoshita.selenium.TestGoogle@4585572a]" name="testGoogle" duration-ms="2199" started-at="2012-03-21T15:39:51Z" data-provider="DataExcel" finished-at="2012-03-21T15:39:54Z">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[Minecraft Diamonds]]>
+              </value>
+            </param>
+            <param index="1">
+              <value>
+                <![CDATA[Tutorial]]>
+              </value>
+            </param>
+            <param index="2">
+              <value>
+                <![CDATA[org.testng.TestRunner@4ad61aef]]>
+              </value>
+            </param>
+            <param index="3">
+              <value>
+                <![CDATA[public void br.eti.kinoshita.selenium.TestGoogle.testGoogle(java.lang.String,java.lang.String,org.testng.ITestContext,java.lang.reflect.Method)]]>
+              </value>
+            </param>
+          </params>
+        </test-method> <!-- testGoogle -->
+        <test-method status="PASS" signature="tearDown()[pri:0, instance:br.eti.kinoshita.selenium.TestGoogle@4585572a]" name="tearDown" is-config="true" duration-ms="694" started-at="2012-03-21T15:39:54Z" finished-at="2012-03-21T15:39:54Z">
+        </test-method> <!-- tearDown -->
+      </class> <!-- br.eti.kinoshita.selenium.TestGoogle -->
+    </test> <!-- Default test -->
+  </suite> <!-- Default suite -->
+</testng-results>
