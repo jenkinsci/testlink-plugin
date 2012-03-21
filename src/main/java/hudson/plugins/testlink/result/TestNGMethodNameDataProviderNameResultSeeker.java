@@ -76,8 +76,9 @@ public class TestNGMethodNameDataProviderNameResultSeeker extends AbstractTestNG
 			String keyCustomField, 
 			boolean attachTestNGXML, 
 			boolean markSkippedTestAsBlocked, 
-			String dataProviderNameKeyCustomField) {
-		super(includePattern, keyCustomField, attachTestNGXML, markSkippedTestAsBlocked);
+			String dataProviderNameKeyCustomField,
+			boolean includeNotes) {
+		super(includePattern, keyCustomField, attachTestNGXML, markSkippedTestAsBlocked, includeNotes);
 		this.dataProviderNameKeyCustomField = dataProviderNameKeyCustomField;
 	}
 	
@@ -142,8 +143,10 @@ public class TestNGMethodNameDataProviderNameResultSeeker extends AbstractTestNG
 											automatedTestCase.addCustomFieldAndStatus(value, status);
 										}
 										
-										final String notes = this.getTestNGNotes(method);
-										automatedTestCase.appendNotes(notes);
+										if(this.isIncludeNotes()) {
+											final String notes = this.getTestNGNotes(method);
+											automatedTestCase.appendNotes(notes);
+										}
 										
 										this.handleResult(automatedTestCase, build, listener, testlink, status, suite);
 									}

@@ -82,8 +82,8 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 	 * @param attachYAMLishAttachments
 	 */
 	@DataBoundConstructor
-	public TAPFileNameResultSeeker(String includePattern, String keyCustomField, boolean attachTAPStream, boolean attachYAMLishAttachments) {
-		super(includePattern, keyCustomField);
+	public TAPFileNameResultSeeker(String includePattern, String keyCustomField, boolean attachTAPStream, boolean attachYAMLishAttachments, boolean includeNotes) {
+		super(includePattern, keyCustomField, includeNotes);
 		this.attachTAPStream = attachTAPStream;
 		this.attachYAMLishAttachments = attachYAMLishAttachments;
 	}
@@ -162,8 +162,10 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 							final ExecutionStatus status = this.getExecutionStatus(testSets.get(key));
 							automatedTestCase.addCustomFieldAndStatus(value, status);
 							
-							final String notes = this.getTapNotes(testSets.get(key));
-							automatedTestCase.appendNotes(notes);
+							if(this.isIncludeNotes()) {
+								final String notes = this.getTapNotes(testSets.get(key));
+								automatedTestCase.appendNotes(notes);
+							}
 							
 							this.handleResult(automatedTestCase, build, listener, testlink, status, testSets, key);
 						}

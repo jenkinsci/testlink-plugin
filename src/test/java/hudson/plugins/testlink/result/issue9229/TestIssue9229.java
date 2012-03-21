@@ -63,7 +63,7 @@ public class TestIssue9229 extends ResultSeekerTestCase {
 	 */
 	@Override
 	public ResultSeeker getResultSeeker() {
-		return new JUnitCaseClassNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD, false);
+		return new JUnitCaseClassNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD, false, false);
 	}
 
 	/*

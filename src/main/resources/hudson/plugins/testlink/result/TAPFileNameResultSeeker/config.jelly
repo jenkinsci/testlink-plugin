@@ -15,5 +15,9 @@
     <f:entry title="${%Attach TAP YAMLish attachments}" help="${rootURL}/../plugin/testlink/help-attachYAMLishResult.html">
         <f:checkbox name="TAPFileNameResultSeeker.attachYAMLishAttachments" value="${instance.attachYAMLishAttachments}" checked="${instance.attachYAMLishAttachments}" />
     </f:entry>
+    
+    <f:entry title="${%Include test notes}" help="${rootURL}/../plugin/testlink/help-includeNotes.html">
+        <f:checkbox name="TAPFileNameResultSeeker.includeNotes" value="${instance.includeNotes}" checked="${instance.includeNotes}" />
+    </f:entry>
 
 </j:jelly>

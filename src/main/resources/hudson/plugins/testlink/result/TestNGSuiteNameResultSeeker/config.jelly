@@ -15,5 +15,9 @@
     <f:entry title="${%Mark skipped test as Blocked}" help="${rootURL}/../plugin/testlink/help-markSkippedTestAsBlocked.html">
         <f:checkbox name="TestNGClassNameResultSeeker.markSkippedTestAsBlocked" value="${instance.markSkippedTestAsBlocked}" checked="${instance.markSkippedTestAsBlocked}" />
     </f:entry>
+    
+    <f:entry title="${%Include test notes}" help="${rootURL}/../plugin/testlink/help-includeNotes.html">
+        <f:checkbox name="TestNGClassNameResultSeeker.includeNotes" value="${instance.includeNotes}" checked="${instance.includeNotes}" />
+    </f:entry>
 
 </j:jelly>

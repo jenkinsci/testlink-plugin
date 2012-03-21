@@ -67,8 +67,8 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * @param markSkippedTestAsBlocked
 	 */
 	@DataBoundConstructor
-	public TestNGSuiteNameResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean markSkippedTestAsBlocked) {
-		super(includePattern, keyCustomField, attachTestNGXML, markSkippedTestAsBlocked);
+	public TestNGSuiteNameResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean markSkippedTestAsBlocked, boolean includeNotes) {
+		super(includePattern, keyCustomField, attachTestNGXML, markSkippedTestAsBlocked, includeNotes);
 	}
 	
 	@Extension
@@ -119,8 +119,10 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 								automatedTestCase.addCustomFieldAndStatus(value, status);
 							}
 							
-							final String notes = this.getTestNGNotes(suite);
-							automatedTestCase.appendNotes(notes);
+							if(this.isIncludeNotes()) {
+								final String notes = this.getTestNGNotes(suite);
+								automatedTestCase.appendNotes(notes);
+							}
 							
 							super.handleResult(automatedTestCase, build, listener, testlink, status, suite);
 						}

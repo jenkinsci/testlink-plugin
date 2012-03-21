@@ -60,8 +60,8 @@ public class JUnitCaseNameResultSeeker extends AbstractJUnitResultSeeker {
 	 * @param attachJUnitXML Bit that enables attaching result file to TestLink
 	 */
 	@DataBoundConstructor
-	public JUnitCaseNameResultSeeker(String includePattern, String keyCustomField, boolean attachJUnitXML) {
-		super(includePattern, keyCustomField, attachJUnitXML);
+	public JUnitCaseNameResultSeeker(String includePattern, String keyCustomField, boolean attachJUnitXML, boolean includeNotes) {
+		super(includePattern, keyCustomField, attachJUnitXML, includeNotes);
 	}
 
 	@Extension
@@ -96,8 +96,10 @@ public class JUnitCaseNameResultSeeker extends AbstractJUnitResultSeeker {
 								ExecutionStatus status = this.getExecutionStatus(caseResult);
 								automatedTestCase.addCustomFieldAndStatus(value, status);
 								
-								final String notes = this.getJUnitNotes(caseResult);
-								automatedTestCase.appendNotes(notes);
+								if(this.isIncludeNotes()) {
+									final String notes = this.getJUnitNotes(caseResult);
+									automatedTestCase.appendNotes(notes);
+								}
 								
 								super.handleResult(automatedTestCase, build, listener, testlink, suiteResult);
 							}

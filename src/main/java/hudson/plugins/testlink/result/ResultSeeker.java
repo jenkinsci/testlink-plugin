@@ -67,16 +67,22 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	 * Key custom field.
 	 */
 	protected final String keyCustomField;
+	
+	/**
+	 * Whether the plug-in must include notes when updating test cases.
+	 */
+	protected final boolean includeNotes;
 
 	/**
 	 * Creates a result seeker passing a ant-like pattern to look for results.
 	 * 
 	 * @param includePattern Include pattern when looking for results.
 	 */
-	public ResultSeeker(String includePattern, String keyCustomField) {
+	public ResultSeeker(String includePattern, String keyCustomField, boolean includeNotes) {
 		super();
 		this.includePattern = includePattern;
 		this.keyCustomField = keyCustomField;
+		this.includeNotes = includeNotes;
 	}
 	
 	/**
@@ -91,6 +97,13 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	 */
 	public String getKeyCustomField() {
 		return keyCustomField;
+	}
+	
+	/**
+	 * @return the enableNotes
+	 */
+	public boolean isIncludeNotes() {
+		return includeNotes;
 	}
 
 	/*

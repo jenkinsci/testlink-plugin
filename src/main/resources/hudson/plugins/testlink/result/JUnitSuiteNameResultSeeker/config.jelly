@@ -11,5 +11,9 @@
     <f:entry title="${%Attach JUnit XML}" help="${rootURL}/../plugin/testlink/help-attachResult.html">
         <f:checkbox name="JUnitSuiteNameResultSeeker.attachJUnitXML" value="${instance.attachJUnitXML}" checked="${instance.attachJUnitXML}" />
     </f:entry>
+    
+    <f:entry title="${%Include test notes}" help="${rootURL}/../plugin/testlink/help-includeNotes.html">
+        <f:checkbox name="JUnitSuiteNameResultSeeker.includeNotes" value="${instance.includeNotes}" checked="${instance.includeNotes}" />
+    </f:entry>
 
 </j:jelly>

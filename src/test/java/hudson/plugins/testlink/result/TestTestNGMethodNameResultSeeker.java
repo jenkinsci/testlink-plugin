@@ -66,7 +66,7 @@ public class TestTestNGMethodNameResultSeeker extends ResultSeekerTestCase {
 	 */
 	@Override
 	public ResultSeeker getResultSeeker() {
-		return new TestNGMethodNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD, false, false);
+		return new TestNGMethodNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD, false, false, false);
 	}
 
 	/*

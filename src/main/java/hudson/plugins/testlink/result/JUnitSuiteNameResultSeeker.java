@@ -59,8 +59,8 @@ public class JUnitSuiteNameResultSeeker extends AbstractJUnitResultSeeker {
 	 * @param keyCustomField Key custom field to match against the results
 	 */
 	@DataBoundConstructor
-	public JUnitSuiteNameResultSeeker(String includePattern, String keyCustomField, boolean attachJUnitXML) {
-		super(includePattern, keyCustomField, attachJUnitXML);
+	public JUnitSuiteNameResultSeeker(String includePattern, String keyCustomField, boolean attachJUnitXML, boolean includeNotes) {
+		super(includePattern, keyCustomField, attachJUnitXML, includeNotes);
 	}
 
 	@Extension
@@ -99,8 +99,10 @@ public class JUnitSuiteNameResultSeeker extends AbstractJUnitResultSeeker {
 							ExecutionStatus status = this.getExecutionStatus(suiteResult);
 							automatedTestCase.addCustomFieldAndStatus(value, status);
 							
-							final String notes = this.getJUnitNotes(suiteResult);
-							automatedTestCase.appendNotes(notes);
+							if(this.isIncludeNotes()) {
+								final String notes = this.getJUnitNotes(suiteResult);
+								automatedTestCase.appendNotes(notes);
+							}
 							
 							super.handleResult(automatedTestCase, build, listener, testlink, suiteResult);
 						}

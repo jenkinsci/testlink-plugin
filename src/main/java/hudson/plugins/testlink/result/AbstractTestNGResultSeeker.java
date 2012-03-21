@@ -59,8 +59,8 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	
 	private boolean markSkippedTestAsBlocked = false;
 	
-	public AbstractTestNGResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean markSkippedTestAsBlocked) {
-		super(includePattern, keyCustomField);
+	public AbstractTestNGResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean markSkippedTestAsBlocked, boolean includeNotes) {
+		super(includePattern, keyCustomField, includeNotes);
 		this.attachTestNGXML = attachTestNGXML;
 		this.markSkippedTestAsBlocked = markSkippedTestAsBlocked;
 	}
