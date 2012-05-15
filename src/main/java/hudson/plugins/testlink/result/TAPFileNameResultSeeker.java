@@ -122,8 +122,6 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 	 */
 	@Override
 	public void seek(final TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, final BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
-		// TBD: it cannot be serialized easily... but it is possible. Your lazy bastard.
-		final TapConsumer tapConsumer = TapConsumerFactory.makeTap13YamlConsumer();
 		
 		try {
 			final Map<String, TestSet> testSets = build.getWorkspace().act(new FilePath.FileCallable<Map<String, TestSet>>() {
@@ -139,15 +137,9 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 					
 					for(String tapFile : tapFiles) {
 						final File input = new File(workspace, tapFile);
-						String tapFileNameWithoutExtension = input.getName();
-						
-						int extensionIndex = tapFileNameWithoutExtension.lastIndexOf('.');
-						if ( extensionIndex != -1 )
-						{
-							tapFileNameWithoutExtension = tapFileNameWithoutExtension.substring(0, tapFileNameWithoutExtension.lastIndexOf('.'));
-						}
+						final TapConsumer tapConsumer = TapConsumerFactory.makeTap13YamlConsumer();
 						final TestSet testSet = tapConsumer.load(input);
-						testSets.put(tapFileNameWithoutExtension, testSet);
+						testSets.put(input.getName(), testSet);
 					}
 					
 					return testSets;
@@ -158,7 +150,13 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 				for(TestCaseWrapper automatedTestCase : automatedTestCases) {
 					final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
 					for(String value : commaSeparatedValues) {
-						if(key.equals(value)) {
+						String tapFileNameWithoutExtension = key;
+						int extensionIndex = tapFileNameWithoutExtension.lastIndexOf('.');
+						if ( extensionIndex != -1 )
+						{
+							tapFileNameWithoutExtension = tapFileNameWithoutExtension.substring(0, tapFileNameWithoutExtension.lastIndexOf('.'));
+						}
+						if(tapFileNameWithoutExtension.equals(value)) {
 							final ExecutionStatus status = this.getExecutionStatus(testSets.get(key));
 							automatedTestCase.addCustomFieldAndStatus(value, status);
 							
@@ -188,18 +186,17 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 				final int executionId = testlink.updateTestCase(automatedTestCase);
 				
 				if(executionId > 0 && this.isAttachTAPStream()) {
+					final String remoteWs = build.getWorkspace().getRemote();
 					List<Attachment> attachments = build.getWorkspace().act( new FileCallable<List<Attachment>>() {
 						
 						private static final long serialVersionUID = -5411683541842375558L;
 
 						List<Attachment> attachments = new ArrayList<Attachment>();
 						
-						public List<Attachment> invoke(File f,
-								VirtualChannel channel)
-								throws IOException,
-								InterruptedException {
+						public List<Attachment> invoke(File f, VirtualChannel channel) 
+								throws IOException, InterruptedException {
 							
-							File reportFile = new File(build.getWorkspace().getRemote(), key);
+							File reportFile = new File(remoteWs, key);
 							final Attachment attachment = new Attachment();
 							attachment.setContent(TAPFileNameResultSeeker.this.getBase64FileContent(reportFile));
 							attachment.setDescription(reportFile.getName());
