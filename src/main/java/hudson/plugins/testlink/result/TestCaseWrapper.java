@@ -299,5 +299,13 @@ public class TestCaseWrapper implements Serializable {
 	public Integer getVersion() {
 		return testCase.getVersion();
 	}
+	
+	public String getFullExternalId() {
+		return testCase.getFullExternalId();
+	}
+	
+	public void setFullExternalId(String fullExternalId) {
+		this.testCase.setFullExternalId(fullExternalId);
+	}
 
 }

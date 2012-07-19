@@ -365,6 +365,8 @@ public final class TestLinkHelper
 		builder.append("<tr><th>");
 		builder.append(Messages.ReportSummary_Details_TestCaseId() );
 		builder.append("</th><th>");
+		builder.append(Messages.ReportSummary_Details_TestCaseExternalId() );
+		builder.append("</th><th>");
 		builder.append(Messages.ReportSummary_Details_Version() );
 		builder.append("</th><th>");
 		builder.append(Messages.ReportSummary_Details_Name());
@@ -379,6 +381,7 @@ public final class TestLinkHelper
         	builder.append("<tr>\n");
         	
         	builder.append("<td>"+tc.getId()+"</td>");
+        	builder.append("<td>"+tc.getFullExternalId()+"</td>");
         	builder.append("<td>"+tc.getVersion()+"</td>");
         	builder.append("<td>"+tc.getName()+"</td>");
         	builder.append("<td>"+tc.getTestProjectId()+"</td>");

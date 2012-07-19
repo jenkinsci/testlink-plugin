@@ -288,34 +288,27 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 				automatedTestCase.setExecutionStatus(ExecutionStatus.BLOCKED);
 			} else {
 				if (iterativeBuildSteps != null) {
-					final EnvVars iterativeEnvVars = TestLinkHelper
-							.buildTestCaseEnvVars(automatedTestCase,
+					final EnvVars iterativeEnvVars = TestLinkHelper.buildTestCaseEnvVars(automatedTestCase,
 									testLinkSite.getTestProject(),
 									testLinkSite.getTestPlan(),
 									testLinkSite.getBuild(), listener);
 
 					build.addAction(new EnvironmentContributingAction() {
-						public void buildEnvVars(AbstractBuild<?, ?> build,
-								EnvVars env) {
+						public void buildEnvVars(AbstractBuild<?, ?> build, EnvVars env) {
 							env.putAll(iterativeEnvVars);
 						}
-
 						public String getUrlName() {
 							return null;
 						}
-
 						public String getIconFileName() {
 							return null;
 						}
-
 						public String getDisplayName() {
 							return null;
 						}
 					});
-
 					for (BuildStep b : iterativeBuildSteps) {
-						final boolean success = b.perform(build, launcher,
-								listener);
+						final boolean success = b.perform(build, launcher, listener);
 						if (!success) {
 							this.failure = Boolean.TRUE;
 						}
