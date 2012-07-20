@@ -44,6 +44,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -63,6 +65,8 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
  */
 public class TestLinkBuilder extends AbstractTestLinkBuilder {
 
+	private static final Logger LOGGER = Logger.getLogger("hudson.plugins.testlink");
+	
 	/**
 	 * The Descriptor of this Builder. It contains the TestLink installation.
 	 */
@@ -91,6 +95,9 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
 			BuildListener listener) throws InterruptedException, IOException {
+		
+		LOGGER.log(Level.INFO, "TestLink builder started");
+		
 		this.failure = false;
 
 		// TestLink installation
@@ -117,6 +124,12 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			final String buildName = expandVariable(build.getBuildVariableResolver(),
 					build.getEnvironment(listener), getBuildName());
 			final String buildNotes = Messages.TestLinkBuilder_Build_Notes();
+			if(LOGGER.isLoggable(Level.FINE)) {
+				LOGGER.log(Level.FINE, "TestLink project name: ["+testProjectName+"]");
+				LOGGER.log(Level.FINE, "TestLink plan name: ["+testPlanName+"]");
+				LOGGER.log(Level.FINE, "TestLink build name: ["+buildName+"]");
+				LOGGER.log(Level.FINE, "TestLink build notes: ["+buildNotes+"]");
+			}
 			// TestLink Site object
 			testLinkSite = this.getTestLinkSite(testLinkUrl, testLinkDevKey, testProjectName, testPlanName, buildName, buildNotes);
 			final String[] customFieldsNames = this.createArrayOfCustomFieldsNames(build.getBuildVariableResolver(), build.getEnvironment(listener));
@@ -141,6 +154,12 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			e.printStackTrace(listener.fatalError(e.getMessage()));
 			throw new AbortException(Messages.TestLinkBuilder_TestLinkCommunicationError());
 		}
+		
+		if(LOGGER.isLoggable(Level.FINE)) {
+			for(TestCaseWrapper tcw : automatedTestCases) {
+				LOGGER.log(Level.FINE, "TestLink automated test case ID [" + tcw.getId() + "], name [" +tcw.getName()+ "]");
+			}
+		}
 
 		listener.getLogger().println(Messages.TestLinkBuilder_ExecutingSingleBuildSteps());
 		this.executeSingleBuildSteps(build, launcher, listener);
@@ -156,6 +175,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			
 			if(getResultSeekers() != null) {
 				for (ResultSeeker resultSeeker : getResultSeekers()) {
+					LOGGER.log(Level.INFO, "Seeking test results. Using: " + resultSeeker.getDescriptor().getDisplayName());
 					resultSeeker.seek(automatedTestCases, build, launcher, listener, testLinkSite);
 				}
 			}
@@ -185,6 +205,8 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			}
 		}
 
+		LOGGER.log(Level.INFO, "TestLink builder finished");
+		
 		// end
 		return Boolean.TRUE;
 	}

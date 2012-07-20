@@ -38,6 +38,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -57,6 +59,8 @@ import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 public abstract class ResultSeeker implements Serializable, Describable<ResultSeeker>, Comparable<ResultSeeker> {
 
 	private static final long serialVersionUID = 3609106615463455486L;
+	
+	private static final Logger LOGGER = Logger.getLogger("hudson.plugins.testlink");
 	
 	/**
 	 * Include pattern used when looking for results.
@@ -184,6 +188,12 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 				throw new IOException(e);
 			}
 		}
+		
+		if(LOGGER.isLoggable(Level.FINE)) {
+			for(String fileName : fileNames) {
+				LOGGER.log(Level.FINE, "Test result file found: " + fileName);
+			}
+		}
 
 		return fileNames;
 
@@ -197,13 +207,16 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 
 		for (CustomField cf : customFields) {
 			boolean isKeyCustomField = cf.getName().equals(keyCustomFieldName);
-
 			if (isKeyCustomField) {
 				customField = cf;
 				break;
 			}
-
 		}
+		
+		if(LOGGER.isLoggable(Level.FINE)) {
+			LOGGER.log(Level.FINE, "Key custom field used: " + customField);
+		}
+		
 		return customField;
 	}
 	
