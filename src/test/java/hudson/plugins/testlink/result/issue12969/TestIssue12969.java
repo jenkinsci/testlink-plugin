@@ -30,8 +30,8 @@ import hudson.plugins.testlink.result.TestNGMethodNameDataProviderNameResultSeek
 
 import org.jvnet.hudson.test.Bug;
 
+import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
-import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 
 /**
  * Tests for issue 12969.

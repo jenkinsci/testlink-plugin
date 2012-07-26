@@ -23,8 +23,8 @@
  */
 package hudson.plugins.testlink.result;
 
+import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
-import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 
 /**
  * Tests ResultSeeker with TestNG method name.

@@ -29,8 +29,8 @@ import hudson.plugins.testlink.util.TestLinkHelper;
 import java.lang.reflect.Constructor;
 import java.util.Locale;
 
-import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
-import br.eti.kinoshita.testlinkjavaapi.model.ExecutionType;
+import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
+import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionType;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**

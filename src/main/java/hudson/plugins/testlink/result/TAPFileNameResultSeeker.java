@@ -53,9 +53,9 @@ import org.tap4j.model.TestResult;
 import org.tap4j.model.TestSet;
 import org.tap4j.util.DirectiveValues;
 
-import br.eti.kinoshita.testlinkjavaapi.TestLinkAPIException;
+import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
-import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
+import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
 
 /**
  * <p>Seeks for test results matching each TAP file name with the key 
@@ -68,7 +68,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
  */
 public class TAPFileNameResultSeeker extends ResultSeeker {
 	
-	private static final long serialVersionUID = 2227402366772835869L;
+	private static final long serialVersionUID = 3068999690225092293L;
 
 	protected static final String TEXT_PLAIN_CONTENT_TYPE = "text/plain";
 	

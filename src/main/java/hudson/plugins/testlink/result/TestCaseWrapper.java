@@ -32,9 +32,9 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 
+import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
-import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCaseStep;
 
@@ -44,7 +44,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCaseStep;
  */
 public class TestCaseWrapper implements Serializable {
 
-	private static final long serialVersionUID = 7997733027050911729L;
+	private static final long serialVersionUID = 6440057711152759081L;
 
 	/**
 	 * A list of custom field and status, used to allow the user to use a comma

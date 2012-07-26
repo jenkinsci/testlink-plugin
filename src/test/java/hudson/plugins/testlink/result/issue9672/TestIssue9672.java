@@ -23,10 +23,10 @@
  */
 package hudson.plugins.testlink.result.issue9672;
 
+import hudson.plugins.testlink.result.JUnitCaseClassNameResultSeeker;
 import hudson.plugins.testlink.result.ResultSeeker;
 import hudson.plugins.testlink.result.ResultSeekerTestCase;
 import hudson.plugins.testlink.result.TestCaseWrapper;
-import hudson.plugins.testlink.result.JUnitCaseClassNameResultSeeker;
 
 import org.jvnet.hudson.test.Bug;
 

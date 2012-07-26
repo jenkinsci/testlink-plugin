@@ -1,13 +1,13 @@
 <div>
   <p>
-	Le Plug-in TestLink Jenkins récupère les données de cas de test automatisés à partir de
-	TestLink. Ces données sont ensuite utilisées en variables d'environnement. Ainsi vos   
-	Build Steps itératives peuvent utiliser ces informations pour exécuter vos tests
-	automatisés.
+	Le Plug-in Jenkins TestLink rï¿½cupï¿½re les donnï¿½es de cas de test automatisï¿½s ï¿½ partir de
+	TestLink. Ces donnï¿½es sont ensuite utilisï¿½es en variables d'environnement. Ainsi vos   
+	Build Steps itï¿½ratives peuvent utiliser ces informations pour exï¿½cuter vos tests
+	automatisï¿½s.
   </p>
-  <p>Par exemple, vous pourriez exécuter ant en passant une Test Class en paramètre: <pre>/opt/java/apache-ant-1.8.0/bin/ant -DtestClass=$TESTLINK_TESTCASE_TEST_CLASS</pre></p>
+  <p>Par exemple, vous pourriez exï¿½cuter ant en passant une Test Class en paramï¿½tre: <pre>/opt/java/apache-ant-1.8.0/bin/ant -DtestClass=$TESTLINK_TESTCASE_TEST_CLASS</pre></p>
   <p>
-  	Liste des variables d'environnement que le Plug-in TestLink Jenkins défini:
+  	Liste des variables d'environnement que le Plug-in Jenkins TestLink dï¿½fini:
   </p>
   <p>
   	<ul>
@@ -23,8 +23,16 @@
   	</ul>
   </p>
   <p>
-  	Pour chaque champ personnalisé trouvé, le Plug-in TestLink Jenkins défini une variable 
-  	d'environnement avec ses nom et valeur, comme indiqué ci-dessus (%CUSTOM_FIELD_NAME%).
-  	Si le nom du champ personnalisé contient des espaces, the plug-in va les convertir en _.
+  	Pour chaque champ personnalisï¿½ trouvï¿½, le Plug-in Jenkins TestLink dï¿½fini une variable 
+  	d'environnement avec ses nom et valeur, comme indiquï¿½ ci-dessus (%CUSTOM_FIELD_NAME%).
+  	Si le nom du champ personnalisï¿½ contient des espaces, the plug-in va les convertir en _.
+  </p>
+    <p>
+    For each Test Step of the Test Case, Jenkins TestLink Plug-in defines two environment 
+    variables. TESTLINK_TESTCASE_STEP_$INDEX_ACTION and 
+    TESTLINK_TESTCASE_STEP_$INDEX_EXPECTED. e.g.: for the first test step found 
+    in a test case, you can expect to have the environment variable 
+    TESTLINK_TESTCASE_STEP_1_ACTION with the action of the step, and 
+    TESTLINK_TESTCASE_STEP_1_EXPECTED with the expected result.
   </p>
 </div>

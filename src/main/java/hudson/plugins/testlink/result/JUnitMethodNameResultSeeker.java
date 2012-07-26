@@ -38,7 +38,7 @@ import java.io.IOException;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
+import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 
 /**
  * <p>Seeks for test results matching each JUnit Case Result class name and method name with 
@@ -53,7 +53,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
  */
 public class JUnitMethodNameResultSeeker extends AbstractJUnitResultSeeker {
 
-	private static final long serialVersionUID = -4509186062258198342L;
+	private static final long serialVersionUID = -9198823056268332288L;
 
 	/**
 	 * @param includePattern Include pattern used when looking for results

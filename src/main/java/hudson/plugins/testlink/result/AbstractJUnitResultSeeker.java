@@ -35,9 +35,9 @@ import hudson.tasks.junit.SuiteResult;
 import java.io.File;
 import java.io.IOException;
 
-import br.eti.kinoshita.testlinkjavaapi.TestLinkAPIException;
+import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
-import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
+import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
@@ -45,8 +45,8 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
  */
 public abstract class AbstractJUnitResultSeeker extends ResultSeeker {
 
-	private static final long serialVersionUID = -942821218286222278L;
-	
+	private static final long serialVersionUID = -5345177768201402707L;
+
 	private static final String TEXT_XML_CONTENT_TYPE = "text/xml";
 	
 	private boolean attachJUnitXML = false;

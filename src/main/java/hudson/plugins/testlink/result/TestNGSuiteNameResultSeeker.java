@@ -43,7 +43,7 @@ import java.util.List;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
+import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 
 /**
  * <p>Seeks for test results matching each TestNG Suite name with the key 
@@ -56,7 +56,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
  */
 public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 
-	private static final long serialVersionUID = 6157213418831164850L;
+	private static final long serialVersionUID = 3998602647639013614L;
 	
 	private final TestNGParser parser = new TestNGParser();
 	

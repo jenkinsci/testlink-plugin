@@ -44,7 +44,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
+import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 
 /**
  * <p>Seeks for test results matching each TestNG Method name with the key 
@@ -57,7 +57,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
  */
 public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 
-	private static final long serialVersionUID = 6344411033025796715L;
+	private static final long serialVersionUID = 3885800916930897675L;
 	
 	private final TestNGParser parser = new TestNGParser();
 	

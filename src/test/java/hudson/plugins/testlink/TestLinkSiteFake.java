@@ -62,6 +62,8 @@ public class TestLinkSiteFake extends TestLinkSite {
 		case BLOCKED:
 			report.setBlocked(report.getBlocked()+1);
 			break;
+		default:
+			break;
 		}
 		return 1;
 	}

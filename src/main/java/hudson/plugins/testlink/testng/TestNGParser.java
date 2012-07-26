@@ -90,6 +90,14 @@ public class TestNGParser implements Serializable {
     		throw new ParserException( e );
 		} catch (IOException e) {
 			throw new ParserException( e );
+		} finally {
+			if(fileInputStream != null) {
+				try {
+					fileInputStream.close();
+				} catch(IOException ioe) {
+					// OK, Do nothing
+				}
+			}
 		}
         
         return suite;

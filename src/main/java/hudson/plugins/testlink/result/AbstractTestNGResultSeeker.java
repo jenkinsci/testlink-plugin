@@ -35,9 +35,9 @@ import hudson.remoting.VirtualChannel;
 import java.io.File;
 import java.io.IOException;
 
-import br.eti.kinoshita.testlinkjavaapi.TestLinkAPIException;
+import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
-import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
+import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
@@ -45,7 +45,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.ExecutionStatus;
  */
 public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 
-	private static final long serialVersionUID = -5069755890860922333L;
+	private static final long serialVersionUID = -1017414394764084125L;
 	
 	public static final String PASS = "PASS";
 	public static final String FAIL = "FAIL";

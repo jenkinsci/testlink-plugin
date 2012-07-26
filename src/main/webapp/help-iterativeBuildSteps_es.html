@@ -1,14 +1,14 @@
 <div>
   <p>
-  	TestLink Jenkins Plug-in recupera los datos de los casos de prueba automatizados 
+  	Jenkins TestLink Plug-in recupera los datos de los casos de prueba automatizados 
   	del TestLink. Estos datos son entonces definidos como variables de ambiente. 
-  	De esta manera su Build Steps iterativos pueden hacer uso de esta información 
+  	De esta manera su Build Steps iterativos pueden hacer uso de esta informaciï¿½n 
   	para ejecutar sus pruebas automatizadas.
   </p>
   <p>Por ejemplo, usted puede ejecutar ant pasando una clase de prueba como 
-  parámetro: <pre>/opt/java/apache-ant-1.8.0/bin/ant -DtestClass=$TESTLINK_TESTCASE_TEST_CLASS</pre></p>
+  parametro: <pre>/opt/java/apache-ant-1.8.0/bin/ant -DtestClass=$TESTLINK_TESTCASE_TEST_CLASS</pre>
   <p>
-  	Lista de variables de ambiente que el TestLink Jenkins Plug-in define:
+  	Lista de variables de ambiente que el Jenkins TestLink Plug-in define:
   </p>
   <p>
   	<ul>
@@ -24,9 +24,17 @@
   	</ul>
   </p>
   <p>
-  	Para cada Campo Personalizado encontrado, TestLink Hudson Plug-in define una 
+  	Para cada Campo Personalizado encontrado, Jenkins TestLink Plug-in define una 
   	variable de ambiente con su nombre y valor, como ense&#241;ado arriba 
   	(%CUSTOM_FIELD_NAME%). Si el nombre del campo personalizado tiene espacios el 
   	plug-in ir&#225; convertir-los en _&#39;s.
+  </p>
+    <p>
+    For each Test Step of the Test Case, Jenkins TestLink Plug-in defines two environment 
+    variables. TESTLINK_TESTCASE_STEP_$INDEX_ACTION and 
+    TESTLINK_TESTCASE_STEP_$INDEX_EXPECTED. e.g.: for the first test step found 
+    in a test case, you can expect to have the environment variable 
+    TESTLINK_TESTCASE_STEP_1_ACTION with the action of the step, and 
+    TESTLINK_TESTCASE_STEP_1_EXPECTED with the expected result.
   </p>
 </div>
