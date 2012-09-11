@@ -64,6 +64,7 @@ extends HudsonTestCase
 				null, 
 				Boolean.FALSE, 
 				Boolean.FALSE,  
+				Boolean.FALSE, 
 				null);
 	}
 	
@@ -89,7 +90,7 @@ extends HudsonTestCase
 	
 	public void testNull()
 	{
-		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null );
+		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null, null );
 		
 		assertNotNull( builder );
 		
@@ -112,6 +113,8 @@ extends HudsonTestCase
 		assertNull( builder.getCustomFields() );
 		
 		assertNull( builder.getTransactional() );
+		
+		assertNull( builder.getFailIfNoResults() );
 		
 	}
 	
@@ -137,6 +140,7 @@ extends HudsonTestCase
 			null, 
 			Boolean.FALSE, 
 			Boolean.FALSE,  
+			Boolean.FALSE, 
 			null);
 		
 		assertNotNull( hudson );
@@ -163,6 +167,7 @@ extends HudsonTestCase
 		assertEquals( builder.getCustomFields(), "class, time" );
 		
 		assertFalse( builder.getTransactional() );
+		assertFalse( builder.getFailIfNoResults() );
 		
 	}
 

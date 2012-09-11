@@ -114,6 +114,11 @@ extends Builder
 	 */
 	protected final Boolean failedTestsMarkBuildAsFailure;
 	
+	/**
+	 * Fail the build if no test results are present.
+	 */
+	protected final Boolean failIfNoResults;
+	
 	/*
 	 * Test life cycle commands. With these hooks you can execute command before 
 	 * the single test command, after the single test command, before the 
@@ -153,6 +158,7 @@ extends Builder
 	 * @param afterIteratingAllTestCasesBuildSteps Command executed after iterating all test cases.
 	 * @param transactional Whether the build's execution is transactional or not.
 	 * @param failedTestsMarkBuildAsFailure Whether failed tests mark the build as failure or not.
+	 * @param failIfNoResults If true marks the build as FAILURE.
 	 * @param resultSeekers List of result seekers.
 	 */
 	public AbstractTestLinkBuilder(
@@ -167,6 +173,7 @@ extends Builder
 		List<BuildStep> afterIteratingAllTestCasesBuildSteps, 
 		Boolean transactional, 
 		Boolean failedTestsMarkBuildAsFailure, 
+		Boolean failIfNoResults, 
 		List<ResultSeeker> resultSeekers
 	) {
 		super();
@@ -181,6 +188,7 @@ extends Builder
 		this.afterIteratingAllTestCasesBuildSteps = afterIteratingAllTestCasesBuildSteps;
 		this.transactional = transactional;
 		this.failedTestsMarkBuildAsFailure = failedTestsMarkBuildAsFailure;
+		this.failIfNoResults = failIfNoResults;
 		this.resultSeekers = resultSeekers;
 	}
 	
@@ -262,6 +270,13 @@ extends Builder
 	public Boolean getFailedTestsMarkBuildAsUnstable()
 	{
 		return failedTestsMarkBuildAsFailure;
+	}
+	
+	/**
+	 * @return the failIfNoResults
+	 */
+	public Boolean getFailIfNoResults() {
+		return failIfNoResults;
 	}
 	
 	/**

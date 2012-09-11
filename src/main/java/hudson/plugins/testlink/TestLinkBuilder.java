@@ -81,12 +81,12 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			List<BuildStep> iterativeBuildSteps,
 			List<BuildStep> afterIteratingAllTestCasesBuildSteps,
 			Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
-			List<ResultSeeker> resultSeekers) {
+			Boolean failIfNoResults, List<ResultSeeker> resultSeekers) {
 		super(testLinkName, testProjectName, testPlanName, buildName,
 				customFields, singleBuildSteps,
 				beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
 				afterIteratingAllTestCasesBuildSteps, transactional,
-				failedTestsMarkBuildAsFailure, resultSeekers);
+				failedTestsMarkBuildAsFailure, failIfNoResults, resultSeekers);
 	}
 
 	/**
@@ -196,8 +196,11 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		final TestLinkResult result = new TestLinkResult(report, build);
 		final TestLinkBuildAction buildAction = new TestLinkBuildAction(build, result);
 		build.addAction(buildAction);
-
-		if (report.getFailed() > 0) {
+		
+		if(report.getTestsTotal() <= 0 && this.getFailIfNoResults() == Boolean.TRUE) {
+			listener.getLogger().println("No test results found. Setting the build result as FAILURE.");
+			build.setResult(Result.FAILURE);
+		} else if (report.getFailed() > 0) {
 			if (this.failedTestsMarkBuildAsFailure != null && this.failedTestsMarkBuildAsFailure) {
 				build.setResult(Result.FAILURE);
 			} else {
