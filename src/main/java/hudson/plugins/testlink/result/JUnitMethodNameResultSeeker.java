@@ -83,7 +83,7 @@ public class JUnitMethodNameResultSeeker extends AbstractJUnitResultSeeker {
 	 */
 	@Override
 	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
-		listener.getLogger().println( Messages.Results_JUnit_LookingForTestClasses() ); // i18n
+		listener.getLogger().println( Messages.Results_JUnit_LookingForTestMethods() ); // i18n
 		try {
 			final JUnitParser parser = new JUnitParser(false);
 			final TestResult testResult = parser.parse(this.includePattern, build, launcher, listener);

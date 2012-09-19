@@ -107,7 +107,7 @@ public class TestNGMethodNameDataProviderNameResultSeeker extends AbstractTestNG
 	 */
 	@Override
 	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, final BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
-		listener.getLogger().println( Messages.Results_TestNG_LookingForTestSuites() );
+		listener.getLogger().println( Messages.Results_TestNG_LookingForTestMethodDataProvider() );
 		try {
 			final List<Suite> suites = build.getWorkspace().act(new FilePath.FileCallable<List<Suite>>() {
 				private static final long serialVersionUID = 1L;
