@@ -196,14 +196,14 @@ public final class TestLinkHelper
 		Map<String, String> testLinkEnvVar = new HashMap<String, String>();
 		
 		testLinkEnvVar.put( TESTLINK_TESTCASE_ID_ENVVAR, ""+testCase.getId() );
-		testLinkEnvVar.put( TESTLINK_TESTCASE_NAME_ENVVAR, ""+testCase.getName() );
+		testLinkEnvVar.put( TESTLINK_TESTCASE_NAME_ENVVAR, defaultIfBlank(testCase.getName(), ""));
 		testLinkEnvVar.put( TESTLINK_TESTCASE_TESTSUITE_ID_ENVVAR, ""+testCase.getTestSuiteId() );
 		testLinkEnvVar.put( TESTLINK_TESTCASE_TESTPROJECT_ID, ""+testCase.getTestProjectId() );
 		testLinkEnvVar.put( TESTLINK_TESTCASE_AUTHOR_ENVVAR, ""+testCase.getAuthorLogin() );
-		testLinkEnvVar.put( TESTLINK_TESTCASE_SUMMARY_ENVVAR, testCase.getSummary() );
-		testLinkEnvVar.put( TESTLINK_BUILD_NAME_ENVVAR, build.getName() );
-		testLinkEnvVar.put( TESTLINK_TESTPLAN_NAME_ENVVAR, testPlan.getName() );
-		testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, testProject.getName() );
+		testLinkEnvVar.put( TESTLINK_TESTCASE_SUMMARY_ENVVAR, defaultIfBlank(testCase.getSummary(), "") );
+		testLinkEnvVar.put( TESTLINK_BUILD_NAME_ENVVAR, defaultIfBlank(build.getName(), ""));
+		testLinkEnvVar.put( TESTLINK_TESTPLAN_NAME_ENVVAR, defaultIfBlank(testPlan.getName(), ""));
+		testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, defaultIfBlank(testProject.getName(), ""));
 		
 		List<CustomField> customFields = testCase.getCustomFields();
 		for ( CustomField customField : customFields )
@@ -227,6 +227,19 @@ public final class TestLinkHelper
 		return testLinkEnvVar;
 	}
 	
+	/**
+	 * TODO: use apache stringutils'
+	 * @param string
+	 * @param defaultValue
+	 * @return
+	 */
+	private static String defaultIfBlank(String string, String defaultValue) {
+		if(string == null || string.trim().equals("")) {
+			return defaultValue;
+		}
+		return string;
+	}
+
 	/**
 	 * <p>Formats a custom field into an environment variable. It appends 
 	 * TESTLINK_TESTCASE in front of the environment variable name.</p>

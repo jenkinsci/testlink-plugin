@@ -49,84 +49,72 @@ import org.kohsuke.stapler.StaplerRequest;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 1.0
  */
-public class TestLinkBuilderDescriptor 
-extends Descriptor<Builder>
-{
+public class TestLinkBuilderDescriptor extends BuildStepDescriptor<Builder> {
 
 	// exposed for Jelly
-    public final Class<TestLinkBuilder> testLinkBuildType = TestLinkBuilder.class;
-	
+	public final Class<TestLinkBuilder> testLinkBuildType = TestLinkBuilder.class;
+
 	private static final String DISPLAY_NAME = "Invoke TestLink";
-	
+
 	@CopyOnWrite
-	private volatile TestLinkInstallation[] installations = 
-		new TestLinkInstallation[0];
-	
-	public TestLinkBuilderDescriptor()
-	{
+	private volatile TestLinkInstallation[] installations = new TestLinkInstallation[0];
+
+	public TestLinkBuilderDescriptor() {
 		super(TestLinkBuilder.class);
 		load();
 	}
 
 	@Override
-	public String getDisplayName()
-	{
+	public String getDisplayName() {
 		return DISPLAY_NAME;
 	}
-	
+
 	/**
 	 * @return List of TestLink installations
 	 */
-	public TestLinkInstallation[] getInstallations()
-	{
+	public TestLinkInstallation[] getInstallations() {
 		return this.installations;
 	}
-	
+
 	public TestLinkInstallation getInstallationByTestLinkName(
-		String testLinkName
-	)
-	{
+			String testLinkName) {
 		TestLinkInstallation installation = null;
-		if ( this.installations != null && this.installations.length > 0 )
-		{
-			for(TestLinkInstallation tempInst : this.installations )
-			{
-				if ( tempInst.getName().equals(testLinkName))
-				{
+		if (this.installations != null && this.installations.length > 0) {
+			for (TestLinkInstallation tempInst : this.installations) {
+				if (tempInst.getName().equals(testLinkName)) {
 					return tempInst;
 				}
 			}
 		}
 		return installation;
 	}
-	
+
 	@Override
-	public boolean configure( StaplerRequest req, JSONObject json )
-	throws hudson.model.Descriptor.FormException
-	{
-		this.installations = 
-			req.bindParametersToList(
-					TestLinkInstallation.class,
-					"TestLink.").toArray(new TestLinkInstallation[0]);
+	public boolean configure(StaplerRequest req, JSONObject json)
+			throws hudson.model.Descriptor.FormException {
+		this.installations = req.bindParametersToList(
+				TestLinkInstallation.class, "TestLink.").toArray(
+				new TestLinkInstallation[0]);
 		save();
 		return true;
 	}
-	
+
 	// exposed for Jelly
-    public List<Descriptor<? extends BuildStep>> getApplicableBuildSteps(AbstractProject<?,?> p) {
-        return getBuildSteps();
-    }
-    
-    public List<Descriptor<? extends ResultSeeker>> getApplicableResultSeekers(AbstractProject<?, ?> p) {
-    	List<Descriptor<? extends ResultSeeker>> list = new LinkedList<Descriptor<? extends ResultSeeker>>();
-    	for(Descriptor<? extends ResultSeeker> rs : ResultSeeker.all()) {
-    		list.add(rs);
-    	}
-    	return list;
-    }
-	
-    public static List<Descriptor<? extends BuildStep>> getBuildSteps()
-	{
+	public List<Descriptor<? extends BuildStep>> getApplicableBuildSteps(
+			AbstractProject<?, ?> p) {
+		return getBuildSteps();
+	}
+
+	public List<Descriptor<? extends ResultSeeker>> getApplicableResultSeekers(
+			AbstractProject<?, ?> p) {
+		List<Descriptor<? extends ResultSeeker>> list = new LinkedList<Descriptor<? extends ResultSeeker>>();
+		for (Descriptor<? extends ResultSeeker> rs : ResultSeeker.all()) {
+			list.add(rs);
+		}
+		return list;
+	}
+
+	public static List<Descriptor<? extends BuildStep>> getBuildSteps() {
 		List<Descriptor<? extends BuildStep>> list = new ArrayList<Descriptor<? extends BuildStep>>();
 		addTo(Builder.all(), list);
 		addTo(Publisher.all(), list);
@@ -134,33 +122,38 @@ extends Descriptor<Builder>
 	}
 
 	private static void addTo(
-			List<? extends Descriptor<? extends BuildStep>> source, 
-			List<Descriptor<? extends BuildStep>> list )
-	{
-		for(Descriptor<? extends BuildStep> d : source)
-		{
-			if ( d instanceof BuildStepDescriptor)
-			{
-				BuildStepDescriptor<?> bsd = (BuildStepDescriptor<?>)d;
-				if(bsd.isApplicable(FreeStyleProject.class))
-				{
+			List<? extends Descriptor<? extends BuildStep>> source,
+			List<Descriptor<? extends BuildStep>> list) {
+		for (Descriptor<? extends BuildStep> d : source) {
+			if (d instanceof BuildStepDescriptor) {
+				BuildStepDescriptor<?> bsd = (BuildStepDescriptor<?>) d;
+				if (bsd.isApplicable(FreeStyleProject.class)) {
 					list.add(d);
 				}
 			}
 		}
 	}
-    
-	/* 
+
+	/*
 	 * --- Validation methods ---
 	 */
-	public FormValidation doCheckMandatory(@QueryParameter String value)
-	{
+	public FormValidation doCheckMandatory(@QueryParameter String value) {
 		FormValidation returnValue = FormValidation.ok();
-		if ( StringUtils.isBlank( value ) )
-		{
-			returnValue = FormValidation.error( Messages.TestLinkBuilder_MandatoryProperty() );
+		if (StringUtils.isBlank(value)) {
+			returnValue = FormValidation.error(Messages
+					.TestLinkBuilder_MandatoryProperty());
 		}
 		return returnValue;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hudson.tasks.BuildStepDescriptor#isApplicable(java.lang.Class)
+	 */
+	@Override
+	public boolean isApplicable(Class<? extends AbstractProject> jobType) {
+		return Boolean.TRUE;
+	}
+
 }
