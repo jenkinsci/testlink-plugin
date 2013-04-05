@@ -10,9 +10,9 @@
 				value="pentium_pro+mmx pentium_pro pentium+mmx pentium i486 i386 i86" />
 		</properties>
 		<testcase time="0" classname="br.eti.kinoshita.junit.SampleTest"
-			name="testSomething" />
+			name="methodname" />
 		<testcase time="0" classname="br.eti.kinoshita.junit.SampleTest"
-			name="testSomething2">
+			name="methodname2">
 			<failure message="expected:&lt;true&gt; but was:&lt;false&gt;"
 				type="junit.framework.AssertionFailedError">junit.framework.AssertionFailedError: expected:&lt;true&gt; but
 				was:&lt;false&gt;
@@ -59,7 +59,7 @@
 			</failure>
 		</testcase>
 		<testcase time="0" classname="br.eti.kinoshita.junit.SampleTest"
-			name="testSomething3" />
+			name="methodname3" />
 	</testsuite>
 	<testsuite failures="0" time="0.016" errors="0" skipped="0"
 		tests="1" name="suiteB">
@@ -70,7 +70,7 @@
 				value="pentium_pro+mmx pentium_pro pentium+mmx pentium i486 i386 i86" />
 		</properties>
 		<testcase time="0" classname="br.eti.kinoshita.junit.SampleTest"
-			name="testSomething" />
+			name="methodname" />
 	</testsuite>
 	<testsuite failures="0" time="0.016" errors="0" skipped="0"
 		tests="1" name="suiteC">
@@ -81,6 +81,6 @@
 				value="pentium_pro+mmx pentium_pro pentium+mmx pentium i486 i386 i86" />
 		</properties>
 		<testcase time="0" classname="br.eti.kinoshita.junit.SampleTest"
-			name="testSomething2" />
+			name="methodname2" />
 	</testsuite>
 </testsuites>

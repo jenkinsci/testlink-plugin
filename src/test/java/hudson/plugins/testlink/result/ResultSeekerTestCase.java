@@ -131,10 +131,21 @@ class ResultSeekerBuilder extends Builder implements Serializable {
 			BuildListener listener) throws InterruptedException,
 			IOException {
 		for (FilePath f : build.getWorkspace().list()) {
-            f.touch(System.currentTimeMillis());
+			traverseDirectory(f);
         }
 		
         seeker.seek(tcs, build, launcher, listener, testlink);
         return (seeker != null);
+	}
+	private static void traverseDirectory(FilePath f) throws InterruptedException, IOException {
+		if (f.isDirectory()) {
+			for (FilePath subdir : f.list()) {
+				if (subdir.isDirectory()) {
+					traverseDirectory(subdir);
+				}
+				subdir.touch(System.currentTimeMillis());
+			}
+		}
+        f.touch(System.currentTimeMillis());		
 	}
 }
