@@ -130,9 +130,9 @@ extends junit.framework.TestCase
 	{
 		Report report = new Report(1, null);
 		
-		TestCase testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 1, 1, false, null, 1, 1, null, null, ExecutionStatus.PASSED );
-		TestCase testCase2 = new TestCase(2, "tc2", 2, 2, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 2, 2, false, null, 2, 2, null, null, ExecutionStatus.FAILED );
-		TestCase testCase3 = new TestCase(3, "tc3", 3, 3, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 3, 3, false, null, 3, 3, null, null, ExecutionStatus.BLOCKED );
+		TestCase testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 1, 1, null, false, null, 1, 1, null, null, ExecutionStatus.PASSED, null, null);
+		TestCase testCase2 = new TestCase(2, "tc2", 2, 2, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 2, 2, null, false, null, 2, 2, null, null, ExecutionStatus.FAILED, null, null);
+		TestCase testCase3 = new TestCase(3, "tc3", 3, 3, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 3, 3, null, false, null, 3, 3, null, null, ExecutionStatus.BLOCKED, null, null);
 		testCase1.setFullExternalId("1");
 		testCase2.setFullExternalId("2");
 		testCase3.setFullExternalId("3");
