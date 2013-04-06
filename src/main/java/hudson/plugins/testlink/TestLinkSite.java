@@ -28,6 +28,7 @@ import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionType;
 import br.eti.kinoshita.testlinkjavaapi.constants.ResponseDetails;
+import br.eti.kinoshita.testlinkjavaapi.constants.TestCaseDetails;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
@@ -129,7 +130,7 @@ public class TestLinkSite
 				null, 
 				ExecutionType.AUTOMATED, 
 				Boolean.TRUE,
-				null);			
+				TestCaseDetails.FULL);			
 
 		for( final TestCase testCase : testCases )
 		{
