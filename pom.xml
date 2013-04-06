@@ -8,7 +8,7 @@
 			against? -->
 	</parent>
 
-	<inceptionYear>2010-2011 the Jenkins TestLink plug-in team</inceptionYear>
+	<inceptionYear>2010</inceptionYear>
 
 	<artifactId>testlink</artifactId>
 	<name>Jenkins TestLink Plugin</name>
