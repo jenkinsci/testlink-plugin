@@ -5,7 +5,7 @@
     </f:entry>
 
     <f:entry title="${%TestNG method name Key Custom Field}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
-        <f:textbox id="methodNameKeyCustomField" name="TestNGMethodNameDataProviderNameResultSeeker.methodNameKeyCustomField" value="${instance.methodNameKeyCustomField}" />
+        <f:textbox id="keyCustomField" name="TestNGMethodNameDataProviderNameResultSeeker.keyCustomField" value="${instance.keyCustomField}" />
     </f:entry>
     
     <f:entry title="${%TestNG data provider name Key Custom Field}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
