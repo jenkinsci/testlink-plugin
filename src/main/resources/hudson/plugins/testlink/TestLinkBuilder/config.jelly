@@ -28,6 +28,31 @@
   <f:entry title="${%Custom Fields}" help="${rootURL}/../plugin/testlink/help-customFields.html">
 	  <f:textbox id="customFields" name="TestLinkBuilder.customFields" value="${instance.customFields}" />
   </f:entry>
+  
+  <f:advanced>
+  <f:section title="${%Execution Status}">
+
+  <f:entry title="${%Not Run}" help="${rootURL}/../plugin/testlink/help-executionStatus.html">
+      <f:checkbox name="TestLinkBuilder.executionStatusNotRun" value="${instance.executionStatusNotRun}" 
+      checked="${instance.executionStatusNotRun}" />
+  </f:entry>
+  
+  <f:entry title="${%Passed}" help="${rootURL}/../plugin/testlink/help-executionStatus.html">
+      <f:checkbox name="TestLinkBuilder.executionStatusPassed" value="${instance.executionStatusPassed}" 
+      checked="${instance.executionStatusPassed}" />
+  </f:entry>
+      
+  <f:entry title="${%Failed}" help="${rootURL}/../plugin/testlink/help-executionStatus.html">
+      <f:checkbox name="TestLinkBuilder.executionStatusFailed" value="${instance.executionStatusFailed}" 
+      checked="${instance.executionStatusFailed}" />
+  </f:entry>
+      
+  <f:entry title="${%Blocked}" help="${rootURL}/../plugin/testlink/help-executionStatus.html">
+      <f:checkbox name="TestLinkBuilder.executionStatusBlocked" value="${instance.executionStatusBlocked}" 
+      checked="${instance.executionStatusBlocked}" />
+  </f:entry>
+  </f:section>
+  </f:advanced>
       
     <f:block><p><strong>Test Execution</strong></p></f:block>
     

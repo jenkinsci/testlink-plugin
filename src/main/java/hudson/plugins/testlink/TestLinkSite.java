@@ -23,6 +23,9 @@
  */
 package hudson.plugins.testlink;
 
+import java.util.ArrayList;
+import java.util.Set;
+
 import hudson.plugins.testlink.result.TestCaseWrapper;
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
@@ -115,10 +118,15 @@ public class TestLinkSite
 
 	/**
 	 * @param customFieldsNames Array of custom fields names
+	 * @param executionStatus Execution statuses to filter by
 	 * @return Array of automated test cases with custom fields
 	 */
-	public TestCase[] getAutomatedTestCases( String[] customFieldsNames ) 
+	public TestCase[] getAutomatedTestCases( String[] customFieldsNames, Set<ExecutionStatus> executionStatuses ) 
 	{
+		// we do not use the api to filter out execution statuses because it
+		// doesn't work how the api describes - javadocs say comma separated
+		// string of n, p, f and b but looking at the testlink source its an
+		// array of strings
 		final TestCase[] testCases = this.api.getTestCasesForTestPlan(
 				getTestPlan().getId(), 
 				null, 
@@ -132,8 +140,14 @@ public class TestLinkSite
 				Boolean.TRUE,
 				TestCaseDetails.FULL);			
 
+		final ArrayList<TestCase> filteredTestCases = new ArrayList<TestCase>();
+		
 		for( final TestCase testCase : testCases )
 		{
+			if(!executionStatuses.contains(testCase.getExecutionStatus())) {
+				continue;
+			}
+			filteredTestCases.add(testCase);
 			testCase.setTestProjectId(getTestProject().getId());
 			testCase.setExecutionStatus(ExecutionStatus.NOT_RUN);
 			if ( customFieldsNames != null )
@@ -153,7 +167,7 @@ public class TestLinkSite
 			}
 		}
 		
-		return testCases;
+		return filteredTestCases.toArray(new TestCase[0]);
 	}
 	
 	/**
@@ -166,8 +180,9 @@ public class TestLinkSite
 	{
 		int executionId = 0;
 		
-		if ( testCase.getExecutionStatus() != null || testCase.getExecutionStatus() != ExecutionStatus.NOT_RUN )
-		{
+		if (testCase.getExecutionStatus() != null
+				&& !ExecutionStatus.NOT_RUN.equals(testCase
+						.getExecutionStatus()))	{
 			// Update Test Case status
 			final ReportTCResultResponse reportTCResultResponse = api.reportTCResult(
 					testCase.getId(), 
