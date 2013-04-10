@@ -44,7 +44,7 @@ public class TestJUnitMethodNameResultSeeker extends ResultSeekerTestCase {
 		CustomField cf = new CustomField();
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
-		cf.setValue("br.eti.kinoshita.junit.SampleTest#testSomething");
+		cf.setValue("br.eti.kinoshita.junit.SampleTest#methodname");
 		tc.getCustomFields().add(cf);
 		tc.setId(1);
 		tcs[0] = tc;
@@ -52,7 +52,7 @@ public class TestJUnitMethodNameResultSeeker extends ResultSeekerTestCase {
 		tc = new TestCaseWrapper();
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
-		cf.setValue("br.eti.kinoshita.junit.SampleTest#testSomething2");
+		cf.setValue("br.eti.kinoshita.junit.SampleTest#methodname2");
 		tc.getCustomFields().add(cf);
 		tc.setId(2);
 		tcs[1] = tc;
@@ -73,7 +73,7 @@ public class TestJUnitMethodNameResultSeeker extends ResultSeekerTestCase {
 	 */
 	@Override
 	public String getResultsDirectory() {
-		return "hudson/plugins/testlink/result/junit/methodname/";
+		return "hudson/plugins/testlink/result";
 	}
 
 	/* (non-Javadoc)
@@ -81,7 +81,7 @@ public class TestJUnitMethodNameResultSeeker extends ResultSeekerTestCase {
 	 */
 	@Override
 	public String getResultsPattern() {
-		return "TEST-*.xml";
+		return "**/TEST-*.xml";
 	}
 	
 	public void testJUnitMethodNameResultSeekerStrategy() throws Exception {
