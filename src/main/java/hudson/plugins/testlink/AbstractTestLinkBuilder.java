@@ -33,10 +33,14 @@ import hudson.tasks.BuildStep;
 import hudson.tasks.Builder;
 import hudson.util.VariableResolver;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
+
+import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 
 /**
  * Contains basic logic for a Builder for TestLink plug-in. This class was 
@@ -81,6 +85,26 @@ extends Builder
 	 * Comma separated list of custom fields to download from TestLink.
 	 */
 	protected final String customFields;
+	
+	/**
+	 * Tests that have not been run.
+	 */
+	protected final Boolean executionStatusNotRun;
+	
+	/**
+	 * Tests that have passed.
+	 */
+	protected final Boolean executionStatusPassed;
+	
+	/**
+	 * Tests that have failed.
+	 */
+	protected final Boolean executionStatusFailed;
+	
+	/**
+	 * Tests that are blocked.
+	 */
+	protected final Boolean executionStatusBlocked;
 	
 	/**
 	 * List of build steps that are executed only once per job execution. 
@@ -167,6 +191,10 @@ extends Builder
 		String testPlanName, 
 		String buildName, 
 		String customFields, 
+		Boolean executionStatusNotRun,
+		Boolean executionStatusPassed,
+		Boolean executionStatusFailed,
+		Boolean executionStatusBlocked,
 		List<BuildStep> singleBuildSteps, 
 		List<BuildStep> beforeIteratingAllTestCasesBuildSteps, 
 		List<BuildStep> iterativeBuildSteps, 
@@ -182,6 +210,10 @@ extends Builder
 		this.testPlanName = testPlanName;
 		this.buildName = buildName;
 		this.customFields = customFields;
+		this.executionStatusNotRun = executionStatusNotRun;
+		this.executionStatusPassed = executionStatusPassed;
+		this.executionStatusFailed = executionStatusFailed;
+		this.executionStatusBlocked = executionStatusBlocked;
 		this.singleBuildSteps = singleBuildSteps;
 		this.beforeIteratingAllTestCasesBuildSteps = beforeIteratingAllTestCasesBuildSteps;
 		this.iterativeBuildSteps = iterativeBuildSteps;
@@ -230,7 +262,23 @@ extends Builder
 	{
 		return this.customFields;
 	}
-	
+
+	public Boolean getExecutionStatusNotRun() {
+		return executionStatusNotRun;
+	}
+
+	public Boolean getExecutionStatusPassed() {
+		return executionStatusPassed;
+	}
+
+	public Boolean getExecutionStatusFailed() {
+		return executionStatusFailed;
+	}
+
+	public Boolean getExecutionStatusBlocked() {
+		return executionStatusBlocked;
+	}
+
 	public List<BuildStep> getSingleBuildSteps()
 	{
 		return this.singleBuildSteps;
@@ -335,5 +383,35 @@ extends Builder
 		
 		return customFieldNamesArray;
 	}
+
+	/**
+	 * Return a set of execution statuses that we are interested in. If none are
+	 * true, then assume that job is to run tests of all execution statuses.
+	 * 
+	 * @return a set of execution statuses
+	 */
+	Set<ExecutionStatus> getExecutionStatuses() {
+		Set<ExecutionStatus> statuses = new HashSet<ExecutionStatus>();
+		if (Boolean.TRUE.equals(executionStatusNotRun)) {
+			statuses.add(ExecutionStatus.NOT_RUN);
+		}
+		if (Boolean.TRUE.equals(executionStatusPassed)) {
+			statuses.add(ExecutionStatus.PASSED);
+		}
+		if (Boolean.TRUE.equals(executionStatusFailed)) {
+			statuses.add(ExecutionStatus.FAILED);
+		}
+		if (Boolean.TRUE.equals(executionStatusBlocked)) {
+			statuses.add(ExecutionStatus.BLOCKED);
+		}
+		if (statuses.size() == 0) {
+			statuses.add(ExecutionStatus.NOT_RUN);
+			statuses.add(ExecutionStatus.PASSED);
+			statuses.add(ExecutionStatus.FAILED);
+			statuses.add(ExecutionStatus.BLOCKED);
+		}
+		return statuses;
+	}
+	
 	
 }
