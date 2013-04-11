@@ -44,6 +44,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -76,6 +77,8 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 	@DataBoundConstructor
 	public TestLinkBuilder(String testLinkName, String testProjectName,
 			String testPlanName, String buildName, String customFields,
+			Boolean executionStatusNotRun, Boolean executionStatusPassed,
+			Boolean executionStatusFailed, Boolean executionStatusBlocked,
 			List<BuildStep> singleBuildSteps,
 			List<BuildStep> beforeIteratingAllTestCasesBuildSteps,
 			List<BuildStep> iterativeBuildSteps,
@@ -83,7 +86,8 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
 			Boolean failIfNoResults, List<ResultSeeker> resultSeekers) {
 		super(testLinkName, testProjectName, testPlanName, buildName,
-				customFields, singleBuildSteps,
+				customFields, executionStatusNotRun, executionStatusPassed,
+				executionStatusFailed, executionStatusBlocked, singleBuildSteps,
 				beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
 				afterIteratingAllTestCasesBuildSteps, transactional,
 				failedTestsMarkBuildAsFailure, failIfNoResults, resultSeekers);
@@ -133,8 +137,9 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			// TestLink Site object
 			testLinkSite = this.getTestLinkSite(testLinkUrl, testLinkDevKey, testProjectName, testPlanName, buildName, buildNotes);
 			final String[] customFieldsNames = this.createArrayOfCustomFieldsNames(build.getBuildVariableResolver(), build.getEnvironment(listener));
+			final Set<ExecutionStatus> executionStatuses = this.getExecutionStatuses();
 			// Array of automated test cases
-			TestCase[] testCases = testLinkSite.getAutomatedTestCases(customFieldsNames);
+			TestCase[] testCases = testLinkSite.getAutomatedTestCases(customFieldsNames, executionStatuses);
 
 			// Transforms test cases into test case wrappers
 			automatedTestCases = this.transform(testCases);
