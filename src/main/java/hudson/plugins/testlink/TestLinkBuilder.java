@@ -31,12 +31,14 @@ import hudson.model.BuildListener;
 import hudson.model.EnvironmentContributingAction;
 import hudson.model.Result;
 import hudson.model.AbstractBuild;
+import hudson.model.Descriptor;
 import hudson.plugins.testlink.result.ResultSeeker;
 import hudson.plugins.testlink.result.ResultSeekerException;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 import hudson.plugins.testlink.util.Messages;
 import hudson.plugins.testlink.util.TestLinkHelper;
 import hudson.tasks.BuildStep;
+import hudson.tasks.Builder;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -355,5 +357,10 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 				}
 			}
 		}
+	}
+	
+	@Override
+	public Descriptor<Builder> getDescriptor() {
+	    return (TestLinkBuilderDescriptor) super.getDescriptor();
 	}
 }
