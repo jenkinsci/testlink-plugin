@@ -29,10 +29,6 @@ import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.TestLinkSite;
-import hudson.plugins.testlink.testng.Suite;
-import hudson.plugins.testlink.testng.Test;
-import hudson.plugins.testlink.testng.TestMethod;
-import hudson.plugins.testlink.testng.TestNGParser;
 import hudson.plugins.testlink.util.Messages;
 import hudson.remoting.VirtualChannel;
 
@@ -45,6 +41,11 @@ import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
+
+import com.tupilabs.testng.parser.Suite;
+import com.tupilabs.testng.parser.Test;
+import com.tupilabs.testng.parser.TestMethod;
+import com.tupilabs.testng.parser.TestNGParser;
 
 /**
  * <p>Seeks for test results matching each TestNG Method name and its Data 
@@ -127,23 +128,23 @@ public class TestNGMethodNameDataProviderNameResultSeeker extends AbstractTestNG
 					return suites;
 				}
 			});
-			for(Suite suite : suites) {
-				for(Test test : suite.getTests() ) {
-					for(hudson.plugins.testlink.testng.Class  clazz : test.getClasses()) {
-						for(TestMethod method : clazz.getTestMethods()) {
-							for(TestCaseWrapper automatedTestCase : automatedTestCases) {
+			for (Suite suite : suites) {
+				for (Test test : suite.getTests()) {
+					for (com.tupilabs.testng.parser.Class  clazz : test.getClasses()) {
+						for (TestMethod method : clazz.getTestMethods()) {
+							for (TestCaseWrapper automatedTestCase : automatedTestCases) {
 								final String qualifiedName = clazz.getName()+'#'+method.getName();
 								final String dataProviderName = method.getDataProvider();
 								final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
 								final String dataProviderValue = automatedTestCase.getKeyCustomFieldValue(this.dataProviderNameKeyCustomField);
-								for(String value : commaSeparatedValues) {
-									if(qualifiedName.equals(value) && dataProviderName.equals(dataProviderValue)) {
+								for (String value : commaSeparatedValues) {
+									if (qualifiedName.equals(value) && dataProviderName.equals(dataProviderValue)) {
 										ExecutionStatus status = this.getExecutionStatus(method);
-										if(status != ExecutionStatus.NOT_RUN) {
+										if (status != ExecutionStatus.NOT_RUN) {
 											automatedTestCase.addCustomFieldAndStatus(value, status);
 										}
 										
-										if(this.isIncludeNotes()) {
+										if (this.isIncludeNotes()) {
 											final String notes = this.getTestNGNotes(method);
 											automatedTestCase.appendNotes(notes);
 										}

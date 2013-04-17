@@ -29,10 +29,6 @@ import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.TestLinkSite;
-import hudson.plugins.testlink.testng.Suite;
-import hudson.plugins.testlink.testng.Test;
-import hudson.plugins.testlink.testng.TestMethod;
-import hudson.plugins.testlink.testng.TestNGParser;
 import hudson.plugins.testlink.util.Messages;
 import hudson.remoting.VirtualChannel;
 
@@ -44,6 +40,11 @@ import java.util.List;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
+
+import com.tupilabs.testng.parser.Suite;
+import com.tupilabs.testng.parser.Test;
+import com.tupilabs.testng.parser.TestMethod;
+import com.tupilabs.testng.parser.TestNGParser;
 
 /**
  * <p>Seeks for test results matching each TestNG Suite name with the key 
@@ -142,7 +143,7 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 	 */
 	private ExecutionStatus getExecutionStatus(Suite suite) {
 		for( Test test : suite.getTests() )	{
-			for( hudson.plugins.testlink.testng.Class clazz : test.getClasses() ) {
+			for(com.tupilabs.testng.parser.Class clazz : test.getClasses()) {
 				for( TestMethod method : clazz.getTestMethods() ) {
 					if(method.getStatus().equals(FAIL)) {
 						return ExecutionStatus.FAILED; 

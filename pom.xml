@@ -284,7 +284,12 @@
 			<version>1.9.5</version> 
 			<scope>test</scope>
   		</dependency>
-  	</dependencies>
+		<dependency>
+			<groupId>com.tupilabs</groupId>
+			<artifactId>testng-parser</artifactId>
+			<version>0.2</version>
+		</dependency>
+	</dependencies>
 
 	<repositories>
 		<repository>

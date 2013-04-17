@@ -29,10 +29,6 @@ import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.TestLinkSite;
-import hudson.plugins.testlink.testng.Class;
-import hudson.plugins.testlink.testng.Suite;
-import hudson.plugins.testlink.testng.Test;
-import hudson.plugins.testlink.testng.TestMethod;
 import hudson.plugins.testlink.util.Messages;
 import hudson.remoting.VirtualChannel;
 
@@ -45,6 +41,10 @@ import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
+
+import com.tupilabs.testng.parser.Suite;
+import com.tupilabs.testng.parser.Test;
+import com.tupilabs.testng.parser.TestMethod;
 
 /**
  * <p>Seeks for test results matching each TestNG Class name with the key 
@@ -110,7 +110,7 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 			});
 			for(Suite suite : suites) {
 				for(Test test : suite.getTests() ) {
-					for(hudson.plugins.testlink.testng.Class  clazz : test.getClasses()) {
+					for(com.tupilabs.testng.parser.Class  clazz : test.getClasses()) {
 						for(TestCaseWrapper automatedTestCase : automatedTestCases) {
 							final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
 							for(String value : commaSeparatedValues) {
@@ -152,7 +152,7 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * @param suite
 	 * @return
 	 */
-	private ExecutionStatus getExecutionStatus(hudson.plugins.testlink.testng.Class clazz) {
+	private ExecutionStatus getExecutionStatus(com.tupilabs.testng.parser.Class clazz) {
 		for( TestMethod method : clazz.getTestMethods() ) {
 			if ( StringUtils.isNotBlank(method.getStatus()) ) {
 				if(method.getStatus().equals(FAIL)) {
@@ -176,8 +176,7 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * @param clazz TestNG test class.
 	 * @return notes for TestNG suite and test class.
 	 */
-	private String getTestNGNotes( Suite suite, Class clazz )
-	{
+	private String getTestNGNotes(Suite suite, com.tupilabs.testng.parser.Class clazz) {
 		StringBuilder notes = new StringBuilder();
 		
 		notes.append( 

@@ -28,8 +28,6 @@ import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.TestLinkSite;
-import hudson.plugins.testlink.testng.Suite;
-import hudson.plugins.testlink.testng.TestNGParser;
 import hudson.remoting.VirtualChannel;
 
 import java.io.File;
@@ -38,6 +36,9 @@ import java.io.IOException;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
+
+import com.tupilabs.testng.parser.Suite;
+import com.tupilabs.testng.parser.TestNGParser;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br

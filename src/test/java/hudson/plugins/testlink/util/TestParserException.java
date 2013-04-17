@@ -23,44 +23,42 @@
  */
 package hudson.plugins.testlink.util;
 
-import hudson.plugins.testlink.testng.ParserException;
 import junit.framework.TestCase;
+
+import com.tupilabs.testng.parser.ParserException;
 
 /**
  * Tests the ParserException.
  * 
- * @see {@link ParserException}
- * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
+ * @see {@link ParserException}
  * @since 2.0
  */
-public class TestParserException 
-extends TestCase
-{
+public class TestParserException extends TestCase {
 
-	private ParserException exception;
-	
-	public void testTestLinkPluginException()
-	{
-		this.exception = new ParserException();
-		
-		assertNotNull( this.exception );
-		
-		this.exception = new ParserException("Lamen");
-		
-		assertNotNull( this.exception );
-		assertEquals( this.exception.getMessage(), "Lamen" );
-		
-		this.exception = new ParserException( new NullPointerException() );
-		
-		assertNotNull( this.exception );
-		assertNotNull( this.exception.getCause() );
-		
-		this.exception = new ParserException("Lamen", new NullPointerException() );
-		
-		assertNotNull( this.exception );
-		assertNotNull( this.exception.getCause() );
-		assertEquals( this.exception.getMessage(), "Lamen" );
-	}
-	
+    private ParserException exception;
+
+    public void testTestLinkPluginException() {
+        this.exception = new ParserException();
+
+        assertNotNull(this.exception);
+
+        this.exception = new ParserException("Lamen");
+
+        assertNotNull(this.exception);
+        assertEquals(this.exception.getMessage(), "Lamen");
+
+        this.exception = new ParserException(new NullPointerException());
+
+        assertNotNull(this.exception);
+        assertNotNull(this.exception.getCause());
+
+        this.exception = new ParserException("Lamen",
+                new NullPointerException());
+
+        assertNotNull(this.exception);
+        assertNotNull(this.exception.getCause());
+        assertEquals(this.exception.getMessage(), "Lamen");
+    }
+
 }

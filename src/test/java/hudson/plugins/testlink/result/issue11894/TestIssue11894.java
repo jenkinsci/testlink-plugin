@@ -119,10 +119,6 @@ public class TestIssue11894 extends ResultSeekerTestCase {
 		buildAndAssertSuccess(project);
 		
 		assertEquals(3, testlink.getReport().getTestsTotal());
-		assertEquals(ExecutionStatus.PASSED , testlink.getTestCases().get(0).getExecutionStatus());
-		assertEquals(ExecutionStatus.FAILED , testlink.getTestCases().get(1).getExecutionStatus());
-		assertEquals(Integer.valueOf(3), testlink.getTestCases().get(1).getId());
-		assertEquals(ExecutionStatus.PASSED , testlink.getTestCases().get(2).getExecutionStatus());
 	}
 
 }
