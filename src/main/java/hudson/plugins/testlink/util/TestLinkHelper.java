@@ -191,30 +191,27 @@ public final class TestLinkHelper
 	 * @param build TestLink Build.
 	 * @return Map (name, value) of environment variables.
 	 */
-	public static Map<String, String> createTestLinkEnvironmentVariables( TestCaseWrapper testCase, TestProject testProject, TestPlan testPlan, Build build ) 
-	{
+	public static Map<String, String> createTestLinkEnvironmentVariables(TestCaseWrapper testCase, TestProject testProject, TestPlan testPlan, Build build) {
 		Map<String, String> testLinkEnvVar = new HashMap<String, String>();
 		
 		testLinkEnvVar.put( TESTLINK_TESTCASE_ID_ENVVAR, ""+testCase.getId() );
-		testLinkEnvVar.put( TESTLINK_TESTCASE_NAME_ENVVAR, defaultIfBlank(testCase.getName(), ""));
+		testLinkEnvVar.put( TESTLINK_TESTCASE_NAME_ENVVAR, StringUtils.defaultIfBlank(testCase.getName(), ""));
 		testLinkEnvVar.put( TESTLINK_TESTCASE_TESTSUITE_ID_ENVVAR, ""+testCase.getTestSuiteId() );
 		testLinkEnvVar.put( TESTLINK_TESTCASE_TESTPROJECT_ID, ""+testCase.getTestProjectId() );
 		testLinkEnvVar.put( TESTLINK_TESTCASE_AUTHOR_ENVVAR, ""+testCase.getAuthorLogin() );
-		testLinkEnvVar.put( TESTLINK_TESTCASE_SUMMARY_ENVVAR, defaultIfBlank(testCase.getSummary(), "") );
-		testLinkEnvVar.put( TESTLINK_BUILD_NAME_ENVVAR, defaultIfBlank(build.getName(), ""));
-		testLinkEnvVar.put( TESTLINK_TESTPLAN_NAME_ENVVAR, defaultIfBlank(testPlan.getName(), ""));
-		testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, defaultIfBlank(testProject.getName(), ""));
+		testLinkEnvVar.put( TESTLINK_TESTCASE_SUMMARY_ENVVAR, StringUtils.defaultIfBlank(testCase.getSummary(), "") );
+		testLinkEnvVar.put( TESTLINK_BUILD_NAME_ENVVAR, StringUtils.defaultIfBlank(build.getName(), ""));
+		testLinkEnvVar.put( TESTLINK_TESTPLAN_NAME_ENVVAR, StringUtils.defaultIfBlank(testPlan.getName(), ""));
+		testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, StringUtils.defaultIfBlank(testProject.getName(), ""));
 		
 		List<CustomField> customFields = testCase.getCustomFields();
-		for ( CustomField customField : customFields )
-		{
+		for (CustomField customField : customFields) {
 			addCustomFieldEnvironmentVariableName( customField, testLinkEnvVar );
 		}
 
 		List<TestCaseStep> steps = testCase.getSteps();
 		testLinkEnvVar.put(TESTLINK_TESTCASE_STEP_PREFIX + "TOTAL", Integer.toString(steps.size()));
-		for ( TestCaseStep step : steps )
-		{
+		for (TestCaseStep step : steps) {
 			String name = TESTLINK_TESTCASE_STEP_PREFIX + step.getNumber() + "_ACTION";
 			String action = step.getActions();
 			testLinkEnvVar.put(name, action);
@@ -223,23 +220,28 @@ public final class TestLinkHelper
 			String expected = step.getExpectedResults();
 			testLinkEnvVar.put(name, expected);
 		}
-		
 		return testLinkEnvVar;
 	}
 	
 	/**
-	 * TODO: use apache stringutils'
-	 * @param string
-	 * @param defaultValue
-	 * @return
-	 */
-	private static String defaultIfBlank(String string, String defaultValue) {
-		if(string == null || string.trim().equals("")) {
-			return defaultValue;
-		}
-		return string;
-	}
-
+     * Creates a Map (name, value) of environment variables for a TestLink Test Case.
+     * 
+     * @param testProject TestLink Test Project.
+     * @param testPlan TestLink Test Plan.
+     * @param build TestLink Build.
+     * @return Map (name, value) of environment variables.
+     */
+    public static Map<String, String> createTestLinkEnvironmentVariables(int numberOfTests, TestProject testProject, TestPlan testPlan, Build build) {
+        Map<String, String> testLinkEnvVar = new HashMap<String, String>();
+        
+        testLinkEnvVar.put( TESTLINK_BUILD_NAME_ENVVAR, StringUtils.defaultIfBlank(build.getName(), ""));
+        testLinkEnvVar.put( TESTLINK_TESTPLAN_NAME_ENVVAR, StringUtils.defaultIfBlank(testPlan.getName(), ""));
+        testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, StringUtils.defaultIfBlank(testProject.getName(), ""));
+        
+        testLinkEnvVar.put(TESTLINK_TESTCASE_PREFIX + "TOTAL", Integer.toString(numberOfTests));
+        return testLinkEnvVar;
+    }
+	
 	/**
 	 * <p>Formats a custom field into an environment variable. It appends 
 	 * TESTLINK_TESTCASE in front of the environment variable name.</p>
@@ -308,17 +310,33 @@ public final class TestLinkHelper
 	 * @param listener Hudson Build Listener
 	 * @return EnvVars (environment variables)
 	 */
-	public static EnvVars buildTestCaseEnvVars( TestCaseWrapper testCase, TestProject testProject, TestPlan testPlan, Build build, BuildListener listener ) 
-	{
+	public static EnvVars buildTestCaseEnvVars(TestCaseWrapper testCase, TestProject testProject, TestPlan testPlan, Build build, BuildListener listener)	{
 		// Build environment variables list
 		Map<String, String> testLinkEnvironmentVariables = TestLinkHelper.createTestLinkEnvironmentVariables( testCase, testProject, testPlan, build );
-
 		// Merge with build environment variables list
 		listener.getLogger().println(Messages.TestLinkBuilder_MergingEnvVars());
-		
 		final EnvVars buildEnvironment = new EnvVars( testLinkEnvironmentVariables );
 		return buildEnvironment;
 	}
+	
+	/**
+     * Creates EnvVars for TestLink entities.
+     * 
+     * @param numberOfTests number of tests
+     * @param testProject TestLink Test Project
+     * @param testPlan TestLink Test Plan
+     * @param build TestLink Build
+     * @param listener Hudson Build Listener
+     * @return EnvVars (environment variables)
+     */
+    public static EnvVars buildTestCaseEnvVars(int numberOfTests, TestProject testProject, TestPlan testPlan, Build build, BuildListener listener)   {
+        // Build environment variables list
+        Map<String, String> testLinkEnvironmentVariables = TestLinkHelper.createTestLinkEnvironmentVariables(numberOfTests, testProject, testPlan, build);
+        // Merge with build environment variables list
+        listener.getLogger().println(Messages.TestLinkBuilder_MergingEnvVars());
+        final EnvVars buildEnvironment = new EnvVars( testLinkEnvironmentVariables );
+        return buildEnvironment;
+    }
 	
 	/**
 	 * Creates Report Summary.
@@ -327,10 +345,7 @@ public final class TestLinkHelper
 	 * @param previous Previous TestLink Report
 	 * @return Report Summary
 	 */
-	public static String createReportSummary(
-			Report testLinkReport,
-			Report previous) 
-	{
+	public static String createReportSummary(Report testLinkReport, Report previous) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildID(testLinkReport.getBuildId())+"</b></p>");
 		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildName(testLinkReport.getBuildName())+"</b></p>");
@@ -367,11 +382,8 @@ public final class TestLinkHelper
 	 * @param previous Previous TestLink report
 	 * @return Detailed Report Summary
 	 */
-	public static String createReportSummaryDetails(
-			Report report,
-			Report previous) 
-	{
-		StringBuilder builder = new StringBuilder();
+	public static String createReportSummaryDetails(Report report, Report previous) {
+		final StringBuilder builder = new StringBuilder();
 
 		builder.append("<p>"+Messages.ReportSummary_Details_Header()+"</p>");
 		builder.append("<table border=\"1\">\n");
@@ -418,16 +430,7 @@ public final class TestLinkHelper
 	 */
 	public static String getPlusSignal(int current, int previous) {
 		int difference = current - previous;
-        
-		if(difference > 0)
-        {
-			return " (+"+difference+")";
-        }
-		else
-		{
-			return "";
-		}
-        
+        return difference > 0 ? " (+"+difference+")" : "";
     }
 	
 }

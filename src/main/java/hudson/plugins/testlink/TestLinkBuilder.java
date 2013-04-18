@@ -169,7 +169,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		}
 
 		listener.getLogger().println(Messages.TestLinkBuilder_ExecutingSingleBuildSteps());
-		this.executeSingleBuildSteps(build, launcher, listener);
+		this.executeSingleBuildSteps(automatedTestCases.length, testLinkSite, build, launcher, listener);
 
 		listener.getLogger().println(Messages.TestLinkBuilder_ExecutingIterativeBuildSteps());
 		this.executeIterativeBuildSteps(automatedTestCases, testLinkSite, build, launcher, listener);
@@ -264,19 +264,40 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 
 	/**
 	 * Executes the list of single build steps.
-	 * 
-	 * @param build
-	 *            Jenkins build.
-	 * @param launcher
-	 * @param listener
+	 *
+	 * @param numberOfTests number of tests 
+	 * @param testLinkSite TestLink site
+	 * @param build Jenkins build.
+	 * @param launcher job launcher
+	 * @param listener build listener
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	protected void executeSingleBuildSteps(AbstractBuild<?, ?> build,
+	protected void executeSingleBuildSteps(int numberOfTests, TestLinkSite testLinkSite, AbstractBuild<?, ?> build,
 			Launcher launcher, BuildListener listener) throws IOException,
 			InterruptedException {
 		if (singleBuildSteps != null) {
 			for (BuildStep b : singleBuildSteps) {
+			    final EnvVars iterativeEnvVars = TestLinkHelper.buildTestCaseEnvVars(
+			            numberOfTests, 
+                        testLinkSite.getTestProject(),
+                        testLinkSite.getTestPlan(),
+                        testLinkSite.getBuild(), 
+                        listener);
+                build.addAction(new EnvironmentContributingAction() {
+                    public void buildEnvVars(AbstractBuild<?, ?> build, EnvVars env) {
+                        env.putAll(iterativeEnvVars);
+                    }
+                    public String getUrlName() {
+                        return null;
+                    }
+                    public String getIconFileName() {
+                        return null;
+                    }
+                    public String getDisplayName() {
+                        return null;
+                    }
+                });
 				final boolean success = b.perform(build, launcher, listener);
 				if (!success) {
 					this.failure = Boolean.TRUE;
