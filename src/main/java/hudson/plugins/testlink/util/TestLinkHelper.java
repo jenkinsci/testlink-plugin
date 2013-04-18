@@ -195,14 +195,14 @@ public final class TestLinkHelper
 		Map<String, String> testLinkEnvVar = new HashMap<String, String>();
 		
 		testLinkEnvVar.put( TESTLINK_TESTCASE_ID_ENVVAR, ""+testCase.getId() );
-		testLinkEnvVar.put( TESTLINK_TESTCASE_NAME_ENVVAR, StringUtils.defaultIfBlank(testCase.getName(), ""));
+		testLinkEnvVar.put( TESTLINK_TESTCASE_NAME_ENVVAR, StringUtils.defaultIfEmpty(testCase.getName(), ""));
 		testLinkEnvVar.put( TESTLINK_TESTCASE_TESTSUITE_ID_ENVVAR, ""+testCase.getTestSuiteId() );
 		testLinkEnvVar.put( TESTLINK_TESTCASE_TESTPROJECT_ID, ""+testCase.getTestProjectId() );
 		testLinkEnvVar.put( TESTLINK_TESTCASE_AUTHOR_ENVVAR, ""+testCase.getAuthorLogin() );
-		testLinkEnvVar.put( TESTLINK_TESTCASE_SUMMARY_ENVVAR, StringUtils.defaultIfBlank(testCase.getSummary(), "") );
-		testLinkEnvVar.put( TESTLINK_BUILD_NAME_ENVVAR, StringUtils.defaultIfBlank(build.getName(), ""));
-		testLinkEnvVar.put( TESTLINK_TESTPLAN_NAME_ENVVAR, StringUtils.defaultIfBlank(testPlan.getName(), ""));
-		testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, StringUtils.defaultIfBlank(testProject.getName(), ""));
+		testLinkEnvVar.put( TESTLINK_TESTCASE_SUMMARY_ENVVAR, StringUtils.defaultIfEmpty(testCase.getSummary(), "") );
+		testLinkEnvVar.put( TESTLINK_BUILD_NAME_ENVVAR, StringUtils.defaultIfEmpty(build.getName(), ""));
+		testLinkEnvVar.put( TESTLINK_TESTPLAN_NAME_ENVVAR, StringUtils.defaultIfEmpty(testPlan.getName(), ""));
+		testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, StringUtils.defaultIfEmpty(testProject.getName(), ""));
 		
 		List<CustomField> customFields = testCase.getCustomFields();
 		for (CustomField customField : customFields) {
@@ -234,9 +234,9 @@ public final class TestLinkHelper
     public static Map<String, String> createTestLinkEnvironmentVariables(int numberOfTests, TestProject testProject, TestPlan testPlan, Build build) {
         Map<String, String> testLinkEnvVar = new HashMap<String, String>();
         
-        testLinkEnvVar.put( TESTLINK_BUILD_NAME_ENVVAR, StringUtils.defaultIfBlank(build.getName(), ""));
-        testLinkEnvVar.put( TESTLINK_TESTPLAN_NAME_ENVVAR, StringUtils.defaultIfBlank(testPlan.getName(), ""));
-        testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, StringUtils.defaultIfBlank(testProject.getName(), ""));
+        testLinkEnvVar.put( TESTLINK_BUILD_NAME_ENVVAR, StringUtils.defaultIfEmpty(build.getName(), ""));
+        testLinkEnvVar.put( TESTLINK_TESTPLAN_NAME_ENVVAR, StringUtils.defaultIfEmpty(testPlan.getName(), ""));
+        testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, StringUtils.defaultIfEmpty(testProject.getName(), ""));
         
         testLinkEnvVar.put(TESTLINK_TESTCASE_PREFIX + "TOTAL", Integer.toString(numberOfTests));
         return testLinkEnvVar;
