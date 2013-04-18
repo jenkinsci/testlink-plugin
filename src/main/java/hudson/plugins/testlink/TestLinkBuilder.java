@@ -162,12 +162,13 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			throw new AbortException(Messages.TestLinkBuilder_TestLinkCommunicationError());
 		}
 		
-		if(LOGGER.isLoggable(Level.FINE)) {
-			for(TestCaseWrapper tcw : automatedTestCases) {
-				LOGGER.log(Level.FINE, "TestLink automated test case ID [" + tcw.getId() + "], name [" +tcw.getName()+ "]");
-			}
+		for(TestCaseWrapper tcw : automatedTestCases) {
+		    testLinkSite.getReport().addTestCase(tcw);
+		    if(LOGGER.isLoggable(Level.FINE)) {
+		        LOGGER.log(Level.FINE, "TestLink automated test case ID [" + tcw.getId() + "], name [" +tcw.getName()+ "]");
+		    }
 		}
-
+		
 		listener.getLogger().println(Messages.TestLinkBuilder_ExecutingSingleBuildSteps());
 		this.executeSingleBuildSteps(automatedTestCases.length, testLinkSite, build, launcher, listener);
 
@@ -197,6 +198,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		// This report is used to generate the graphs and to store the list of
 		// test cases with each found status.
 		final Report report = testLinkSite.getReport();
+		report.tally();
 		
 		listener.getLogger().println(Messages.TestLinkBuilder_ShowFoundTestResults(report.getTestsTotal()));
 		

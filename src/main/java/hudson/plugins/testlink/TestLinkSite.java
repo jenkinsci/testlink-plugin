@@ -176,8 +176,7 @@ public class TestLinkSite
 	 * 
 	 * @param testCases Test Cases
 	 */
-	public int updateTestCase( TestCaseWrapper testCase ) 
-	{
+	public int updateTestCase(TestCaseWrapper testCase) {
 		int executionId = 0;
 		
 		if (testCase.getExecutionStatus() != null
@@ -214,7 +213,7 @@ public class TestLinkSite
 			}
 			
 			executionId = reportTCResultResponse.getExecutionId();
-			report.addTestCase(testCase);
+			//report.addTestCase(testCase);
 		}
 		
 		return executionId;

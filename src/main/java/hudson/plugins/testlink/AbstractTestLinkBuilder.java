@@ -50,32 +50,25 @@ import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.4
  */
-public class AbstractTestLinkBuilder
-extends Builder
-{
+public class AbstractTestLinkBuilder extends Builder {
 
 	/* --- Job properties --- */
-	
 	/**
 	 * Comma constant for custom fields separated with delimiter.
 	 */
 	private static final String COMMA = ",";
-
 	/**
 	 * The name of the TestLink installation.
 	 */
 	protected final String testLinkName;
-	
 	/**
 	 * The name of the Test Project.
 	 */
 	protected final String testProjectName;
-	
 	/**
 	 * The name of the Test Plan.
 	 */
 	protected final String testPlanName;
-	
 	/**
 	 * The name of the Build.
 	 */

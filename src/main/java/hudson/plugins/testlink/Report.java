@@ -153,5 +153,30 @@ public class Report implements Serializable {
 	public List<TestCaseWrapper> getTestCases() {
 		return testCases;
 	}
+	
+	public void tally() {
+	    this.blocked = 0;
+	    this.failed = 0;
+	    this.notRun = 0;
+	    this.passed = 0;
+	    for (TestCaseWrapper tcw : getTestCases()) {
+	        switch (tcw.getExecutionStatus()) {
+	        case BLOCKED:
+	            this.blocked += 1;
+	            break;
+	        case FAILED:
+	            this.failed += 1;
+	            break;
+	        case NOT_RUN:
+	            this.notRun += 1;
+	            break;
+	        case PASSED: 
+	            this.passed += 1;
+	            break;
+            default:
+                break;
+	        }
+	    }
+	}
 
 }
