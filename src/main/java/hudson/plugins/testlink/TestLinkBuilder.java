@@ -305,7 +305,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 				testProjectName);
 		Platform p = null;
 		if (!platformName.equals("")){
-		Platform platforms[] = api.getProjectPlatforms(testProject.getId());		
+			Platform platforms[] = api.getProjectPlatforms(testProject.getId());		
 			for (int i = 0; i < platforms.length; i++) {
 				if (platforms[i].getName().equals(platformName)) {
 					p = platforms[i];
