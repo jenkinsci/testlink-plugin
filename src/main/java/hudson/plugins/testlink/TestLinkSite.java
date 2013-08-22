@@ -196,7 +196,10 @@ public class TestLinkSite
 				&& !ExecutionStatus.NOT_RUN.equals(testCase
 						.getExecutionStatus()))	{
 			// Update Test Case status
-			final ReportTCResultResponse reportTCResultResponse = api.reportTCResult(
+
+			final ReportTCResultResponse reportTCResultResponse = null;
+			if (plateform != null){
+				reportTCResultResponse = api.reportTCResult(
 					testCase.getId(), 
 					testCase.getInternalId(), 
 					testPlan.getId(), 
@@ -210,6 +213,23 @@ public class TestLinkSite
 					platform.getName(), // platform name
 					null, // custom fields
 					null);
+			}
+			else {
+				reportTCResultResponse = api.reportTCResult(
+					testCase.getId(), 
+					testCase.getInternalId(), 
+					testPlan.getId(), 
+					testCase.getExecutionStatus(), 
+					build.getId(), 
+					build.getName(), 
+					testCase.getNotes(), 
+					null, // guess
+					null, // bug id
+					null, 
+					null, // platform name
+					null, // custom fields
+					null);
+			}
 			
 			switch(testCase.getExecutionStatus()) {
 			case PASSED:
