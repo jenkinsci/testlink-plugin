@@ -197,8 +197,8 @@ public class TestLinkSite
 						.getExecutionStatus()))	{
 			// Update Test Case status
 
-			final ReportTCResultResponse reportTCResultResponse = null;
-			if (plateform != null){
+			ReportTCResultResponse reportTCResultResponse = null;
+			if (platform != null){
 				reportTCResultResponse = api.reportTCResult(
 					testCase.getId(), 
 					testCase.getInternalId(), 
