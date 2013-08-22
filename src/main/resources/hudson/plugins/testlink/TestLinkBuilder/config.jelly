@@ -20,6 +20,11 @@
 	  <f:textbox name="TestLinkBuilder.testPlanName" value="${instance.testPlanName}" 
 	  checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)"/>
   </f:entry>
+
+  <f:entry title="${%Platform Name}" help="${rootURL}/../plugin/testlink/help-platformName.html">
+	  <f:textbox name="TestLinkBuilder.platformName" value="${instance.platformName}" 
+	  checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)"/>
+  </f:entry>
   
   <f:entry title="${%Build Name}" help="${rootURL}/../plugin/testlink/help-buildName.html">
 	  <f:textbox name="TestLinkBuilder.buildName" value="${instance.buildName}" />

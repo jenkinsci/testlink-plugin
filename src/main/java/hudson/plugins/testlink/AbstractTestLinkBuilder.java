@@ -68,7 +68,12 @@ public class AbstractTestLinkBuilder extends Builder {
 	/**
 	 * The name of the Test Plan.
 	 */
+	protected final String platformName;
+	/**
+	 * The platform name.
+	 */
 	protected final String testPlanName;
+
 	/**
 	 * The name of the Build.
 	 */
@@ -181,7 +186,8 @@ public class AbstractTestLinkBuilder extends Builder {
 	public AbstractTestLinkBuilder(
 		String testLinkName, 
 		String testProjectName, 
-		String testPlanName, 
+		String testPlanName,
+		String platformName,
 		String buildName, 
 		String customFields, 
 		Boolean executionStatusNotRun,
@@ -201,6 +207,7 @@ public class AbstractTestLinkBuilder extends Builder {
 		this.testLinkName = testLinkName;
 		this.testProjectName = testProjectName;
 		this.testPlanName = testPlanName;
+		this.platformName = platformName;
 		this.buildName = buildName;
 		this.customFields = customFields;
 		this.executionStatusNotRun = executionStatusNotRun;
@@ -245,6 +252,12 @@ public class AbstractTestLinkBuilder extends Builder {
 	{
 		return this.testPlanName;
 	}
+
+	public String getPlatformName()
+	{
+		return this.platformName;
+	}
+
 	
 	public String getBuildName()
 	{

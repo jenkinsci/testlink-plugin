@@ -39,6 +39,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.ReportTCResultResponse;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
+import br.eti.kinoshita.testlinkjavaapi.model.Platform;;
 
 /**
  * Immutable object that represents the TestLink site with a Test Project, 
@@ -53,6 +54,7 @@ public class TestLinkSite
 	protected final TestLinkAPI api;
 	protected final TestProject testProject;
 	protected final TestPlan testPlan;
+	protected final Platform platform;
 	protected final Build build;
 	protected final Report report;
 	
@@ -62,12 +64,13 @@ public class TestLinkSite
 	 * @param testPlan TestLink Test Plan
 	 * @param build TestLink Build
 	 */
-	public TestLinkSite(TestLinkAPI api, TestProject testProject, TestPlan testPlan, Build build)
+	public TestLinkSite(TestLinkAPI api, TestProject testProject, TestPlan testPlan, Platform platform, Build build)
 	{
 		super();
 		this.api = api;
 		this.testProject = testProject;
 		this.testPlan = testPlan;
+		this.platform = platform;
 		this.build = build;
 		if(build != null) 
 		{
@@ -101,6 +104,16 @@ public class TestLinkSite
 		return testPlan;
 	}
 
+	/**
+	 * @return the platform
+	 */
+	public Platform getPlatform()
+	{
+		return platform;
+	}
+
+	
+	
 	/**
 	 * @return the build
 	 */
@@ -193,8 +206,8 @@ public class TestLinkSite
 					testCase.getNotes(), 
 					null, // guess
 					null, // bug id
-					null, // platform id 
-					testCase.getPlatform(), // platform name
+					platform.getId(), 
+					platform.getName(), // platform name
 					null, // custom fields
 					null);
 			
