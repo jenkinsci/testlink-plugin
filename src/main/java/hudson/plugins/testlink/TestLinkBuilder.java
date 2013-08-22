@@ -303,13 +303,14 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 
 		final TestPlan testPlan = api.getTestPlanByName(testPlanName,
 				testProjectName);
-
-		Platform platforms[] = api.getProjectPlatforms(testProject.getId());
 		Platform p = null;
-		for (int i = 0; i < platforms.length; i++) {
-			if (platforms[i].getName().equals(platformName)) {
-				p = platforms[i];
-				break;
+		if (!platformName.equals("")){
+		Platform platforms[] = api.getProjectPlatforms(testProject.getId());		
+			for (int i = 0; i < platforms.length; i++) {
+				if (platforms[i].getName().equals(platformName)) {
+					p = platforms[i];
+					break;
+				}
 			}
 		}
 
