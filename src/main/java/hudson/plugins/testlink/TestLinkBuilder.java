@@ -307,46 +307,9 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		Platform platforms[] = api.getProjectPlatforms(testProject.getId());
 		Platform p = null;
 		for (int i = 0; i < platforms.length; i++) {
-			try {
-				// Create file
-				java.io.FileWriter fstream = new java.io.FileWriter(
-						"/home/eurogiciel/out.txt");
-				java.io.BufferedWriter out = new java.io.BufferedWriter(fstream);
-				out.write(platforms[i].getName());
-				out.close();
-			} catch (Exception e) {// Catch exception if any
-				System.err.println("Error: " + e.getMessage());
-			}
-			
 			if (platforms[i].getName().equals(platformName)) {
 				p = platforms[i];
 				break;
-			}
-		}
-
-		if (p == null) {
-			try {
-				// Create file
-				java.io.FileWriter fstream = new java.io.FileWriter(
-						"/home/eurogiciel/out.txt");
-				java.io.BufferedWriter out = new java.io.BufferedWriter(fstream);
-				out.write("fail");
-				// Close the output stream
-				out.close();
-			} catch (Exception e) {// Catch exception if any
-				System.err.println("Error: " + e.getMessage());
-			}
-		} else {
-			try {
-				// Create file
-				java.io.FileWriter fstream = new java.io.FileWriter(
-						"/home/eurogiciel/out.txt");
-				java.io.BufferedWriter out = new java.io.BufferedWriter(fstream);
-				out.write(p.toString());
-				out.write(p.getId());
-				out.close();
-			} catch (Exception e) {// Catch exception if any
-				System.err.println("Error: " + e.getMessage());
 			}
 		}
 
