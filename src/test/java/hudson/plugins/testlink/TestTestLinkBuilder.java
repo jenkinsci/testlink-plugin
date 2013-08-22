@@ -112,6 +112,8 @@ extends HudsonTestCase
 		assertNull( builder.getTestProjectName() );
 		
 		assertNull( builder.getTestPlanName() );
+
+		assertNull( builder.getPlatformName() );
 		
 		assertNull( builder.getBuildName() );
 		
@@ -171,12 +173,12 @@ extends HudsonTestCase
 		assertNotNull( builder.getTestProjectName() );
 		assertEquals( builder.getTestProjectName(), "No project" );
 
-		assertNotNull( builder.getTestProjectName() );
-		assertEquals( builder.getTestProjectName(), "No platform" );
-		
 		assertNotNull( builder.getTestPlanName() );
 		assertEquals( builder.getTestPlanName(), "No plan" );
-		
+
+		assertNotNull( builder.getPlatformName() );
+		assertEquals( builder.getPlatformName(), "No platform" );
+				
 		assertNotNull( builder.getBuildName() );
 		assertEquals( builder.getBuildName(), "No build" );
 		
