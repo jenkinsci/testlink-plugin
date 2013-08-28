@@ -44,7 +44,7 @@ import java.util.List;
 
 import net.sf.json.JSONObject;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
