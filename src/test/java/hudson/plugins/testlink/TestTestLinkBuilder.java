@@ -64,6 +64,7 @@ extends HudsonTestCase
 				"No testlink", 
 				"No project",
 				"No plan", 
+				"No platform",
 				"No build", 
 				"class, time, sample-job-$BUILD_ID", 
 				Boolean.FALSE,
@@ -102,7 +103,7 @@ extends HudsonTestCase
 	
 	public void testNull()
 	{
-		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null );
+		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null );
 		
 		assertNotNull( builder );
 		
@@ -111,6 +112,8 @@ extends HudsonTestCase
 		assertNull( builder.getTestProjectName() );
 		
 		assertNull( builder.getTestPlanName() );
+
+		assertNull( builder.getPlatformName() );
 		
 		assertNull( builder.getBuildName() );
 		
@@ -144,6 +147,7 @@ extends HudsonTestCase
 			"No testlink", 
 			"No project",
 			"No plan", 
+			"No platform",
 			"No build", 
 			"class, time", 
 			Boolean.FALSE,
@@ -168,10 +172,13 @@ extends HudsonTestCase
 		
 		assertNotNull( builder.getTestProjectName() );
 		assertEquals( builder.getTestProjectName(), "No project" );
-		
+
 		assertNotNull( builder.getTestPlanName() );
 		assertEquals( builder.getTestPlanName(), "No plan" );
-		
+
+		assertNotNull( builder.getPlatformName() );
+		assertEquals( builder.getPlatformName(), "No platform" );
+				
 		assertNotNull( builder.getBuildName() );
 		assertEquals( builder.getBuildName(), "No build" );
 		
@@ -189,7 +196,7 @@ extends HudsonTestCase
 
 	@Test
 	public void getExecutionStatusesShouldReturnAllWhenAllAreFalse() {
-		builder = new TestLinkBuilder(null, null, null, null, null, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null, null, null, null, null, null, null, null );
+		builder = new TestLinkBuilder(null, null, null, null, null, null, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null, null, null, null, null, null, null, null );
 		Set<ExecutionStatus> statuses = builder.getExecutionStatuses();
 		assertThat(statuses, hasSize(4));
 		assertThat(
@@ -200,7 +207,7 @@ extends HudsonTestCase
 	
 	@Test
 	public void getExecutionStatusesShouldReturnAllWhenAllAreNull() {
-		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null );
+		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null );
 		Set<ExecutionStatus> statuses = builder.getExecutionStatuses();
 		assertThat(statuses, hasSize(4));
 		assertThat(
@@ -211,7 +218,7 @@ extends HudsonTestCase
 	
 	@Test
 	public void getExecutionStatusesShouldReturnSomeWhenSomeAreTrue() {
-		builder = new TestLinkBuilder(null, null, null, null, null, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, null, null, null, null, null, null, null, null );
+		builder = new TestLinkBuilder(null, null, null, null, null, null, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, null, null, null, null, null, null, null, null );
 		Set<ExecutionStatus> statuses = builder.getExecutionStatuses();
 		assertThat(statuses, hasSize(2));
 		assertThat(
@@ -221,7 +228,7 @@ extends HudsonTestCase
 	
 	@Test
 	public void getExecutionStatusesShouldOneSomeWhenNotRunIsTrue() {
-		builder = new TestLinkBuilder(null, null, null, null, null, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null, null, null, null, null, null, null, null );
+		builder = new TestLinkBuilder(null, null, null, null, null, null, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null, null, null, null, null, null, null, null );
 		Set<ExecutionStatus> statuses = builder.getExecutionStatuses();
 		assertThat(statuses, hasSize(1));
 		assertThat(
@@ -231,7 +238,7 @@ extends HudsonTestCase
 	
 	@Test
 	public void getExecutionStatusesShouldOneSomeWhenPassedIsTrue() {
-		builder = new TestLinkBuilder(null, null, null, null, null, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, null, null, null, null, null, null, null, null );
+		builder = new TestLinkBuilder(null, null, null, null, null, null, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, null, null, null, null, null, null, null, null );
 		Set<ExecutionStatus> statuses = builder.getExecutionStatuses();
 		assertThat(statuses, hasSize(1));
 		assertThat(
@@ -241,7 +248,7 @@ extends HudsonTestCase
 	
 	@Test
 	public void getExecutionStatusesShouldOneSomeWhenFailedIsTrue() {
-		builder = new TestLinkBuilder(null, null, null, null, null, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, null, null, null, null, null, null, null, null );
+		builder = new TestLinkBuilder(null, null, null, null, null, null, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, null, null, null, null, null, null, null, null );
 		Set<ExecutionStatus> statuses = builder.getExecutionStatuses();
 		assertThat(statuses, hasSize(1));
 		assertThat(
@@ -251,7 +258,7 @@ extends HudsonTestCase
 	
 	@Test
 	public void getExecutionStatusesShouldOneSomeWhenBlockedIsTrue() {
-		builder = new TestLinkBuilder(null, null, null, null, null, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, null, null, null, null, null, null, null, null );
+		builder = new TestLinkBuilder(null, null, null, null, null, null, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, null, null, null, null, null, null, null, null );
 		Set<ExecutionStatus> statuses = builder.getExecutionStatuses();
 		assertThat(statuses, hasSize(1));
 		assertThat(
