@@ -74,6 +74,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 	
 	private boolean attachTAPStream = false;
 	private boolean attachYAMLishAttachments = false;
+	private Boolean compareFullPath = false;
 	
 	/**
 	 * @param includePattern
@@ -82,10 +83,11 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 	 * @param attachYAMLishAttachments
 	 */
 	@DataBoundConstructor
-	public TAPFileNameResultSeeker(String includePattern, String keyCustomField, boolean attachTAPStream, boolean attachYAMLishAttachments, boolean includeNotes) {
+	public TAPFileNameResultSeeker(String includePattern, String keyCustomField, boolean attachTAPStream, boolean attachYAMLishAttachments, boolean includeNotes, Boolean compareFullPath) {
 		super(includePattern, keyCustomField, includeNotes);
 		this.attachTAPStream = attachTAPStream;
 		this.attachYAMLishAttachments = attachYAMLishAttachments;
+		this.compareFullPath = compareFullPath;
 	}
 	
 	public void setAttachTAPStream(boolean attachTAPStream) {
@@ -103,8 +105,18 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 	public boolean isAttachYAMLishAttachments() {
 		return attachYAMLishAttachments;
 	}
+	
+	public Boolean isCompareFullPath() {
+	    if (compareFullPath == null) 
+	        compareFullPath = false;
+        return compareFullPath;
+    }
 
-	@Extension
+    public void setCompareFullPath(Boolean compareFullPath) {
+        this.compareFullPath = compareFullPath;
+    }
+
+    @Extension
 	public static class DescriptorImpl extends ResultSeekerDescriptor {
 		/*
 		 * (non-Javadoc)
@@ -139,7 +151,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 						final File input = new File(workspace, tapFile);
 						final TapConsumer tapConsumer = TapConsumerFactory.makeTap13YamlConsumer();
 						final TestSet testSet = tapConsumer.load(input);
-						testSets.put(input.getName(), testSet);
+						testSets.put(tapFile, testSet);
 					}
 					
 					return testSets;
@@ -151,10 +163,15 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 					final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
 					for(String value : commaSeparatedValues) {
 						String tapFileNameWithoutExtension = key;
+						int leftIndex = 0;
+						if (!this.isCompareFullPath()) {
+						    int lastIndex = tapFileNameWithoutExtension.lastIndexOf('/');
+						    if (lastIndex > 0)
+						        leftIndex = lastIndex+1;
+						}
 						int extensionIndex = tapFileNameWithoutExtension.lastIndexOf('.');
-						if ( extensionIndex != -1 )
-						{
-							tapFileNameWithoutExtension = tapFileNameWithoutExtension.substring(0, tapFileNameWithoutExtension.lastIndexOf('.'));
+						if ( extensionIndex != -1 ) {
+							tapFileNameWithoutExtension = tapFileNameWithoutExtension.substring(leftIndex, tapFileNameWithoutExtension.lastIndexOf('.'));
 						}
 						if(tapFileNameWithoutExtension.equals(value)) {
 							final ExecutionStatus status = this.getExecutionStatus(testSets.get(key));

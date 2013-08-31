@@ -19,5 +19,9 @@
     <f:entry title="${%Include test notes}" help="${rootURL}/../plugin/testlink/help-includeNotes.html">
         <f:checkbox name="TAPFileNameResultSeeker.includeNotes" value="${instance.includeNotes}" checked="${instance.includeNotes}" />
     </f:entry>
+    
+    <f:entry title="${%Compare full path}" help="${rootURL}/../plugin/testlink/help-compareFullPath.html">
+        <f:checkbox name="TAPFileNameResultSeeker.compareFullPath" value="${instance.compareFullPath}" checked="${instance.compareFullPath}" />
+    </f:entry>
 
 </j:jelly>
