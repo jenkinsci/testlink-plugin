@@ -76,6 +76,27 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 	@Extension
 	public static final TestLinkBuilderDescriptor DESCRIPTOR = new TestLinkBuilderDescriptor();
 
+	/**
+	 * @deprecated
+	 */
+    public TestLinkBuilder(String testLinkName, String testProjectName,
+            String testPlanName, String buildName, String customFields,
+            Boolean executionStatusNotRun, Boolean executionStatusPassed,
+            Boolean executionStatusFailed, Boolean executionStatusBlocked,
+            List<BuildStep> singleBuildSteps,
+            List<BuildStep> beforeIteratingAllTestCasesBuildSteps,
+            List<BuildStep> iterativeBuildSteps,
+            List<BuildStep> afterIteratingAllTestCasesBuildSteps,
+            Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
+            Boolean failIfNoResults, List<ResultSeeker> resultSeekers) {
+        super(testLinkName, testProjectName, testPlanName, buildName,
+                customFields, executionStatusNotRun, executionStatusPassed,
+                executionStatusFailed, executionStatusBlocked, singleBuildSteps,
+                beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
+                afterIteratingAllTestCasesBuildSteps, transactional,
+                failedTestsMarkBuildAsFailure, failIfNoResults, false, resultSeekers);
+    }
+	
 	@DataBoundConstructor
 	public TestLinkBuilder(String testLinkName, String testProjectName,
 			String testPlanName, String buildName, String customFields,
@@ -86,13 +107,13 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			List<BuildStep> iterativeBuildSteps,
 			List<BuildStep> afterIteratingAllTestCasesBuildSteps,
 			Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
-			Boolean failIfNoResults, List<ResultSeeker> resultSeekers) {
+			Boolean failIfNoResults, Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
 		super(testLinkName, testProjectName, testPlanName, buildName,
 				customFields, executionStatusNotRun, executionStatusPassed,
 				executionStatusFailed, executionStatusBlocked, singleBuildSteps,
 				beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
 				afterIteratingAllTestCasesBuildSteps, transactional,
-				failedTestsMarkBuildAsFailure, failIfNoResults, resultSeekers);
+				failedTestsMarkBuildAsFailure, failIfNoResults, failOnNotRun, resultSeekers);
 	}
 
 	/**
@@ -211,10 +232,15 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			build.setResult(Result.FAILURE);
 		} else if (report.getFailed() > 0) {
 			if (this.failedTestsMarkBuildAsFailure != null && this.failedTestsMarkBuildAsFailure) {
+			    listener.getLogger().println("There are failed tests, setting the build result as FAILURE.");
 				build.setResult(Result.FAILURE);
 			} else {
+			    listener.getLogger().println("There are failed tests, setting the build result as UNSTABLE.");
 				build.setResult(Result.UNSTABLE);
 			}
+		} else if (this.getFailOnNotRun() && report.getNotRun() > 0) {
+		    listener.getLogger().println("There are not run tests, setting the build result as FAILURE.");
+		    build.setResult(Result.FAILURE);
 		}
 
 		LOGGER.log(Level.INFO, "TestLink builder finished");

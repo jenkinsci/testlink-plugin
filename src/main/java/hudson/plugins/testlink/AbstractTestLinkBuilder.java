@@ -136,6 +136,11 @@ public class AbstractTestLinkBuilder extends Builder {
 	 */
 	protected final Boolean failIfNoResults;
 	
+	/**
+	 * Create failure if any of the tests are set as not-run
+	 */
+	protected final Boolean failOnNotRun;
+	
 	/*
 	 * Test life cycle commands. With these hooks you can execute command before 
 	 * the single test command, after the single test command, before the 
@@ -159,6 +164,48 @@ public class AbstractTestLinkBuilder extends Builder {
 	 */
 	private List<ResultSeeker> resultSeekers;
 	
+	/**
+	 * @deprecated
+	 */
+	public AbstractTestLinkBuilder(
+	        String testLinkName, 
+	        String testProjectName, 
+	        String testPlanName, 
+	        String buildName, 
+	        String customFields, 
+	        Boolean executionStatusNotRun,
+	        Boolean executionStatusPassed,
+	        Boolean executionStatusFailed,
+	        Boolean executionStatusBlocked,
+	        List<BuildStep> singleBuildSteps, 
+	        List<BuildStep> beforeIteratingAllTestCasesBuildSteps, 
+	        List<BuildStep> iterativeBuildSteps, 
+	        List<BuildStep> afterIteratingAllTestCasesBuildSteps, 
+	        Boolean transactional, 
+	        Boolean failedTestsMarkBuildAsFailure, 
+	        Boolean failIfNoResults, 
+	        List<ResultSeeker> resultSeekers
+	    ) {
+	    super();
+        this.testLinkName = testLinkName;
+        this.testProjectName = testProjectName;
+        this.testPlanName = testPlanName;
+        this.buildName = buildName;
+        this.customFields = customFields;
+        this.executionStatusNotRun = executionStatusNotRun;
+        this.executionStatusPassed = executionStatusPassed;
+        this.executionStatusFailed = executionStatusFailed;
+        this.executionStatusBlocked = executionStatusBlocked;
+        this.singleBuildSteps = singleBuildSteps;
+        this.beforeIteratingAllTestCasesBuildSteps = beforeIteratingAllTestCasesBuildSteps;
+        this.iterativeBuildSteps = iterativeBuildSteps;
+        this.afterIteratingAllTestCasesBuildSteps = afterIteratingAllTestCasesBuildSteps;
+        this.transactional = transactional;
+        this.failedTestsMarkBuildAsFailure = failedTestsMarkBuildAsFailure;
+        this.failIfNoResults = failIfNoResults;
+        this.resultSeekers = resultSeekers;
+        this.failOnNotRun = false;
+	}
 	/**
 	 * This constructor is bound to a stapler request. All parameters here are 
 	 * passed by Jenkins.
@@ -195,6 +242,7 @@ public class AbstractTestLinkBuilder extends Builder {
 		Boolean transactional, 
 		Boolean failedTestsMarkBuildAsFailure, 
 		Boolean failIfNoResults, 
+		Boolean failOnNotRun, 
 		List<ResultSeeker> resultSeekers
 	) {
 		super();
@@ -214,6 +262,7 @@ public class AbstractTestLinkBuilder extends Builder {
 		this.transactional = transactional;
 		this.failedTestsMarkBuildAsFailure = failedTestsMarkBuildAsFailure;
 		this.failIfNoResults = failIfNoResults;
+		this.failOnNotRun = failOnNotRun;
 		this.resultSeekers = resultSeekers;
 	}
 	
@@ -321,6 +370,13 @@ public class AbstractTestLinkBuilder extends Builder {
 	}
 	
 	/**
+	 * @return the failOnNotRun
+	 */
+	public Boolean getFailOnNotRun() {
+	    return failOnNotRun;
+	}
+	
+	/**
 	 * @return the resultSeekers
 	 */
 	public List<ResultSeeker> getResultSeekers() {
@@ -338,8 +394,7 @@ public class AbstractTestLinkBuilder extends Builder {
 	 * @see hudson.tasks.BuildStepCompatibilityLayer#getProjectAction(hudson.model.AbstractProject)
 	 */
 	@Override
-	public Action getProjectAction(AbstractProject<?, ?> project) 
-	{
+	public Action getProjectAction(AbstractProject<?, ?> project) {
 		return new TestLinkProjectAction(project);
 	}
 	

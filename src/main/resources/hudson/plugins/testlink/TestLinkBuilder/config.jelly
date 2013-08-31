@@ -92,6 +92,10 @@
       <f:entry title="${%Fail the build if no test results are present}" help="${rootURL}/../plugin/testlink/help-failIfNoResults.html">
           <f:checkbox name="TestLinkBuilder.failIfNoResults" value="${instance.failIfNoResults}" checked="${instance.failIfNoResults}" />
       </f:entry>
+      
+      <f:entry title="${%Fail on not Run}">
+          <f:checkbox name="TestLinkBuilder.failOnNotRun" value="${instance.failOnNotRun}" checked="${instance.failOnNotRun}" />
+      </f:entry> 
    
     </f:advanced>
 
