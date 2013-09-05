@@ -41,7 +41,7 @@ public class TestLinkSiteFake extends TestLinkSite {
 	protected List<TestCaseWrapper> testCases = new LinkedList<TestCaseWrapper>();
 
 	public TestLinkSiteFake() {
-		super(null, null, null, new Build(1, 1, "Fake build", "Fake notes"));
+		super(null, null, null, null, new Build(1, 1, "Fake build", "Fake notes"));
 	}
 
 	/* (non-Javadoc)
