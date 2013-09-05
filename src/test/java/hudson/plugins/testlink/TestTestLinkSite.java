@@ -175,7 +175,7 @@ public class TestTestLinkSite {
 		
 		when(api.getTestCasesForTestPlan(anyInt(), anyListOf(Integer.class),
 				anyInt(), anyListOf(Integer.class), anyString(), anyBoolean(),
-				anyListOf(Integer.class), anyString(),
+				anyListOf(Integer.class), anyListOf(String.class).toArray(new String[0]),
 				any(ExecutionType.class), anyBoolean(),
 				any(TestCaseDetails.class))).thenReturn(returnedTestCases);
 		
@@ -195,10 +195,10 @@ public class TestTestLinkSite {
 		TestCase[] returnedTestCases = {testCase1, testCase2};
 		
 		when(api.getTestCasesForTestPlan(anyInt(), anyListOf(Integer.class),
-				anyInt(), anyListOf(Integer.class), anyString(), anyBoolean(),
-				anyListOf(Integer.class), anyString(),
-				any(ExecutionType.class), anyBoolean(),
-				any(TestCaseDetails.class))).thenReturn(returnedTestCases);
+                anyInt(), anyListOf(Integer.class), anyString(), anyBoolean(),
+                anyListOf(Integer.class), anyListOf(String.class).toArray(new String[0]),
+                any(ExecutionType.class), anyBoolean(),
+                any(TestCaseDetails.class))).thenReturn(returnedTestCases);
 		
 		HashSet<ExecutionStatus> statuses = new HashSet<ExecutionStatus>();
 		statuses.add(ExecutionStatus.FAILED);

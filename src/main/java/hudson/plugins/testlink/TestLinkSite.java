@@ -23,10 +23,11 @@
  */
 package hudson.plugins.testlink;
 
+import hudson.plugins.testlink.result.TestCaseWrapper;
+
 import java.util.ArrayList;
 import java.util.Set;
 
-import hudson.plugins.testlink.result.TestCaseWrapper;
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionType;
@@ -39,7 +40,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.ReportTCResultResponse;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
-import br.eti.kinoshita.testlinkjavaapi.model.Platform;;
+import br.eti.kinoshita.testlinkjavaapi.model.Platform;
 
 /**
  * Immutable object that represents the TestLink site with a Test Project, 
@@ -103,7 +104,7 @@ public class TestLinkSite
 	{
 		return testPlan;
 	}
-
+	
 	/**
 	 * @return the platform
 	 */
@@ -111,8 +112,6 @@ public class TestLinkSite
 	{
 		return platform;
 	}
-
-	
 	
 	/**
 	 * @return the build
@@ -134,12 +133,13 @@ public class TestLinkSite
 	 * @param executionStatus Execution statuses to filter by
 	 * @return Array of automated test cases with custom fields
 	 */
-	public TestCase[] getAutomatedTestCases( String[] customFieldsNames, Set<ExecutionStatus> executionStatuses ) 
-	{
-		// we do not use the api to filter out execution statuses because it
-		// doesn't work how the api describes - javadocs say comma separated
-		// string of n, p, f and b but looking at the testlink source its an
-		// array of strings
+	public TestCase[] getAutomatedTestCases( String[] customFieldsNames, Set<ExecutionStatus> executionStatuses ) {
+	    String[] executionStatus = new String[executionStatuses.size()];
+	    int i = 0;
+	    for (ExecutionStatus es : executionStatuses) {
+	        executionStatus[i] = es.toString();
+	        i++;
+	    }
 		final TestCase[] testCases = this.api.getTestCasesForTestPlan(
 				getTestPlan().getId(), 
 				null, 
@@ -148,7 +148,7 @@ public class TestLinkSite
 				null,
 				null, 
 				null, 
-				null, 
+				executionStatus, // execute status
 				ExecutionType.AUTOMATED, 
 				Boolean.TRUE,
 				TestCaseDetails.FULL);			
@@ -196,7 +196,6 @@ public class TestLinkSite
 				&& !ExecutionStatus.NOT_RUN.equals(testCase
 						.getExecutionStatus()))	{
 			// Update Test Case status
-
 			ReportTCResultResponse reportTCResultResponse = null;
 			if (platform != null){
 				reportTCResultResponse = api.reportTCResult(
@@ -210,7 +209,7 @@ public class TestLinkSite
 					null, // guess
 					null, // bug id
 					platform.getId(), 
-					platform.getName(), // platform name
+					platform.getName(), 
 					null, // custom fields
 					null);
 			}

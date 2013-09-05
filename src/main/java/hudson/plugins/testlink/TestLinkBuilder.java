@@ -70,31 +70,51 @@ import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
 public class TestLinkBuilder extends AbstractTestLinkBuilder {
 
 	private static final Logger LOGGER = Logger.getLogger("hudson.plugins.testlink");
-
+	
 	/**
 	 * The Descriptor of this Builder. It contains the TestLink installation.
 	 */
 	@Extension
 	public static final TestLinkBuilderDescriptor DESCRIPTOR = new TestLinkBuilderDescriptor();
 
+	/**
+	 * @deprecated
+	 */
+    public TestLinkBuilder(String testLinkName, String testProjectName,
+            String testPlanName, String platformName, String buildName, String customFields,
+            Boolean executionStatusNotRun, Boolean executionStatusPassed,
+            Boolean executionStatusFailed, Boolean executionStatusBlocked,
+            List<BuildStep> singleBuildSteps,
+            List<BuildStep> beforeIteratingAllTestCasesBuildSteps,
+            List<BuildStep> iterativeBuildSteps,
+            List<BuildStep> afterIteratingAllTestCasesBuildSteps,
+            Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
+            Boolean failIfNoResults, List<ResultSeeker> resultSeekers) {
+        super(testLinkName, testProjectName, testPlanName, platformName, buildName,
+                customFields, executionStatusNotRun, executionStatusPassed,
+                executionStatusFailed, executionStatusBlocked, singleBuildSteps,
+                beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
+                afterIteratingAllTestCasesBuildSteps, transactional,
+                failedTestsMarkBuildAsFailure, failIfNoResults, false, resultSeekers);
+    }
+	
 	@DataBoundConstructor
 	public TestLinkBuilder(String testLinkName, String testProjectName,
-			String testPlanName, String platformName, String buildName,
-			String customFields, Boolean executionStatusNotRun,
-			Boolean executionStatusPassed, Boolean executionStatusFailed,
-			Boolean executionStatusBlocked, List<BuildStep> singleBuildSteps,
+			String testPlanName, String platformName, String buildName, String customFields,
+			Boolean executionStatusNotRun, Boolean executionStatusPassed,
+			Boolean executionStatusFailed, Boolean executionStatusBlocked,
+			List<BuildStep> singleBuildSteps,
 			List<BuildStep> beforeIteratingAllTestCasesBuildSteps,
 			List<BuildStep> iterativeBuildSteps,
 			List<BuildStep> afterIteratingAllTestCasesBuildSteps,
 			Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
-			Boolean failIfNoResults, List<ResultSeeker> resultSeekers) {
-		super(testLinkName, testProjectName, testPlanName, platformName,
-				buildName, customFields, executionStatusNotRun,
-				executionStatusPassed, executionStatusFailed,
-				executionStatusBlocked, singleBuildSteps,
+			Boolean failIfNoResults, Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
+		super(testLinkName, testProjectName, testPlanName, platformName, buildName,
+				customFields, executionStatusNotRun, executionStatusPassed,
+				executionStatusFailed, executionStatusBlocked, singleBuildSteps,
 				beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
 				afterIteratingAllTestCasesBuildSteps, transactional,
-				failedTestsMarkBuildAsFailure, failIfNoResults, resultSeekers);
+				failedTestsMarkBuildAsFailure, failIfNoResults, failOnNotRun, resultSeekers);
 	}
 
 	/**
@@ -103,9 +123,9 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
 			BuildListener listener) throws InterruptedException, IOException {
-	
+		
 		LOGGER.log(Level.INFO, "TestLink builder started");
-
+		
 		this.failure = false;
 
 		// TestLink installation
@@ -143,22 +163,20 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			// TestLink Site object
 			testLinkSite = this.getTestLinkSite(testLinkUrl, testLinkDevKey, testProjectName, testPlanName, platformName, buildName, buildNotes);
 			final String[] customFieldsNames = this.createArrayOfCustomFieldsNames(build.getBuildVariableResolver(), build.getEnvironment(listener));
-			final Set<ExecutionStatus> executionStatuses = this
-					.getExecutionStatuses();
+			final Set<ExecutionStatus> executionStatuses = this.getExecutionStatuses();
 			// Array of automated test cases
 			TestCase[] testCases = testLinkSite.getAutomatedTestCases(customFieldsNames, executionStatuses);
 
 			// Transforms test cases into test case wrappers
 			automatedTestCases = this.transform(testCases);
-	
+			
 			testCases = null;
 
 			listener.getLogger().println(Messages.TestLinkBuilder_ShowFoundAutomatedTestCases(automatedTestCases.length));
 
 			// Sorts test cases by each execution order (this info comes from
 			// TestLink)
-			listener.getLogger().println(
-					Messages.TestLinkBuilder_SortingTestCases());
+			listener.getLogger().println(Messages.TestLinkBuilder_SortingTestCases());
 			Arrays.sort(automatedTestCases, this.executionOrderComparator);
 		} catch (MalformedURLException mue) {
 			mue.printStackTrace(listener.fatalError(mue.getMessage()));
@@ -167,14 +185,14 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			e.printStackTrace(listener.fatalError(e.getMessage()));
 			throw new AbortException(Messages.TestLinkBuilder_TestLinkCommunicationError());
 		}
-
+		
 		for(TestCaseWrapper tcw : automatedTestCases) {
 		    testLinkSite.getReport().addTestCase(tcw);
 		    if(LOGGER.isLoggable(Level.FINE)) {
 		        LOGGER.log(Level.FINE, "TestLink automated test case ID [" + tcw.getId() + "], name [" +tcw.getName()+ "]");
 		    }
 		}
-
+		
 		listener.getLogger().println(Messages.TestLinkBuilder_ExecutingSingleBuildSteps());
 		this.executeSingleBuildSteps(automatedTestCases.length, testLinkSite, build, launcher, listener);
 
@@ -186,7 +204,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		// contains attachments, platform and notes.
 		try {
 			listener.getLogger().println(Messages.Results_LookingForTestResults());
-
+			
 			if(getResultSeekers() != null) {
 				for (ResultSeeker resultSeeker : getResultSeekers()) {
 					LOGGER.log(Level.INFO, "Seeking test results. Using: " + resultSeeker.getDescriptor().getDisplayName());
@@ -211,20 +229,25 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		final TestLinkResult result = new TestLinkResult(report, build);
 		final TestLinkBuildAction buildAction = new TestLinkBuildAction(build, result);
 		build.addAction(buildAction);
-
+		
 		if(report.getTestsTotal() <= 0 && this.getFailIfNoResults() == Boolean.TRUE) {
 			listener.getLogger().println("No test results found. Setting the build result as FAILURE.");
 			build.setResult(Result.FAILURE);
 		} else if (report.getFailed() > 0) {
 			if (this.failedTestsMarkBuildAsFailure != null && this.failedTestsMarkBuildAsFailure) {
+			    listener.getLogger().println("There are failed tests, setting the build result as FAILURE.");
 				build.setResult(Result.FAILURE);
 			} else {
+			    listener.getLogger().println("There are failed tests, setting the build result as UNSTABLE.");
 				build.setResult(Result.UNSTABLE);
 			}
+		} else if (this.getFailOnNotRun() && report.getNotRun() > 0) {
+		    listener.getLogger().println("There are not run tests, setting the build result as FAILURE.");
+		    build.setResult(Result.FAILURE);
 		}
 
 		LOGGER.log(Level.INFO, "TestLink builder finished");
-	
+		
 		// end
 		return Boolean.TRUE;
 	}
@@ -237,7 +260,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		if(testCases == null || testCases.length == 0) {
 			return new TestCaseWrapper[0];
 		}
-	
+		
 		List<TestCaseWrapper> automatedTestCases = new ArrayList<TestCaseWrapper>();
 		for(TestCase testCase : testCases) {
 			TestCaseWrapper wrapper = new TestCaseWrapper(testCase);
@@ -253,8 +276,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 	 */
 	public TestLinkSite getTestLinkSite(String testLinkUrl,
 			String testLinkDevKey, String testProjectName, String testPlanName,
-			String platformName, String buildName, String buildNotes)
-			throws MalformedURLException {
+			String platformName, String buildName, String buildNotes) throws MalformedURLException {
 		final TestLinkAPI api;
 		final URL url = new URL(testLinkUrl);
 		api = new TestLinkAPI(url, testLinkDevKey);
@@ -264,6 +286,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 
 		final TestPlan testPlan = api.getTestPlanByName(testPlanName,
 				testProjectName);
+				
 		Platform p = null;
 		if (!platformName.equals("")){
 			Platform platforms[] = api.getProjectPlatforms(testProject.getId());		
@@ -274,11 +297,12 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 				}
 			}
 		}
+		final Platform platform = p;
 
 		final Build build = api.createBuild(testPlan.getId(), buildName,
 				buildNotes);
 
-		return new TestLinkSite(api, testProject, testPlan, p, build);
+		return new TestLinkSite(api, testProject, testPlan, platform, build);
 	}
 
 	/**
@@ -398,7 +422,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			}
 		}
 	}
-
+	
 	@Override
 	public Descriptor<Builder> getDescriptor() {
 	    return (TestLinkBuilderDescriptor) super.getDescriptor();

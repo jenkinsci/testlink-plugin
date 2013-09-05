@@ -30,7 +30,6 @@ import hudson.plugins.testlink.result.TestNGMethodNameResultSeeker;
 
 import org.jvnet.hudson.test.Bug;
 
-import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 
 /**
