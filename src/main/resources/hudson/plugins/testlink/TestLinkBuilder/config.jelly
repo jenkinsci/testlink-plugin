@@ -21,10 +21,6 @@
 	  checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)"/>
   </f:entry>
 
-  <f:entry title="${%Platform Name}" help="${rootURL}/../plugin/testlink/help-platformName.html">
-	  <f:textbox name="TestLinkBuilder.platformName" value="${instance.platformName}"/>
-  </f:entry>
-  
   <f:entry title="${%Build Name}" help="${rootURL}/../plugin/testlink/help-buildName.html">
 	  <f:textbox name="TestLinkBuilder.buildName" value="${instance.buildName}" />
   </f:entry>
@@ -34,6 +30,11 @@
   </f:entry>
   
   <f:advanced>
+  
+  <f:entry title="${%Platform Name}" help="${rootURL}/../plugin/testlink/help-platformName.html">
+      <f:textbox name="TestLinkBuilder.platformName" value="${instance.platformName}"/>
+  </f:entry>
+  
   <f:section title="${%Execution Status}">
 
   <f:entry title="${%Not Run}" help="${rootURL}/../plugin/testlink/help-executionStatus.html">

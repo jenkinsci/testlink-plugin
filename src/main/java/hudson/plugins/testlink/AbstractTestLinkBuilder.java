@@ -72,12 +72,11 @@ public class AbstractTestLinkBuilder extends Builder {
 	/**
 	 * The name of the Build.
 	 */
-	protected final String platformName;
+	protected String buildName;
 	/**
 	 * The platform name.
 	 */
-	protected String buildName;
-	
+	protected final String platformName;
 	/**
 	 * Comma separated list of custom fields to download from TestLink.
 	 */
@@ -169,13 +168,13 @@ public class AbstractTestLinkBuilder extends Builder {
 	private List<ResultSeeker> resultSeekers;
 	
 	/**
+	 * Kept for backward compatibility. Don't add new fields here.
 	 * @deprecated
 	 */
 	public AbstractTestLinkBuilder(
 	        String testLinkName, 
 	        String testProjectName, 
 	        String testPlanName, 
-	        String platformName, 
 	        String buildName, 
 	        String customFields, 
 	        Boolean executionStatusNotRun,
@@ -195,7 +194,7 @@ public class AbstractTestLinkBuilder extends Builder {
         this.testLinkName = testLinkName;
         this.testProjectName = testProjectName;
         this.testPlanName = testPlanName;
-        this.platformName = platformName;
+        this.platformName = null;
         this.buildName = buildName;
         this.customFields = customFields;
         this.executionStatusNotRun = executionStatusNotRun;
@@ -213,12 +212,58 @@ public class AbstractTestLinkBuilder extends Builder {
         this.failOnNotRun = false;
 	}
 	/**
+     * Kept for backward compatibility. Don't add new fields here.
+     * @deprecated
+     */
+    public AbstractTestLinkBuilder(
+        String testLinkName, 
+        String testProjectName, 
+        String testPlanName, 
+        String buildName, 
+        String customFields, 
+        Boolean executionStatusNotRun,
+        Boolean executionStatusPassed,
+        Boolean executionStatusFailed,
+        Boolean executionStatusBlocked,
+        List<BuildStep> singleBuildSteps, 
+        List<BuildStep> beforeIteratingAllTestCasesBuildSteps, 
+        List<BuildStep> iterativeBuildSteps, 
+        List<BuildStep> afterIteratingAllTestCasesBuildSteps, 
+        Boolean transactional, 
+        Boolean failedTestsMarkBuildAsFailure, 
+        Boolean failIfNoResults, 
+        Boolean failOnNotRun, 
+        List<ResultSeeker> resultSeekers
+    ) {
+        super();
+        this.testLinkName = testLinkName;
+        this.testProjectName = testProjectName;
+        this.testPlanName = testPlanName;
+        this.platformName = null;
+        this.buildName = buildName;
+        this.customFields = customFields;
+        this.executionStatusNotRun = executionStatusNotRun;
+        this.executionStatusPassed = executionStatusPassed;
+        this.executionStatusFailed = executionStatusFailed;
+        this.executionStatusBlocked = executionStatusBlocked;
+        this.singleBuildSteps = singleBuildSteps;
+        this.beforeIteratingAllTestCasesBuildSteps = beforeIteratingAllTestCasesBuildSteps;
+        this.iterativeBuildSteps = iterativeBuildSteps;
+        this.afterIteratingAllTestCasesBuildSteps = afterIteratingAllTestCasesBuildSteps;
+        this.transactional = transactional;
+        this.failedTestsMarkBuildAsFailure = failedTestsMarkBuildAsFailure;
+        this.failIfNoResults = failIfNoResults;
+        this.failOnNotRun = failOnNotRun;
+        this.resultSeekers = resultSeekers;
+    }
+	/**
 	 * This constructor is bound to a stapler request. All parameters here are 
 	 * passed by Jenkins.
 	 * 
 	 * @param testLinkName TestLink Installation name.
 	 * @param testProjectName TestLink Test Project name.
 	 * @param testPlanName TestLink Test Plan name.
+	 * @param platformName TestLink Platform name.
 	 * @param buildName TestLink Build name.
 	 * @param customFields TestLink comma-separated list of Custom Fields.
 	 * @param keyCustomField Key custom field.
@@ -274,13 +319,11 @@ public class AbstractTestLinkBuilder extends Builder {
 		this.resultSeekers = resultSeekers;
 	}
 	
-	public String getTestLinkName()
-	{
+	public String getTestLinkName()	{
 		return this.testLinkName;
 	}
 	
-	public String getTestProjectName()
-	{
+	public String getTestProjectName() {
 		return this.testProjectName;
 	}
 	
@@ -293,28 +336,23 @@ public class AbstractTestLinkBuilder extends Builder {
 	 * @param variable Variable value (includes mask).
 	 * @return Expanded test project name job configuration property.
 	 */
-	public String expandVariable( VariableResolver<String> variableResolver, EnvVars envVars, String variable )
-	{
+	public String expandVariable( VariableResolver<String> variableResolver, EnvVars envVars, String variable )	{
 		return Util.replaceMacro(envVars.expand(variable), variableResolver);
 	}
 	
-	public String getTestPlanName()
-	{
+	public String getTestPlanName()	{
 		return this.testPlanName;
 	}
 	
-	public String getPlatformName()
-	{
+	public String getPlatformName()	{
 		return this.platformName;
 	}
 	
-	public String getBuildName()
-	{
+	public String getBuildName() {
 		return this.buildName;
 	}
 	
-	public String getCustomFields()
-	{
+	public String getCustomFields() {
 		return this.customFields;
 	}
 
@@ -334,23 +372,19 @@ public class AbstractTestLinkBuilder extends Builder {
 		return executionStatusBlocked;
 	}
 
-	public List<BuildStep> getSingleBuildSteps()
-	{
+	public List<BuildStep> getSingleBuildSteps() {
 		return this.singleBuildSteps;
 	}
 	
-	public List<BuildStep> getBeforeIteratingAllTestCasesBuildSteps()
-	{
+	public List<BuildStep> getBeforeIteratingAllTestCasesBuildSteps() {
 		return beforeIteratingAllTestCasesBuildSteps;
 	}
 
-	public List<BuildStep> getIterativeBuildSteps()
-	{
+	public List<BuildStep> getIterativeBuildSteps() {
 		return this.iterativeBuildSteps;
 	}
 	
-	public List<BuildStep> getAfterIteratingAllTestCasesBuildSteps()
-	{
+	public List<BuildStep> getAfterIteratingAllTestCasesBuildSteps() {
 		return afterIteratingAllTestCasesBuildSteps;
 	}
 	
@@ -362,16 +396,14 @@ public class AbstractTestLinkBuilder extends Builder {
 	 * 
 	 * @return If the build step should be transactional or not
 	 */
-	public Boolean getTransactional()
-	{
+	public Boolean getTransactional() {
 		return this.transactional;
 	}
 	
 	/**
 	 * @return the failedTestsMarkBuildAsUnstable
 	 */
-	public Boolean getFailedTestsMarkBuildAsUnstable()
-	{
+	public Boolean getFailedTestsMarkBuildAsUnstable() {
 		return failedTestsMarkBuildAsFailure;
 	}
 	
@@ -420,8 +452,7 @@ public class AbstractTestLinkBuilder extends Builder {
 	 * 
 	 * @return Array of custom fields names.
 	 */
-	protected String[] createArrayOfCustomFieldsNames(final VariableResolver<String> variableResolver, final EnvVars envVars)
-	{
+	protected String[] createArrayOfCustomFieldsNames(final VariableResolver<String> variableResolver, final EnvVars envVars) {
 		String[] customFieldNamesArray = new String[0];
 		String customFields = expandVariable(variableResolver, envVars, this.getCustomFields());
 		
@@ -473,6 +504,5 @@ public class AbstractTestLinkBuilder extends Builder {
 		}
 		return statuses;
 	}
-	
 	
 }

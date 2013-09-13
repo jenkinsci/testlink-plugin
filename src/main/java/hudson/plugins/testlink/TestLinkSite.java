@@ -36,11 +36,11 @@ import br.eti.kinoshita.testlinkjavaapi.constants.TestCaseDetails;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
+import br.eti.kinoshita.testlinkjavaapi.model.Platform;
 import br.eti.kinoshita.testlinkjavaapi.model.ReportTCResultResponse;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
-import br.eti.kinoshita.testlinkjavaapi.model.Platform;
 
 /**
  * Immutable object that represents the TestLink site with a Test Project, 
@@ -49,8 +49,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.Platform;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 3.0
  */
-public class TestLinkSite
-{
+public class TestLinkSite {
 
 	protected final TestLinkAPI api;
 	protected final TestProject testProject;
@@ -60,21 +59,29 @@ public class TestLinkSite
 	protected final Report report;
 	
 	/**
+	 * Kept for backward compatibility. Don't add fields.
+	 * @deprecated
+	 */
+	public TestLinkSite(TestLinkAPI api, TestProject testProject, TestPlan testPlan, Build build) {
+	    this(api, testProject, testPlan, null, build);
+	}
+	
+	/**
 	 * @param api TestLink Java API object
 	 * @param testProject TestLink Test Project
 	 * @param testPlan TestLink Test Plan
+	 * @param platform TestLink platform
 	 * @param build TestLink Build
 	 */
-	public TestLinkSite(TestLinkAPI api, TestProject testProject, TestPlan testPlan, Platform platform, Build build)
-	{
+	public TestLinkSite(TestLinkAPI api, TestProject testProject, TestPlan testPlan, 
+	        Platform platform, Build build) {
 		super();
 		this.api = api;
 		this.testProject = testProject;
 		this.testPlan = testPlan;
 		this.platform = platform;
 		this.build = build;
-		if(build != null) 
-		{
+		if(build != null) {
 			report = new Report(build.getId() == null ? 0 : build.getId(), build.getName());
 		} else {
 			report = new Report(0, null);
@@ -84,40 +91,35 @@ public class TestLinkSite
 	/**
 	 * @return the TestLink Java API object
 	 */
-	public TestLinkAPI getApi()
-	{
+	public TestLinkAPI getApi() {
 		return api;
 	}
 
 	/**
 	 * @return the testProject
 	 */
-	public TestProject getTestProject()
-	{
+	public TestProject getTestProject() {
 		return testProject;
 	}
 
 	/**
 	 * @return the testPlan
 	 */
-	public TestPlan getTestPlan()
-	{
+	public TestPlan getTestPlan() {
 		return testPlan;
 	}
 	
 	/**
 	 * @return the platform
 	 */
-	public Platform getPlatform()
-	{
+	public Platform getPlatform() {
 		return platform;
 	}
 	
 	/**
 	 * @return the build
 	 */
-	public Build getBuild()
-	{
+	public Build getBuild() {
 		return build;
 	}
 	
@@ -155,18 +157,15 @@ public class TestLinkSite
 
 		final ArrayList<TestCase> filteredTestCases = new ArrayList<TestCase>();
 		
-		for( final TestCase testCase : testCases )
-		{
+		for( final TestCase testCase : testCases ) {
 			if(!executionStatuses.contains(testCase.getExecutionStatus())) {
 				continue;
 			}
 			filteredTestCases.add(testCase);
 			testCase.setTestProjectId(getTestProject().getId());
 			testCase.setExecutionStatus(ExecutionStatus.NOT_RUN);
-			if ( customFieldsNames != null )
-			{
-				for( String customFieldName : customFieldsNames )
-				{
+			if ( customFieldsNames != null ) {
+				for( String customFieldName : customFieldsNames ) {
 					final CustomField customField = 
 							this.api.getTestCaseCustomFieldDesignValue(
 									testCase.getId(), 
@@ -196,39 +195,20 @@ public class TestLinkSite
 				&& !ExecutionStatus.NOT_RUN.equals(testCase
 						.getExecutionStatus()))	{
 			// Update Test Case status
-			ReportTCResultResponse reportTCResultResponse = null;
-			if (platform != null){
-				reportTCResultResponse = api.reportTCResult(
-					testCase.getId(), 
-					testCase.getInternalId(), 
-					testPlan.getId(), 
-					testCase.getExecutionStatus(), 
-					build.getId(), 
-					build.getName(), 
-					testCase.getNotes(), 
-					null, // guess
-					null, // bug id
-					platform.getId(), 
-					platform.getName(), 
-					null, // custom fields
-					null);
-			}
-			else {
-				reportTCResultResponse = api.reportTCResult(
-					testCase.getId(), 
-					testCase.getInternalId(), 
-					testPlan.getId(), 
-					testCase.getExecutionStatus(), 
-					build.getId(), 
-					build.getName(), 
-					testCase.getNotes(), 
-					null, // guess
-					null, // bug id
-					null, 
-					null, // platform name
-					null, // custom fields
-					null);
-			}
+			final ReportTCResultResponse reportTCResultResponse = api.reportTCResult(
+				testCase.getId(), 
+				testCase.getInternalId(), 
+				testPlan.getId(), 
+				testCase.getExecutionStatus(), 
+				build.getId(), 
+				build.getName(), 
+				testCase.getNotes(), 
+				null, // guess
+				null, // bug id
+				(platform != null ? platform.getId() : null), // platform id
+				(platform != null ? platform.getName() : null), // platform name
+				null, // custom fields
+				null);
 			
 			switch(testCase.getExecutionStatus()) {
 			case PASSED:
