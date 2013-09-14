@@ -181,11 +181,16 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			if(LOGGER.isLoggable(Level.FINE)) {
 				LOGGER.log(Level.FINE, "TestLink project name: ["+testProjectName+"]");
 				LOGGER.log(Level.FINE, "TestLink plan name: ["+testPlanName+"]");
+				LOGGER.log(Level.FINE, "TestLink platform name: ["+platformName+"]");
 				LOGGER.log(Level.FINE, "TestLink build name: ["+buildName+"]");
 				LOGGER.log(Level.FINE, "TestLink build notes: ["+buildNotes+"]");
 			}
 			// TestLink Site object
 			testLinkSite = this.getTestLinkSite(testLinkUrl, testLinkDevKey, testProjectName, testPlanName, platformName, buildName, buildNotes);
+			
+			if (StringUtils.isNotBlank(platformName) && testLinkSite.getPlatform() == null) 
+			    listener.getLogger().println(Messages.TestLinkBuilder_PlatformNotFound(platformName));
+			
 			final String[] customFieldsNames = this.createArrayOfCustomFieldsNames(build.getBuildVariableResolver(), build.getEnvironment(listener));
 			final Set<ExecutionStatus> executionStatuses = this.getExecutionStatuses();
 			// Array of automated test cases
@@ -265,7 +270,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			    listener.getLogger().println("There are failed tests, setting the build result as UNSTABLE.");
 				build.setResult(Result.UNSTABLE);
 			}
-		} else if (this.getFailOnNotRun() && report.getNotRun() > 0) {
+		} else if (this.getFailOnNotRun() != null && this.getFailOnNotRun() && report.getNotRun() > 0) {
 		    listener.getLogger().println("There are not run tests, setting the build result as FAILURE.");
 		    build.setResult(Result.FAILURE);
 		}
