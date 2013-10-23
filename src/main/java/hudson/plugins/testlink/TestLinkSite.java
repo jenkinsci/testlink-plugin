@@ -150,7 +150,7 @@ public class TestLinkSite {
 				null,
 				null, 
 				null, 
-				executionStatus, // execute status
+				(executionStatus.length == 0 ? null : executionStatus), // execute status
 				ExecutionType.AUTOMATED, 
 				Boolean.TRUE,
 				TestCaseDetails.FULL);			
@@ -158,8 +158,8 @@ public class TestLinkSite {
 		final ArrayList<TestCase> filteredTestCases = new ArrayList<TestCase>();
 		
 		for( final TestCase testCase : testCases ) {
-			if(!executionStatuses.contains(testCase.getExecutionStatus())) {
-				continue;
+			if(executionStatuses.size() != 0 && !executionStatuses.contains(testCase.getExecutionStatus())) {
+				continue; // TODO: log 
 			}
 			filteredTestCases.add(testCase);
 			testCase.setTestProjectId(getTestProject().getId());

@@ -478,7 +478,7 @@ public class AbstractTestLinkBuilder extends Builder {
 
 	/**
 	 * Return a set of execution statuses that we are interested in. If none are
-	 * true, then assume that job is to run tests of all execution statuses.
+	 * true, then send null to let testlink decide.
 	 * 
 	 * @return a set of execution statuses
 	 */
@@ -497,10 +497,10 @@ public class AbstractTestLinkBuilder extends Builder {
 			statuses.add(ExecutionStatus.BLOCKED);
 		}
 		if (statuses.size() == 0) {
-			statuses.add(ExecutionStatus.NOT_RUN);
-			statuses.add(ExecutionStatus.PASSED);
-			statuses.add(ExecutionStatus.FAILED);
-			statuses.add(ExecutionStatus.BLOCKED);
+//			statuses.add(ExecutionStatus.NOT_RUN);
+//			statuses.add(ExecutionStatus.PASSED);
+//			statuses.add(ExecutionStatus.FAILED);
+//			statuses.add(ExecutionStatus.BLOCKED);
 		}
 		return statuses;
 	}
