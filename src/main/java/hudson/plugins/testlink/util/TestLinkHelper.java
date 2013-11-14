@@ -45,12 +45,10 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
 
 /**
  * Helper methods for TestLink.
- * 
  * @author Bruno P. Kinoshita
  * @since 2.0
  */
-public final class TestLinkHelper 
-{
+public final class TestLinkHelper {
 	
 	// Environment Variables names.
 	private static final String TESTLINK_TESTCASE_PREFIX = "TESTLINK_TESTCASE_";
@@ -71,8 +69,7 @@ public final class TestLinkHelper
 	/**
 	 * Default hidden constructor for a helper class.
 	 */
-	private TestLinkHelper()
-	{
+	private TestLinkHelper() {
 		super();
 	}
 	
@@ -85,23 +82,15 @@ public final class TestLinkHelper
 	 * @param executionStatus the execution status.
 	 * @return the text wrapped in html tags that add color to the text.
 	 */
-	public static String getExecutionStatusTextColored( ExecutionStatus executionStatus ) 
-	{
+	public static String getExecutionStatusTextColored(ExecutionStatus executionStatus) {
 		String executionStatusTextColored = "Undefined";
-		if ( executionStatus == ExecutionStatus.FAILED )
-		{
+		if (executionStatus == ExecutionStatus.FAILED){
 			executionStatusTextColored = "<span style='color: red'>Failed</span>";
-		}
-		if ( executionStatus == ExecutionStatus.PASSED )
-		{
+		} else if (executionStatus == ExecutionStatus.PASSED) {
 			executionStatusTextColored = "<span style='color: green'>Passed</span>";
-		}
-		if ( executionStatus == ExecutionStatus.BLOCKED )
-		{
+		} else if (executionStatus == ExecutionStatus.BLOCKED) {
 			executionStatusTextColored = "<span style='color: yellow'>Blocked</span>";
-		}
-		if ( executionStatus == ExecutionStatus.NOT_RUN )
-		{
+		} else if (executionStatus == ExecutionStatus.NOT_RUN) {
 			executionStatusTextColored = "<span style='color: gray'>Not Run</span>";
 		}
 		return executionStatusTextColored;
@@ -128,18 +117,14 @@ public final class TestLinkHelper
 	 * @param testLinkJavaAPIProperties
 	 * @param listener Jenkins Build listener
 	 */
-	public static void setTestLinkJavaAPIProperties( String testLinkJavaAPIProperties, BuildListener listener )
-	{
-		if ( StringUtils.isNotBlank( testLinkJavaAPIProperties ) )
-		{
+	public static void setTestLinkJavaAPIProperties(String testLinkJavaAPIProperties, BuildListener listener) {
+		if (StringUtils.isNotBlank(testLinkJavaAPIProperties)) {
 			final StringTokenizer tokenizer = new StringTokenizer( testLinkJavaAPIProperties, "," );
 			
-			if ( tokenizer.countTokens() > 0 )
-			{
-				while ( tokenizer.hasMoreTokens() )
-				{
+			if (tokenizer.countTokens() > 0) {
+				while (tokenizer.hasMoreTokens()) {
 					String systemProperty = tokenizer.nextToken();
-					maybeAddSystemProperty( systemProperty, listener );
+					maybeAddSystemProperty(systemProperty, listener);
 				}
 			}
 		}
@@ -151,30 +136,22 @@ public final class TestLinkHelper
 	 * @param systemProperty System property entry in format <key>=<value>.
 	 * @param listener Jenkins Build listener
 	 */
-	public static void maybeAddSystemProperty( String systemProperty, BuildListener listener )
-	{
+	public static void maybeAddSystemProperty(String systemProperty, BuildListener listener) {
 		final StringTokenizer tokenizer = new StringTokenizer( systemProperty, "=:");
-		if ( tokenizer.countTokens() == 2 )
-		{
+		if (tokenizer.countTokens() == 2) {
 			final String key 	= tokenizer.nextToken();
 			final String value	= tokenizer.nextToken();
 			
-			if ( StringUtils.isNotBlank( key ) && StringUtils.isNotBlank( value ) )
-			{
-				if ( key.contains(BASIC_HTTP_PASSWORD))
-				{
-					listener.getLogger().println( Messages.TestLinkBuilder_SettingSystemProperty(key, "********") );
-				}
-				else
-				{
+			if (StringUtils.isNotBlank(key) && StringUtils.isNotBlank(value)) {
+				if (key.contains(BASIC_HTTP_PASSWORD)) {
+					listener.getLogger().println(Messages.TestLinkBuilder_SettingSystemProperty(key, "********"));
+				} else {
 					listener.getLogger().println( Messages.TestLinkBuilder_SettingSystemProperty(key, value) );
 				}
-				try
-				{
+				
+				try {
 					System.setProperty(key, value);
-				} 
-				catch ( SecurityException se )
-				{
+				} catch ( SecurityException se ) {
 					se.printStackTrace( listener.getLogger() );
 				}
 			
@@ -212,13 +189,11 @@ public final class TestLinkHelper
 		List<TestCaseStep> steps = testCase.getSteps();
 		testLinkEnvVar.put(TESTLINK_TESTCASE_STEP_PREFIX + "TOTAL", Integer.toString(steps.size()));
 		for (TestCaseStep step : steps) {
-			String name = TESTLINK_TESTCASE_STEP_PREFIX + step.getNumber() + "_ACTION";
 			String action = step.getActions();
-			testLinkEnvVar.put(name, action);
+			testLinkEnvVar.put(TESTLINK_TESTCASE_STEP_PREFIX + step.getNumber() + "_ACTION", action);
 			
-			name = TESTLINK_TESTCASE_STEP_PREFIX + step.getNumber() + "_EXPECTED";
 			String expected = step.getExpectedResults();
-			testLinkEnvVar.put(name, expected);
+			testLinkEnvVar.put(TESTLINK_TESTCASE_STEP_PREFIX + step.getNumber() + "_EXPECTED", expected);
 		}
 		return testLinkEnvVar;
 	}
@@ -234,9 +209,9 @@ public final class TestLinkHelper
     public static Map<String, String> createTestLinkEnvironmentVariables(int numberOfTests, TestProject testProject, TestPlan testPlan, Build build) {
         Map<String, String> testLinkEnvVar = new HashMap<String, String>();
         
-        testLinkEnvVar.put( TESTLINK_BUILD_NAME_ENVVAR, StringUtils.defaultIfEmpty(build.getName(), ""));
-        testLinkEnvVar.put( TESTLINK_TESTPLAN_NAME_ENVVAR, StringUtils.defaultIfEmpty(testPlan.getName(), ""));
-        testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, StringUtils.defaultIfEmpty(testProject.getName(), ""));
+        testLinkEnvVar.put(TESTLINK_BUILD_NAME_ENVVAR, StringUtils.defaultIfEmpty(build.getName(), ""));
+        testLinkEnvVar.put(TESTLINK_TESTPLAN_NAME_ENVVAR, StringUtils.defaultIfEmpty(testPlan.getName(), ""));
+        testLinkEnvVar.put(TESTLINK_TESTPROJECT_NAME_ENVVAR, StringUtils.defaultIfEmpty(testProject.getName(), ""));
         
         testLinkEnvVar.put(TESTLINK_TESTCASE_PREFIX + "TOTAL", Integer.toString(numberOfTests));
         return testLinkEnvVar;
@@ -275,14 +250,11 @@ public final class TestLinkHelper
 		
 		testLinkEnvVar.put(customFieldName, customFieldValue);
 		
-		if ( StringUtils.isNotBlank( customFieldValue ) ) 
-		{
-			StringTokenizer tokenizer = new StringTokenizer( customFieldValue, "," );
-			if ( tokenizer.countTokens() > 1 )
-			{
+		if (StringUtils.isNotBlank( customFieldValue )) {
+			StringTokenizer tokenizer = new StringTokenizer(customFieldValue, ",");
+			if (tokenizer.countTokens() > 1) {
 				int index = 0;
-				while ( tokenizer.hasMoreTokens() )
-				{
+				while (tokenizer.hasMoreTokens()) {
 					String token = tokenizer.nextToken();
 					token = token.trim();
 					

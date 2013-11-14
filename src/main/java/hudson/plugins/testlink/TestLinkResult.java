@@ -31,29 +31,24 @@ import java.io.Serializable;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 1.0
  */
-public class TestLinkResult 
-implements Serializable
-{
-	
-	private static final long serialVersionUID = 3355678827881770594L;
-	
-	private Report report;
-	private AbstractBuild<?, ?> build;
+public class TestLinkResult implements Serializable {
 
-	public TestLinkResult(Report report, AbstractBuild<?, ?> build)
-	{
-		this.report = report;
-		this.build = build;
-	}
-	
-	public AbstractBuild<?, ?> getOwner()
-	{
-		return this.build;
-	}
-	
-	public Report getReport()
-	{
-		return this.report;
-	}
-	
+    private static final long serialVersionUID = 3355678827881770594L;
+
+    private Report report;
+    private AbstractBuild<?, ?> build;
+
+    public TestLinkResult(Report report, AbstractBuild<?, ?> build) {
+        this.report = report;
+        this.build = build;
+    }
+
+    public AbstractBuild<?, ?> getOwner() {
+        return this.build;
+    }
+
+    public Report getReport() {
+        return this.report;
+    }
+
 }

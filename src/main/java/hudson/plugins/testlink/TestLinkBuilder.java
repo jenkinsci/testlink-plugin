@@ -46,7 +46,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -93,7 +92,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
             Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
             Boolean failIfNoResults, List<ResultSeeker> resultSeekers) {
         super(testLinkName, testProjectName, testPlanName, buildName,
-                customFields, executionStatusNotRun, executionStatusPassed,
+                null, customFields, executionStatusNotRun, executionStatusPassed,
                 executionStatusFailed, executionStatusBlocked, singleBuildSteps,
                 beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
                 afterIteratingAllTestCasesBuildSteps, transactional,
@@ -114,7 +113,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
             List<BuildStep> afterIteratingAllTestCasesBuildSteps,
             Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
             Boolean failIfNoResults, Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
-        super(testLinkName, testProjectName, testPlanName, buildName,
+        super(testLinkName, testProjectName, testPlanName, buildName, null, 
                 customFields, executionStatusNotRun, executionStatusPassed,
                 executionStatusFailed, executionStatusBlocked, singleBuildSteps,
                 beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
@@ -134,11 +133,9 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
 			Boolean failIfNoResults, Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
 		super(testLinkName, testProjectName, testPlanName, platformName, buildName,
-				customFields, executionStatusNotRun, executionStatusPassed,
-				executionStatusFailed, executionStatusBlocked, singleBuildSteps,
-				beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
-				afterIteratingAllTestCasesBuildSteps, transactional,
-				failedTestsMarkBuildAsFailure, failIfNoResults, failOnNotRun, resultSeekers);
+				customFields, singleBuildSteps, beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
+				afterIteratingAllTestCasesBuildSteps, transactional, failedTestsMarkBuildAsFailure, 
+				failIfNoResults, failOnNotRun, resultSeekers);
 	}
 
 	/**
@@ -192,9 +189,8 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			    listener.getLogger().println(Messages.TestLinkBuilder_PlatformNotFound(platformName));
 			
 			final String[] customFieldsNames = this.createArrayOfCustomFieldsNames(build.getBuildVariableResolver(), build.getEnvironment(listener));
-			final Set<ExecutionStatus> executionStatuses = this.getExecutionStatuses();
 			// Array of automated test cases
-			TestCase[] testCases = testLinkSite.getAutomatedTestCases(customFieldsNames, executionStatuses);
+			TestCase[] testCases = testLinkSite.getAutomatedTestCases(customFieldsNames);
 
 			// Transforms test cases into test case wrappers
 			automatedTestCases = this.transform(testCases);

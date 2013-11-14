@@ -24,10 +24,6 @@
 package hudson.plugins.testlink;
 
 import hudson.plugins.testlink.result.TestCaseWrapper;
-
-import java.util.ArrayList;
-import java.util.Set;
-
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionType;
@@ -132,16 +128,9 @@ public class TestLinkSite {
 
 	/**
 	 * @param customFieldsNames Array of custom fields names
-	 * @param executionStatus Execution statuses to filter by
 	 * @return Array of automated test cases with custom fields
 	 */
-	public TestCase[] getAutomatedTestCases( String[] customFieldsNames, Set<ExecutionStatus> executionStatuses ) {
-	    String[] executionStatus = new String[executionStatuses.size()];
-	    int i = 0;
-	    for (ExecutionStatus es : executionStatuses) {
-	        executionStatus[i] = es.toString();
-	        i++;
-	    }
+	public TestCase[] getAutomatedTestCases(String[] customFieldsNames) {
 		final TestCase[] testCases = this.api.getTestCasesForTestPlan(
 				getTestPlan().getId(), 
 				null, 
@@ -150,36 +139,29 @@ public class TestLinkSite {
 				null,
 				null, 
 				null, 
-				(executionStatus.length == 0 ? null : executionStatus), // execute status
+				null, // execute status
 				ExecutionType.AUTOMATED, 
 				Boolean.TRUE,
 				TestCaseDetails.FULL);			
 
-		final ArrayList<TestCase> filteredTestCases = new ArrayList<TestCase>();
-		
 		for( final TestCase testCase : testCases ) {
-			if(executionStatuses.size() != 0 && !executionStatuses.contains(testCase.getExecutionStatus())) {
-				continue; // TODO: log 
-			}
-			filteredTestCases.add(testCase);
 			testCase.setTestProjectId(getTestProject().getId());
 			testCase.setExecutionStatus(ExecutionStatus.NOT_RUN);
-			if ( customFieldsNames != null ) {
-				for( String customFieldName : customFieldsNames ) {
-					final CustomField customField = 
-							this.api.getTestCaseCustomFieldDesignValue(
-									testCase.getId(), 
-									null, /* testCaseExternalId */ 
-									testCase.getVersion(), 
-									testCase.getTestProjectId(), 
-									customFieldName, 
-									ResponseDetails.FULL);
+			if (customFieldsNames != null) {
+				for(String customFieldName : customFieldsNames) {
+					final CustomField customField = this.api.getTestCaseCustomFieldDesignValue(
+                									testCase.getId(), 
+                									null, /* testCaseExternalId */ 
+                									testCase.getVersion(), 
+                									testCase.getTestProjectId(), 
+                									customFieldName, 
+                									ResponseDetails.FULL);
 					testCase.getCustomFields().add(customField);
 				}
 			}
 		}
 		
-		return filteredTestCases.toArray(new TestCase[0]);
+		return testCases;
 	}
 	
 	/**
@@ -191,9 +173,7 @@ public class TestLinkSite {
 	public int updateTestCase(TestCaseWrapper testCase) {
 		int executionId = 0;
 		
-		if (testCase.getExecutionStatus() != null
-				&& !ExecutionStatus.NOT_RUN.equals(testCase
-						.getExecutionStatus()))	{
+		if (testCase.getExecutionStatus() != null && !ExecutionStatus.NOT_RUN.equals(testCase.getExecutionStatus())) {
 			// Update Test Case status
 			final ReportTCResultResponse reportTCResultResponse = api.reportTCResult(
 				testCase.getId(), 
@@ -211,17 +191,17 @@ public class TestLinkSite {
 				null);
 			
 			switch(testCase.getExecutionStatus()) {
-			case PASSED:
-				report.setPassed(report.getPassed()+1);
-				break;
-			case FAILED:
-				report.setFailed(report.getFailed()+1);
-				break;
-			case BLOCKED:
-				report.setBlocked(report.getBlocked()+1);
-				break;
-			default:
-				break;
+    			case PASSED:
+    				report.setPassed(report.getPassed()+1);
+    				break;
+    			case FAILED:
+    				report.setFailed(report.getFailed()+1);
+    				break;
+    			case BLOCKED:
+    				report.setBlocked(report.getBlocked()+1);
+    				break;
+    			default:
+    				break;
 			}
 			
 			executionId = reportTCResultResponse.getExecutionId();
@@ -231,8 +211,8 @@ public class TestLinkSite {
 		return executionId;
 	}
 	
-	public void uploadAttachment(int executionId, Attachment attachment) {
-		api.uploadExecutionAttachment(
+	public Attachment uploadAttachment(int executionId, Attachment attachment) {
+		return api.uploadExecutionAttachment(
 				executionId, 
 				attachment.getTitle(), 
 				attachment.getDescription(), 

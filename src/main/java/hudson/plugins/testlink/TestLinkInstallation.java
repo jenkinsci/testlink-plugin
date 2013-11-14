@@ -28,69 +28,57 @@ import java.io.Serializable;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
- * Represents the TestLink installation in Hudson global configuration. 
+ * Represents the TestLink installation in Hudson global configuration.
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 1.0
  */
-public class TestLinkInstallation 
-implements Serializable
-{
+public class TestLinkInstallation implements Serializable {
 
-	private static final long serialVersionUID = -6254365355132610350L;
+    private static final long serialVersionUID = -6254365355132610350L;
 
-	/**
-	 * Name of the installation
-	 */
-	private String name;
-	
-	/**
-	 * TestLink URL
-	 */
-	private String url;
-	
-	/**
-	 * A valid user dev key
-	 */
-	private String devKey;
-	
-	/**
-	 * TestLink Java API properties
-	 */
-	private String testLinkJavaAPIProperties;
-	
-	@DataBoundConstructor
-	public TestLinkInstallation(
-		String name, 
-		String url, 
-		String devKey, 
-		String testLinkJavaAPIProperties
-	)
-	{
-		this.name = name;
-		this.url = url;
-		this.devKey = devKey;
-		this.testLinkJavaAPIProperties = testLinkJavaAPIProperties;
-	}
-	
-	public String getName()
-	{
-		return this.name;
-	}
-	
-	public String getUrl()
-	{
-		return this.url;
-	}
-	
-	public String getDevKey()
-	{
-		return this.devKey;
-	}
+    /**
+     * Name of the installation
+     */
+    private String name;
 
-	public String getTestLinkJavaAPIProperties()
-	{
-		return testLinkJavaAPIProperties;
-	}
-	
+    /**
+     * TestLink URL
+     */
+    private String url;
+
+    /**
+     * A valid user dev key
+     */
+    private String devKey;
+
+    /**
+     * TestLink Java API properties
+     */
+    private String testLinkJavaAPIProperties;
+
+    @DataBoundConstructor
+    public TestLinkInstallation(String name, String url, String devKey, String testLinkJavaAPIProperties) {
+        this.name = name;
+        this.url = url;
+        this.devKey = devKey;
+        this.testLinkJavaAPIProperties = testLinkJavaAPIProperties;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getUrl() {
+        return this.url;
+    }
+
+    public String getDevKey() {
+        return this.devKey;
+    }
+
+    public String getTestLinkJavaAPIProperties() {
+        return testLinkJavaAPIProperties;
+    }
+
 }

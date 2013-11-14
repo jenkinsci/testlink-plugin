@@ -35,113 +35,98 @@ import org.kohsuke.stapler.StaplerProxy;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 1.0
  */
-public class TestLinkBuildAction 
-implements Action, Serializable, StaplerProxy
-{
+public class TestLinkBuildAction implements Action, Serializable, StaplerProxy {
 
-	private static final long serialVersionUID = -914904584770393909L;
-	
-	public static final String DISPLAY_NAME = "TestLink";
-	public static final String ICON_FILE_NAME = "/plugin/testlink/icons/testlink-24.png";
-	public static final String URL_NAME = "testLinkResult";
-	
-	private AbstractBuild<?, ?> build;
-	private TestLinkResult result;
-	
-	public TestLinkBuildAction(AbstractBuild<?, ?> build, TestLinkResult result)
-	{
-		this.build = build;
-		this.result = result;
-	}
-	
-	public String getDisplayName()
-	{
-		return DISPLAY_NAME;
-	}
+    private static final long serialVersionUID = -914904584770393909L;
 
-	public String getIconFileName()
-	{
-		return ICON_FILE_NAME;
-	}
+    public static final String DISPLAY_NAME = "TestLink";
+    public static final String ICON_FILE_NAME = "/plugin/testlink/icons/testlink-24.png";
+    public static final String URL_NAME = "testLinkResult";
 
-	public String getUrlName()
-	{
-		return URL_NAME;
-	}
+    private AbstractBuild<?, ?> build;
+    private TestLinkResult result;
 
-	public Object getTarget()
-	{
-		return this.result;
-	}
+    public TestLinkBuildAction(AbstractBuild<?, ?> build, TestLinkResult result) {
+        this.build = build;
+        this.result = result;
+    }
 
-	public AbstractBuild<?, ?> getBuild() {
-		return build;
-	}
-	
-	/**
-	 * @return TestLink job execution result
-	 */
-	public TestLinkResult getResult()
-	{
-		return this.result;
-	}
-	
-	/**
-	 * @return Previous TestLink report
-	 */
-	private Report getPreviousReport()
-	{
-		TestLinkResult previousResult = this.getPreviousResult();
-		Report previousReport = null;
-		if ( previousResult != null )
-		{
-			previousReport = previousResult.getReport();
-		}
-		return previousReport;
-	}
-	
-	/**
-	 * @return Previous TestLink job execution result
-	 */
-	public TestLinkResult getPreviousResult()
-	{
-		TestLinkBuildAction previousAction = this.getPreviousAction();
-		TestLinkResult previousResult = null;
-		if ( previousAction != null )
-		{
-			previousResult = previousAction.getResult();
-		}
-		return previousResult;
-	}
-	
-	/**
-	 * @return Previous Build Action
-	 */
-	public TestLinkBuildAction getPreviousAction()
-	{
-		if ( this.build != null )
-		{
-			AbstractBuild<?, ?> previousBuild = this.build.getPreviousBuild();
-			if ( previousBuild != null )
-			{
-				return previousBuild.getAction(TestLinkBuildAction.class);
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * @return Report summary
-	 */
-	public String getSummary(){
+    public String getDisplayName() {
+        return DISPLAY_NAME;
+    }
+
+    public String getIconFileName() {
+        return ICON_FILE_NAME;
+    }
+
+    public String getUrlName() {
+        return URL_NAME;
+    }
+
+    public Object getTarget() {
+        return this.result;
+    }
+
+    public AbstractBuild<?, ?> getBuild() {
+        return build;
+    }
+
+    /**
+     * @return TestLink job execution result
+     */
+    public TestLinkResult getResult() {
+        return this.result;
+    }
+
+    /**
+     * @return Previous TestLink report
+     */
+    private Report getPreviousReport() {
+        TestLinkResult previousResult = this.getPreviousResult();
+        Report previousReport = null;
+        if (previousResult != null) {
+            previousReport = previousResult.getReport();
+        }
+        return previousReport;
+    }
+
+    /**
+     * @return Previous TestLink job execution result
+     */
+    public TestLinkResult getPreviousResult() {
+        TestLinkBuildAction previousAction = this.getPreviousAction();
+        TestLinkResult previousResult = null;
+        if (previousAction != null) {
+            previousResult = previousAction.getResult();
+        }
+        return previousResult;
+    }
+
+    /**
+     * @return Previous Build Action
+     */
+    public TestLinkBuildAction getPreviousAction() {
+        if (this.build != null) {
+            AbstractBuild<?, ?> previousBuild = this.build.getPreviousBuild();
+            if (previousBuild != null) {
+                return previousBuild.getAction(TestLinkBuildAction.class);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return Report summary
+     */
+    public String getSummary() {
         return TestLinkHelper.createReportSummary(result.getReport(), this.getPreviousReport());
     }
-	
-	/**
-	 * @return Detailed Report summary
-	 */
-    public String getDetails(){
+
+    /**
+     * @return Detailed Report summary
+     */
+    public String getDetails() {
         return TestLinkHelper.createReportSummaryDetails(result.getReport(), this.getPreviousReport());
     }
-	
+
 }

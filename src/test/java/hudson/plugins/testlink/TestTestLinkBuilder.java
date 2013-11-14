@@ -23,10 +23,6 @@
  */
 package hudson.plugins.testlink;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
-
 import hudson.EnvVars;
 import hudson.tasks.BuildStep;
 import hudson.tasks.Shell;
@@ -35,13 +31,9 @@ import hudson.util.VariableResolver.ByMap;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.HudsonTestCase;
-
-import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 
 /**
  * Tests TestLinkBuilder class.
@@ -199,75 +191,4 @@ extends HudsonTestCase
 		
 	}
 
-	@Test
-	public void getExecutionStatusesShouldReturnAllWhenAllAreFalse() {
-		builder = new TestLinkBuilder(null, null, null, null, null, null, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null, null, null, null, null, null, null, null, null );
-		Set<ExecutionStatus> statuses = builder.getExecutionStatuses();
-		assertThat(statuses, hasSize(4));
-		assertThat(
-				statuses,
-				contains(ExecutionStatus.NOT_RUN, ExecutionStatus.PASSED,
-						ExecutionStatus.FAILED, ExecutionStatus.BLOCKED));
-	}
-	
-	@Test
-	public void getExecutionStatusesShouldReturnAllWhenAllAreNull() {
-		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null );
-		Set<ExecutionStatus> statuses = builder.getExecutionStatuses();
-		assertThat(statuses, hasSize(4));
-		assertThat(
-				statuses,
-				contains(ExecutionStatus.NOT_RUN, ExecutionStatus.PASSED,
-						ExecutionStatus.FAILED, ExecutionStatus.BLOCKED));
-	}
-	
-	@Test
-	public void getExecutionStatusesShouldReturnSomeWhenSomeAreTrue() {
-		builder = new TestLinkBuilder(null, null, null, null, null, null, Boolean.TRUE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, null, null, null, null, null, null, null, null, null);
-		Set<ExecutionStatus> statuses = builder.getExecutionStatuses();
-		assertThat(statuses, hasSize(2));
-		assertThat(
-				statuses,
-				contains(ExecutionStatus.NOT_RUN, ExecutionStatus.FAILED));
-	}
-	
-	@Test
-	public void getExecutionStatusesShouldOneSomeWhenNotRunIsTrue() {
-		builder = new TestLinkBuilder(null, null, null, null, null, null, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null, null, null, null, null, null, null, null, null);
-		Set<ExecutionStatus> statuses = builder.getExecutionStatuses();
-		assertThat(statuses, hasSize(1));
-		assertThat(
-				statuses,
-				contains(ExecutionStatus.NOT_RUN));
-	}
-	
-	@Test
-	public void getExecutionStatusesShouldOneSomeWhenPassedIsTrue() {
-		builder = new TestLinkBuilder(null, null, null, null, null, null, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE, null, null, null, null, null, null, null, null, null);
-		Set<ExecutionStatus> statuses = builder.getExecutionStatuses();
-		assertThat(statuses, hasSize(1));
-		assertThat(
-				statuses,
-				contains(ExecutionStatus.PASSED));
-	}
-	
-	@Test
-	public void getExecutionStatusesShouldOneSomeWhenFailedIsTrue() {
-		builder = new TestLinkBuilder(null, null, null, null, null, null, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, null, null, null, null, null, null, null, null, null);
-		Set<ExecutionStatus> statuses = builder.getExecutionStatuses();
-		assertThat(statuses, hasSize(1));
-		assertThat(
-				statuses,
-				contains(ExecutionStatus.FAILED));
-	}
-	
-	@Test
-	public void getExecutionStatusesShouldOneSomeWhenBlockedIsTrue() {
-		builder = new TestLinkBuilder(null, null, null, null, null, null, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, null, null, null, null, null, null, null, null, null);
-		Set<ExecutionStatus> statuses = builder.getExecutionStatuses();
-		assertThat(statuses, hasSize(1));
-		assertThat(
-				statuses,
-				contains(ExecutionStatus.BLOCKED));
-	}
 }

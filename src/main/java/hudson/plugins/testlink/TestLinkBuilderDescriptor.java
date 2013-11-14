@@ -57,120 +57,118 @@ import com.tupilabs.testng.parser.TestNGParser;
  */
 public class TestLinkBuilderDescriptor extends BuildStepDescriptor<Builder> {
 
-	// exposed for Jelly
-	public final Class<TestLinkBuilder> testLinkBuildType = TestLinkBuilder.class;
+    // exposed for Jelly
+    public final Class<TestLinkBuilder> testLinkBuildType = TestLinkBuilder.class;
 
-	private static final String DISPLAY_NAME = "Invoke TestLink";
+    private static final String DISPLAY_NAME = "Invoke TestLink";
 
-	@CopyOnWrite
-	private volatile TestLinkInstallation[] installations = new TestLinkInstallation[0];
+    @CopyOnWrite
+    private volatile TestLinkInstallation[] installations = new TestLinkInstallation[0];
 
-	public TestLinkBuilderDescriptor() {
-		super(TestLinkBuilder.class);
-		load();
-	}
+    public TestLinkBuilderDescriptor() {
+        super(TestLinkBuilder.class);
+        load();
+    }
 
-	@Override
-	public String getDisplayName() {
-		return DISPLAY_NAME;
-	}
+    @Override
+    public String getDisplayName() {
+        return DISPLAY_NAME;
+    }
 
-	/**
-	 * @return List of TestLink installations
-	 */
-	public TestLinkInstallation[] getInstallations() {
-		return this.installations;
-	}
+    /**
+     * @return List of TestLink installations
+     */
+    public TestLinkInstallation[] getInstallations() {
+        return this.installations;
+    }
 
-	public TestLinkInstallation getInstallationByTestLinkName(
-			String testLinkName) {
-		TestLinkInstallation installation = null;
-		if (this.installations != null && this.installations.length > 0) {
-			for (TestLinkInstallation tempInst : this.installations) {
-				if (tempInst.getName().equals(testLinkName)) {
-					return tempInst;
-				}
-			}
-		}
-		return installation;
-	}
+    public TestLinkInstallation getInstallationByTestLinkName(String testLinkName) {
+        TestLinkInstallation installation = null;
+        if (this.installations != null && this.installations.length > 0) {
+            for (TestLinkInstallation tempInst : this.installations) {
+                if (tempInst.getName().equals(testLinkName)) {
+                    return tempInst;
+                }
+            }
+        }
+        return installation;
+    }
 
-	@Override
-	public boolean configure(StaplerRequest req, JSONObject json)
-			throws hudson.model.Descriptor.FormException {
-		this.installations = req.bindParametersToList(
-				TestLinkInstallation.class, "TestLink.").toArray(
-				new TestLinkInstallation[0]);
-		save();
-		return true;
-	}
+    @Override
+    public boolean configure(StaplerRequest req, JSONObject json) throws hudson.model.Descriptor.FormException {
+        this.installations = req.bindParametersToList(TestLinkInstallation.class, "TestLink.").toArray(
+                new TestLinkInstallation[0]);
+        save();
+        return true;
+    }
 
-	// exposed for Jelly
-	public List<Descriptor<? extends BuildStep>> getApplicableBuildSteps(
-			AbstractProject<?, ?> p) {
-		return getBuildSteps();
-	}
+    // exposed for Jelly
+    public List<Descriptor<? extends BuildStep>> getApplicableBuildSteps(AbstractProject<?, ?> p) {
+        return getBuildSteps();
+    }
 
-	public List<Descriptor<? extends ResultSeeker>> getApplicableResultSeekers(
-			AbstractProject<?, ?> p) {
-		List<Descriptor<? extends ResultSeeker>> list = new LinkedList<Descriptor<? extends ResultSeeker>>();
-		for (Descriptor<? extends ResultSeeker> rs : ResultSeeker.all()) {
-			list.add(rs);
-		}
-		return list;
-	}
+    public List<Descriptor<? extends ResultSeeker>> getApplicableResultSeekers(AbstractProject<?, ?> p) {
+        List<Descriptor<? extends ResultSeeker>> list = new LinkedList<Descriptor<? extends ResultSeeker>>();
+        for (Descriptor<? extends ResultSeeker> rs : ResultSeeker.all()) {
+            list.add(rs);
+        }
+        return list;
+    }
 
-	public static List<Descriptor<? extends BuildStep>> getBuildSteps() {
-		List<Descriptor<? extends BuildStep>> list = new ArrayList<Descriptor<? extends BuildStep>>();
-		addTo(Builder.all(), list);
-		addTo(Publisher.all(), list);
-		return list;
-	}
+    public static List<Descriptor<? extends BuildStep>> getBuildSteps() {
+        List<Descriptor<? extends BuildStep>> list = new ArrayList<Descriptor<? extends BuildStep>>();
+        addTo(Builder.all(), list);
+        addTo(Publisher.all(), list);
+        return list;
+    }
 
-	private static void addTo(
-			List<? extends Descriptor<? extends BuildStep>> source,
-			List<Descriptor<? extends BuildStep>> list) {
-		for (Descriptor<? extends BuildStep> d : source) {
-			if (d instanceof BuildStepDescriptor) {
-				BuildStepDescriptor<?> bsd = (BuildStepDescriptor<?>) d;
-				if (bsd.isApplicable(FreeStyleProject.class)) {
-					list.add(d);
-				}
-			}
-		}
-	}
+    private static void addTo(List<? extends Descriptor<? extends BuildStep>> source,
+            List<Descriptor<? extends BuildStep>> list) {
+        for (Descriptor<? extends BuildStep> d : source) {
+            if (d instanceof BuildStepDescriptor) {
+                BuildStepDescriptor<?> bsd = (BuildStepDescriptor<?>) d;
+                if (bsd.isApplicable(FreeStyleProject.class)) {
+                    list.add(d);
+                }
+            }
+        }
+    }
 
-	/*
-	 * --- Validation methods ---
-	 */
-	public FormValidation doCheckMandatory(@QueryParameter String value) {
-		FormValidation returnValue = FormValidation.ok();
-		if (StringUtils.isBlank(value)) {
-			returnValue = FormValidation.error(Messages
-					.TestLinkBuilder_MandatoryProperty());
-		}
-		return returnValue;
-	}
+    /*
+     * --- Validation methods ---
+     */
+    public FormValidation doCheckMandatory(@QueryParameter String value) {
+        FormValidation returnValue = FormValidation.ok();
+        if (StringUtils.isBlank(value)) {
+            returnValue = FormValidation.error(Messages.TestLinkBuilder_MandatoryProperty());
+        }
+        return returnValue;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see hudson.tasks.BuildStepDescriptor#isApplicable(java.lang.Class)
-	 */
-	@Override
-	public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-		return Boolean.TRUE;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see hudson.tasks.BuildStepDescriptor#isApplicable(java.lang.Class)
+     */
+    @Override
+    public boolean isApplicable(Class<? extends AbstractProject> jobType) {
+        return Boolean.TRUE;
+    }
 
-	@Initializer(before=InitMilestone.PLUGINS_STARTED)
-	public static void addAliases() {
-	    Items.XSTREAM2.addCompatibilityAlias("hudson.plugins.testlink.testng.Suite", Suite.class);
-	    Items.XSTREAM2.addCompatibilityAlias("hudson.plugins.testlink.testng.TestNGParser", TestNGParser.class);
-	    Items.XSTREAM2.addCompatibilityAlias("hudson.plugins.testlink.testng.Test", com.tupilabs.testng.parser.Test.class);
-	    Items.XSTREAM2.addCompatibilityAlias("hudson.plugins.testlink.testng.TestMethod", com.tupilabs.testng.parser.TestMethod.class);
-	    Items.XSTREAM2.addCompatibilityAlias("hudson.plugins.testlink.testng.Class", com.tupilabs.testng.parser.Class.class);
-	    Items.XSTREAM2.addCompatibilityAlias("hudson.plugins.testlink.testng.ParserException", com.tupilabs.testng.parser.ParserException.class);
-	    Items.XSTREAM2.alias("hudson.plugins.testlink.testng.Class.list", java.util.LinkedList.class, java.util.LinkedHashSet.class);
-	}
+    @Initializer(before = InitMilestone.PLUGINS_STARTED)
+    public static void addAliases() {
+        Items.XSTREAM2.addCompatibilityAlias("hudson.plugins.testlink.testng.Suite", Suite.class);
+        Items.XSTREAM2.addCompatibilityAlias("hudson.plugins.testlink.testng.TestNGParser", TestNGParser.class);
+        Items.XSTREAM2.addCompatibilityAlias("hudson.plugins.testlink.testng.Test",
+                com.tupilabs.testng.parser.Test.class);
+        Items.XSTREAM2.addCompatibilityAlias("hudson.plugins.testlink.testng.TestMethod",
+                com.tupilabs.testng.parser.TestMethod.class);
+        Items.XSTREAM2.addCompatibilityAlias("hudson.plugins.testlink.testng.Class",
+                com.tupilabs.testng.parser.Class.class);
+        Items.XSTREAM2.addCompatibilityAlias("hudson.plugins.testlink.testng.ParserException",
+                com.tupilabs.testng.parser.ParserException.class);
+        Items.XSTREAM2.alias("hudson.plugins.testlink.testng.Class.list", java.util.LinkedList.class,
+                java.util.LinkedHashSet.class);
+    }
 
 }

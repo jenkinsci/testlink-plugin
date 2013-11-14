@@ -16,8 +16,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 
-import java.util.HashSet;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -179,9 +177,7 @@ public class TestTestLinkSite {
 				any(ExecutionType.class), anyBoolean(),
 				any(TestCaseDetails.class))).thenReturn(returnedTestCases);
 		
-		HashSet<ExecutionStatus> statuses = new HashSet<ExecutionStatus>();
-		
-		TestCase[] testCases = testLinkSite.getAutomatedTestCases(null, statuses);
+		TestCase[] testCases = testLinkSite.getAutomatedTestCases(null);
 		
 		assertThat(testCases.length, is(2));
  	}
@@ -200,12 +196,9 @@ public class TestTestLinkSite {
                 any(ExecutionType.class), anyBoolean(),
                 any(TestCaseDetails.class))).thenReturn(returnedTestCases);
 		
-		HashSet<ExecutionStatus> statuses = new HashSet<ExecutionStatus>();
-		statuses.add(ExecutionStatus.FAILED);
+		TestCase[] testCases = testLinkSite.getAutomatedTestCases(null);
 		
-		TestCase[] testCases = testLinkSite.getAutomatedTestCases(null, statuses);
-		
-		assertThat(testCases.length, is(1));
+		assertThat(testCases.length, is(2));
 		assertThat(testCases[0], is(sameInstance(testCase1)));
  	}
 
