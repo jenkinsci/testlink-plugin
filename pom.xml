@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -84,32 +85,32 @@
 			</roles>
 		</developer>
 		<developer>
-            <id>yachoor</id>
-            <name>Janusz Chorko</name>
-            <email>jchorko@gmail.com</email>
-            <timezone>+1</timezone>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
+			<id>yachoor</id>
+			<name>Janusz Chorko</name>
+			<email>jchorko@gmail.com</email>
+			<timezone>+1</timezone>
+			<roles>
+				<role>developer</role>
+			</roles>
+		</developer>
 	</developers>
-	
+
 	<contributors>
-	   <contributor>
-            <name>Bozenka Miljkovic</name>
-            <email>kbozenka@yahoo.com</email>
-            <timezone>+1</timezone>
-       </contributor>
-	   <contributor>
-            <name>Jaroslavas</name>
-            <email>j.daskevicius@gmail.com</email>
-            <timezone>+2</timezone>
-	   </contributor>
-	   <contributor>
-            <name>Vignesh Senapathy</name>
-            <email>vigneshsenapathy@gmail.com</email>
-            <timezone>+5</timezone>
-       </contributor>
+		<contributor>
+			<name>Bozenka Miljkovic</name>
+			<email>kbozenka@yahoo.com</email>
+			<timezone>+1</timezone>
+		</contributor>
+		<contributor>
+			<name>Jaroslavas</name>
+			<email>j.daskevicius@gmail.com</email>
+			<timezone>+2</timezone>
+		</contributor>
+		<contributor>
+			<name>Vignesh Senapathy</name>
+			<email>vigneshsenapathy@gmail.com</email>
+			<timezone>+5</timezone>
+		</contributor>
 	</contributors>
 
 	<build>
@@ -236,7 +237,7 @@
 		<dependency>
 			<groupId>org.tap4j</groupId>
 			<artifactId>tap4j</artifactId>
-			<version>4.0.4</version>
+			<version>4.0.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -274,14 +275,20 @@
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>  
-			<version>1.9.5</version> 
+			<artifactId>mockito-all</artifactId>
+			<version>1.9.5</version>
 			<scope>test</scope>
-  		</dependency>
+		</dependency>
 		<dependency>
 			<groupId>com.tupilabs</groupId>
 			<artifactId>testng-parser</artifactId>
 			<version>0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jenkins-ci.main</groupId>
+			<artifactId>ui-samples-plugin</artifactId>
+			<version>1.509</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 

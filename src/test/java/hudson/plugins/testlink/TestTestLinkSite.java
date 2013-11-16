@@ -85,7 +85,7 @@ public class TestTestLinkSite {
 
 		verify(api)
 				.reportTCResult(3, 4, 2, status, 1,
-						"build-name", "notes", null, null, null, null,
+						"build-name", "notes", null, null, null, "platform",
 						null, null);
 		Report report = testLinkSite.getReport();
 		assertThat(report.getPassed(), is(1));
@@ -105,7 +105,7 @@ public class TestTestLinkSite {
 
 		verify(api)
 				.reportTCResult(3, 4, 2, status, 1,
-						"build-name", "notes", null, null, null, null,
+						"build-name", "notes", null, null, null, "platform",
 						null, null);
 		Report report = testLinkSite.getReport();
 		assertThat(report.getPassed(), is(0));
@@ -125,7 +125,7 @@ public class TestTestLinkSite {
 
 		verify(api)
 				.reportTCResult(3, 4, 2, status, 1,
-						"build-name", "notes", null, null, null, null,
+						"build-name", "notes", null, null, null, "platform",
 						null, null);
 		Report report = testLinkSite.getReport();
 		assertThat(report.getPassed(), is(0));
