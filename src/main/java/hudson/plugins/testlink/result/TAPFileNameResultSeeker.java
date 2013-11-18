@@ -165,7 +165,7 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 						String tapFileNameWithoutExtension = key;
 						int leftIndex = 0;
 						if (!this.isCompareFullPath()) {
-						    int lastIndex = tapFileNameWithoutExtension.lastIndexOf('/');
+						    int lastIndex = tapFileNameWithoutExtension.lastIndexOf(File.separator);
 						    if (lastIndex > 0)
 						        leftIndex = lastIndex+1;
 						}
