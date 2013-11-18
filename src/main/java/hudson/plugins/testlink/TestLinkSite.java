@@ -186,7 +186,7 @@ public class TestLinkSite {
 				null, // guess
 				null, // bug id
 				(platform != null ? platform.getId() : null), // platform id
-				(platform != null ? platform.getName() : null), // platform name
+				(testCase.getPlatform() != null ? testCase.getPlatform() : null), // platform name
 				null, // custom fields
 				null);
 			
