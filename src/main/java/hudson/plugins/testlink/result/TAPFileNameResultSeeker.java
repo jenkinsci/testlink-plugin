@@ -71,7 +71,8 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 	private static final long serialVersionUID = 3068999690225092293L;
 
 	protected static final String TEXT_PLAIN_CONTENT_TYPE = "text/plain";
-	
+
+	private boolean testpointsAsExecutions = false;
 	private boolean attachTAPStream = false;
 	private boolean attachYAMLishAttachments = false;
 	private Boolean compareFullPath = false;
@@ -88,6 +89,14 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 		this.attachTAPStream = attachTAPStream;
 		this.attachYAMLishAttachments = attachYAMLishAttachments;
 		this.compareFullPath = compareFullPath;
+	}
+	
+	public void setTestpointsAsExecutions(boolean testpointsAsExecutions) {
+		this.testpointsAsExecutions = testpointsAsExecutions;
+	}
+	
+	public boolean isTestpointsAsExecutions() {
+		return testpointsAsExecutions;
 	}
 	
 	public void setAttachTAPStream(boolean attachTAPStream) {
@@ -174,15 +183,39 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 							tapFileNameWithoutExtension = tapFileNameWithoutExtension.substring(leftIndex, tapFileNameWithoutExtension.lastIndexOf('.'));
 						}
 						if(tapFileNameWithoutExtension.equals(value)) {
-							final ExecutionStatus status = this.getExecutionStatus(testSets.get(key));
-							automatedTestCase.addCustomFieldAndStatus(value, status);
-							
-							if(this.isIncludeNotes()) {
-								final String notes = this.getTapNotes(testSets.get(key));
-								automatedTestCase.appendNotes(notes);
+							if (this.isTestpointsAsExecutions()) {												
+								final TestSet testSet = testSets.get(key);
+								Integer executionNumbers = testSet.getNumberOfTestResults();
+								for (Integer i=1; i <= executionNumbers; i++){
+									final TestResult result = testSet.getTestResult(i);
+									ExecutionStatus status;
+									if (result.getStatus().toString().toUpperCase().equals("OK")) {
+										status = ExecutionStatus.PASSED;
+									}
+									else {
+										status = ExecutionStatus.FAILED;
+									}
+									automatedTestCase.addCustomFieldAndStatus(value, status);
+									
+									if(this.isIncludeNotes()) {
+										final String notes = this.getTapNotes(testSets.get(key));
+										automatedTestCase.appendNotes(notes);
+									}
+									
+									this.handleResult(automatedTestCase, build, listener, testlink, status, testSets, key);
+								}
 							}
-							
-							this.handleResult(automatedTestCase, build, listener, testlink, status, testSets, key);
+							else {	
+								final ExecutionStatus status = this.getExecutionStatus(testSets.get(key));
+								automatedTestCase.addCustomFieldAndStatus(value, status);
+								
+								if(this.isIncludeNotes()) {
+									final String notes = this.getTapNotes(testSets.get(key));
+									automatedTestCase.appendNotes(notes);
+								}
+								
+								this.handleResult(automatedTestCase, build, listener, testlink, status, testSets, key);
+							}
 						}
 					}
 				}
