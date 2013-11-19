@@ -80,12 +80,14 @@ public class TAPFileNameResultSeeker extends ResultSeeker {
 	/**
 	 * @param includePattern
 	 * @param keyCustomField
+	 * @param testpointsAsExecutions
 	 * @param attachTAPStream
 	 * @param attachYAMLishAttachments
 	 */
 	@DataBoundConstructor
-	public TAPFileNameResultSeeker(String includePattern, String keyCustomField, boolean attachTAPStream, boolean attachYAMLishAttachments, boolean includeNotes, Boolean compareFullPath) {
+	public TAPFileNameResultSeeker(String includePattern, String keyCustomField, boolean testpointsAsExecutions, boolean attachTAPStream, boolean attachYAMLishAttachments, boolean includeNotes, Boolean compareFullPath) {
 		super(includePattern, keyCustomField, includeNotes);
+		this.testpointsAsExecutions = testpointsAsExecutions;
 		this.attachTAPStream = attachTAPStream;
 		this.attachYAMLishAttachments = attachYAMLishAttachments;
 		this.compareFullPath = compareFullPath;
