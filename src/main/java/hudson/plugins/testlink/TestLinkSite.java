@@ -172,6 +172,18 @@ public class TestLinkSite {
 	 */
 	public int updateTestCase(TestCaseWrapper testCase) {
 		int executionId = 0;
+		Integer platformId = null;
+		String platformName = null;
+		
+		if (testCase.getPlatform() == null) {
+			if (platform != null) {
+				platformId = platform.getId(); // platform id
+				platformName = platform.getName(); // platform name
+			}
+		} else {
+		    // platformId is set to null
+		    platformName = testCase.getPlatform(); // platform name
+		}
 		
 		if (testCase.getExecutionStatus() != null && !ExecutionStatus.NOT_RUN.equals(testCase.getExecutionStatus())) {
 			// Update Test Case status
@@ -185,8 +197,8 @@ public class TestLinkSite {
 				testCase.getNotes(), 
 				null, // guess
 				null, // bug id
-				(platform != null ? platform.getId() : null), // platform id
-				(platform != null ? platform.getName() : null), // platform name
+				platformId, // platform id
+				platformName, // platform name
 				null, // custom fields
 				null);
 			
