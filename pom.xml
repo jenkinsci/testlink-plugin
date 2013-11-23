@@ -283,12 +283,6 @@
 			<artifactId>testng-parser</artifactId>
 			<version>0.2</version>
 		</dependency>
-		<dependency>
-			<groupId>org.jenkins-ci.main</groupId>
-			<artifactId>ui-samples-plugin</artifactId>
-			<version>1.509</version>
-			<scope>compile</scope>
-		</dependency>		
 	</dependencies>
 
 	<repositories>
