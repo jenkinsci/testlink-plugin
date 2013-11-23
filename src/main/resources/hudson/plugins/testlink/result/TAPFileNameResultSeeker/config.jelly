@@ -7,6 +7,10 @@
     <f:entry title="${%Key Custom Field}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
         <f:textbox id="keyCustomField" name="TAPFileNameResultSeeker.keyCustomField" value="${instance.keyCustomField}" />
     </f:entry>
+           
+    <f:entry title="${%Create one testlink execution for each TAP testpoint}" help="${rootURL}/../plugin/testlink/help-testpointsAsExecutions.html">
+        <f:checkbox name="TAPFileNameResultSeeker.testpointsAsExecutions" value="${instance.testpointsAsExecutions}" checked="${instance.testpointsAsExecutions}" />
+    </f:entry>
     
     <f:entry title="${%Attach TAP Stream}" help="${rootURL}/../plugin/testlink/help-attachResult.html">
         <f:checkbox name="TAPFileNameResultSeeker.attachTAPStream" value="${instance.attachTAPStream}" checked="${instance.attachTAPStream}" />
