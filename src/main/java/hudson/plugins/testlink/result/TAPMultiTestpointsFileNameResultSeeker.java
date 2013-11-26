@@ -57,6 +57,16 @@ import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
 
+/**
+ * <p>Seeks for test results matching each TAP file name with the key 
+ * custom field.</p>
+ * 
+ * <p>Skips TAP Streams that were skipped.</p>
+ * 
+ * @author Javier Delgado - http://github.com/witokondoria
+ * @since 3.9
+ */
+
 public class TAPMultiTestpointsFileNameResultSeeker extends AbstractTAPResultSeeker {
 	
 	private static final long serialVersionUID = 3068999690225000000L;

@@ -35,6 +35,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
 
 /**
+ * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @author Javier Delgado - http://github.com/witokondoria
  * @since 3.9
  */
