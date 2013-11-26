@@ -1,0 +1,27 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+    <f:entry title="${%Include Pattern}" help="${rootURL}/../plugin/testlink/help-tapIncludePattern.html">
+        <f:textbox id="includePattern" name="TAPMultiTestpointsFileNameResultSeeker.includePattern" value="${instance.includePattern}" />
+    </f:entry>
+
+    <f:entry title="${%Key Custom Field}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
+        <f:textbox id="keyCustomField" name="TAPMultiTestpointsFileNameResultSeeker.keyCustomField" value="${instance.keyCustomField}" />
+    </f:entry>
+        
+    <f:entry title="${%Attach TAP Stream}" help="${rootURL}/../plugin/testlink/help-attachResult.html">
+        <f:checkbox name="TAPMultiTestpointsFileNameResultSeeker.attachTAPStream" value="${instance.attachTAPStream}" checked="${instance.attachTAPStream}" />
+    </f:entry>
+    
+    <f:entry title="${%Attach TAP YAMLish attachments}" help="${rootURL}/../plugin/testlink/help-attachYAMLishResult.html">
+        <f:checkbox name="TAPMultiTestpointsFileNameResultSeeker.attachYAMLishAttachments" value="${instance.attachYAMLishAttachments}" checked="${instance.attachYAMLishAttachments}" />
+    </f:entry>
+    
+    <f:entry title="${%Include test notes}" help="${rootURL}/../plugin/testlink/help-includeNotes.html">
+        <f:checkbox name="TAPMultiTestpointsFileNameResultSeeker.includeNotes" value="${instance.includeNotes}" checked="${instance.includeNotes}" />
+    </f:entry>
+    
+    <f:entry title="${%Compare full path}" help="${rootURL}/../plugin/testlink/help-compareFullPath.html">
+        <f:checkbox name="TAPMultiTestpointsFileNameResultSeeker.compareFullPath" value="${instance.compareFullPath}" checked="${instance.compareFullPath}" />
+    </f:entry>
+
+</j:jelly>
