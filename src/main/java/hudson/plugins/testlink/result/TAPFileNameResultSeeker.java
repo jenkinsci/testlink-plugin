@@ -24,38 +24,8 @@
 package hudson.plugins.testlink.result;
 
 import hudson.Extension;
-import hudson.FilePath;
-import hudson.FilePath.FileCallable;
-import hudson.Launcher;
-import hudson.model.BuildListener;
-import hudson.model.Result;
-import hudson.model.AbstractBuild;
-import hudson.plugins.testlink.TestLinkSite;
-import hudson.remoting.VirtualChannel;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.tap4j.consumer.TapConsumer;
-import org.tap4j.consumer.TapConsumerFactory;
-import org.tap4j.model.Directive;
-import org.tap4j.model.Plan;
-import org.tap4j.model.TestResult;
-import org.tap4j.model.TestSet;
-import org.tap4j.util.DirectiveValues;
-
-import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
-import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
-import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
 
 /**
  * <p>Seeks for test results matching each TAP file name with the key 
@@ -66,7 +36,7 @@ import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 3.1
  */
-public class TAPFileNameResultSeeker extends AbstractTAPResultSeeker {
+public class TAPFileNameResultSeeker extends AbstractTAPFileNameResultSeeker {
 	
 	private static final long serialVersionUID = 3068999690225092293L;
 	
@@ -84,12 +54,8 @@ public class TAPFileNameResultSeeker extends AbstractTAPResultSeeker {
 
 		@Override
 		public String getDisplayName() {
-			return "TAP file name - consolidate testpoints"; // TBD: i18n
+			return "TAP file name"; // TBD: i18n
 		}
 	}
 	
-	@Override
-	public void seek(final TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, final BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
-		super.seek(automatedTestCases, build, launcher, listener, testlink);
-	}
 }
