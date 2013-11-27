@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.kohsuke.stapler.DataBoundConstructor;
 import org.tap4j.consumer.TapConsumer;
 import org.tap4j.consumer.TapConsumerFactory;
 import org.tap4j.model.Directive;
@@ -40,7 +39,7 @@ import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
  * @since 3.9
  */
 
-public class AbstractTAPResultSeeker extends ResultSeeker {
+public abstract class AbstractTAPResultSeeker extends ResultSeeker {
 	
 	private static final long serialVersionUID = 3068999690225092293L;
 
@@ -56,7 +55,6 @@ public class AbstractTAPResultSeeker extends ResultSeeker {
 	 * @param attachTAPStream
 	 * @param attachYAMLishAttachments
 	 */
-	@DataBoundConstructor
 	public AbstractTAPResultSeeker(String includePattern, String keyCustomField, boolean attachTAPStream, boolean attachYAMLishAttachments, boolean includeNotes, Boolean compareFullPath) {
 		super(includePattern, keyCustomField, includeNotes);
 		this.attachTAPStream = attachTAPStream;
