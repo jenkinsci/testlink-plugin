@@ -236,7 +236,7 @@
 		<dependency>
 			<groupId>org.tap4j</groupId>
 			<artifactId>tap4j</artifactId>
-			<version>4.0.5</version>
+			<version>4.0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>

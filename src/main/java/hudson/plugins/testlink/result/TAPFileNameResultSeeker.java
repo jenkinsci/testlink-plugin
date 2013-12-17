@@ -40,7 +40,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 3.1
  */
-public class TAPFileNameResultSeeker extends AbstractTAPResultSeeker {
+public class TAPFileNameResultSeeker extends AbstractTAPFileNameResultSeeker {
 	
 	private static final long serialVersionUID = 3068999690225092293L;
 	
