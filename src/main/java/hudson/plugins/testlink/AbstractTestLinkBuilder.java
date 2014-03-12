@@ -77,6 +77,11 @@ public class AbstractTestLinkBuilder extends Builder {
      */
     protected final String customFields;
 
+	/**
+	 * Comma separated list of custom Keywords to download from TestLink.
+	 */
+	protected final String keywords;
+	
     /**
      * List of build steps that are executed only once per job execution.
      */
@@ -138,7 +143,7 @@ public class AbstractTestLinkBuilder extends Builder {
      * Create a AbstractTestLinkBuilder.
      */
     public AbstractTestLinkBuilder(String testLinkName, String testProjectName, String testPlanName, 
-            String platformName, String buildName, String customFields, List<BuildStep> singleBuildSteps,
+            String platformName, String buildName, String customFields, String keywords, List<BuildStep> singleBuildSteps,
             List<BuildStep> beforeIteratingAllTestCasesBuildSteps, List<BuildStep> iterativeBuildSteps,
             List<BuildStep> afterIteratingAllTestCasesBuildSteps, Boolean transactional,
             Boolean failedTestsMarkBuildAsFailure, Boolean failIfNoResults, Boolean failOnNotRun,
@@ -150,6 +155,7 @@ public class AbstractTestLinkBuilder extends Builder {
         this.platformName = platformName;
         this.buildName = buildName;
         this.customFields = customFields;
+        this.keywords = keywords;
         this.singleBuildSteps = singleBuildSteps;
         this.beforeIteratingAllTestCasesBuildSteps = beforeIteratingAllTestCasesBuildSteps;
         this.iterativeBuildSteps = iterativeBuildSteps;
@@ -188,7 +194,7 @@ public class AbstractTestLinkBuilder extends Builder {
             List<BuildStep> iterativeBuildSteps, List<BuildStep> afterIteratingAllTestCasesBuildSteps,
             Boolean transactional, Boolean failedTestsMarkBuildAsFailure, Boolean failIfNoResults,
             Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
-        this(testLinkName, testProjectName, testPlanName, platformName, buildName, customFields, singleBuildSteps, 
+        this(testLinkName, testProjectName, testPlanName, platformName, buildName, customFields, "", singleBuildSteps, 
              beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps, afterIteratingAllTestCasesBuildSteps, 
              transactional, failedTestsMarkBuildAsFailure, failIfNoResults, failOnNotRun, resultSeekers);
     }
@@ -361,4 +367,10 @@ public class AbstractTestLinkBuilder extends Builder {
         return customFieldNamesArray;
     }
 
+	/**
+	 * @return Keywords , separated e.g.: database,performance
+	 */
+	public String getKeywords() {
+		return keywords;
+	}
 }

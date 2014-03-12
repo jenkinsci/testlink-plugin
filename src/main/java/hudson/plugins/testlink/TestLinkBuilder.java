@@ -123,7 +123,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
     
 	@DataBoundConstructor
 	public TestLinkBuilder(String testLinkName, String testProjectName,
-			String testPlanName, String platformName, String buildName, String customFields,
+			String testPlanName, String platformName, String buildName, String customFields, String keywords, 
 			Boolean executionStatusNotRun, Boolean executionStatusPassed,
 			Boolean executionStatusFailed, Boolean executionStatusBlocked,
 			List<BuildStep> singleBuildSteps,
@@ -133,7 +133,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
 			Boolean failIfNoResults, Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
 		super(testLinkName, testProjectName, testPlanName, platformName, buildName,
-				customFields, singleBuildSteps, beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
+				customFields, keywords, singleBuildSteps, beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
 				afterIteratingAllTestCasesBuildSteps, transactional, failedTestsMarkBuildAsFailure, 
 				failIfNoResults, failOnNotRun, resultSeekers);
 	}
@@ -174,12 +174,15 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 					build.getEnvironment(listener), getPlatformName());
 			final String buildName = expandVariable(build.getBuildVariableResolver(),
 					build.getEnvironment(listener), getBuildName());
+			final String keywords = expandVariable(build.getBuildVariableResolver(), build.getEnvironment(listener),
+					getKeywords());
 			final String buildNotes = Messages.TestLinkBuilder_Build_Notes();
 			if(LOGGER.isLoggable(Level.FINE)) {
 				LOGGER.log(Level.FINE, "TestLink project name: ["+testProjectName+"]");
 				LOGGER.log(Level.FINE, "TestLink plan name: ["+testPlanName+"]");
 				LOGGER.log(Level.FINE, "TestLink platform name: ["+platformName+"]");
 				LOGGER.log(Level.FINE, "TestLink build name: ["+buildName+"]");
+				LOGGER.log(Level.FINE, "TestLink build keywords: [" + keywords + "]");
 				LOGGER.log(Level.FINE, "TestLink build notes: ["+buildNotes+"]");
 			}
 			// TestLink Site object
@@ -190,7 +193,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			
 			final String[] customFieldsNames = this.createArrayOfCustomFieldsNames(build.getBuildVariableResolver(), build.getEnvironment(listener));
 			// Array of automated test cases
-			TestCase[] testCases = testLinkSite.getAutomatedTestCases(customFieldsNames);
+			TestCase[] testCases = testLinkSite.getAutomatedTestCases(customFieldsNames, keywords);
 
 			// Transforms test cases into test case wrappers
 			automatedTestCases = this.transform(testCases);

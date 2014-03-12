@@ -58,7 +58,7 @@ extends HudsonTestCase
 				"No plan", 
 				"No platform", 
 				"No build", 
-				"class, time, sample-job-$BUILD_ID", 
+				"class, time, sample-job-$BUILD_ID","database", 
 				Boolean.FALSE,
 				Boolean.FALSE,
 				Boolean.FALSE,
@@ -96,7 +96,7 @@ extends HudsonTestCase
 	
 	public void testNull()
 	{
-		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+		builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 		
 		assertNotNull( builder );
 		
@@ -144,7 +144,7 @@ extends HudsonTestCase
 			"No plan", 
 			"No platform", 
 			"No build", 
-			"class, time", 
+			"class, time", "database,performance",
 			Boolean.FALSE,
 			Boolean.FALSE,
 			Boolean.FALSE,

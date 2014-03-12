@@ -128,15 +128,16 @@ public class TestLinkSite {
 
 	/**
 	 * @param customFieldsNames Array of custom fields names
+	 * @param keywords , separated e.g.: database,performance
 	 * @return Array of automated test cases with custom fields
-	 */
-	public TestCase[] getAutomatedTestCases(String[] customFieldsNames) {
+	 */	
+	public TestCase[] getAutomatedTestCases(String[] customFieldsNames, String keywords) {
 		final TestCase[] testCases = this.api.getTestCasesForTestPlan(
 				getTestPlan().getId(), 
 				null, 
 				null, 
 				null, 
-				null,
+				keywords, 
 				null, 
 				null, 
 				null, // execute status
