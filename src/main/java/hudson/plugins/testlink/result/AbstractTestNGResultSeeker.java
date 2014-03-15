@@ -23,6 +23,7 @@
  */
 package hudson.plugins.testlink.result;
 
+import hudson.FilePath;
 import hudson.FilePath.FileCallable;
 import hudson.model.BuildListener;
 import hudson.model.Result;
@@ -32,6 +33,11 @@ import hudson.remoting.VirtualChannel;
 
 import java.io.File;
 import java.io.IOException;
+
+
+
+
+import org.apache.commons.lang.StringUtils;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
@@ -53,15 +59,31 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	public static final String SKIP = "SKIP";
 	
 	public static final String TEXT_XML_CONTENT_TYPE = "text/xml";
+	public static final String TEXT_TXT_CONTENT_TYPE = "text/plain";
+	public static final String TEXT_PDF_CONTENT_TYPE = "application/pdf";
 
 	protected final TestNGParser parser = new TestNGParser();
 	
 	private boolean attachTestNGXML = false;
 	
+	private boolean attachPdfReport= false;
+	
+	private boolean attachTestSourcePage = false;
+	
+	private String testCasesReportFolder="";
+	
 	private boolean markSkippedTestAsBlocked = false;
 	
-	public AbstractTestNGResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean markSkippedTestAsBlocked, boolean includeNotes) {
-		super(includePattern, keyCustomField, includeNotes);
+	
+	/**
+	 * @param includePattern
+	 * @param keyCustomField
+	 * @param attachTestNGXML
+	 * @param markSkippedTestAsBlocked
+	 * @param includeNotes
+	 */
+	public AbstractTestNGResultSeeker(String includePattern, String keyCustomField, String keywordsExecutedFilter, boolean attachTestNGXML, boolean markSkippedTestAsBlocked, boolean includeNotes) {
+		super(includePattern, keyCustomField, keywordsExecutedFilter, includeNotes);
 		this.attachTestNGXML = attachTestNGXML;
 		this.markSkippedTestAsBlocked = markSkippedTestAsBlocked;
 	}
@@ -74,6 +96,23 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 		return attachTestNGXML;
 	}
 	
+
+	public boolean isAttachPdfReport() {
+		return attachPdfReport;
+	}
+
+	public void setAttachPdfReport(boolean attachPdfReport) {
+		this.attachPdfReport = attachPdfReport;
+	}
+	
+	public void setAttachTestSourcePage(boolean attachTestSourcePage) {
+		this.attachTestSourcePage = attachTestSourcePage;
+	}
+
+	public boolean isAttachTestSourcePage() {
+		return attachTestSourcePage;
+	}
+	
 	public void setMarkSkippedTestAsBlocked(boolean markSkippedTestAsBlocked) {
 		this.markSkippedTestAsBlocked = markSkippedTestAsBlocked;
 	}
@@ -82,35 +121,27 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 		return markSkippedTestAsBlocked;
 	}
 	
+	public String getTestCasesReportFolder() {
+		return testCasesReportFolder;
+	}
+
+	public void setTestCasesReportFolder(String testCasesReportFolder) {
+		this.testCasesReportFolder = testCasesReportFolder;
+	}
+	
+	/**
+	 * @param automatedTestCase
+	 * @param build
+	 * @param listener
+	 * @param testlink
+	 * @param status
+	 * @param suiteResult
+	 */
 	protected void handleResult(TestCaseWrapper automatedTestCase, AbstractBuild<?, ?> build, BuildListener listener, TestLinkSite testlink, ExecutionStatus status, final Suite suiteResult) {
 		if(automatedTestCase.getExecutionStatus(this.keyCustomField) != ExecutionStatus.NOT_RUN) {
 			try {
-				final int executionId = testlink.updateTestCase(automatedTestCase);
+				updateTestlink(automatedTestCase, build, testlink, suiteResult);
 				
-				if(executionId > 0 && this.isAttachTestNGXML()) {
-					Attachment attachment = build.getWorkspace().act( new FileCallable<Attachment>() {
-
-						private static final long serialVersionUID = -5411683541842375558L;
-
-						public Attachment invoke(File f,
-								VirtualChannel channel)
-								throws IOException,
-								InterruptedException {
-							
-							File reportFile = new File(suiteResult.getFile());
-							final Attachment attachment = new Attachment();
-							attachment.setContent(AbstractTestNGResultSeeker.this.getBase64FileContent(reportFile));
-							attachment.setDescription(reportFile.getName());
-							attachment.setFileName(reportFile.getName());
-							attachment.setFileSize(reportFile.length());
-							attachment.setFileType(TEXT_XML_CONTENT_TYPE);
-							attachment.setTitle(reportFile.getName());
-							
-							return attachment;
-						}
-					});
-					testlink.uploadAttachment(executionId, attachment);
-				}
 			} catch ( TestLinkAPIException te ) {
 				build.setResult(Result.UNSTABLE);
 				te.printStackTrace(listener.getLogger());
@@ -123,5 +154,119 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 			}
 		}
 	}
+
+	/**
+	 * @param automatedTestCase
+	 * @param build
+	 * @param testlink
+	 * @param suiteResult
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	private void updateTestlink(TestCaseWrapper automatedTestCase, AbstractBuild<?, ?> build, TestLinkSite testlink,
+			final Suite suiteResult) throws IOException, InterruptedException {
+		final int executionId = testlink.updateTestCase(automatedTestCase);
+		
+		if(executionId > 0 && this.isAttachTestNGXML()) {
+			Attachment xmlAttachment = buildAttachment(build, suiteResult.getFile(),TEXT_XML_CONTENT_TYPE); 
+			testlink.uploadAttachment(executionId, xmlAttachment);
+		}
+		
+		if(executionId > 0 && this.isAttachTestSourcePage()) {
+			
+			String reportFullFileName = getReportFullFileName(build, automatedTestCase); 
+			
+			if (StringUtils.isNotEmpty(reportFullFileName)){
+				Attachment txtAttachment = buildAttachment(build, reportFullFileName + ".txt", TEXT_TXT_CONTENT_TYPE); 
+				testlink.uploadAttachment(executionId, txtAttachment);
+			}
+			
+		}
+		
+		if(executionId > 0 && this.isAttachPdfReport()) {
+			
+			String reportFullFileName = getReportFullFileName(build, automatedTestCase); 
+			
+			if (StringUtils.isNotEmpty(reportFullFileName)){
+				Attachment pdfAttachment = buildAttachment(build, reportFullFileName + ".pdf", TEXT_PDF_CONTENT_TYPE); 
+				testlink.uploadAttachment(executionId, pdfAttachment);
+			}
+			
+		}
+	}
+	
+
+	/**
+	 * @param build
+	 * @param suiteResult
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	private String getReportFullFileName(AbstractBuild<?, ?> build, final TestCaseWrapper automatedTestCase) throws IOException,
+			InterruptedException {
+
+		// Get the name		
+		String relativePath = "";
+		if (StringUtils.isNotEmpty(this.testCasesReportFolder)){
+			relativePath =this.testCasesReportFolder+ "/";
+		}
+		if (StringUtils.isNotEmpty(automatedTestCase.getPlatform())){
+			relativePath = relativePath + automatedTestCase.getPlatform()+ "/";
+		}
+		String customFieldValue = automatedTestCase.getKeyCustomFieldValue(this.keyCustomField);
+		String fileToUpload = customFieldValue.replace("#", "_");
+		fileToUpload =  relativePath + fileToUpload;
+	
+		// Get the full path
+		FilePath fp = new FilePath(build.getWorkspace(), fileToUpload);
+		String result = fp.act(new ReportFileCallable());
+		return result;
+	};
+	
+	
+	
+	/**
+	 * @param build
+	 * @param suiteResult
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	private Attachment buildAttachment(AbstractBuild<?, ?> build, final String fileResult, String contentType) throws IOException,
+			InterruptedException {
+		// The fileResult.getFile() came from a "build.getWorkspace().act" and "getAbsoluteFile"
+		File reportFile = new File(fileResult);
+		final Attachment attachment = new Attachment();
+		attachment.setContent(AbstractTestNGResultSeeker.this.getBase64FileContent(reportFile));
+		attachment.setDescription(reportFile.getName());
+		attachment.setFileName(reportFile.getName());
+		attachment.setFileSize(reportFile.length());
+		attachment.setFileType(contentType);
+		attachment.setTitle(reportFile.getName());
+		return attachment;
+	}
+	
+	
+	
+	/**
+	 * @author s2o
+	 *
+	 */
+	private static class ReportFileCallable implements FileCallable<String> {
+		  private static final long serialVersionUID = 1L;
+
+		  public String invoke(File file, VirtualChannel channel) throws IOException, InterruptedException {
+		    if (file.getAbsoluteFile().exists()){
+		      return file.getAbsoluteFile().getPath();
+		    } else {
+		      return "";
+		    }
+		  }		
+	}
+
+
+
+
 	
 }

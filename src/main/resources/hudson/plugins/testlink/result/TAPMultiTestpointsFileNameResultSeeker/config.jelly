@@ -8,6 +8,10 @@
         <f:textbox id="keyCustomField" name="TAPMultiTestpointsFileNameResultSeeker.keyCustomField" value="${instance.keyCustomField}" />
     </f:entry>
         
+    <f:entry title="${%Filter Executed by Keywords}" help="${rootURL}/../plugin/testlink/help-atkeywordsExecutedFilter.html">
+        <f:textbox id="keywordsExecutedFilter" name="TestNGMethodNameResultSeeker.keywordsExecutedFilter" value="${instance.keywordsExecutedFilter}" />
+    </f:entry>
+    
     <f:entry title="${%Attach TAP Stream}" help="${rootURL}/../plugin/testlink/help-attachResult.html">
         <f:checkbox name="TAPMultiTestpointsFileNameResultSeeker.attachTAPStream" value="${instance.attachTAPStream}" checked="${instance.attachTAPStream}" />
     </f:entry>

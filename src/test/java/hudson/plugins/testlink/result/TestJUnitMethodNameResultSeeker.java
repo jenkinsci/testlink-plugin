@@ -65,7 +65,7 @@ public class TestJUnitMethodNameResultSeeker extends ResultSeekerTestCase {
 	 */
 	@Override
 	public ResultSeeker getResultSeeker() {
-		return new JUnitMethodNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD, false, false);
+		return new JUnitMethodNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD, KEYWORD_FIELD, false, false);
 	}
 
 	/* (non-Javadoc)

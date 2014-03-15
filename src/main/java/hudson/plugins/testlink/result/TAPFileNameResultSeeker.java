@@ -44,12 +44,21 @@ public class TAPFileNameResultSeeker extends AbstractTAPFileNameResultSeeker {
 	
 	private static final long serialVersionUID = 3068999690225092293L;
 	
+	/**
+	 * @param includePattern
+	 * @param keyCustomField
+	 * @param keywordsExecutedFilter
+	 * @param attachTAPStream
+	 * @param attachYAMLishAttachments
+	 * @param includeNotes
+	 * @param compareFullPath
+	 */
 	@DataBoundConstructor
 	public TAPFileNameResultSeeker(String includePattern,
-			String keyCustomField, boolean attachTAPStream,
+			String keyCustomField, String keywordsExecutedFilter, boolean attachTAPStream,
 			boolean attachYAMLishAttachments, boolean includeNotes,
 			Boolean compareFullPath) {
-		super(includePattern, keyCustomField, attachTAPStream,
+		super(includePattern, keyCustomField, keywordsExecutedFilter, attachTAPStream,
 				attachYAMLishAttachments, includeNotes, compareFullPath);
 	}
 

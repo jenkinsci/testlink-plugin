@@ -308,4 +308,8 @@ public class TestCaseWrapper implements Serializable {
 		this.testCase.setFullExternalId(fullExternalId);
 	}
 
+	public List<String> getKeywords() {
+		return this.testCase.getKeywords();		
+	}
+
 }

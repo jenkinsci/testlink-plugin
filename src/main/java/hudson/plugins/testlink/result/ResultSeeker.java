@@ -37,6 +37,7 @@ import hudson.plugins.testlink.TestLinkSite;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,19 +74,34 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	protected final String keyCustomField;
 	
 	/**
+	 * Filter from the executed Keywords.
+	 */
+	protected final String keywordsExecutedFilter;
+	
+	/**
+	 * Filter from the executed Keywords.
+	 */
+	protected String[] keywordsExecutedFilterList;
+	
+	
+	/**
 	 * Whether the plug-in must include notes when updating test cases.
 	 */
 	protected final boolean includeNotes;
 
 	/**
-	 * Creates a result seeker passing a ant-like pattern to look for results.
+	 * Creates a result seeker passing an ant-like pattern to look for results.
 	 * 
-	 * @param includePattern Include pattern when looking for results.
+	 * @param includePattern
+	 * @param keyCustomField
+	 * @param keywordsExecutedFilter
+	 * @param includeNotes
 	 */
-	public ResultSeeker(String includePattern, String keyCustomField, boolean includeNotes) {
+	public ResultSeeker(String includePattern, String keyCustomField, String keywordsExecutedFilter, boolean includeNotes) {
 		super();
 		this.includePattern = includePattern;
 		this.keyCustomField = keyCustomField;
+		this.keywordsExecutedFilter = keywordsExecutedFilter;
 		this.includeNotes = includeNotes;
 	}
 	
@@ -218,6 +234,40 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 		}
 		
 		return customField;
+	}
+	
+	/**
+	 * <pre>
+	 * Retorn true 
+	 * 	if any of the keywords of the testCase is in the keywordsExecutedFilter
+	 * 	or keywordsExecutedFilter="" 
+	 * </pre>
+	 * 
+	 * @param automatedTestCase
+	 * @return
+	 */
+	public boolean isInKeywordsFilter(TestCaseWrapper automatedTestCase) {
+		
+		boolean filterTestCase=false;
+		
+		if (StringUtils.isBlank(keywordsExecutedFilter)){
+			filterTestCase= true;
+		} else {
+			// Lazy inicialization
+			if (keywordsExecutedFilterList==null){
+				keywordsExecutedFilterList = automatedTestCase.split(keywordsExecutedFilter);
+			}
+			List<String>  testCaseKeywords = automatedTestCase.getKeywords();		
+			
+			int index=0;
+			int last=keywordsExecutedFilterList.length;
+			while (filterTestCase==false && index<last){
+				filterTestCase=testCaseKeywords.contains(keywordsExecutedFilterList[index]);
+				index++;
+			}
+		}
+				
+		return filterTestCase;
 	}
 	
 	/* (non-Javadoc)

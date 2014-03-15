@@ -8,8 +8,24 @@
         <f:textbox id="keyCustomField" name="TestNGMethodNameResultSeeker.keyCustomField" value="${instance.keyCustomField}" />
     </f:entry>
     
+     <f:entry title="${%Filter Keywords Executed}" help="${rootURL}/../plugin/testlink/help-atkeywordsExecutedFilter.html">
+        <f:textbox id="keywordsExecutedFilter" name="TestNGMethodNameResultSeeker.keywordsExecutedFilter" value="${instance.keywordsExecutedFilter}" />
+    </f:entry>
+        
     <f:entry title="${%Attach TestNG XML}" help="${rootURL}/../plugin/testlink/help-attachResult.html">
         <f:checkbox name="TestNGMethodNameResultSeeker.attachTestNGXML" value="${instance.attachTestNGXML}" checked="${instance.attachTestNGXML}" />
+    </f:entry>
+    
+    <f:entry title="${%Include TestNG attachTestSourcePage}" help="${rootURL}/../plugin/testlink/help-attachTestSourcePage.html">
+        <f:checkbox name="TestNGMethodNameResultSeeker.attachTestSourcePage" value="${instance.attachTestSourcePage}" checked="${instance.attachTestSourcePage}" />
+    </f:entry>
+    
+    <f:entry title="${%Include TestNG attachPdfReport}" help="${rootURL}/../plugin/testlink/help-attachPdfReport.html">
+        <f:checkbox name="TestNGMethodNameResultSeeker.attachPdfReport" value="${instance.attachPdfReport}" checked="${instance.attachPdfReport}" />
+    </f:entry>
+        
+    <f:entry title="${%Report testCasesReportFolder}" help="${rootURL}/../plugin/testlink/help-testCasesReportFolder.html">
+        <f:textbox id="testCasesReportFolder" name="TestNGMethodNameResultSeeker.testCasesReportFolder" value="${instance.testCasesReportFolder}" />
     </f:entry>
     
     <f:entry title="${%Mark skipped test as Blocked}" help="${rootURL}/../plugin/testlink/help-markSkippedTestAsBlocked.html">

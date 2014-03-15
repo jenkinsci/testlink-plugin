@@ -63,11 +63,13 @@ public class JUnitCaseClassNameResultSeeker extends AbstractJUnitResultSeeker {
 	/**
 	 * @param includePattern Include pattern used when looking for results
 	 * @param keyCustomField Key custom field to match against the results
-	 * @param attachJunitXML Bit that enables attaching result file to TestLink
+	 * @param keywordsExecutedFilter
+	 * @param attachJUnitXML Bit that enables attaching result file to TestLink
+	 * @param includeNotes
 	 */
 	@DataBoundConstructor
-	public JUnitCaseClassNameResultSeeker(String includePattern, String keyCustomField, boolean attachJUnitXML, boolean includeNotes) {
-		super(includePattern, keyCustomField, attachJUnitXML, includeNotes);
+	public JUnitCaseClassNameResultSeeker(String includePattern, String keyCustomField,  String keywordsExecutedFilter, boolean attachJUnitXML, boolean includeNotes) {
+		super(includePattern, keyCustomField, keywordsExecutedFilter, attachJUnitXML, includeNotes);
 	}
 	
 	@Extension
@@ -102,22 +104,9 @@ public class JUnitCaseClassNameResultSeeker extends AbstractJUnitResultSeeker {
 				
 				for(CaseResult caseResult : caseResults) {
 					for(TestCaseWrapper automatedTestCase : automatedTestCases) {
-						final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
-						for(String value : commaSeparatedValues) {
-							if(! caseResult.isSkipped() && caseResult.getClassName().equals(value)) {
-								// A class can have many case results, so we check if the class has failed anywhere
-								//final ExecutionStatus previousStatus = automatedTestCase.getCustomFieldAndStatus().get(value);
-								final ExecutionStatus status = this.getExecutionStatus(caseResult);
-								automatedTestCase.addCustomFieldAndStatus(value, status);
-								
-								if(this.isIncludeNotes()) {
-									final String notes = this.getJUnitNotes(caseResult);
-									automatedTestCase.appendNotes(notes);
-								}
-								
-								classNameTestCase.put(Integer.valueOf(automatedTestCase.getId())+"#"+Arrays.toString(commaSeparatedValues), automatedTestCase);
-							}
-						}
+						if (isInKeywordsFilter(automatedTestCase)) {
+							haldleTestCase(classNameTestCase, caseResult, automatedTestCase);
+						}							
 					}
 				}
 				
@@ -131,6 +120,31 @@ public class JUnitCaseClassNameResultSeeker extends AbstractJUnitResultSeeker {
 			throw new ResultSeekerException(e);
 		} catch (InterruptedException e) {
 			throw new ResultSeekerException(e);
+		}
+	}
+
+	/**
+	 * @param classNameTestCase
+	 * @param caseResult
+	 * @param automatedTestCase
+	 */
+	private void haldleTestCase(final Map<String, TestCaseWrapper> classNameTestCase, CaseResult caseResult,
+			TestCaseWrapper automatedTestCase) {
+		final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
+		for(String value : commaSeparatedValues) {
+			if(! caseResult.isSkipped() && caseResult.getClassName().equals(value)) {
+				// A class can have many case results, so we check if the class has failed anywhere
+				//final ExecutionStatus previousStatus = automatedTestCase.getCustomFieldAndStatus().get(value);
+				final ExecutionStatus status = this.getExecutionStatus(caseResult);
+				automatedTestCase.addCustomFieldAndStatus(value, status);
+				
+				if(this.isIncludeNotes()) {
+					final String notes = this.getJUnitNotes(caseResult);
+					automatedTestCase.appendNotes(notes);
+				}
+				
+				classNameTestCase.put(Integer.valueOf(automatedTestCase.getId())+"#"+Arrays.toString(commaSeparatedValues), automatedTestCase);
+			}
 		}
 	}
 

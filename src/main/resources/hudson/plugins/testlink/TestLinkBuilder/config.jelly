@@ -29,7 +29,7 @@
 	  <f:textbox id="customFields" name="TestLinkBuilder.customFields" value="${instance.customFields}" />
   </f:entry>
   
-  <f:entry title="${%Keywords Definitions}" help="${rootURL}/../plugin/testlink/help-platformName.html">
+  <f:entry title="${%Keywords Definitions}" help="${rootURL}/../plugin/testlink/help-keywords.html">
       <f:textbox name="TestLinkBuilder.keywords" value="${instance.keywords}"/>
   </f:entry>
   
