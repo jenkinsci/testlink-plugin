@@ -24,6 +24,7 @@
 package hudson.plugins.testlink.result;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -197,7 +198,7 @@ public class TestCaseWrapper implements Serializable {
 				break;
 			}
 		}
-		return this.split(keyCustomFieldValue);
+		return split(keyCustomFieldValue);
 	}
 	
 	public String getKeyCustomFieldValue(final String keyCustomFieldName) {
@@ -214,7 +215,7 @@ public class TestCaseWrapper implements Serializable {
 	/**
 	 * Splits a String by comma and gets an array of Strings.
 	 */
-	protected String[] split(String input) {
+	public static String[] split(String input) {
 		if (StringUtils.isBlank(input)) {
 			return new String[0];
 		}
@@ -309,7 +310,9 @@ public class TestCaseWrapper implements Serializable {
 	}
 
 	public List<String> getKeywords() {
-		return this.testCase.getKeywords();		
+		//return this.testCase.getKeywords();	
+		// TODO -> waiting for the new version of the API and testlink...
+		return new ArrayList<String>();	
 	}
 
 }

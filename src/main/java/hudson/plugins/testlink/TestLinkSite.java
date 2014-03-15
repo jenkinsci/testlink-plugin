@@ -23,6 +23,10 @@
  */
 package hudson.plugins.testlink;
 
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+
 import hudson.plugins.testlink.result.TestCaseWrapper;
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
@@ -145,6 +149,12 @@ public class TestLinkSite {
 				Boolean.TRUE,
 				TestCaseDetails.FULL);			
 
+		String[] keywordsList;
+		if (StringUtils.isBlank(keywords)) {
+			keywordsList= new String[0];
+		}else {
+			keywordsList = TestCaseWrapper.split(keywords);
+		}
 		for( final TestCase testCase : testCases ) {
 			testCase.setTestProjectId(getTestProject().getId());
 			testCase.setExecutionStatus(ExecutionStatus.NOT_RUN);
@@ -159,6 +169,11 @@ public class TestLinkSite {
                 									ResponseDetails.FULL);
 					testCase.getCustomFields().add(customField);
 				}
+			}
+			if (keywordsList.length>0){		
+				// TODO waiting for next version of API
+				//List<String>  testCaseKeywords = this.api.getTestCaseKeywords(testCase.getTestProjectId(), testCase.getId());
+//				testCase.setKeywords(testCaseKeywords);
 			}
 		}
 		

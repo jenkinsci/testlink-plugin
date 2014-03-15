@@ -255,7 +255,7 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 		} else {
 			// Lazy inicialization
 			if (keywordsExecutedFilterList==null){
-				keywordsExecutedFilterList = automatedTestCase.split(keywordsExecutedFilter);
+				keywordsExecutedFilterList = TestCaseWrapper.split(keywordsExecutedFilter);
 			}
 			List<String>  testCaseKeywords = automatedTestCase.getKeywords();		
 			
