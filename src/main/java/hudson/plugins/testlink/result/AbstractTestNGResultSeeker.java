@@ -37,6 +37,8 @@ import java.io.IOException;
 
 
 
+
+
 import org.apache.commons.lang.StringUtils;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
@@ -220,7 +222,7 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	
 		// Get the full path
 		FilePath fp = new FilePath(build.getWorkspace(), fileToUpload);
-		String result = fp.act(new ReportFileCallable());
+		String result = fp.act(new PathFileCallable());
 		return result;
 	};
 	
@@ -235,15 +237,9 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	 */
 	private Attachment buildAttachment(AbstractBuild<?, ?> build, final String fileResult, String contentType) throws IOException,
 			InterruptedException {
-		// The fileResult.getFile() came from a "build.getWorkspace().act" and "getAbsoluteFile"
-		File reportFile = new File(fileResult);
-		final Attachment attachment = new Attachment();
-		attachment.setContent(AbstractTestNGResultSeeker.this.getBase64FileContent(reportFile));
-		attachment.setDescription(reportFile.getName());
-		attachment.setFileName(reportFile.getName());
-		attachment.setFileSize(reportFile.length());
-		attachment.setFileType(contentType);
-		attachment.setTitle(reportFile.getName());
+		
+		FilePath fp = new FilePath(build.getWorkspace(), fileResult);
+		Attachment attachment = fp.act(new BuildAttachmentFileCallable(fileResult,contentType));
 		return attachment;
 	}
 	
@@ -253,10 +249,11 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	 * @author s2o
 	 *
 	 */
-	private static class ReportFileCallable implements FileCallable<String> {
-		  private static final long serialVersionUID = 1L;
+	private static class PathFileCallable implements FileCallable<String> {
 
-		  public String invoke(File file, VirtualChannel channel) throws IOException, InterruptedException {
+		private static final long serialVersionUID = 6373621466401478661L;
+
+		public String invoke(File file, VirtualChannel channel) throws IOException, InterruptedException {
 		    if (file.getAbsoluteFile().exists()){
 		      return file.getAbsoluteFile().getPath();
 		    } else {
@@ -266,7 +263,32 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	}
 
 
+	/**
+	 * @author s2o
+	 *
+	 */
+	private static class BuildAttachmentFileCallable implements FileCallable<Attachment> {
+		
+		private static final long serialVersionUID = 2926421342182432160L;
+		private String fileResult;
+		private String contentType;
 
+		public BuildAttachmentFileCallable(String fileResult, String contentType){
+			this.fileResult=fileResult;
+			this.contentType=contentType;
+		}
+		  public Attachment invoke(File file, VirtualChannel channel) throws IOException, InterruptedException {
+			  File reportFile = new File(fileResult);
+				final Attachment attachment = new Attachment();
+				attachment.setContent(AbstractTestNGResultSeeker.getBase64FileContent(reportFile));
+				attachment.setDescription(reportFile.getName());
+				attachment.setFileName(reportFile.getName());
+				attachment.setFileSize(reportFile.length());
+				attachment.setFileType(contentType);
+				attachment.setTitle(reportFile.getName());
+				return attachment;
+		  }		
+	}
 
 	
 }

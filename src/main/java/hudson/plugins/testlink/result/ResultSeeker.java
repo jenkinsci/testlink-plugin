@@ -170,7 +170,7 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	 * @return file content encoded in Base64.
 	 * @throws IOException
 	 */
-	protected String getBase64FileContent(File file) throws IOException {
+	public static String getBase64FileContent(File file) throws IOException {
 		byte[] fileData = FileUtils.readFileToByteArray(file);
 		return Base64.encodeBase64String(fileData);
 	}
