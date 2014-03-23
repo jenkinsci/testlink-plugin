@@ -277,8 +277,7 @@ public class TestLinkSite {
 			if (keywordsList.length > 0) {
 				// TODO waiting for next version of API
 				// List<String> testCaseKeywords = api.getTestCaseKeywords(testCase.getTestProjectId(), testCase.getId());
-				 List<String> testCaseKeywords = new ArrayList<String>();
-				 testCase.setKeywords(testCaseKeywords);
+				// testCase.setKeywords(testCaseKeywords);
 			}
 		}
 
