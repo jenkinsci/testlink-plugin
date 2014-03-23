@@ -29,6 +29,7 @@ import hudson.model.Action;
 import hudson.model.AbstractProject;
 import hudson.plugins.testlink.result.ResultSeeker;
 import hudson.plugins.testlink.util.ExecutionOrderComparator;
+import hudson.plugins.testlink.util.JenkinsHelper;
 import hudson.tasks.BuildStep;
 import hudson.tasks.Builder;
 import hudson.util.VariableResolver;
@@ -207,19 +208,6 @@ public class AbstractTestLinkBuilder extends Builder {
         return this.testProjectName;
     }
 
-    /**
-     * Expands a text variable like BUILD-$VAR replacing the $VAR part with a environment variable that matches its
-     * name, minus $.
-     * 
-     * @param variableResolver Jenkins Build Variable Resolver.
-     * @param envVars Jenkins Build Environment Variables.
-     * @param variable Variable value (includes mask).
-     * @return Expanded test project name job configuration property.
-     */
-    public String expandVariable(VariableResolver<String> variableResolver, EnvVars envVars, String variable) {
-        return Util.replaceMacro(envVars.expand(variable), variableResolver);
-    }
-
     public String getTestPlanName() {
         return this.testPlanName;
     }
@@ -348,7 +336,7 @@ public class AbstractTestLinkBuilder extends Builder {
     protected String[] createArrayOfCustomFieldsNames(final VariableResolver<String> variableResolver,
             final EnvVars envVars) {
         String[] customFieldNamesArray = new String[0];
-        String customFields = expandVariable(variableResolver, envVars, this.getCustomFields());
+        String customFields = JenkinsHelper.expandVariable(variableResolver, envVars, this.getCustomFields());
 
         if (StringUtils.isNotBlank(customFields)) {
             StringTokenizer tokenizer = new StringTokenizer(customFields, COMMA);

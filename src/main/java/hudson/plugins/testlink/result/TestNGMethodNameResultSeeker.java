@@ -29,6 +29,7 @@ import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.TestLinkSite;
+import hudson.plugins.testlink.util.JenkinsHelper;
 import hudson.plugins.testlink.util.Messages;
 import hudson.remoting.VirtualChannel;
 
@@ -36,6 +37,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -66,14 +69,15 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 	/**
 	 * @param includePattern
 	 * @param keyCustomField
-	 * @param keywordsExecutedFilter
+	 * @param KeywordExdFilter
 	 * @param attachTestNGXML
 	 * @param markSkippedTestAsBlocked
 	 * @param includeNotes
 	 */
 	@DataBoundConstructor
-	public TestNGMethodNameResultSeeker(String includePattern, String keyCustomField, String keywordsExecutedFilter, boolean attachTestNGXML, boolean markSkippedTestAsBlocked, boolean includeNotes) {
-		super(includePattern, keyCustomField, keywordsExecutedFilter, attachTestNGXML, markSkippedTestAsBlocked, includeNotes);
+	public TestNGMethodNameResultSeeker(String includePattern, String keyCustomField, String KeywordExdFilter, boolean attachTestNGXML,
+			boolean attachPdfReport, String testCasesReportFolder, boolean markSkippedTestAsBlocked, boolean includeNotes) {
+		super(includePattern, keyCustomField, KeywordExdFilter, attachTestNGXML,  attachPdfReport, testCasesReportFolder, markSkippedTestAsBlocked, includeNotes);
 	}
 	
 	@Extension
@@ -96,6 +100,8 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, final BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
 		listener.getLogger().println( Messages.Results_TestNG_LookingForTestMethod() );
 		try {
+			final String includePatternEnv = JenkinsHelper.expandVariable(build.getBuildVariableResolver(), build.getEnvironment(listener),includePattern);
+			
 			final List<Suite> suites = build.getWorkspace().act(new FilePath.FileCallable<List<Suite>>() {
 				private static final long serialVersionUID = 1L;
 
@@ -103,7 +109,8 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 				
 				public List<Suite> invoke(File workspace, VirtualChannel channel)
 						throws IOException, InterruptedException {
-					final String[] xmls = TestNGMethodNameResultSeeker.this.scan(workspace, includePattern, listener);
+					
+					final String[] xmls = TestNGMethodNameResultSeeker.this.scan(workspace, includePatternEnv, listener);
 					
 					for(String xml : xmls) {
 						final File input = new File(workspace, xml);
@@ -114,19 +121,28 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 					return suites;
 				}
 			});
+			
+			ExecutorService executor = Executors.newFixedThreadPool(testlink.getParallelRequest());
+			
 			for(Suite suite : suites) {
 				for(Test test : suite.getTests() ) {
 					for(com.tupilabs.testng.parser.Class  clazz : test.getClasses()) {
 						for(TestMethod method : clazz.getTestMethods()) {
 							for(TestCaseWrapper automatedTestCase : automatedTestCases) {
 								if (isInKeywordsFilter(automatedTestCase)) {
-									haldleTestCase(build, listener, testlink, suite, clazz, method, automatedTestCase);
+									haldleTestCase(executor, build, listener, testlink, suite, clazz, method, automatedTestCase);
 								}								
 							}
 						}
 					}
 				}
 			}
+			
+			executor.shutdown();
+	        // Wait until all threads are finish
+	        while (!executor.isTerminated()) {
+	        }
+	        
 		} catch (IOException e) {
 			throw new ResultSeekerException(e);
 		} catch (InterruptedException e) {
@@ -145,13 +161,14 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * @param method
 	 * @param automatedTestCase
 	 */
-	private void haldleTestCase(AbstractBuild<?, ?> build, final BuildListener listener, TestLinkSite testlink,
-			Suite suite, com.tupilabs.testng.parser.Class clazz, TestMethod method, TestCaseWrapper automatedTestCase) {
+	private void haldleTestCase(ExecutorService executor, final AbstractBuild<?, ?> build, final BuildListener listener,final TestLinkSite testlink,
+			final Suite suite, final com.tupilabs.testng.parser.Class clazz, final TestMethod method, final  TestCaseWrapper automatedTestCase) {
 		final String qualifiedName = clazz.getName()+'#'+method.getName();
 		final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
+		
 		for(String value : commaSeparatedValues) {
 			if(qualifiedName.equals(value)) {
-				ExecutionStatus status = this.getExecutionStatus(method);
+				final ExecutionStatus status = this.getExecutionStatus(method);
 				if(status != ExecutionStatus.NOT_RUN) {
 					automatedTestCase.addCustomFieldAndStatus(value, status);
 				}
@@ -161,12 +178,13 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 					automatedTestCase.appendNotes(notes);
 				}
 				
-				super.handleResult(automatedTestCase, build, listener, testlink, status, suite);
+	            executor.execute(new Runnable(){
+					public void run() {
+						TestNGMethodNameResultSeeker.super.handleResult(automatedTestCase, build, listener, testlink, status, suite);
+					}});
 			}
-		}
+		}		
 	}
-
-
 
 	/**
 	 * @param suite

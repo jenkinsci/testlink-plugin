@@ -57,7 +57,7 @@ public class TAPFileNameMultiTestPointsResultSeeker extends AbstractTAPFileNameR
     /**
      * @param includePattern
      * @param keyCustomField
-     * @param keywordsExecutedFilter
+     * @param KeywordExdFilter
      * @param attachTAPStream
      * @param attachYAMLishAttachments
      * @param includeNotes
@@ -65,10 +65,10 @@ public class TAPFileNameMultiTestPointsResultSeeker extends AbstractTAPFileNameR
      * @param testpointsAsExecutions
      */
     @DataBoundConstructor
-    public TAPFileNameMultiTestPointsResultSeeker(String includePattern, String keyCustomField, String keywordsExecutedFilter,
+    public TAPFileNameMultiTestPointsResultSeeker(String includePattern, String keyCustomField, String KeywordExdFilter,
             boolean attachTAPStream, boolean attachYAMLishAttachments, boolean includeNotes, boolean compareFullPath,
             boolean testpointsAsExecutions) {
-        super(includePattern, keyCustomField, keywordsExecutedFilter, attachTAPStream, attachYAMLishAttachments, includeNotes, compareFullPath);
+        super(includePattern, keyCustomField, KeywordExdFilter, attachTAPStream, attachYAMLishAttachments, includeNotes, compareFullPath);
 
     }
 

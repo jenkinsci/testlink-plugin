@@ -310,9 +310,9 @@ public class TestCaseWrapper implements Serializable {
 	}
 
 	public List<String> getKeywords() {
-		//return this.testCase.getKeywords();	
-		// TODO -> waiting for the new version of the API and testlink...
-		return new ArrayList<String>();	
+		// TODO waiting the API
+//		return this.testCase.getKeywords();	
+		return new ArrayList<String>();
 	}
 
 }

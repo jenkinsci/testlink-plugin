@@ -29,6 +29,7 @@ import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.TestLinkSite;
+import hudson.plugins.testlink.util.JenkinsHelper;
 import hudson.remoting.VirtualChannel;
 
 import java.io.File;
@@ -38,6 +39,9 @@ import java.io.IOException;
 
 
 
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -54,6 +58,8 @@ import com.tupilabs.testng.parser.TestNGParser;
  */
 public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 
+	private static final Logger LOGGER = Logger.getLogger("hudson.plugins.testlink");
+	
 	private static final long serialVersionUID = -1017414394764084125L;
 	
 	public static final String PASS = "PASS";
@@ -61,7 +67,6 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	public static final String SKIP = "SKIP";
 	
 	public static final String TEXT_XML_CONTENT_TYPE = "text/xml";
-	public static final String TEXT_TXT_CONTENT_TYPE = "text/plain";
 	public static final String TEXT_PDF_CONTENT_TYPE = "application/pdf";
 
 	protected final TestNGParser parser = new TestNGParser();
@@ -70,11 +75,11 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	
 	private boolean attachPdfReport= false;
 	
-	private boolean attachTestSourcePage = false;
-	
 	private String testCasesReportFolder="";
 	
 	private boolean markSkippedTestAsBlocked = false;
+
+	private String testCasesReportFolderEnv;
 	
 	
 	/**
@@ -84,10 +89,14 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	 * @param markSkippedTestAsBlocked
 	 * @param includeNotes
 	 */
-	public AbstractTestNGResultSeeker(String includePattern, String keyCustomField, String keywordsExecutedFilter, boolean attachTestNGXML, boolean markSkippedTestAsBlocked, boolean includeNotes) {
-		super(includePattern, keyCustomField, keywordsExecutedFilter, includeNotes);
+	public AbstractTestNGResultSeeker(String includePattern, String keyCustomField, String KeywordExdFilter, boolean attachTestNGXML,
+			boolean attachPdfReport, String testCasesReportFolder,
+			 boolean markSkippedTestAsBlocked, boolean includeNotes) {
+		super(includePattern, keyCustomField, KeywordExdFilter, includeNotes);
 		this.attachTestNGXML = attachTestNGXML;
 		this.markSkippedTestAsBlocked = markSkippedTestAsBlocked;
+		this.attachPdfReport=attachPdfReport;
+		this.testCasesReportFolder=testCasesReportFolder;
 	}
 
 	public void setAttachTestNGXML(boolean attachTestNGXML) {
@@ -105,14 +114,6 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 
 	public void setAttachPdfReport(boolean attachPdfReport) {
 		this.attachPdfReport = attachPdfReport;
-	}
-	
-	public void setAttachTestSourcePage(boolean attachTestSourcePage) {
-		this.attachTestSourcePage = attachTestSourcePage;
-	}
-
-	public boolean isAttachTestSourcePage() {
-		return attachTestSourcePage;
 	}
 	
 	public void setMarkSkippedTestAsBlocked(boolean markSkippedTestAsBlocked) {
@@ -142,7 +143,7 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	protected void handleResult(TestCaseWrapper automatedTestCase, AbstractBuild<?, ?> build, BuildListener listener, TestLinkSite testlink, ExecutionStatus status, final Suite suiteResult) {
 		if(automatedTestCase.getExecutionStatus(this.keyCustomField) != ExecutionStatus.NOT_RUN) {
 			try {
-				updateTestlink(automatedTestCase, build, testlink, suiteResult);
+				updateTestlink(automatedTestCase, build, listener, testlink, suiteResult);
 				
 			} catch ( TestLinkAPIException te ) {
 				build.setResult(Result.UNSTABLE);
@@ -165,32 +166,31 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private void updateTestlink(TestCaseWrapper automatedTestCase, AbstractBuild<?, ?> build, TestLinkSite testlink,
+	private void updateTestlink(TestCaseWrapper automatedTestCase, AbstractBuild<?, ?> build, BuildListener listener, TestLinkSite testlink,
 			final Suite suiteResult) throws IOException, InterruptedException {
 		final int executionId = testlink.updateTestCase(automatedTestCase);
+		
+		// Get the name				
+		if (testCasesReportFolderEnv==null){
+			String relativePath= JenkinsHelper.expandVariable(build.getBuildVariableResolver(),
+					build.getEnvironment(listener), testCasesReportFolder);
+			if (StringUtils.isNotEmpty(relativePath)){
+				testCasesReportFolderEnv =relativePath+ "/";
+			}
+		}
+		
 		
 		if(executionId > 0 && this.isAttachTestNGXML()) {
 			Attachment xmlAttachment = buildAttachment(build, suiteResult.getFile(),TEXT_XML_CONTENT_TYPE); 
 			testlink.uploadAttachment(executionId, xmlAttachment);
-		}
-		
-		if(executionId > 0 && this.isAttachTestSourcePage()) {
-			
-			String reportFullFileName = getReportFullFileName(build, automatedTestCase); 
-			
-			if (StringUtils.isNotEmpty(reportFullFileName)){
-				Attachment txtAttachment = buildAttachment(build, reportFullFileName + ".txt", TEXT_TXT_CONTENT_TYPE); 
-				testlink.uploadAttachment(executionId, txtAttachment);
-			}
-			
-		}
-		
+		}			
+		LOGGER.log(Level.INFO, "updateTestlink: " + automatedTestCase.getName());
+
 		if(executionId > 0 && this.isAttachPdfReport()) {
-			
 			String reportFullFileName = getReportFullFileName(build, automatedTestCase); 
-			
+						
 			if (StringUtils.isNotEmpty(reportFullFileName)){
-				Attachment pdfAttachment = buildAttachment(build, reportFullFileName + ".pdf", TEXT_PDF_CONTENT_TYPE); 
+				Attachment pdfAttachment = buildAttachment(build, reportFullFileName, TEXT_PDF_CONTENT_TYPE); 
 				testlink.uploadAttachment(executionId, pdfAttachment);
 			}
 			
@@ -206,19 +206,11 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	 * @throws InterruptedException
 	 */
 	private String getReportFullFileName(AbstractBuild<?, ?> build, final TestCaseWrapper automatedTestCase) throws IOException,
-			InterruptedException {
-
-		// Get the name		
-		String relativePath = "";
-		if (StringUtils.isNotEmpty(this.testCasesReportFolder)){
-			relativePath =this.testCasesReportFolder+ "/";
-		}
-		if (StringUtils.isNotEmpty(automatedTestCase.getPlatform())){
-			relativePath = relativePath + automatedTestCase.getPlatform()+ "/";
-		}
+			InterruptedException {		
+		
 		String customFieldValue = automatedTestCase.getKeyCustomFieldValue(this.keyCustomField);
 		String fileToUpload = customFieldValue.replace("#", "_");
-		fileToUpload =  relativePath + fileToUpload;
+		fileToUpload =  testCasesReportFolderEnv + fileToUpload+  ".pdf";
 	
 		// Get the full path
 		FilePath fp = new FilePath(build.getWorkspace(), fileToUpload);

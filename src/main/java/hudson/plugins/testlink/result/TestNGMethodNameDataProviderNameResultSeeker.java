@@ -68,7 +68,7 @@ public class TestNGMethodNameDataProviderNameResultSeeker extends AbstractTestNG
 	/**
 	 * @param includePattern
 	 * @param keyCustomField
-	 * @param keywordsExecutedFilter
+	 * @param KeywordExdFilter
 	 * @param attachTestNGXML
 	 * @param markSkippedTestAsBlocked
 	 * @param dataProviderNameKeyCustomField
@@ -78,12 +78,12 @@ public class TestNGMethodNameDataProviderNameResultSeeker extends AbstractTestNG
 	public TestNGMethodNameDataProviderNameResultSeeker(
 			String includePattern, 
 			String keyCustomField, 
-			String keywordsExecutedFilter,
-			boolean attachTestNGXML, 
+			String KeywordExdFilter,
+			boolean attachTestNGXML,boolean attachPdfReport, String testCasesReportFolder, 
 			boolean markSkippedTestAsBlocked, 
 			String dataProviderNameKeyCustomField,
 			boolean includeNotes) {
-		super(includePattern, keyCustomField, keywordsExecutedFilter, attachTestNGXML, markSkippedTestAsBlocked, includeNotes);
+		super(includePattern, keyCustomField, KeywordExdFilter, attachTestNGXML,  attachPdfReport,testCasesReportFolder,markSkippedTestAsBlocked, includeNotes);
 		this.dataProviderNameKeyCustomField = dataProviderNameKeyCustomField;
 	}
 	

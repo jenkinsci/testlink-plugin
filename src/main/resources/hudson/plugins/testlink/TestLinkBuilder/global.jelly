@@ -16,6 +16,12 @@
             default="http://localhost/testlink/lib/api/xmlrpc.php" 
             checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)" />
           </f:entry>
+          
+          <f:entry title="${%URL Results}" help="${rootURL}/../plugin/testlink/help-testlinkUrlResults.html">
+            <f:textbox name="TestLink.urlResults" value="${inst.urlResults}" 
+            default="http://localhost/testlink/lib/results/resultsTC.php?tplan_id=" 
+            checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)" />
+          </f:entry>
 
           <f:entry title="${%Developer Key}">
             <f:textbox name="TestLink.devKey" value="${inst.devKey}" 
@@ -25,6 +31,10 @@
           <f:advanced>	  
 			  <f:entry title="${%TestLink Java API Properties}" help="${rootURL}/../plugin/testlink/help-testlinkJavaAPIProperties.html">
 				  <f:textbox name="TestLink.testLinkJavaAPIProperties" value="${inst.testLinkJavaAPIProperties}" />
+			  </f:entry>
+			  
+			  <f:entry title="${%TestLink Max. Parallel request}"  help="${rootURL}/../plugin/testlink/help-parallelRequest.html">
+            	<f:textbox name="TestLink.parallelRequest" value="${inst.parallelRequest}" default="1"/>
 			  </f:entry>
 		  </f:advanced>
           

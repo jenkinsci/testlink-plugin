@@ -58,13 +58,13 @@ public class JUnitSuiteNameResultSeeker extends AbstractJUnitResultSeeker {
 	/**
 	 * @param includePattern Include pattern used when looking for results
 	 * @param keyCustomField Include pattern used when looking for results
-	 * @param keywordsExecutedFilter
+	 * @param KeywordExdFilter
 	 * @param attachJUnitXML
 	 * @param includeNotes
 	 */
 	@DataBoundConstructor
-	public JUnitSuiteNameResultSeeker(String includePattern, String keyCustomField,  String keywordsExecutedFilter, boolean attachJUnitXML, boolean includeNotes) {
-		super(includePattern, keyCustomField, keywordsExecutedFilter, attachJUnitXML, includeNotes);
+	public JUnitSuiteNameResultSeeker(String includePattern, String keyCustomField,  String KeywordExdFilter, boolean attachJUnitXML, boolean includeNotes) {
+		super(includePattern, keyCustomField, KeywordExdFilter, attachJUnitXML, includeNotes);
 	}
 
 	@Extension

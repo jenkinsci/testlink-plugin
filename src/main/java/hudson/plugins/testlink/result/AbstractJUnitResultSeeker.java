@@ -55,12 +55,12 @@ public abstract class AbstractJUnitResultSeeker extends ResultSeeker {
 	/**
 	 * @param includePattern
 	 * @param keyCustomField
-	 * @param keywordsExecutedFilter
+	 * @param KeywordExdFilter
 	 * @param attachJunitXML
 	 * @param includeNotes
 	 */
-	public AbstractJUnitResultSeeker(String includePattern, String keyCustomField, String keywordsExecutedFilter, boolean attachJunitXML, boolean includeNotes) {
-		super(includePattern, keyCustomField, keywordsExecutedFilter, includeNotes);
+	public AbstractJUnitResultSeeker(String includePattern, String keyCustomField, String KeywordExdFilter, boolean attachJunitXML, boolean includeNotes) {
+		super(includePattern, keyCustomField, KeywordExdFilter, includeNotes);
 		this.attachJUnitXML = attachJunitXML;
 	}
 	

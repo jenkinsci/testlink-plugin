@@ -47,7 +47,7 @@ public class TAPFileNameResultSeeker extends AbstractTAPFileNameResultSeeker {
 	/**
 	 * @param includePattern
 	 * @param keyCustomField
-	 * @param keywordsExecutedFilter
+	 * @param KeywordExdFilter
 	 * @param attachTAPStream
 	 * @param attachYAMLishAttachments
 	 * @param includeNotes
@@ -55,10 +55,10 @@ public class TAPFileNameResultSeeker extends AbstractTAPFileNameResultSeeker {
 	 */
 	@DataBoundConstructor
 	public TAPFileNameResultSeeker(String includePattern,
-			String keyCustomField, String keywordsExecutedFilter, boolean attachTAPStream,
+			String keyCustomField, String KeywordExdFilter, boolean attachTAPStream,
 			boolean attachYAMLishAttachments, boolean includeNotes,
 			Boolean compareFullPath) {
-		super(includePattern, keyCustomField, keywordsExecutedFilter, attachTAPStream,
+		super(includePattern, keyCustomField, KeywordExdFilter, attachTAPStream,
 				attachYAMLishAttachments, includeNotes, compareFullPath);
 	}
 

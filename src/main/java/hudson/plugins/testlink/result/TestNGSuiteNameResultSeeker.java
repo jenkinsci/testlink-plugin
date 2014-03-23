@@ -65,14 +65,15 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 	/**
 	 * @param includePattern
 	 * @param keyCustomField
-	 * @param keywordsExecutedFilter
+	 * @param KeywordExdFilter
 	 * @param attachTestNGXML
 	 * @param markSkippedTestAsBlocked
 	 * @param includeNotes
 	 */
 	@DataBoundConstructor
-	public TestNGSuiteNameResultSeeker(String includePattern, String keyCustomField, String keywordsExecutedFilter, boolean attachTestNGXML, boolean markSkippedTestAsBlocked, boolean includeNotes) {
-		super(includePattern, keyCustomField, keywordsExecutedFilter, attachTestNGXML, markSkippedTestAsBlocked, includeNotes);
+	public TestNGSuiteNameResultSeeker(String includePattern, String keyCustomField, String KeywordExdFilter, boolean attachTestNGXML, 
+			boolean attachPdfReport, String testCasesReportFolder, boolean markSkippedTestAsBlocked, boolean includeNotes) {
+		super(includePattern, keyCustomField, KeywordExdFilter, attachTestNGXML,  attachPdfReport, testCasesReportFolder, markSkippedTestAsBlocked, includeNotes);
 	}
 	
 	@Extension

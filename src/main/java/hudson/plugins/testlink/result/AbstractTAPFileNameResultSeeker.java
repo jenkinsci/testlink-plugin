@@ -54,16 +54,16 @@ public abstract class AbstractTAPFileNameResultSeeker extends ResultSeeker {
     /**
      * @param includePattern
      * @param keyCustomField
-     * @param keywordsExecutedFilter
+     * @param KeywordExdFilter
      * @param attachTAPStream
      * @param attachYAMLishAttachments
      * @param includeNotes
      * @param compareFullPath
      */
     @DataBoundConstructor
-    public AbstractTAPFileNameResultSeeker(String includePattern, String keyCustomField, String keywordsExecutedFilter, boolean attachTAPStream,
+    public AbstractTAPFileNameResultSeeker(String includePattern, String keyCustomField, String KeywordExdFilter, boolean attachTAPStream,
             boolean attachYAMLishAttachments, boolean includeNotes, Boolean compareFullPath) {
-        super(includePattern, keyCustomField, keywordsExecutedFilter, includeNotes);
+        super(includePattern, keyCustomField, KeywordExdFilter, includeNotes);
         this.attachTAPStream = attachTAPStream;
         this.attachYAMLishAttachments = attachYAMLishAttachments;
         this.compareFullPath = compareFullPath;

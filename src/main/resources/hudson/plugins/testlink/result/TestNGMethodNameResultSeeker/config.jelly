@@ -8,19 +8,15 @@
         <f:textbox id="keyCustomField" name="TestNGMethodNameResultSeeker.keyCustomField" value="${instance.keyCustomField}" />
     </f:entry>
     
-     <f:entry title="${%Filter Keywords Executed}" help="${rootURL}/../plugin/testlink/help-atkeywordsExecutedFilter.html">
-        <f:textbox id="keywordsExecutedFilter" name="TestNGMethodNameResultSeeker.keywordsExecutedFilter" value="${instance.keywordsExecutedFilter}" />
-    </f:entry>
+     <f:entry title="${%Filter Keywords Executed}" help="${rootURL}/../plugin/testlink/help-atKeywordExdFilter.html">
+        <f:textbox id="KeywordExdFilter" name="TestNGMethodNameResultSeeker.KeywordExdFilter" value="${instance.KeywordExdFilter}" />
+    </f:entry>      
         
     <f:entry title="${%Attach TestNG XML}" help="${rootURL}/../plugin/testlink/help-attachResult.html">
         <f:checkbox name="TestNGMethodNameResultSeeker.attachTestNGXML" value="${instance.attachTestNGXML}" checked="${instance.attachTestNGXML}" />
-    </f:entry>
+    </f:entry>  
     
-    <f:entry title="${%Include TestNG attachTestSourcePage}" help="${rootURL}/../plugin/testlink/help-attachTestSourcePage.html">
-        <f:checkbox name="TestNGMethodNameResultSeeker.attachTestSourcePage" value="${instance.attachTestSourcePage}" checked="${instance.attachTestSourcePage}" />
-    </f:entry>
-    
-    <f:entry title="${%Include TestNG attachPdfReport}" help="${rootURL}/../plugin/testlink/help-attachPdfReport.html">
+    <f:entry title="${%Attach pdf report}" help="${rootURL}/../plugin/testlink/help-attachPdfReport.html">
         <f:checkbox name="TestNGMethodNameResultSeeker.attachPdfReport" value="${instance.attachPdfReport}" checked="${instance.attachPdfReport}" />
     </f:entry>
         

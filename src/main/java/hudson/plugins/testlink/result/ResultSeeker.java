@@ -37,7 +37,7 @@ import hudson.plugins.testlink.TestLinkSite;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,12 +76,12 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	/**
 	 * Filter from the executed Keywords.
 	 */
-	protected final String keywordsExecutedFilter;
+	protected final String KeywordExdFilter;
 	
 	/**
 	 * Filter from the executed Keywords.
 	 */
-	protected String[] keywordsExecutedFilterList;
+	protected String[] KeyList;
 	
 	
 	/**
@@ -94,14 +94,14 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	 * 
 	 * @param includePattern
 	 * @param keyCustomField
-	 * @param keywordsExecutedFilter
+	 * @param KeywordExdFilter
 	 * @param includeNotes
 	 */
-	public ResultSeeker(String includePattern, String keyCustomField, String keywordsExecutedFilter, boolean includeNotes) {
+	public ResultSeeker(String includePattern, String keyCustomField, String KeywordExdFilter, boolean includeNotes) {
 		super();
 		this.includePattern = includePattern;
 		this.keyCustomField = keyCustomField;
-		this.keywordsExecutedFilter = keywordsExecutedFilter;
+		this.KeywordExdFilter = KeywordExdFilter;
 		this.includeNotes = includeNotes;
 	}
 	
@@ -117,6 +117,13 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	 */
 	public String getKeyCustomField() {
 		return keyCustomField;
+	}
+	
+	/**
+	 * @return
+	 */
+	public String getKeywordExdFilter() {
+		return KeywordExdFilter;
 	}
 	
 	/**
@@ -239,8 +246,8 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	/**
 	 * <pre>
 	 * Retorn true 
-	 * 	if any of the keywords of the testCase is in the keywordsExecutedFilter
-	 * 	or keywordsExecutedFilter="" 
+	 * 	if any of the keywords of the testCase is in the KeywordExdFilter
+	 * 	or KeywordExdFilter=="" 
 	 * </pre>
 	 * 
 	 * @param automatedTestCase
@@ -250,19 +257,22 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 		
 		boolean filterTestCase=false;
 		
-		if (StringUtils.isBlank(keywordsExecutedFilter)){
+		if (StringUtils.isBlank(KeywordExdFilter)){
 			filterTestCase= true;
 		} else {
 			// Lazy inicialization
-			if (keywordsExecutedFilterList==null){
-				keywordsExecutedFilterList = TestCaseWrapper.split(keywordsExecutedFilter);
+			if (KeyList==null){
+				KeyList = TestCaseWrapper.split(KeywordExdFilter);
 			}
+			// If there are any KeyList defined, then the testCase must have keywords to match
 			List<String>  testCaseKeywords = automatedTestCase.getKeywords();		
-			
+			if (testCaseKeywords==null){
+				testCaseKeywords = new ArrayList<String>();
+			}
 			int index=0;
-			int last=keywordsExecutedFilterList.length;
+			int last=KeyList.length;
 			while (filterTestCase==false && index<last){
-				filterTestCase=testCaseKeywords.contains(keywordsExecutedFilterList[index]);
+				filterTestCase=testCaseKeywords.contains(KeyList[index]);
 				index++;
 			}
 		}
@@ -276,5 +286,7 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	public int compareTo(ResultSeeker o) {
 		return o != null ? this.getDescriptor().getDisplayName().compareTo(o.getDescriptor().getDisplayName()) : 0;
 	}
+
+
 
 }

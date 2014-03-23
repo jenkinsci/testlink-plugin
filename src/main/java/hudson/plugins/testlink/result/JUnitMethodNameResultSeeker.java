@@ -58,13 +58,13 @@ public class JUnitMethodNameResultSeeker extends AbstractJUnitResultSeeker {
 	/**
 	 * @param includePattern Include pattern used when looking for results
 	 * @param keyCustomField Key custom field to match against the results
-	 * @param keywordsExecutedFilter keywords of testcases to filter test results
+	 * @param KeywordExdFilter keywords of testcases to filter test results
 	 * @param attachJUnitXML Bit that enables attaching result file to TestLink
 	 * @param includeNotes
 	 */
 	@DataBoundConstructor
-	public JUnitMethodNameResultSeeker(String includePattern, String keyCustomField, String keywordsExecutedFilter, boolean attachJUnitXML, boolean includeNotes) {
-		super(includePattern, keyCustomField, keywordsExecutedFilter, attachJUnitXML, includeNotes);
+	public JUnitMethodNameResultSeeker(String includePattern, String keyCustomField, String KeywordExdFilter, boolean attachJUnitXML, boolean includeNotes) {
+		super(includePattern, keyCustomField, KeywordExdFilter, attachJUnitXML, includeNotes);
 	}
 	
 	@Extension
