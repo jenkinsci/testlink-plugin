@@ -276,8 +276,8 @@ public class TestLinkSite {
 			}
 			if (keywordsList.length > 0) {
 				// TODO waiting for next version of API
-				// List<String> testCaseKeywords = api.getTestCaseKeywords(testCase.getTestProjectId(), testCase.getId());
-				// testCase.setKeywords(testCaseKeywords);
+//				 List<String> testCaseKeywords = api.getTestCaseKeywords(testCase.getTestProjectId(), testCase.getId());
+//				 testCase.setKeywords(testCaseKeywords);
 			}
 		}
 

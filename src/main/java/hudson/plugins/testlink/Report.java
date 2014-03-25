@@ -215,28 +215,28 @@ public class Report implements Serializable {
 	 * @return the testlinkAlldUrl
 	 */
 	public String getTestlinkMatrixResultUrl() {
-		return linkResults+"/lib/results/resultsTC.php?type=n&format=0&tplan_id="+testPlanId;
+		return linkResults+"/lib/results/resultsTC.php?format=0&tplan_id="+testPlanId;
 	}
 
 	/**
 	 * @return the testlinkFaultUrl
 	 */
 	public String getTestlinkFaultUrl() {
-		return linkResults+"/lib/results/resultsTC.php?type=n&format=0&tplan_id="+testPlanId;
+		return linkResults+"/lib/results/resultsByStatus.php?type=f&format=0&tplan_id="+testPlanId;
 	}
 
 	/**
 	 * @return the testlinkNotRunUrl
 	 */
 	public String getTestlinkNotRunUrl() {
-		return linkResults+"/lib/results/resultsTC.php?type=n&format=0&tplan_id="+testPlanId;
+		return linkResults+"/lib/results/resultsByStatus.php?type=n&format=0&tplan_id="+testPlanId;
 	}
 
 	/**
 	 * @return the testlinkBlockedUrl
 	 */
 	public String getTestlinkBlockedUrl() {
-		return linkResults+"/lib/results/resultsTC.php?type=n&format=0&tplan_id="+testPlanId;
+		return linkResults+"/lib/results/resultsByStatus.php?type=b&format=0&tplan_id="+testPlanId;
 	}
 
 
