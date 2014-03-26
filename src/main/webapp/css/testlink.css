@@ -24,13 +24,13 @@
 }
 
 .testlink-button:hover{
-	border-color:#7D98B8;
+	border-color:#D4E1FC;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#1a000000',GradientType=0);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(transparent), color-stop(40%, rgba(0,0,0, 0.05)), to(#7D98B8));
-    background-image: -webkit-linear-gradient(transparent, rgba(0,0,0, 0.05) 40%, #7D98B8);
-    background-image: -moz-linear-gradient(top, rgba(0,0,0, 0.05) 0%, #7D98B8);
-    background-image: -o-linear-gradient(transparent, rgba(0,0,0, 0.05) 40%, #7D98B8);
-    background-image: linear-gradient(transparent, rgba(0,0,0, 0.05) 40%, #7D98B8);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(transparent), color-stop(40%, rgba(0,0,0, 0.05)), to(#D4E1FC));
+    background-image: -webkit-linear-gradient(transparent, rgba(0,0,0, 0.05) 40%, #D4E1FC);
+    background-image: -moz-linear-gradient(top, rgba(0,0,0, 0.05) 0%, #D4E1FC);
+    background-image: -o-linear-gradient(transparent, rgba(0,0,0, 0.05) 40%, #D4E1FC);
+    background-image: linear-gradient(transparent, rgba(0,0,0, 0.05) 40%, #D4E1FC);
     outline: 0;
 }
 

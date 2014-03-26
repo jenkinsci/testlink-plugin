@@ -26,6 +26,7 @@ package hudson.plugins.testlink.util;
 import hudson.EnvVars;
 import hudson.model.BuildListener;
 import hudson.plugins.testlink.Report;
+import hudson.plugins.testlink.TestLinkBuildAction;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 
 import java.util.HashMap;
@@ -332,7 +333,8 @@ public final class TestLinkHelper {
 		
 		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildID(testLinkReport.getBuildId())+"</b></p>");
 		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildName(testLinkReport.getBuildName())+"</b></p>");
-			
+		builder.append("<p><a href=\"" + TestLinkBuildAction.URL_NAME + "\">");
+		
 		Integer total = testLinkReport.getTestsTotal();
 		Integer previousTotal = previous != null ? previous.getTestsTotal() : total;
 		Integer passed = testLinkReport.getPassed();

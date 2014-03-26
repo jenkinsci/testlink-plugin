@@ -102,6 +102,24 @@ extends junit.framework.TestCase
 		assertEquals(reportSummary, "<p><b>TestLink build ID: 1</b></p><p><b>TestLink build name: My build</b></p><p><a href=\"testLinkResult\">Total of 3 tests</a>. Where 1 passed, 1 failed, 1 were blocked and 0 were not executed.</p>");
 	}
 	
+	public void testSummaryWithTestlink()
+	{
+		Report report = new Report(1, "My build");
+		
+		report.setPassed(1);
+		
+		report.setFailed(1);
+		
+		report.setBlocked(1);
+		String url="http://host:port/testlink";
+		report.setLinkResults(url);
+		report.setTestPlanId(1);
+		
+		String reportSummary = TestLinkHelper.createReportSummary(report, null);
+		assertNotNull(reportSummary);
+		assertEquals(reportSummary, "<link rel='stylesheet' type='text/css' href='/plugin/testlink/css/testlink.css'/><div id='testlinkMenu'><ul><b>Show in Testlink:</b><li class='testlink-button'><a target='blank' style='color: green' href=http://host:port/testlink/lib/results/resultsTC.php?format=0&tplan_id=1>Matriz resultados</a></li><li class='testlink-button'><a target='blank' style='color: red' href=http://host:port/testlink/lib/results/resultsByStatus.php?type=f&format=0&tplan_id=1>Errores</a></li><li class='testlink-button'><a target='blank' style='color: gray' href=http://host:port/testlink/lib/results/resultsByStatus.php?type=n&format=0&tplan_id=1>No ejecutado</a></li><li class='testlink-button'><a target='blank' style='color: rgb(187, 187, 60)' href=http://host:port/testlink/lib/results/resultsByStatus.php?type=b&format=0&tplan_id=1>Bloqueado</a></li></ul></div><br/><p><b>TestLink build ID: 1</b></p><p><b>TestLink build name: My build</b></p><p><a href=\"testLinkResult\">Total of 3 tests</a>. Where 1 passed, 1 failed, 1 were blocked and 0 were not executed.</p>");
+	}
+	
 	/**
 	 * Tests the createReportSummary() method with a previous TestLinkReport.
 	 */
