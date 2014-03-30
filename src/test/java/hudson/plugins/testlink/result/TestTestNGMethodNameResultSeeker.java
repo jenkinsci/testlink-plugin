@@ -23,8 +23,12 @@
  */
 package hudson.plugins.testlink.result;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
+import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**
  * Tests ResultSeeker with TestNG method name.
@@ -35,6 +39,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 public class TestTestNGMethodNameResultSeeker extends ResultSeekerTestCase {
 
 	private final static String KEY_CUSTOM_FIELD = "testCustomField";
+	private static final String KEYWORD_FIELD = "userDemo";
 
 	/*
 	 * (non-Javadoc)
@@ -66,9 +71,14 @@ public class TestTestNGMethodNameResultSeeker extends ResultSeekerTestCase {
 	 */
 	@Override
 	public ResultSeeker getResultSeeker() {
+		return new TestNGMethodNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD, KEYWORD_FIELD_BLANK, false, false, "",false, false);
+	}
+	
+	public ResultSeeker getResultSeekerKeyword() {
 		return new TestNGMethodNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD, KEYWORD_FIELD, false, false, "",false, false);
 	}
 
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -80,7 +90,14 @@ public class TestTestNGMethodNameResultSeeker extends ResultSeekerTestCase {
 	public TestCaseWrapper[] getAutomatedTestCases() {
 		final TestCaseWrapper[] tcs = new TestCaseWrapper[3];
 
-		TestCaseWrapper tc = new TestCaseWrapper();
+		TestCase testCase = new TestCase();
+		List<String> keywords = new ArrayList<String>();
+		keywords.add("userDemo");
+		keywords.add("userReal");
+		// TODO waiting the API
+//		testCase.setKeywords(keywords);
+		
+		TestCaseWrapper tc = new TestCaseWrapper(testCase);
 		CustomField cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("br.eti.kinoshita.Test#testVoid");
@@ -88,7 +105,12 @@ public class TestTestNGMethodNameResultSeeker extends ResultSeekerTestCase {
 		tc.setId(1);
 		tcs[0] = tc;
 
-		tc = new TestCaseWrapper();
+		testCase = new TestCase();
+		keywords = new ArrayList<String>();
+		keywords.add("nothing");
+		// TODO waiting the API
+//		testCase.setKeywords(keywords);
+		tc = new TestCaseWrapper(testCase);
 		cf = new CustomField();
 		cf.setName(KEY_CUSTOM_FIELD);
 		cf.setValue("br.eti.kinoshita.Test2#testVoid");
@@ -114,6 +136,27 @@ public class TestTestNGMethodNameResultSeeker extends ResultSeekerTestCase {
 		assertEquals(ExecutionStatus.FAILED , testlink.getTestCases().get(0).getExecutionStatus());
 		assertEquals(ExecutionStatus.FAILED , testlink.getTestCases().get(1).getExecutionStatus());
 		assertEquals(ExecutionStatus.PASSED , testlink.getTestCases().get(2).getExecutionStatus());
+	}
+	
+	
+	public void testTestResultSeekerThreeMethodsKeyWods() throws Exception {
+		
+		
+		buildAndAssertSuccess(project);
+		
+		// Compatibility with empty keyword
+		assertTrue("filtered key", getResultSeeker().isInKeywordsFilter(getAutomatedTestCases()[0]));
+		assertTrue("filtered key", getResultSeeker().isInKeywordsFilter(getAutomatedTestCases()[1]));
+		assertTrue("filtered key", getResultSeeker().isInKeywordsFilter(getAutomatedTestCases()[1]));		
+		assertTrue("filtered key", getResultSeeker().isInKeywordsFilter(getAutomatedTestCases()[2]));
+		
+		// TODO waiting the API
+//		assertTrue("filtered key", getResultSeekerKeyword().isInKeywordsFilter(getAutomatedTestCases()[0]));
+//		assertFalse("not filtered key", getResultSeekerKeyword().isInKeywordsFilter(getAutomatedTestCases()[1]));
+//		assertFalse("filtered key", getResultSeekerKeyword().isInKeywordsFilter(getAutomatedTestCases()[2]));
+		
+
+	
 	}
 
 }
