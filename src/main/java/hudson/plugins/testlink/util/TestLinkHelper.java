@@ -319,6 +319,18 @@ public final class TestLinkHelper {
 	 */
 	public static String createReportSummary(Report testLinkReport, Report previous) {
 		StringBuilder builder = new StringBuilder();
+		
+		// Urls to testlink if defined in global properties
+		if (StringUtils.isNotBlank(testLinkReport.getLinkResults())){
+			builder.append("<link rel='stylesheet' type='text/css' href='/plugin/testlink/css/testlink.css'/>");
+			builder.append("<div id='testlinkMenu'><ul><b>"+Messages.ReportSummary_Summary_URLTestlink()+":</b>");
+			builder.append("<li class='testlink-button'><a target='blank' style='color: green' href="+testLinkReport.getTestlinkMatrixResultUrl()+">"+Messages.ReportSummary_Summary_TestlinkMatrixResult() +"</a></li>");
+			builder.append("<li class='testlink-button'><a target='blank' style='color: red' href="+testLinkReport.getTestlinkFaultUrl()+">"+Messages.ReportSummary_Summary_TestlinkFault() +"</a></li>");
+			builder.append("<li class='testlink-button'><a target='blank' style='color: gray' href="+testLinkReport.getTestlinkNotRunUrl()+">"+Messages.ReportSummary_Summary_TestlinkNotRun() +"</a></li>");
+			builder.append("<li class='testlink-button'><a target='blank' style='color: rgb(187, 187, 60)' href="+testLinkReport.getTestlinkBlockedUrl()+">"+Messages.ReportSummary_Summary_TestlinkBlocked() +"</a></li>");
+			builder.append("</ul></div><br/>");
+		}
+		
 		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildID(testLinkReport.getBuildId())+"</b></p>");
 		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildName(testLinkReport.getBuildName())+"</b></p>");
 		builder.append("<p><a href=\"" + TestLinkBuildAction.URL_NAME + "\">");

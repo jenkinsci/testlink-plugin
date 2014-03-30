@@ -59,15 +59,19 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 	
 	private static final long serialVersionUID = 6349875034415550272L;
 
+	
 	/**
 	 * @param includePattern
 	 * @param keyCustomField
+	 * @param KeywordExdFilter
 	 * @param attachTestNGXML
 	 * @param markSkippedTestAsBlocked
+	 * @param includeNotes
 	 */
 	@DataBoundConstructor
-	public TestNGClassNameResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean markSkippedTestAsBlocked, boolean includeNotes) {
-		super(includePattern, keyCustomField, attachTestNGXML, markSkippedTestAsBlocked, includeNotes);
+	public TestNGClassNameResultSeeker(String includePattern, String keyCustomField, String KeywordExdFilter, boolean attachTestNGXML,
+			boolean attachPdfReport, String testCasesReportFolder, boolean markSkippedTestAsBlocked, boolean includeNotes) {
+		super(includePattern, keyCustomField, KeywordExdFilter, attachTestNGXML, attachPdfReport, testCasesReportFolder, markSkippedTestAsBlocked, includeNotes);
 	}
 	
 	@Extension
@@ -112,22 +116,9 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 				for(Test test : suite.getTests() ) {
 					for(com.tupilabs.testng.parser.Class  clazz : test.getClasses()) {
 						for(TestCaseWrapper automatedTestCase : automatedTestCases) {
-							final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
-							for(String value : commaSeparatedValues) {
-								if(clazz.getName().equals(value)) {
-									ExecutionStatus status = this.getExecutionStatus(clazz);
-									if(status != ExecutionStatus.NOT_RUN) {
-										automatedTestCase.addCustomFieldAndStatus(value, status);
-									}
-									
-									if(this.isIncludeNotes()) {
-										final String notes = this.getTestNGNotes(suite, clazz);
-										automatedTestCase.appendNotes(notes);
-									}
-									
-									super.handleResult(automatedTestCase, build, listener, testlink, status, suite);
-								}
-							}
+							if (isInKeywordsFilter(automatedTestCase)) {
+								haldleTestCase(build, listener, testlink, suite, clazz, automatedTestCase);
+							}																				
 						}
 					}
 				}
@@ -137,6 +128,34 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 		} catch (InterruptedException e) {
 			throw new ResultSeekerException(e);
 		} 
+	}
+
+	/**
+	 * @param build
+	 * @param listener
+	 * @param testlink
+	 * @param suite
+	 * @param clazz
+	 * @param automatedTestCase
+	 */
+	private void haldleTestCase(AbstractBuild<?, ?> build, final BuildListener listener, TestLinkSite testlink,
+			Suite suite, com.tupilabs.testng.parser.Class clazz, TestCaseWrapper automatedTestCase) {
+		final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
+		for(String value : commaSeparatedValues) {
+			if(clazz.getName().equals(value)) {
+				ExecutionStatus status = this.getExecutionStatus(clazz);
+				if(status != ExecutionStatus.NOT_RUN) {
+					automatedTestCase.addCustomFieldAndStatus(value, status);
+				}
+				
+				if(this.isIncludeNotes()) {
+					final String notes = this.getTestNGNotes(suite, clazz);
+					automatedTestCase.appendNotes(notes);
+				}
+				
+				super.handleResult(automatedTestCase, build, listener, testlink, status, suite);
+			}
+		}
 	}
 
 	/**

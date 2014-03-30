@@ -54,11 +54,21 @@ public class TAPFileNameMultiTestPointsResultSeeker extends AbstractTAPFileNameR
 
     private static final long serialVersionUID = 3068999690225000000L;
 
+    /**
+     * @param includePattern
+     * @param keyCustomField
+     * @param KeywordExdFilter
+     * @param attachTAPStream
+     * @param attachYAMLishAttachments
+     * @param includeNotes
+     * @param compareFullPath
+     * @param testpointsAsExecutions
+     */
     @DataBoundConstructor
-    public TAPFileNameMultiTestPointsResultSeeker(String includePattern, String keyCustomField,
+    public TAPFileNameMultiTestPointsResultSeeker(String includePattern, String keyCustomField, String KeywordExdFilter,
             boolean attachTAPStream, boolean attachYAMLishAttachments, boolean includeNotes, boolean compareFullPath,
             boolean testpointsAsExecutions) {
-        super(includePattern, keyCustomField, attachTAPStream, attachYAMLishAttachments, includeNotes, compareFullPath);
+        super(includePattern, keyCustomField, KeywordExdFilter, attachTAPStream, attachYAMLishAttachments, includeNotes, compareFullPath);
 
     }
 

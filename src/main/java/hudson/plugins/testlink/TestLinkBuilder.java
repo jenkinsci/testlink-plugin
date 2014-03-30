@@ -35,6 +35,7 @@ import hudson.model.Descriptor;
 import hudson.plugins.testlink.result.ResultSeeker;
 import hudson.plugins.testlink.result.ResultSeekerException;
 import hudson.plugins.testlink.result.TestCaseWrapper;
+import hudson.plugins.testlink.util.JenkinsHelper;
 import hudson.plugins.testlink.util.Messages;
 import hudson.plugins.testlink.util.TestLinkHelper;
 import hudson.tasks.BuildStep;
@@ -123,7 +124,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
     
 	@DataBoundConstructor
 	public TestLinkBuilder(String testLinkName, String testProjectName,
-			String testPlanName, String platformName, String buildName, String customFields,
+			String testPlanName, String platformName, String buildName, String customFields, String keywords, 
 			Boolean executionStatusNotRun, Boolean executionStatusPassed,
 			Boolean executionStatusFailed, Boolean executionStatusBlocked,
 			List<BuildStep> singleBuildSteps,
@@ -133,7 +134,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
 			Boolean failIfNoResults, Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
 		super(testLinkName, testProjectName, testPlanName, platformName, buildName,
-				customFields, singleBuildSteps, beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
+				customFields, keywords, singleBuildSteps, beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
 				afterIteratingAllTestCasesBuildSteps, transactional, failedTestsMarkBuildAsFailure, 
 				failIfNoResults, failOnNotRun, resultSeekers);
 	}
@@ -162,35 +163,42 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		final TestLinkSite testLinkSite;
 		final TestCaseWrapper[] automatedTestCases;
 		final String testLinkUrl = installation.getUrl();
-		final String testLinkDevKey = installation.getDevKey();
+		final String testLinkDevKey = installation.getDevKey();				
 		listener.getLogger().println(Messages.TestLinkBuilder_UsedTLURL(testLinkUrl));
 
 		try {
-			final String testProjectName = expandVariable(build.getBuildVariableResolver(),
+			final String testProjectName = JenkinsHelper.expandVariable(build.getBuildVariableResolver(),
 					build.getEnvironment(listener), getTestProjectName());
-			final String testPlanName = expandVariable(build.getBuildVariableResolver(),
+			final String testPlanName = JenkinsHelper.expandVariable(build.getBuildVariableResolver(),
 					build.getEnvironment(listener), getTestPlanName());
-			final String platformName = expandVariable(build.getBuildVariableResolver(),
+			final String platformName = JenkinsHelper.expandVariable(build.getBuildVariableResolver(),
 					build.getEnvironment(listener), getPlatformName());
-			final String buildName = expandVariable(build.getBuildVariableResolver(),
+			final String buildName = JenkinsHelper.expandVariable(build.getBuildVariableResolver(),
 					build.getEnvironment(listener), getBuildName());
+			final String keywords = JenkinsHelper.expandVariable(build.getBuildVariableResolver(), build.getEnvironment(listener),
+					getKeywords());
 			final String buildNotes = Messages.TestLinkBuilder_Build_Notes();
 			if(LOGGER.isLoggable(Level.FINE)) {
 				LOGGER.log(Level.FINE, "TestLink project name: ["+testProjectName+"]");
 				LOGGER.log(Level.FINE, "TestLink plan name: ["+testPlanName+"]");
 				LOGGER.log(Level.FINE, "TestLink platform name: ["+platformName+"]");
 				LOGGER.log(Level.FINE, "TestLink build name: ["+buildName+"]");
+				LOGGER.log(Level.FINE, "TestLink build keywords: [" + keywords + "]");
 				LOGGER.log(Level.FINE, "TestLink build notes: ["+buildNotes+"]");
 			}
 			// TestLink Site object
 			testLinkSite = this.getTestLinkSite(testLinkUrl, testLinkDevKey, testProjectName, testPlanName, platformName, buildName, buildNotes);
+			final int parallelRequest= installation.getParallelRequest();
+			if (parallelRequest>1){
+				testLinkSite.setParallelRequest(parallelRequest);
+			}
 			
 			if (StringUtils.isNotBlank(platformName) && testLinkSite.getPlatform() == null) 
 			    listener.getLogger().println(Messages.TestLinkBuilder_PlatformNotFound(platformName));
 			
 			final String[] customFieldsNames = this.createArrayOfCustomFieldsNames(build.getBuildVariableResolver(), build.getEnvironment(listener));
 			// Array of automated test cases
-			TestCase[] testCases = testLinkSite.getAutomatedTestCases(customFieldsNames);
+			TestCase[] testCases = testLinkSite.getAutomatedTestCases(customFieldsNames, keywords);
 
 			// Transforms test cases into test case wrappers
 			automatedTestCases = this.transform(testCases);
@@ -247,6 +255,11 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		// This report is used to generate the graphs and to store the list of
 		// test cases with each found status.
 		final Report report = testLinkSite.getReport();
+		String testLinkUrlResults = installation.getUrlResults();
+		if (StringUtils.isNotBlank(testLinkUrlResults)){
+			report.setTestPlanId(testLinkSite.getTestPlan().getId());
+			report.setLinkResults(testLinkUrlResults);
+		}		
 		report.tally();
 		
 		listener.getLogger().println(Messages.TestLinkBuilder_ShowFoundTestResults(report.getTestsTotal()));

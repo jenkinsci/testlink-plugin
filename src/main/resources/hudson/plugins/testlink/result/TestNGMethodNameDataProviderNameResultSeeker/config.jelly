@@ -8,6 +8,10 @@
         <f:textbox id="keyCustomField" name="TestNGMethodNameDataProviderNameResultSeeker.keyCustomField" value="${instance.keyCustomField}" />
     </f:entry>
     
+    <f:entry title="${%Filter Executed by Keywords}" help="${rootURL}/../plugin/testlink/help-atKeywordExdFilter.html">
+        <f:textbox id="KeywordExdFilter" name="TestNGMethodNameResultSeeker.KeywordExdFilter" value="${instance.KeywordExdFilter}" />
+    </f:entry>
+    
     <f:entry title="${%TestNG data provider name Key Custom Field}" help="${rootURL}/../plugin/testlink/help-atKeyCustomField.html">
         <f:textbox id="dataProviderNameKeyCustomField" name="TestNGMethodNameDataProviderNameResultSeeker.dataProviderNameKeyCustomField" value="${instance.dataProviderNameKeyCustomField}" />
     </f:entry>

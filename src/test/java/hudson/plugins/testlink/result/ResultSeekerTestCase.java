@@ -47,6 +47,8 @@ import org.jvnet.hudson.test.HudsonTestCase;
  */
 public abstract class ResultSeekerTestCase extends HudsonTestCase {
 
+	protected final static String KEYWORD_FIELD_BLANK = "";
+
 	protected FreeStyleProject project;
 	protected TestLinkSiteFake testlink = new TestLinkSiteFake();
 	

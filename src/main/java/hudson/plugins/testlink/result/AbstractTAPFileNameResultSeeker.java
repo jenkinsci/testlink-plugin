@@ -50,16 +50,20 @@ public abstract class AbstractTAPFileNameResultSeeker extends ResultSeeker {
     private boolean attachYAMLishAttachments = false;
     private Boolean compareFullPath = false;
 
+
     /**
      * @param includePattern
      * @param keyCustomField
+     * @param KeywordExdFilter
      * @param attachTAPStream
      * @param attachYAMLishAttachments
+     * @param includeNotes
+     * @param compareFullPath
      */
     @DataBoundConstructor
-    public AbstractTAPFileNameResultSeeker(String includePattern, String keyCustomField, boolean attachTAPStream,
+    public AbstractTAPFileNameResultSeeker(String includePattern, String keyCustomField, String KeywordExdFilter, boolean attachTAPStream,
             boolean attachYAMLishAttachments, boolean includeNotes, Boolean compareFullPath) {
-        super(includePattern, keyCustomField, includeNotes);
+        super(includePattern, keyCustomField, KeywordExdFilter, includeNotes);
         this.attachTAPStream = attachTAPStream;
         this.attachYAMLishAttachments = attachYAMLishAttachments;
         this.compareFullPath = compareFullPath;
@@ -134,25 +138,9 @@ public abstract class AbstractTAPFileNameResultSeeker extends ResultSeeker {
 
             for (String key : testSets.keySet()) {
                 for (TestCaseWrapper automatedTestCase : automatedTestCases) {
-                    final String[] commaSeparatedValues = automatedTestCase
-                            .getKeyCustomFieldValues(this.keyCustomField);
-                    for (String value : commaSeparatedValues) {
-                        String tapFileNameWithoutExtension = key;
-                        int leftIndex = 0;
-                        if (!this.isCompareFullPath()) {
-                            int lastIndex = tapFileNameWithoutExtension.lastIndexOf(File.separator);
-                            if (lastIndex > 0)
-                                leftIndex = lastIndex + 1;
-                        }
-                        int extensionIndex = tapFileNameWithoutExtension.lastIndexOf('.');
-                        if (extensionIndex != -1) {
-                            tapFileNameWithoutExtension = tapFileNameWithoutExtension.substring(leftIndex,
-                                    tapFileNameWithoutExtension.lastIndexOf('.'));
-                        }
-                        if (tapFileNameWithoutExtension.equals(value)) {
-                            this.updateTestCase(testSets, key, automatedTestCase, value, build, listener, testlink);
-                        }
-                    }
+                	if (isInKeywordsFilter(automatedTestCase)) {
+                		haldleTestCase(build, listener, testlink, testSets, key, automatedTestCase);
+                	}	                    
                 }
             }
         } catch (IOException e) {
@@ -161,6 +149,37 @@ public abstract class AbstractTAPFileNameResultSeeker extends ResultSeeker {
             throw new ResultSeekerException(e);
         }
     }
+
+	/**
+	 * @param build
+	 * @param listener
+	 * @param testlink
+	 * @param testSets
+	 * @param key
+	 * @param automatedTestCase
+	 */
+	private void haldleTestCase(AbstractBuild<?, ?> build, final BuildListener listener, TestLinkSite testlink,
+			final Map<String, TestSet> testSets, String key, TestCaseWrapper automatedTestCase) {
+		final String[] commaSeparatedValues = automatedTestCase
+		        .getKeyCustomFieldValues(this.keyCustomField);
+		for (String value : commaSeparatedValues) {
+		    String tapFileNameWithoutExtension = key;
+		    int leftIndex = 0;
+		    if (!this.isCompareFullPath()) {
+		        int lastIndex = tapFileNameWithoutExtension.lastIndexOf(File.separator);
+		        if (lastIndex > 0)
+		            leftIndex = lastIndex + 1;
+		    }
+		    int extensionIndex = tapFileNameWithoutExtension.lastIndexOf('.');
+		    if (extensionIndex != -1) {
+		        tapFileNameWithoutExtension = tapFileNameWithoutExtension.substring(leftIndex,
+		                tapFileNameWithoutExtension.lastIndexOf('.'));
+		    }
+		    if (tapFileNameWithoutExtension.equals(value)) {
+		        this.updateTestCase(testSets, key, automatedTestCase, value, build, listener, testlink);
+		    }
+		}
+	}
 
     protected void updateTestCase(Map<String, TestSet> testSets, String key, TestCaseWrapper automatedTestCase,
             String value, AbstractBuild<?, ?> build, BuildListener listener, TestLinkSite testlink) {

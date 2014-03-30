@@ -29,6 +29,7 @@ import hudson.model.Action;
 import hudson.model.AbstractProject;
 import hudson.plugins.testlink.result.ResultSeeker;
 import hudson.plugins.testlink.util.ExecutionOrderComparator;
+import hudson.plugins.testlink.util.JenkinsHelper;
 import hudson.tasks.BuildStep;
 import hudson.tasks.Builder;
 import hudson.util.VariableResolver;
@@ -77,6 +78,11 @@ public class AbstractTestLinkBuilder extends Builder {
      */
     protected final String customFields;
 
+	/**
+	 * Comma separated list of custom Keywords to download from TestLink.
+	 */
+	protected final String keywords;
+	
     /**
      * List of build steps that are executed only once per job execution.
      */
@@ -138,7 +144,7 @@ public class AbstractTestLinkBuilder extends Builder {
      * Create a AbstractTestLinkBuilder.
      */
     public AbstractTestLinkBuilder(String testLinkName, String testProjectName, String testPlanName, 
-            String platformName, String buildName, String customFields, List<BuildStep> singleBuildSteps,
+            String platformName, String buildName, String customFields, String keywords, List<BuildStep> singleBuildSteps,
             List<BuildStep> beforeIteratingAllTestCasesBuildSteps, List<BuildStep> iterativeBuildSteps,
             List<BuildStep> afterIteratingAllTestCasesBuildSteps, Boolean transactional,
             Boolean failedTestsMarkBuildAsFailure, Boolean failIfNoResults, Boolean failOnNotRun,
@@ -150,6 +156,7 @@ public class AbstractTestLinkBuilder extends Builder {
         this.platformName = platformName;
         this.buildName = buildName;
         this.customFields = customFields;
+        this.keywords = keywords;
         this.singleBuildSteps = singleBuildSteps;
         this.beforeIteratingAllTestCasesBuildSteps = beforeIteratingAllTestCasesBuildSteps;
         this.iterativeBuildSteps = iterativeBuildSteps;
@@ -188,7 +195,7 @@ public class AbstractTestLinkBuilder extends Builder {
             List<BuildStep> iterativeBuildSteps, List<BuildStep> afterIteratingAllTestCasesBuildSteps,
             Boolean transactional, Boolean failedTestsMarkBuildAsFailure, Boolean failIfNoResults,
             Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
-        this(testLinkName, testProjectName, testPlanName, platformName, buildName, customFields, singleBuildSteps, 
+        this(testLinkName, testProjectName, testPlanName, platformName, buildName, customFields, "", singleBuildSteps, 
              beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps, afterIteratingAllTestCasesBuildSteps, 
              transactional, failedTestsMarkBuildAsFailure, failIfNoResults, failOnNotRun, resultSeekers);
     }
@@ -199,19 +206,6 @@ public class AbstractTestLinkBuilder extends Builder {
 
     public String getTestProjectName() {
         return this.testProjectName;
-    }
-
-    /**
-     * Expands a text variable like BUILD-$VAR replacing the $VAR part with a environment variable that matches its
-     * name, minus $.
-     * 
-     * @param variableResolver Jenkins Build Variable Resolver.
-     * @param envVars Jenkins Build Environment Variables.
-     * @param variable Variable value (includes mask).
-     * @return Expanded test project name job configuration property.
-     */
-    public String expandVariable(VariableResolver<String> variableResolver, EnvVars envVars, String variable) {
-        return Util.replaceMacro(envVars.expand(variable), variableResolver);
     }
 
     public String getTestPlanName() {
@@ -342,7 +336,7 @@ public class AbstractTestLinkBuilder extends Builder {
     protected String[] createArrayOfCustomFieldsNames(final VariableResolver<String> variableResolver,
             final EnvVars envVars) {
         String[] customFieldNamesArray = new String[0];
-        String customFields = expandVariable(variableResolver, envVars, this.getCustomFields());
+        String customFields = JenkinsHelper.expandVariable(variableResolver, envVars, this.getCustomFields());
 
         if (StringUtils.isNotBlank(customFields)) {
             StringTokenizer tokenizer = new StringTokenizer(customFields, COMMA);
@@ -361,4 +355,10 @@ public class AbstractTestLinkBuilder extends Builder {
         return customFieldNamesArray;
     }
 
+	/**
+	 * @return Keywords , separated e.g.: database,performance
+	 */
+	public String getKeywords() {
+		return keywords;
+	}
 }

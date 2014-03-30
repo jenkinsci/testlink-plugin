@@ -48,6 +48,9 @@ public class Report implements Serializable {
 	private final String buildName;
 
 	private final List<TestCaseWrapper> testCases;
+	
+	private Integer testPlanId;
+	private String linkResults="";
 
 	/**
 	 * Default constructor.
@@ -154,6 +157,35 @@ public class Report implements Serializable {
 		return testCases;
 	}
 	
+	/**
+	 * @return
+	 */
+	public String getLinkResults() {
+		return linkResults;
+	}
+
+	/**
+	 * @param linkResults
+	 */
+	public void setLinkResults(String linkResults) {
+		this.linkResults = linkResults;
+	}
+	
+	/**
+	 * @return
+	 */
+	public int getTestPlanId() {
+		return testPlanId;
+	}
+	
+	/**
+	 * @param testPlanId the testPlanId to set
+	 */
+	public void setTestPlanId(Integer testPlanId) {
+		this.testPlanId = testPlanId;
+	}
+
+	
 	public void tally() {
 	    this.blocked = 0;
 	    this.failed = 0;
@@ -178,5 +210,34 @@ public class Report implements Serializable {
 	        }
 	    }
 	}
+
+	/**
+	 * @return the testlinkAlldUrl
+	 */
+	public String getTestlinkMatrixResultUrl() {
+		return linkResults+"/lib/results/resultsTC.php?format=0&tplan_id="+testPlanId;
+	}
+
+	/**
+	 * @return the testlinkFaultUrl
+	 */
+	public String getTestlinkFaultUrl() {
+		return linkResults+"/lib/results/resultsByStatus.php?type=f&format=0&tplan_id="+testPlanId;
+	}
+
+	/**
+	 * @return the testlinkNotRunUrl
+	 */
+	public String getTestlinkNotRunUrl() {
+		return linkResults+"/lib/results/resultsByStatus.php?type=n&format=0&tplan_id="+testPlanId;
+	}
+
+	/**
+	 * @return the testlinkBlockedUrl
+	 */
+	public String getTestlinkBlockedUrl() {
+		return linkResults+"/lib/results/resultsByStatus.php?type=b&format=0&tplan_id="+testPlanId;
+	}
+
 
 }

@@ -64,22 +64,26 @@ public class TestNGMethodNameDataProviderNameResultSeeker extends AbstractTestNG
 	
 	private final String dataProviderNameKeyCustomField;
 
+	
 	/**
 	 * @param includePattern
 	 * @param keyCustomField
+	 * @param KeywordExdFilter
 	 * @param attachTestNGXML
 	 * @param markSkippedTestAsBlocked
 	 * @param dataProviderNameKeyCustomField
+	 * @param includeNotes
 	 */
 	@DataBoundConstructor
 	public TestNGMethodNameDataProviderNameResultSeeker(
 			String includePattern, 
 			String keyCustomField, 
-			boolean attachTestNGXML, 
+			String KeywordExdFilter,
+			boolean attachTestNGXML,boolean attachPdfReport, String testCasesReportFolder, 
 			boolean markSkippedTestAsBlocked, 
 			String dataProviderNameKeyCustomField,
 			boolean includeNotes) {
-		super(includePattern, keyCustomField, attachTestNGXML, markSkippedTestAsBlocked, includeNotes);
+		super(includePattern, keyCustomField, KeywordExdFilter, attachTestNGXML,  attachPdfReport,testCasesReportFolder,markSkippedTestAsBlocked, includeNotes);
 		this.dataProviderNameKeyCustomField = dataProviderNameKeyCustomField;
 	}
 	
@@ -133,24 +137,8 @@ public class TestNGMethodNameDataProviderNameResultSeeker extends AbstractTestNG
 					for (com.tupilabs.testng.parser.Class  clazz : test.getClasses()) {
 						for (TestMethod method : clazz.getTestMethods()) {
 							for (TestCaseWrapper automatedTestCase : automatedTestCases) {
-								final String qualifiedName = clazz.getName()+'#'+method.getName();
-								final String dataProviderName = method.getDataProvider();
-								final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
-								final String dataProviderValue = automatedTestCase.getKeyCustomFieldValue(this.dataProviderNameKeyCustomField);
-								for (String value : commaSeparatedValues) {
-									if (qualifiedName.equals(value) && dataProviderName.equals(dataProviderValue)) {
-										ExecutionStatus status = this.getExecutionStatus(method);
-										if (status != ExecutionStatus.NOT_RUN) {
-											automatedTestCase.addCustomFieldAndStatus(value, status);
-										}
-										
-										if (this.isIncludeNotes()) {
-											final String notes = this.getTestNGNotes(method);
-											automatedTestCase.appendNotes(notes);
-										}
-										
-										this.handleResult(automatedTestCase, build, listener, testlink, status, suite);
-									}
+								if (isInKeywordsFilter(automatedTestCase)) {
+									haldleTestCase(build, listener, testlink, suite, clazz, method, automatedTestCase);
 								}
 							}
 						}
@@ -162,6 +150,38 @@ public class TestNGMethodNameDataProviderNameResultSeeker extends AbstractTestNG
 		} catch (InterruptedException e) {
 			throw new ResultSeekerException(e);
 		} 
+	}
+
+	/**
+	 * @param build
+	 * @param listener
+	 * @param testlink
+	 * @param suite
+	 * @param clazz
+	 * @param method
+	 * @param automatedTestCase
+	 */
+	private void haldleTestCase(AbstractBuild<?, ?> build, final BuildListener listener, TestLinkSite testlink,
+			Suite suite, com.tupilabs.testng.parser.Class clazz, TestMethod method, TestCaseWrapper automatedTestCase) {
+		final String qualifiedName = clazz.getName()+'#'+method.getName();
+		final String dataProviderName = method.getDataProvider();
+		final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
+		final String dataProviderValue = automatedTestCase.getKeyCustomFieldValue(this.dataProviderNameKeyCustomField);
+		for (String value : commaSeparatedValues) {
+			if (qualifiedName.equals(value) && dataProviderName.equals(dataProviderValue)) {
+				ExecutionStatus status = this.getExecutionStatus(method);
+				if (status != ExecutionStatus.NOT_RUN) {
+					automatedTestCase.addCustomFieldAndStatus(value, status);
+				}
+				
+				if (this.isIncludeNotes()) {
+					final String notes = this.getTestNGNotes(method);
+					automatedTestCase.appendNotes(notes);
+				}
+				
+				this.handleResult(automatedTestCase, build, listener, testlink, status, suite);
+			}
+		}
 	}
 
 	/**

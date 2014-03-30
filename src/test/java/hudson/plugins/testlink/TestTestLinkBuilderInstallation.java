@@ -46,13 +46,17 @@ extends TestCase
 			new TestLinkInstallation(
 					"TestLink 1.9.1", 
 					"http://localhost/testlink-1.9.1/lib/api/xml-rpc.php", 
-					"068848", "");
+					"http://host:port/testlink",
+					"068848", "",1);
 		
 		assertNotNull( inst );
 		
 		assertEquals( inst.getName(), "TestLink 1.9.1" );
 		assertEquals( inst.getUrl(), "http://localhost/testlink-1.9.1/lib/api/xml-rpc.php" );
+		assertEquals( inst.getUrlResults(), "http://host:port/testlink" );
 		assertEquals( inst.getDevKey(), "068848" );
+		assertEquals( inst.getParallelRequest(), 1 );
+
 	}
 	
 }

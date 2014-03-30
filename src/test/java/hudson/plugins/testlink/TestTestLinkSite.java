@@ -177,7 +177,7 @@ public class TestTestLinkSite {
 				any(ExecutionType.class), anyBoolean(),
 				any(TestCaseDetails.class))).thenReturn(returnedTestCases);
 		
-		TestCase[] testCases = testLinkSite.getAutomatedTestCases(null);
+		TestCase[] testCases = testLinkSite.getAutomatedTestCases(null, null);
 		
 		assertThat(testCases.length, is(2));
  	}
@@ -196,7 +196,7 @@ public class TestTestLinkSite {
                 any(ExecutionType.class), anyBoolean(),
                 any(TestCaseDetails.class))).thenReturn(returnedTestCases);
 		
-		TestCase[] testCases = testLinkSite.getAutomatedTestCases(null);
+		TestCase[] testCases = testLinkSite.getAutomatedTestCases(null, null);
 		
 		assertThat(testCases.length, is(2));
 		assertThat(testCases[0], is(sameInstance(testCase1)));

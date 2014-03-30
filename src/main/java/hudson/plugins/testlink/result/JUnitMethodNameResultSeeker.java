@@ -58,11 +58,13 @@ public class JUnitMethodNameResultSeeker extends AbstractJUnitResultSeeker {
 	/**
 	 * @param includePattern Include pattern used when looking for results
 	 * @param keyCustomField Key custom field to match against the results
-	 * @param attachJunitXML Bit that enables attaching result file to TestLink
+	 * @param KeywordExdFilter keywords of testcases to filter test results
+	 * @param attachJUnitXML Bit that enables attaching result file to TestLink
+	 * @param includeNotes
 	 */
 	@DataBoundConstructor
-	public JUnitMethodNameResultSeeker(String includePattern, String keyCustomField, boolean attachJUnitXML, boolean includeNotes) {
-		super(includePattern, keyCustomField, attachJUnitXML, includeNotes);
+	public JUnitMethodNameResultSeeker(String includePattern, String keyCustomField, String KeywordExdFilter, boolean attachJUnitXML, boolean includeNotes) {
+		super(includePattern, keyCustomField, KeywordExdFilter, attachJUnitXML, includeNotes);
 	}
 	
 	@Extension
@@ -92,20 +94,10 @@ public class JUnitMethodNameResultSeeker extends AbstractJUnitResultSeeker {
 				for(CaseResult caseResult : suiteResult.getCases()) {
 					final String methodName = caseResult.getClassName() + "#" + caseResult.getName();
 					for(TestCaseWrapper automatedTestCase : automatedTestCases) {
-						final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
-						for(String value : commaSeparatedValues) {
-							if(! caseResult.isSkipped() && methodName.equals(value)) {
-								final ExecutionStatus status = this.getExecutionStatus(caseResult);
-								automatedTestCase.addCustomFieldAndStatus(value, status);
-								
-								if(this.isIncludeNotes()) {
-									final String notes = this.getJUnitNotes(caseResult);
-									automatedTestCase.appendNotes(notes);
-								}
-								
-								super.handleResult(automatedTestCase, build, listener, testlink, suiteResult);
-							}
-						}
+						if (isInKeywordsFilter(automatedTestCase)) {
+							haldleTestCase(build, listener, testlink, suiteResult, caseResult, methodName,
+									automatedTestCase);
+						}	
 					}
 				}
 			}
@@ -113,6 +105,34 @@ public class JUnitMethodNameResultSeeker extends AbstractJUnitResultSeeker {
 			throw new ResultSeekerException(e);
 		} catch (InterruptedException e) {
 			throw new ResultSeekerException(e);
+		}
+	}
+
+	/**
+	 * @param build
+	 * @param listener
+	 * @param testlink
+	 * @param suiteResult
+	 * @param caseResult
+	 * @param methodName
+	 * @param automatedTestCase
+	 */
+	private void haldleTestCase(AbstractBuild<?, ?> build, BuildListener listener, TestLinkSite testlink,
+			final SuiteResult suiteResult, CaseResult caseResult, final String methodName,
+			TestCaseWrapper automatedTestCase) {
+		final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
+		for(String value : commaSeparatedValues) {
+			if(! caseResult.isSkipped() && methodName.equals(value)) {
+				final ExecutionStatus status = this.getExecutionStatus(caseResult);
+				automatedTestCase.addCustomFieldAndStatus(value, status);
+				
+				if(this.isIncludeNotes()) {
+					final String notes = this.getJUnitNotes(caseResult);
+					automatedTestCase.appendNotes(notes);
+				}
+				
+				super.handleResult(automatedTestCase, build, listener, testlink, suiteResult);
+			}
 		}
 	}
 

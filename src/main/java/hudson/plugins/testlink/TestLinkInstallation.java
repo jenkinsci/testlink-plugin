@@ -48,21 +48,45 @@ public class TestLinkInstallation implements Serializable {
     private String url;
 
     /**
+     * Url to Testlink results
+     */
+    private String urlResults;
+    
+    /**
      * A valid user dev key
      */
-    private String devKey;
+    private String devKey;       
+
+    /**
+     * Max parallel request to testlink
+     */
+    private int parallelRequest;
 
     /**
      * TestLink Java API properties
      */
     private String testLinkJavaAPIProperties;
 
+    /**
+     * @param name
+     * @param url
+     * @param devKey
+     * @param urlResults
+     * @param testLinkJavaAPIProperties
+     * @param parallelRequest
+     */
     @DataBoundConstructor
-    public TestLinkInstallation(String name, String url, String devKey, String testLinkJavaAPIProperties) {
+    public TestLinkInstallation(String name, String url, String  urlResults, String devKey,  String testLinkJavaAPIProperties, Integer parallelRequest) {
         this.name = name;
         this.url = url;
+        this.urlResults=urlResults;
         this.devKey = devKey;
         this.testLinkJavaAPIProperties = testLinkJavaAPIProperties;
+        if (parallelRequest==null){
+        	this.parallelRequest=1;
+        }else {
+        	this.parallelRequest= parallelRequest;
+        }        
     }
 
     public String getName() {
@@ -73,6 +97,10 @@ public class TestLinkInstallation implements Serializable {
         return this.url;
     }
 
+    public String getUrlResults() {
+		return urlResults;
+	}
+	
     public String getDevKey() {
         return this.devKey;
     }
@@ -80,5 +108,9 @@ public class TestLinkInstallation implements Serializable {
     public String getTestLinkJavaAPIProperties() {
         return testLinkJavaAPIProperties;
     }
+
+	public int getParallelRequest() {
+		return parallelRequest;
+	}	
 
 }

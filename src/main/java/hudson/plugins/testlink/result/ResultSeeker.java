@@ -37,6 +37,7 @@ import hudson.plugins.testlink.TestLinkSite;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,19 +74,34 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	protected final String keyCustomField;
 	
 	/**
+	 * Filter from the executed Keywords.
+	 */
+	protected final String KeywordExdFilter;
+	
+	/**
+	 * Filter from the executed Keywords.
+	 */
+	protected String[] KeyList;
+	
+	
+	/**
 	 * Whether the plug-in must include notes when updating test cases.
 	 */
 	protected final boolean includeNotes;
 
 	/**
-	 * Creates a result seeker passing a ant-like pattern to look for results.
+	 * Creates a result seeker passing an ant-like pattern to look for results.
 	 * 
-	 * @param includePattern Include pattern when looking for results.
+	 * @param includePattern
+	 * @param keyCustomField
+	 * @param KeywordExdFilter
+	 * @param includeNotes
 	 */
-	public ResultSeeker(String includePattern, String keyCustomField, boolean includeNotes) {
+	public ResultSeeker(String includePattern, String keyCustomField, String KeywordExdFilter, boolean includeNotes) {
 		super();
 		this.includePattern = includePattern;
 		this.keyCustomField = keyCustomField;
+		this.KeywordExdFilter = KeywordExdFilter;
 		this.includeNotes = includeNotes;
 	}
 	
@@ -101,6 +117,13 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	 */
 	public String getKeyCustomField() {
 		return keyCustomField;
+	}
+	
+	/**
+	 * @return
+	 */
+	public String getKeywordExdFilter() {
+		return KeywordExdFilter;
 	}
 	
 	/**
@@ -154,7 +177,7 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	 * @return file content encoded in Base64.
 	 * @throws IOException
 	 */
-	protected String getBase64FileContent(File file) throws IOException {
+	public static String getBase64FileContent(File file) throws IOException {
 		byte[] fileData = FileUtils.readFileToByteArray(file);
 		return Base64.encodeBase64String(fileData);
 	}
@@ -220,11 +243,50 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 		return customField;
 	}
 	
+	/**
+	 * <pre>
+	 * Retorn true 
+	 * 	if any of the keywords of the testCase is in the KeywordExdFilter
+	 * 	or KeywordExdFilter=="" 
+	 * </pre>
+	 * 
+	 * @param automatedTestCase
+	 * @return
+	 */
+	public boolean isInKeywordsFilter(TestCaseWrapper automatedTestCase) {
+		
+		boolean filterTestCase=false;
+		
+		if (StringUtils.isBlank(KeywordExdFilter)){
+			filterTestCase= true;
+		} else {
+			// Lazy inicialization
+			if (KeyList==null){
+				KeyList = TestCaseWrapper.split(KeywordExdFilter);
+			}
+			// If there are any KeyList defined, then the testCase must have keywords to match
+			List<String>  testCaseKeywords = automatedTestCase.getKeywords();		
+			if (testCaseKeywords==null){
+				testCaseKeywords = new ArrayList<String>();
+			}
+			int index=0;
+			int last=KeyList.length;
+			while (filterTestCase==false && index<last){
+				filterTestCase=testCaseKeywords.contains(KeyList[index]);
+				index++;
+			}
+		}
+				
+		return filterTestCase;
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	public int compareTo(ResultSeeker o) {
 		return o != null ? this.getDescriptor().getDisplayName().compareTo(o.getDescriptor().getDisplayName()) : 0;
 	}
+
+
 
 }

@@ -61,15 +61,19 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 	
 	private final TestNGParser parser = new TestNGParser();
 	
+	
 	/**
 	 * @param includePattern
 	 * @param keyCustomField
+	 * @param KeywordExdFilter
 	 * @param attachTestNGXML
 	 * @param markSkippedTestAsBlocked
+	 * @param includeNotes
 	 */
 	@DataBoundConstructor
-	public TestNGSuiteNameResultSeeker(String includePattern, String keyCustomField, boolean attachTestNGXML, boolean markSkippedTestAsBlocked, boolean includeNotes) {
-		super(includePattern, keyCustomField, attachTestNGXML, markSkippedTestAsBlocked, includeNotes);
+	public TestNGSuiteNameResultSeeker(String includePattern, String keyCustomField, String KeywordExdFilter, boolean attachTestNGXML, 
+			boolean attachPdfReport, String testCasesReportFolder, boolean markSkippedTestAsBlocked, boolean includeNotes) {
+		super(includePattern, keyCustomField, KeywordExdFilter, attachTestNGXML,  attachPdfReport, testCasesReportFolder, markSkippedTestAsBlocked, includeNotes);
 	}
 	
 	@Extension
@@ -112,21 +116,8 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 			});
 			for(Suite suite : suites) {
 				for(TestCaseWrapper automatedTestCase : automatedTestCases) {
-					final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
-					for(String value : commaSeparatedValues) {
-						if(suite.getName().equals(value)) {
-							ExecutionStatus status = this.getExecutionStatus(suite);
-							if(status != ExecutionStatus.NOT_RUN) {
-								automatedTestCase.addCustomFieldAndStatus(value, status);
-							}
-							
-							if(this.isIncludeNotes()) {
-								final String notes = this.getTestNGNotes(suite);
-								automatedTestCase.appendNotes(notes);
-							}
-							
-							super.handleResult(automatedTestCase, build, listener, testlink, status, suite);
-						}
+					if (isInKeywordsFilter(automatedTestCase)) {
+						haldleTestCase(build, listener, testlink, suite, automatedTestCase);		
 					}
 				}
 			}
@@ -135,6 +126,33 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 		} catch (InterruptedException e) {
 			throw new ResultSeekerException(e);
 		} 
+	}
+
+	/**
+	 * @param build
+	 * @param listener
+	 * @param testlink
+	 * @param suite
+	 * @param automatedTestCase
+	 */
+	private void haldleTestCase(AbstractBuild<?, ?> build, final BuildListener listener, TestLinkSite testlink,
+			Suite suite, TestCaseWrapper automatedTestCase) {
+		final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
+		for(String value : commaSeparatedValues) {
+			if(suite.getName().equals(value)) {
+				ExecutionStatus status = this.getExecutionStatus(suite);
+				if(status != ExecutionStatus.NOT_RUN) {
+					automatedTestCase.addCustomFieldAndStatus(value, status);
+				}
+				
+				if(this.isIncludeNotes()) {
+					final String notes = this.getTestNGNotes(suite);
+					automatedTestCase.appendNotes(notes);
+				}
+				
+				super.handleResult(automatedTestCase, build, listener, testlink, status, suite);
+			}
+		}
 	}
 
 	/**

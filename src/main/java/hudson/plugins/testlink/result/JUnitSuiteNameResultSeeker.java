@@ -54,13 +54,17 @@ public class JUnitSuiteNameResultSeeker extends AbstractJUnitResultSeeker {
 
 	private static final long serialVersionUID = -969559401334833078L;
 
+
 	/**
 	 * @param includePattern Include pattern used when looking for results
-	 * @param keyCustomField Key custom field to match against the results
+	 * @param keyCustomField Include pattern used when looking for results
+	 * @param KeywordExdFilter
+	 * @param attachJUnitXML
+	 * @param includeNotes
 	 */
 	@DataBoundConstructor
-	public JUnitSuiteNameResultSeeker(String includePattern, String keyCustomField, boolean attachJUnitXML, boolean includeNotes) {
-		super(includePattern, keyCustomField, attachJUnitXML, includeNotes);
+	public JUnitSuiteNameResultSeeker(String includePattern, String keyCustomField,  String KeywordExdFilter, boolean attachJUnitXML, boolean includeNotes) {
+		super(includePattern, keyCustomField, KeywordExdFilter, attachJUnitXML, includeNotes);
 	}
 
 	@Extension
@@ -93,26 +97,40 @@ public class JUnitSuiteNameResultSeeker extends AbstractJUnitResultSeeker {
 			
 			for(SuiteResult suiteResult : testResult.getSuites()) {
 				for(TestCaseWrapper automatedTestCase : automatedTestCases) {
-					final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
-					for(String value : commaSeparatedValues) {
-						if(suiteResult.getName().equals(value)) {
-							ExecutionStatus status = this.getExecutionStatus(suiteResult);
-							automatedTestCase.addCustomFieldAndStatus(value, status);
-							
-							if(this.isIncludeNotes()) {
-								final String notes = this.getJUnitNotes(suiteResult);
-								automatedTestCase.appendNotes(notes);
-							}
-							
-							super.handleResult(automatedTestCase, build, listener, testlink, suiteResult);
-						}
-					}
+					if (isInKeywordsFilter(automatedTestCase)) {
+						haldleTestCase(build, listener, testlink, suiteResult, automatedTestCase);
+					}										
 				}
 			}
 		} catch (IOException e) {
 			throw new ResultSeekerException(e);
 		} catch (InterruptedException e) {
 			throw new ResultSeekerException(e);
+		}
+	}
+
+	/**
+	 * @param build
+	 * @param listener
+	 * @param testlink
+	 * @param suiteResult
+	 * @param automatedTestCase
+	 */
+	private void haldleTestCase(AbstractBuild<?, ?> build, BuildListener listener, TestLinkSite testlink,
+			SuiteResult suiteResult, TestCaseWrapper automatedTestCase) {
+		final String[] commaSeparatedValues = automatedTestCase.getKeyCustomFieldValues(this.keyCustomField);
+		for(String value : commaSeparatedValues) {
+			if(suiteResult.getName().equals(value)) {
+				ExecutionStatus status = this.getExecutionStatus(suiteResult);
+				automatedTestCase.addCustomFieldAndStatus(value, status);
+				
+				if(this.isIncludeNotes()) {
+					final String notes = this.getJUnitNotes(suiteResult);
+					automatedTestCase.appendNotes(notes);
+				}
+				
+				super.handleResult(automatedTestCase, build, listener, testlink, suiteResult);
+			}
 		}
 	}
 	
