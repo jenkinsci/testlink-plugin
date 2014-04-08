@@ -37,7 +37,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.ReportTCResultResponse;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
-
+import java.util.ArrayList;
 /**
  * Immutable object that represents the TestLink site with a Test Project, 
  * a Test Plan and a Build.
