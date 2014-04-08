@@ -167,7 +167,7 @@ public class TestLinkSite {
 				filteredTestcases.add(testCase);
 		}
 		
-		return ArrayList<TestCase>.toArray(filteredTestcases);
+		return filteredTestcases.toArray(new TestCase[filteredTestcases.size()]);
 	}
 	
 	/**
