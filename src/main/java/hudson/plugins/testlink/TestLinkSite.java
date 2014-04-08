@@ -143,7 +143,9 @@ public class TestLinkSite {
 				ExecutionType.AUTOMATED, 
 				Boolean.TRUE,
 				TestCaseDetails.FULL);			
-
+		
+		ArrayList<TestCase> filteredTestcases = new ArrayList<TestCase>();
+		
 		for( final TestCase testCase : testCases ) {
 			testCase.setTestProjectId(getTestProject().getId());
 			testCase.setExecutionStatus(ExecutionStatus.NOT_RUN);
@@ -159,9 +161,12 @@ public class TestLinkSite {
 					testCase.getCustomFields().add(customField);
 				}
 			}
+			
+			if(platform != null && testcase.getPlatform().equals(platform))
+				filteredTestcases.add(testcase);
 		}
 		
-		return testCases;
+		return filteredTestcases.toArray();
 	}
 	
 	/**
