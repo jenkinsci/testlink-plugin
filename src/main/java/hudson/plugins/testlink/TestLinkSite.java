@@ -38,6 +38,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
 import java.util.ArrayList;
+
 /**
  * Immutable object that represents the TestLink site with a Test Project, 
  * a Test Plan and a Build.
@@ -162,8 +163,8 @@ public class TestLinkSite {
 				}
 			}
 			
-			if(platform != null && testcase.getPlatform().equals(platform))
-				filteredTestcases.add(testcase);
+			if(platform != null && testCase.getPlatform().equals(platform))
+				filteredTestcases.add(testCase);
 		}
 		
 		return filteredTestcases.toArray();
