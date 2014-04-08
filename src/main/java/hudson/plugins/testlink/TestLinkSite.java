@@ -163,7 +163,7 @@ public class TestLinkSite {
 				}
 			}
 			
-			if(platform == null || testCase.getPlatform().equals(platform))
+			if(platform == null || testCase.getPlatform().getName().equals(platform.getName()))
 				filteredTestcases.add(testCase);
 		}
 		
