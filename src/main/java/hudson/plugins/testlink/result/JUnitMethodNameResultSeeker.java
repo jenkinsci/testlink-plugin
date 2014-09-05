@@ -99,10 +99,9 @@ public class JUnitMethodNameResultSeeker extends AbstractJUnitResultSeeker {
 								automatedTestCase.addCustomFieldAndStatus(value, status);
 								
 								if(this.isIncludeNotes()) {
-									final String notes = this.getJUnitNotes(caseResult);
+									final String notes = this.getJUnitNotes(caseResult, build.number);
 									automatedTestCase.appendNotes(notes);
 								}
-								
 								super.handleResult(automatedTestCase, build, listener, testlink, suiteResult);
 							}
 						}
@@ -136,7 +135,7 @@ public class JUnitMethodNameResultSeeker extends AbstractJUnitResultSeeker {
 	 * @param testCase JUnit test.
 	 * @return Notes about the JUnit test.
 	 */
-	private String getJUnitNotes( CaseResult testCase )
+	private String getJUnitNotes( CaseResult testCase , int buildNumber)
 	{
 		StringBuilder notes = new StringBuilder();
 		notes.append( 
@@ -148,6 +147,11 @@ public class JUnitMethodNameResultSeeker extends AbstractJUnitResultSeeker {
 						(testCase.getSuiteResult() != null ? testCase.getSuiteResult().getTimestamp() : null))
 		);
 		
+		/* Added for appending build number and error message */
+		notes.append("\nBuild no : " + buildNumber );
+		if(null != testCase.getErrorDetails() ){
+			notes.append("\nError Message : " + testCase.getErrorDetails());
+		}
 		return notes.toString();
 	}
 
