@@ -78,6 +78,8 @@ public class TAPFileNameMultiTestPointsResultSeeker extends AbstractTAPFileNameR
         int executionNumbers = testSet.getNumberOfTestResults();
         for (Integer i = 1; i <= executionNumbers; i++) {
             final TestResult result = testSet.getTestResult(i);
+            if (result == null) // can get null results for test plan : n..m, n>1
+                continue;
             ExecutionStatus status;
             if (result.getStatus().equals(StatusValues.OK)) {
                 status = ExecutionStatus.PASSED;
