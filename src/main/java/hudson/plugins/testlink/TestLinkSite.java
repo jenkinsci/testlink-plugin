@@ -37,6 +37,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.ReportTCResultResponse;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
+import java.util.ArrayList;
 
 /**
  * Immutable object that represents the TestLink site with a Test Project, 
@@ -143,7 +144,9 @@ public class TestLinkSite {
 				ExecutionType.AUTOMATED, 
 				Boolean.TRUE,
 				TestCaseDetails.FULL);			
-
+		
+		ArrayList<TestCase> filteredTestcases = new ArrayList<TestCase>();
+		
 		for( final TestCase testCase : testCases ) {
 			testCase.setTestProjectId(getTestProject().getId());
 			testCase.setExecutionStatus(ExecutionStatus.NOT_RUN);
@@ -159,9 +162,12 @@ public class TestLinkSite {
 					testCase.getCustomFields().add(customField);
 				}
 			}
+			
+			if(platform == null || testCase.getPlatform().getName().equals(platform.getName()))
+				filteredTestcases.add(testCase);
 		}
 		
-		return testCases;
+		return filteredTestcases.toArray(new TestCase[filteredTestcases.size()]);
 	}
 	
 	/**
