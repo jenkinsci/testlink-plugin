@@ -52,6 +52,8 @@ public final class TestLinkHelper {
 	
 	// Environment Variables names.
 	private static final String TESTLINK_TESTCASE_PREFIX = "TESTLINK_TESTCASE_";
+	private static final String TESTLINK_TESTPLAN_PREFIX = "TESTLINK_TESTPLAN_";
+	private static final String TESTLINK_BUILD_PREFIX = "TESTLINK_BUILD_";
 	private static final String TESTLINK_TESTCASE_STEP_PREFIX = "TESTLINK_TESTCASE_STEP_";
 	private static final String TESTLINK_TESTCASE_ID_ENVVAR = "TESTLINK_TESTCASE_ID";
 	private static final String TESTLINK_TESTCASE_NAME_ENVVAR = "TESTLINK_TESTCASE_NAME";
