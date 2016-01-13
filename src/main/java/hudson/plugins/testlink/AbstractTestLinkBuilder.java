@@ -78,6 +78,11 @@ public class AbstractTestLinkBuilder extends Builder {
     protected final String customFields;
 
     /**
+     * Comma separated list of custom fields to download from TestLink.
+     */
+    protected final String testPlanCustomFields;
+
+    /**
      * List of build steps that are executed only once per job execution.
      */
     protected final List<BuildStep> singleBuildSteps;
@@ -138,7 +143,7 @@ public class AbstractTestLinkBuilder extends Builder {
      * Create a AbstractTestLinkBuilder.
      */
     public AbstractTestLinkBuilder(String testLinkName, String testProjectName, String testPlanName, 
-            String platformName, String buildName, String customFields, List<BuildStep> singleBuildSteps,
+            String platformName, String buildName, String customFields, String testPlanCustomFields, List<BuildStep> singleBuildSteps,
             List<BuildStep> beforeIteratingAllTestCasesBuildSteps, List<BuildStep> iterativeBuildSteps,
             List<BuildStep> afterIteratingAllTestCasesBuildSteps, Boolean transactional,
             Boolean failedTestsMarkBuildAsFailure, Boolean failIfNoResults, Boolean failOnNotRun,
@@ -150,6 +155,7 @@ public class AbstractTestLinkBuilder extends Builder {
         this.platformName = platformName;
         this.buildName = buildName;
         this.customFields = customFields;
+        this.testPlanCustomFields = testPlanCustomFields;
         this.singleBuildSteps = singleBuildSteps;
         this.beforeIteratingAllTestCasesBuildSteps = beforeIteratingAllTestCasesBuildSteps;
         this.iterativeBuildSteps = iterativeBuildSteps;
@@ -182,13 +188,13 @@ public class AbstractTestLinkBuilder extends Builder {
      * @deprecated
      */
     public AbstractTestLinkBuilder(String testLinkName, String testProjectName, String testPlanName,
-            String platformName, String buildName, String customFields, Boolean executionStatusNotRun,
+            String platformName, String buildName, String customFields, String testPlanCustomFields, Boolean executionStatusNotRun,
             Boolean executionStatusPassed, Boolean executionStatusFailed, Boolean executionStatusBlocked,
             List<BuildStep> singleBuildSteps, List<BuildStep> beforeIteratingAllTestCasesBuildSteps,
             List<BuildStep> iterativeBuildSteps, List<BuildStep> afterIteratingAllTestCasesBuildSteps,
             Boolean transactional, Boolean failedTestsMarkBuildAsFailure, Boolean failIfNoResults,
             Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
-        this(testLinkName, testProjectName, testPlanName, platformName, buildName, customFields, singleBuildSteps, 
+        this(testLinkName, testProjectName, testPlanName, platformName, buildName, customFields, testPlanCustomFields, singleBuildSteps,
              beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps, afterIteratingAllTestCasesBuildSteps, 
              transactional, failedTestsMarkBuildAsFailure, failIfNoResults, failOnNotRun, resultSeekers);
     }
@@ -228,6 +234,10 @@ public class AbstractTestLinkBuilder extends Builder {
 
     public String getCustomFields() {
         return this.customFields;
+    }
+
+    public String getTestPlanCustomFields(){
+        return this.testPlanCustomFields;
     }
 
     /**
@@ -361,4 +371,26 @@ public class AbstractTestLinkBuilder extends Builder {
         return customFieldNamesArray;
     }
 
+
+    protected String[] createArrayOfTestPlanCustomFieldsNames(final VariableResolver<String> variableResolver,
+                                                              final EnvVars envVars){
+        String[] customFieldNamesArray = new String[0];
+        String customFields = expandVariable(variableResolver, envVars, this.getTestPlanCustomFields());
+
+        if (StringUtils.isNotBlank(customFields)) {
+            StringTokenizer tokenizer = new StringTokenizer(customFields, COMMA);
+            if (tokenizer.countTokens() > 0) {
+                customFieldNamesArray = new String[tokenizer.countTokens()];
+                int index = 0;
+                while (tokenizer.hasMoreTokens()) {
+                    String customFieldName = tokenizer.nextToken();
+                    customFieldName = customFieldName.trim();
+                    customFieldNamesArray[index] = customFieldName;
+                    index = index + 1;
+                }
+            }
+        }
+
+        return customFieldNamesArray;
+    }
 }

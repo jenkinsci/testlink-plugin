@@ -82,7 +82,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 	 * @deprecated
 	 */
     public TestLinkBuilder(String testLinkName, String testProjectName,
-            String testPlanName, String buildName, String customFields,
+            String testPlanName, String buildName, String customFields, String testPlanCustomFields,
             Boolean executionStatusNotRun, Boolean executionStatusPassed,
             Boolean executionStatusFailed, Boolean executionStatusBlocked,
             List<BuildStep> singleBuildSteps,
@@ -92,7 +92,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
             Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
             Boolean failIfNoResults, List<ResultSeeker> resultSeekers) {
         super(testLinkName, testProjectName, testPlanName, buildName,
-                null, customFields, executionStatusNotRun, executionStatusPassed,
+                null, customFields, testPlanCustomFields, executionStatusNotRun, executionStatusPassed,
                 executionStatusFailed, executionStatusBlocked, singleBuildSteps,
                 beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
                 afterIteratingAllTestCasesBuildSteps, transactional,
@@ -104,7 +104,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
      * @deprecated
      */
     public TestLinkBuilder(String testLinkName, String testProjectName,
-            String testPlanName, String buildName, String customFields,
+            String testPlanName, String buildName, String customFields, String testPlanCustomFields,
             Boolean executionStatusNotRun, Boolean executionStatusPassed,
             Boolean executionStatusFailed, Boolean executionStatusBlocked,
             List<BuildStep> singleBuildSteps,
@@ -114,7 +114,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
             Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
             Boolean failIfNoResults, Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
         super(testLinkName, testProjectName, testPlanName, buildName, null, 
-                customFields, executionStatusNotRun, executionStatusPassed,
+                customFields, testPlanCustomFields, executionStatusNotRun, executionStatusPassed,
                 executionStatusFailed, executionStatusBlocked, singleBuildSteps,
                 beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
                 afterIteratingAllTestCasesBuildSteps, transactional,
@@ -123,7 +123,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
     
 	@DataBoundConstructor
 	public TestLinkBuilder(String testLinkName, String testProjectName,
-			String testPlanName, String platformName, String buildName, String customFields,
+			String testPlanName, String platformName, String buildName, String customFields, String testPlanCustomFields,
 			Boolean executionStatusNotRun, Boolean executionStatusPassed,
 			Boolean executionStatusFailed, Boolean executionStatusBlocked,
 			List<BuildStep> singleBuildSteps,
@@ -133,7 +133,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
 			Boolean failIfNoResults, Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
 		super(testLinkName, testProjectName, testPlanName, platformName, buildName,
-				customFields, singleBuildSteps, beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
+				customFields, testPlanCustomFields, singleBuildSteps, beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
 				afterIteratingAllTestCasesBuildSteps, transactional, failedTestsMarkBuildAsFailure, 
 				failIfNoResults, failOnNotRun, resultSeekers);
 	}
@@ -163,6 +163,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		final TestCaseWrapper[] automatedTestCases;
 		final String testLinkUrl = installation.getUrl();
 		final String testLinkDevKey = installation.getDevKey();
+		TestPlan testPlan;
 		listener.getLogger().println(Messages.TestLinkBuilder_UsedTLURL(testLinkUrl));
 
 		try {
@@ -188,9 +189,13 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			if (StringUtils.isNotBlank(platformName) && testLinkSite.getPlatform() == null) 
 			    listener.getLogger().println(Messages.TestLinkBuilder_PlatformNotFound(platformName));
 			
-			final String[] customFieldsNames = this.createArrayOfCustomFieldsNames(build.getBuildVariableResolver(), build.getEnvironment(listener));
+			final String[] testCaseCustomFieldsNames = this.createArrayOfCustomFieldsNames(build.getBuildVariableResolver(), build.getEnvironment(listener));
 			// Array of automated test cases
-			TestCase[] testCases = testLinkSite.getAutomatedTestCases(customFieldsNames);
+			TestCase[] testCases = testLinkSite.getAutomatedTestCases(testCaseCustomFieldsNames);
+
+			final String[] testPlanCustomFieldsNames = this.createArrayOfTestPlanCustomFieldsNames(build.getBuildVariableResolver(), build.getEnvironment(listener));
+
+			testPlan = testLinkSite.getTestPlanWithCustomFields(testPlanCustomFieldsNames);
 
 			// Transforms test cases into test case wrappers
 			automatedTestCases = this.transform(testCases);
@@ -219,10 +224,10 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		}
 		
 		listener.getLogger().println(Messages.TestLinkBuilder_ExecutingSingleBuildSteps());
-		this.executeSingleBuildSteps(automatedTestCases.length, testLinkSite, build, launcher, listener);
+		this.executeSingleBuildSteps(automatedTestCases.length, testPlan, testLinkSite, build, launcher, listener);
 
 		listener.getLogger().println(Messages.TestLinkBuilder_ExecutingIterativeBuildSteps());
-		this.executeIterativeBuildSteps(automatedTestCases, testLinkSite, build, launcher, listener);
+		this.executeIterativeBuildSteps(automatedTestCases, testPlan, testLinkSite, build, launcher, listener);
 
 		// Here we search for test results. The return if a wrapped Test Case
 		// that
@@ -308,7 +313,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 
 		final TestProject testProject = api.getTestProjectByName(testProjectName);
 		final TestPlan testPlan = api.getTestPlanByName(testPlanName, testProjectName);
-				
+
 		Platform platform = null;
 		if (StringUtils.isNotBlank(platformName)){
 			final Platform platforms[] = api.getProjectPlatforms(testProject.getId());		
@@ -335,7 +340,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	protected void executeSingleBuildSteps(int numberOfTests, TestLinkSite testLinkSite, AbstractBuild<?, ?> build,
+	protected void executeSingleBuildSteps(int numberOfTests, TestPlan testPlan, TestLinkSite testLinkSite, AbstractBuild<?, ?> build,
 			Launcher launcher, BuildListener listener) throws IOException,
 			InterruptedException {
 		if (singleBuildSteps != null) {
@@ -343,7 +348,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			    final EnvVars iterativeEnvVars = TestLinkHelper.buildTestCaseEnvVars(
 			            numberOfTests, 
                         testLinkSite.getTestProject(),
-                        testLinkSite.getTestPlan(),
+                        testPlan,
                         testLinkSite.getBuild(), 
                         listener);
                 build.addAction(new EnvironmentContributingAction() {
@@ -385,6 +390,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 	 * @throws IOException
 	 */
 	protected void executeIterativeBuildSteps(TestCaseWrapper[] automatedTestCases,
+											  TestPlan testPlan,
 			TestLinkSite testLinkSite, AbstractBuild<?, ?> build,
 			Launcher launcher, BuildListener listener) throws IOException,
 			InterruptedException {
@@ -405,7 +411,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 				if (iterativeBuildSteps != null) {
 					final EnvVars iterativeEnvVars = TestLinkHelper.buildTestCaseEnvVars(automatedTestCase,
 									testLinkSite.getTestProject(),
-									testLinkSite.getTestPlan(),
+									testPlan,
 									testLinkSite.getBuild(), listener);
 
 					build.addAction(new EnvironmentContributingAction() {

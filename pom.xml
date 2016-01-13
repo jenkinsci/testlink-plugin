@@ -12,7 +12,7 @@
 
 	<artifactId>testlink</artifactId>
 	<name>Jenkins TestLink Plugin</name>
-	<version>3.12-SNAPSHOT</version>
+	<version>3.13-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<description>This plug-in integrates Jenkins to TestLink</description>
 
@@ -271,7 +271,7 @@
 		<dependency>
 			<groupId>br.eti.kinoshita</groupId>
 			<artifactId>testlink-java-api</artifactId>
-			<version>1.9.7-0</version>
+			<version>1.9.13-3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -287,6 +287,11 @@
 	</dependencies>
 
 	<repositories>
+		<repository>
+			<id>in-project</id>
+			<name>In Project Repo</name>
+			<url>file://${project.basedir}/libs</url>
+		</repository>
 		<repository>
 			<id>repo.jenkins-ci.org</id>
 			<url>http://repo.jenkins-ci.org/public/</url>

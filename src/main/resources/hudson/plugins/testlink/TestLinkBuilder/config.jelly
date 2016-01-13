@@ -28,7 +28,11 @@
   <f:entry title="${%Custom Fields}" help="${rootURL}/../plugin/testlink/help-customFields.html">
 	  <f:textbox id="customFields" name="TestLinkBuilder.customFields" value="${instance.customFields}" />
   </f:entry>
-  
+
+  <f:entry title="${%Test Plan Custom Fields}" help="${rootURL}/../plugin/testlink/help-planCustomFields.html">
+  	  <f:textbox id="testPlanCustomFields" name="TestLinkBuilder.testPlanCustomFields" value="${instance.testPlanCustomFields}" />
+  </f:entry>
+
   <f:advanced>
 
     <f:entry title="${%Platform Name}" help="${rootURL}/../plugin/testlink/help-platformName.html">

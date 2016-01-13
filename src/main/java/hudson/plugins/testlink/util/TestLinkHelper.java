@@ -183,9 +183,15 @@ public final class TestLinkHelper {
 		testLinkEnvVar.put( TESTLINK_TESTPLAN_NAME_ENVVAR, StringUtils.defaultIfEmpty(testPlan.getName(), ""));
 		testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, StringUtils.defaultIfEmpty(testProject.getName(), ""));
 		
-		List<CustomField> customFields = testCase.getCustomFields();
-		for (CustomField customField : customFields) {
+		List<CustomField> testCaseCustomFields = testCase.getCustomFields();
+		for (CustomField customField : testCaseCustomFields) {
 			addCustomFieldEnvironmentVariableName( customField, testLinkEnvVar );
+		}
+
+		List<CustomField> testPlanCustomFields = testPlan.getCustomFields();
+
+		for(CustomField customField: testPlanCustomFields){
+			addTestPlanCustomFieldEnvironmentVariableName(customField, testLinkEnvVar);
 		}
 
 		List<TestCaseStep> steps = testCase.getSteps();
@@ -273,7 +279,40 @@ public final class TestLinkHelper {
 			}
 		}
 	}
-	
+
+	public static void addTestPlanCustomFieldEnvironmentVariableName(CustomField customField, Map<String, String> testLinkEnvVar){
+		String customFieldName = customField.getName();
+		String customFieldValue = customField.getValue();
+
+		customFieldName = customFieldName.toUpperCase(); // uppercase
+		customFieldName = customFieldName.trim(); // trim
+		customFieldName = TESTLINK_TESTPLAN_PREFIX + customFieldName; // add prefix
+		customFieldName = customFieldName.replaceAll( "\\s+", "_" ); // replace white spaces
+
+		testLinkEnvVar.put(customFieldName, customFieldValue);
+
+		if (StringUtils.isNotBlank( customFieldValue )) {
+			StringTokenizer tokenizer = new StringTokenizer(customFieldValue, ",");
+			if (tokenizer.countTokens() > 1) {
+				int index = 0;
+				while (tokenizer.hasMoreTokens()) {
+					String token = tokenizer.nextToken();
+					token = token.trim();
+
+					customFieldName = customField.getName();
+					customFieldName = customFieldName.toUpperCase(); // uppercase
+					customFieldName = customFieldName.trim(); // trim
+
+					String tokenName = TESTLINK_TESTPLAN_PREFIX + customFieldName + "_" + index; // add prefix
+					tokenName = tokenName.replaceAll( "\\s+", "_" ); // replace white spaces
+
+					testLinkEnvVar.put(tokenName, token);
+					++index;
+				}
+			}
+		}
+	}
+
 	/**
 	 * Creates EnvVars for a TestLink Test Case.
 	 * 
