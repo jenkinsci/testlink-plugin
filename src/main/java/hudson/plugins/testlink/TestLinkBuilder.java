@@ -159,120 +159,131 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 
 		TestLinkHelper.setTestLinkJavaAPIProperties(installation.getTestLinkJavaAPIProperties(), listener);
 
-		final TestLinkSite testLinkSite;
-		final TestCaseWrapper[] automatedTestCases;
+		TestLinkSite testLinkSite;
+		TestCaseWrapper[] automatedTestCases;
 		final String testLinkUrl = installation.getUrl();
 		final String testLinkDevKey = installation.getDevKey();
 		listener.getLogger().println(Messages.TestLinkBuilder_UsedTLURL(testLinkUrl));
 
-		try {
 			final String testProjectName = expandVariable(build.getBuildVariableResolver(),
 					build.getEnvironment(listener), getTestProjectName());
 			final String testPlanName = expandVariable(build.getBuildVariableResolver(),
 					build.getEnvironment(listener), getTestPlanName());
-			final String platformName = expandVariable(build.getBuildVariableResolver(),
+			String platformName;
+			final String readPlatforms = expandVariable(build.getBuildVariableResolver(),
 					build.getEnvironment(listener), getPlatformName());
 			final String buildName = expandVariable(build.getBuildVariableResolver(),
 					build.getEnvironment(listener), getBuildName());
 			final String buildNotes = Messages.TestLinkBuilder_Build_Notes();
-			if(LOGGER.isLoggable(Level.FINE)) {
-				LOGGER.log(Level.FINE, "TestLink project name: ["+testProjectName+"]");
-				LOGGER.log(Level.FINE, "TestLink plan name: ["+testPlanName+"]");
-				LOGGER.log(Level.FINE, "TestLink platform name: ["+platformName+"]");
-				LOGGER.log(Level.FINE, "TestLink build name: ["+buildName+"]");
-				LOGGER.log(Level.FINE, "TestLink build notes: ["+buildNotes+"]");
+
+			int iterateCount=1; // Multiplatform support logic
+			String [] platformsAll = null;
+			if (readPlatforms != null){
+				platformsAll = readPlatforms.trim().split(",");
+				iterateCount = platformsAll.length;
 			}
-			// TestLink Site object
-			testLinkSite = this.getTestLinkSite(testLinkUrl, testLinkDevKey, testProjectName, testPlanName, platformName, buildName, buildNotes);
-			
-			if (StringUtils.isNotBlank(platformName) && testLinkSite.getPlatform() == null) 
-			    listener.getLogger().println(Messages.TestLinkBuilder_PlatformNotFound(platformName));
-			
-			final String[] customFieldsNames = this.createArrayOfCustomFieldsNames(build.getBuildVariableResolver(), build.getEnvironment(listener));
-			// Array of automated test cases
-			TestCase[] testCases = testLinkSite.getAutomatedTestCases(customFieldsNames);
 
-			// Transforms test cases into test case wrappers
-			automatedTestCases = this.transform(testCases);
-			
-			testCases = null;
+			for (int i = 0; i < iterateCount; i++) { // Iterating over all the platforms
+				platformName = platformsAll[i];
+				try {
+					if (LOGGER.isLoggable(Level.FINE)) {
+						LOGGER.log(Level.FINE, "TestLink project name: [" + testProjectName + "]");
+						LOGGER.log(Level.FINE, "TestLink plan name: [" + testPlanName + "]");
+						LOGGER.log(Level.FINE, "TestLink platform name: [" + platformName + "]");
+						LOGGER.log(Level.FINE, "TestLink build name: [" + buildName + "]");
+						LOGGER.log(Level.FINE, "TestLink build notes: [" + buildNotes + "]");
+					}
+					// TestLink Site object
+					testLinkSite = this.getTestLinkSite(testLinkUrl, testLinkDevKey, testProjectName, testPlanName, platformName, buildName, buildNotes);
 
-			listener.getLogger().println(Messages.TestLinkBuilder_ShowFoundAutomatedTestCases(automatedTestCases.length));
+					if (StringUtils.isNotBlank(platformName) && testLinkSite.getPlatform() == null)
+						listener.getLogger().println(Messages.TestLinkBuilder_PlatformNotFound(platformName));
 
-			// Sorts test cases by each execution order (this info comes from
-			// TestLink)
-			listener.getLogger().println(Messages.TestLinkBuilder_SortingTestCases());
-			Arrays.sort(automatedTestCases, this.executionOrderComparator);
-		} catch (MalformedURLException mue) {
-			mue.printStackTrace(listener.fatalError(mue.getMessage()));
-			throw new AbortException(Messages.TestLinkBuilder_InvalidTLURL(testLinkUrl));
-		} catch (TestLinkAPIException e) {
-			e.printStackTrace(listener.fatalError(e.getMessage()));
-			throw new AbortException(Messages.TestLinkBuilder_TestLinkCommunicationError());
-		}
-		
-		for(TestCaseWrapper tcw : automatedTestCases) {
-		    testLinkSite.getReport().addTestCase(tcw);
-		    if(LOGGER.isLoggable(Level.FINE)) {
-		        LOGGER.log(Level.FINE, "TestLink automated test case ID [" + tcw.getId() + "], name [" +tcw.getName()+ "]");
-		    }
-		}
-		
-		listener.getLogger().println(Messages.TestLinkBuilder_ExecutingSingleBuildSteps());
-		this.executeSingleBuildSteps(automatedTestCases.length, testLinkSite, build, launcher, listener);
+					final String[] customFieldsNames = this.createArrayOfCustomFieldsNames(build.getBuildVariableResolver(), build.getEnvironment(listener));
+					// Array of automated test cases
+					TestCase[] testCases = testLinkSite.getAutomatedTestCases(customFieldsNames);
 
-		listener.getLogger().println(Messages.TestLinkBuilder_ExecutingIterativeBuildSteps());
-		this.executeIterativeBuildSteps(automatedTestCases, testLinkSite, build, launcher, listener);
+					// Transforms test cases into test case wrappers
+					automatedTestCases = this.transform(testCases);
 
-		// Here we search for test results. The return if a wrapped Test Case
-		// that
-		// contains attachments, platform and notes.
-		try {
-			listener.getLogger().println(Messages.Results_LookingForTestResults());
-			
-			if(getResultSeekers() != null) {
-				for (ResultSeeker resultSeeker : getResultSeekers()) {
-					LOGGER.log(Level.INFO, "Seeking test results. Using: " + resultSeeker.getDescriptor().getDisplayName());
-					resultSeeker.seek(automatedTestCases, build, launcher, listener, testLinkSite);
+					testCases = null;
+
+					listener.getLogger().println(Messages.TestLinkBuilder_ShowFoundAutomatedTestCases(automatedTestCases.length));
+
+					// Sorts test cases by each execution order (this info comes from
+					// TestLink)
+					listener.getLogger().println(Messages.TestLinkBuilder_SortingTestCases());
+					Arrays.sort(automatedTestCases, this.executionOrderComparator);
+				} catch (MalformedURLException mue) {
+					mue.printStackTrace(listener.fatalError(mue.getMessage()));
+					throw new AbortException(Messages.TestLinkBuilder_InvalidTLURL(testLinkUrl));
+				} catch (TestLinkAPIException e) {
+					e.printStackTrace(listener.fatalError(e.getMessage()));
+					throw new AbortException(Messages.TestLinkBuilder_TestLinkCommunicationError());
 				}
-			}
-		} catch (ResultSeekerException trse) {
-			trse.printStackTrace(listener.fatalError(trse.getMessage()));
-			throw new AbortException(Messages.Results_ErrorToLookForTestResults(trse.getMessage()));
-		} catch (TestLinkAPIException tlae) {
-			tlae.printStackTrace(listener.fatalError(tlae.getMessage()));
-			throw new AbortException(Messages.TestLinkBuilder_FailedToUpdateTL(tlae.getMessage()));
-		}
 
-		// This report is used to generate the graphs and to store the list of
-		// test cases with each found status.
-		final Report report = testLinkSite.getReport();
-		report.tally();
-		
-		listener.getLogger().println(Messages.TestLinkBuilder_ShowFoundTestResults(report.getTestsTotal()));
-		
-		final TestLinkResult result = new TestLinkResult(report, build);
-		final TestLinkBuildAction buildAction = new TestLinkBuildAction(build, result);
-		build.addAction(buildAction);
-		
-		if(report.getTestsTotal() <= 0 && this.getFailIfNoResults() == Boolean.TRUE) {
-			listener.getLogger().println("No test results found. Setting the build result as FAILURE.");
-			build.setResult(Result.FAILURE);
-		} else if (report.getFailed() > 0) {
-			if (this.failedTestsMarkBuildAsFailure != null && this.failedTestsMarkBuildAsFailure) {
-			    listener.getLogger().println("There are failed tests, setting the build result as FAILURE.");
-				build.setResult(Result.FAILURE);
-			} else {
-			    listener.getLogger().println("There are failed tests, setting the build result as UNSTABLE.");
-				build.setResult(Result.UNSTABLE);
-			}
-		} else if (this.getFailOnNotRun() != null && this.getFailOnNotRun() && report.getNotRun() > 0) {
-		    listener.getLogger().println("There are not run tests, setting the build result as FAILURE.");
-		    build.setResult(Result.FAILURE);
-		}
+				for (TestCaseWrapper tcw : automatedTestCases) {
+					testLinkSite.getReport().addTestCase(tcw);
+					if (LOGGER.isLoggable(Level.FINE)) {
+						LOGGER.log(Level.FINE, "TestLink automated test case ID [" + tcw.getId() + "], name [" + tcw.getName() + "]");
+					}
+				}
 
-		LOGGER.log(Level.INFO, "TestLink builder finished");
-		
+				listener.getLogger().println(Messages.TestLinkBuilder_ExecutingSingleBuildSteps());
+				this.executeSingleBuildSteps(automatedTestCases.length, testLinkSite, build, launcher, listener);
+
+				listener.getLogger().println(Messages.TestLinkBuilder_ExecutingIterativeBuildSteps());
+				this.executeIterativeBuildSteps(automatedTestCases, testLinkSite, build, launcher, listener);
+
+				// Here we search for test results. The return if a wrapped Test Case
+				// that
+				// contains attachments, platform and notes.
+				try {
+					listener.getLogger().println(Messages.Results_LookingForTestResults());
+
+					if (getResultSeekers() != null) {
+						for (ResultSeeker resultSeeker : getResultSeekers()) {
+							LOGGER.log(Level.INFO, "Seeking test results. Using: " + resultSeeker.getDescriptor().getDisplayName());
+							resultSeeker.seek(automatedTestCases, build, launcher, listener, testLinkSite);
+						}
+					}
+				} catch (ResultSeekerException trse) {
+					trse.printStackTrace(listener.fatalError(trse.getMessage()));
+					throw new AbortException(Messages.Results_ErrorToLookForTestResults(trse.getMessage()));
+				} catch (TestLinkAPIException tlae) {
+					tlae.printStackTrace(listener.fatalError(tlae.getMessage()));
+					throw new AbortException(Messages.TestLinkBuilder_FailedToUpdateTL(tlae.getMessage()));
+				}
+
+				// This report is used to generate the graphs and to store the list of
+				// test cases with each found status.
+				final Report report = testLinkSite.getReport();
+				report.tally();
+
+				listener.getLogger().println(Messages.TestLinkBuilder_ShowFoundTestResults(report.getTestsTotal()));
+
+				final TestLinkResult result = new TestLinkResult(report, build);
+				final TestLinkBuildAction buildAction = new TestLinkBuildAction(build, result);
+				build.addAction(buildAction);
+
+				if (report.getTestsTotal() <= 0 && this.getFailIfNoResults() == Boolean.TRUE) {
+					listener.getLogger().println("No test results found. Setting the build result as FAILURE.");
+					build.setResult(Result.FAILURE);
+				} else if (report.getFailed() > 0) {
+					if (this.failedTestsMarkBuildAsFailure != null && this.failedTestsMarkBuildAsFailure) {
+						listener.getLogger().println("There are failed tests, setting the build result as FAILURE.");
+						build.setResult(Result.FAILURE);
+					} else {
+						listener.getLogger().println("There are failed tests, setting the build result as UNSTABLE.");
+						build.setResult(Result.UNSTABLE);
+					}
+				} else if (this.getFailOnNotRun() != null && this.getFailOnNotRun() && report.getNotRun() > 0) {
+					listener.getLogger().println("There are not run tests, setting the build result as FAILURE.");
+					build.setResult(Result.FAILURE);
+				}
+
+				LOGGER.log(Level.INFO, "TestLink builder finished");
+			}
 		// end
 		return Boolean.TRUE;
 	}
