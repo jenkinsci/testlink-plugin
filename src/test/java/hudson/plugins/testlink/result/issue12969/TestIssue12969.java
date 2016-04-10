@@ -23,15 +23,17 @@
  */
 package hudson.plugins.testlink.result.issue12969;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
+
+import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
+import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import hudson.plugins.testlink.result.ResultSeeker;
 import hudson.plugins.testlink.result.ResultSeekerTestCase;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 import hudson.plugins.testlink.result.TestNGMethodNameDataProviderNameResultSeeker;
-
-import org.jvnet.hudson.test.Bug;
-
-import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
-import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 
 /**
  * Tests for issue 12969.
@@ -39,7 +41,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 3.1.2
  */
-@Bug(11894)
+@Issue("11894")
 public class TestIssue12969 extends ResultSeekerTestCase {
 
 	private final static String KEY_CUSTOM_FIELD = "testCustomField";
@@ -108,8 +110,9 @@ public class TestIssue12969 extends ResultSeekerTestCase {
 		return tcs;
 	}
 
+	@Test
 	public void testTestResultSeekerThreeMethodsInDifferentClasses() throws Exception {
-		buildAndAssertSuccess(project);
+		j.buildAndAssertSuccess(project);
 		
 		assertEquals(1, testlink.getReport().getTestsTotal());
 		assertEquals(ExecutionStatus.PASSED , testlink.getTestCases().get(0).getExecutionStatus());

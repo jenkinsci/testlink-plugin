@@ -23,18 +23,21 @@
  */
 package hudson.plugins.testlink.util;
 
-import hudson.plugins.testlink.result.TestCaseWrapper;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import hudson.plugins.testlink.result.TestCaseWrapper;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 1.0
  */
-public class TestExecutionOrderComparator extends TestCase {
+public class TestExecutionOrderComparator {
 
 	private ExecutionOrderComparator comparator;
 
@@ -46,6 +49,7 @@ public class TestExecutionOrderComparator extends TestCase {
 
 	TestCaseWrapper[] arr = new TestCaseWrapper[3];
 
+	@Before
 	public void setUp() {
 		this.comparator = new ExecutionOrderComparator();
 
@@ -58,21 +62,23 @@ public class TestExecutionOrderComparator extends TestCase {
 		this.arr[2] = tc3;
 	}
 
+	@Test
 	public void testOrderingNulls() {
 		TestCaseWrapper[] arrOfNulls = new TestCaseWrapper[2];
 		try {
 			Arrays.sort(arrOfNulls, this.comparator);
 		} catch (NullPointerException npe) {
-			Assert.assertTrue(System.currentTimeMillis() > 0);
+			assertTrue(System.currentTimeMillis() > 0);
 		}
 	}
 
+	@Test
 	public void testOrdering() {
 		Arrays.sort(arr, this.comparator);
 
-		Assert.assertEquals(arr[0], tc1);
-		Assert.assertEquals(arr[1], tc2);
-		Assert.assertEquals(arr[2], tc3);
+		assertEquals(arr[0], tc1);
+		assertEquals(arr[1], tc2);
+		assertEquals(arr[2], tc3);
 
 		tc2.setExecutionOrder(1);
 		tc1.setExecutionOrder(2);
@@ -80,9 +86,9 @@ public class TestExecutionOrderComparator extends TestCase {
 
 		Arrays.sort(arr, this.comparator);
 
-		Assert.assertEquals(arr[0], tc2);
-		Assert.assertEquals(arr[1], tc1);
-		Assert.assertEquals(arr[2], tc3);
+		assertEquals(arr[0], tc2);
+		assertEquals(arr[1], tc1);
+		assertEquals(arr[2], tc3);
 
 	}
 

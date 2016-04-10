@@ -23,6 +23,11 @@
  */
 package hudson.plugins.testlink;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+import org.junit.Test;
+
 import hudson.model.AbstractBuild;
 import junit.framework.TestCase;
 
@@ -35,9 +40,9 @@ import junit.framework.TestCase;
  * @since 2.1
  */
 public class TestTestLinkResult 
-extends TestCase
 {
 
+    @Test
 	public void testTestLinkResult()
 	{
 		Report report = new Report(1, null);

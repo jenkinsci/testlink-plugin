@@ -25,6 +25,7 @@ package hudson.plugins.testlink;
 
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.Run;
 import hudson.util.ChartUtil;
 import hudson.util.DataSetBuilder;
 
@@ -192,8 +193,8 @@ public class TestLinkProjectAction extends AbstractTestLinkProjectAction {
     }
 
     protected void populateDataSetBuilder(DataSetBuilder<String, ChartUtil.NumberOnlyBuildLabel> dataset) {
-        for (AbstractBuild<?, ?> build = getProject().getLastBuild(); build != null; build = build.getPreviousBuild()) {
-            ChartUtil.NumberOnlyBuildLabel label = new ChartUtil.NumberOnlyBuildLabel(build);
+        for (Run<?, ?> build = getProject().getLastBuild(); build != null; build = build.getPreviousBuild()) {
+            ChartUtil.NumberOnlyBuildLabel label = new ChartUtil.NumberOnlyBuildLabel((Run<?, ?>) build);
             TestLinkBuildAction action = build.getAction(getBuildActionClass());
             if (action != null) {
                 final TestLinkResult result = action.getResult();

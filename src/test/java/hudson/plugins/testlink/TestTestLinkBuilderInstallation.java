@@ -23,7 +23,10 @@
  */
 package hudson.plugins.testlink;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Test;
 
 /**
  * Tests the TestLinkBuilderInstallation class.
@@ -34,12 +37,12 @@ import junit.framework.TestCase;
  * @since 2.1
  */
 public class TestTestLinkBuilderInstallation 
-extends TestCase
 {
 
 	/**
 	 * Tests with a TestLinkBuilderInstallation object.
 	 */
+    @Test
 	public void testInstallation()
 	{
 		TestLinkInstallation inst = 

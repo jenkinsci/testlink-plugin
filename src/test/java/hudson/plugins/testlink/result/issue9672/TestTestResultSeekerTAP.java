@@ -28,7 +28,10 @@ import hudson.plugins.testlink.result.ResultSeekerTestCase;
 import hudson.plugins.testlink.result.TAPFileNameResultSeeker;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 
-import org.jvnet.hudson.test.Bug;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
@@ -39,7 +42,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.5
  */
-@Bug(9672)
+@Issue("9672")
 public class TestTestResultSeekerTAP extends ResultSeekerTestCase {
 
 	private final static String KEY_CUSTOM_FIELD = "testCustomField";
@@ -107,8 +110,9 @@ public class TestTestResultSeekerTAP extends ResultSeekerTestCase {
 		return tcs;
 	}
 
+	@Test
 	public void testTwoTestSetsAAndBAndMissingK() throws Exception {
-		buildAndAssertSuccess(project);
+		j.buildAndAssertSuccess(project);
 
 		assertEquals(1, testlink.getReport().getTestsTotal());
 		assertEquals(ExecutionStatus.FAILED, testlink.getTestCases().get(0)

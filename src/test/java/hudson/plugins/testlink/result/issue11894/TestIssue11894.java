@@ -23,14 +23,16 @@
  */
 package hudson.plugins.testlink.result.issue11894;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
+
+import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import hudson.plugins.testlink.result.ResultSeeker;
 import hudson.plugins.testlink.result.ResultSeekerTestCase;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 import hudson.plugins.testlink.result.TestNGMethodNameResultSeeker;
-
-import org.jvnet.hudson.test.Bug;
-
-import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 
 /**
  * Tests for issue 11894.
@@ -38,7 +40,7 @@ import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 3.1
  */
-@Bug(11894)
+@Issue("11894")
 public class TestIssue11894 extends ResultSeekerTestCase {
 
 	private final static String KEY_CUSTOM_FIELD = "testCustomField";
@@ -114,8 +116,9 @@ public class TestIssue11894 extends ResultSeekerTestCase {
 		return tcs;
 	}
 
+	@Test
 	public void testTestResultSeekerThreeMethodsInDifferentClasses() throws Exception {
-		buildAndAssertSuccess(project);
+		j.buildAndAssertSuccess(project);
 		
 		assertEquals(3, testlink.getReport().getTestsTotal());
 	}

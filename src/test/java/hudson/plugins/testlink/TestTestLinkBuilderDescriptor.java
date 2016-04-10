@@ -23,9 +23,15 @@
  */
 package hudson.plugins.testlink;
 
-import hudson.util.FormValidation;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import org.jvnet.hudson.test.HudsonTestCase;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
+
+import hudson.util.FormValidation;
 
 /**
  * Tests the TestLinkBuilderDescriptor class.
@@ -36,9 +42,11 @@ import org.jvnet.hudson.test.HudsonTestCase;
  * @since 2.1
  */
 public class TestTestLinkBuilderDescriptor 
-extends HudsonTestCase
 {
+    
+    @Rule public JenkinsRule j = new JenkinsRule();
 
+    @Test
 	public void testLinkBuilderDescriptor()
 	{
 		TestLinkBuilderDescriptor descriptor = new TestLinkBuilderDescriptor();

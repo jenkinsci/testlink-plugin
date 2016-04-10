@@ -23,6 +23,10 @@
  */
 package hudson.plugins.testlink.result;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 
 /**
@@ -84,8 +88,9 @@ public class TestJUnitMethodNameResultSeeker extends ResultSeekerTestCase {
 		return "**/TEST-*.xml";
 	}
 	
+	@Test
 	public void testJUnitMethodNameResultSeekerStrategy() throws Exception {
-		buildAndAssertSuccess(project);
+		j.buildAndAssertSuccess(project);
 		
 		assertEquals(4, testlink.getReport().getTestsTotal());
 	}

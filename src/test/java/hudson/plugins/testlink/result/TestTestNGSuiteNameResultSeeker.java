@@ -23,6 +23,10 @@
  */
 package hudson.plugins.testlink.result;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 
@@ -99,15 +103,17 @@ public class TestTestNGSuiteNameResultSeeker extends ResultSeekerTestCase {
 		return tcs;
 	}
 
+	@Test
 	public void testTestResultSeekerTwoSuites() throws Exception {
-		buildAndAssertSuccess(project);
+		j.buildAndAssertSuccess(project);
 		
 		assertEquals(2, testlink.getReport().getTestsTotal());
 		assertEquals(ExecutionStatus.FAILED , testlink.getTestCases().get(1).getExecutionStatus());
 	}
 
+	@Test
 	public void testTestResultSeekerTwoSuitesOneNonExistent() throws Exception {
-		buildAndAssertSuccess(project);
+		j.buildAndAssertSuccess(project);
 		
 		assertEquals(2, testlink.getReport().getTestsTotal());
 		assertEquals(ExecutionStatus.FAILED, testlink.getTestCases().get(1).getExecutionStatus());

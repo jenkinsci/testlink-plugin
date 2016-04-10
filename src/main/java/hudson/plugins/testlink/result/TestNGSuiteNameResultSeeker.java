@@ -23,28 +23,30 @@
  */
 package hudson.plugins.testlink.result;
 
-import hudson.Extension;
-import hudson.FilePath;
-import hudson.Launcher;
-import hudson.model.BuildListener;
-import hudson.model.AbstractBuild;
-import hudson.plugins.testlink.TestLinkSite;
-import hudson.plugins.testlink.util.Messages;
-import hudson.remoting.VirtualChannel;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jenkinsci.remoting.Role;
+import org.jenkinsci.remoting.RoleChecker;
+import org.jenkinsci.remoting.RoleSensitive;
 import org.kohsuke.stapler.DataBoundConstructor;
-
-import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 
 import com.tupilabs.testng.parser.Suite;
 import com.tupilabs.testng.parser.Test;
 import com.tupilabs.testng.parser.TestMethod;
 import com.tupilabs.testng.parser.TestNGParser;
+
+import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
+import hudson.Extension;
+import hudson.FilePath;
+import hudson.Launcher;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
+import hudson.plugins.testlink.TestLinkSite;
+import hudson.plugins.testlink.util.Messages;
+import hudson.remoting.VirtualChannel;
 
 /**
  * <p>Seeks for test results matching each TestNG Suite name with the key 
@@ -109,6 +111,11 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 					
 					return suites;
 				}
+
+                @Override
+                public void checkRoles(RoleChecker roleChecker) throws SecurityException {
+                    roleChecker.check((RoleSensitive) this, Role.UNKNOWN);
+                }
 			});
 			for(Suite suite : suites) {
 				for(TestCaseWrapper automatedTestCase : automatedTestCases) {

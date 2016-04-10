@@ -23,6 +23,13 @@
  */
 package hudson.plugins.testlink.result;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
@@ -33,73 +40,71 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
  */
-public class TestTestCaseWrapper 
-extends junit.framework.TestCase
-{
+public class TestTestCaseWrapper {
 
-	protected TestCase testCase;
-	protected Build build;
-	protected TestPlan testPlan;
-	
-	protected TestCaseWrapper testResult;
-	
-	protected void setUp()
-	{
-		testCase = new TestCase();
-		testCase.setId( 100 );
-		build = new Build();
-		build.setId( 100 );
-		testPlan = new TestPlan();
-		testPlan.setId( 100 );
-		
-		testResult = new TestCaseWrapper(testCase);
-		
-		CustomField cf = new CustomField();
-		cf.setName("nz");
-		testResult.getCustomFields().add(cf);
-		
-		cf = new CustomField();
-		cf.setName("au");
-		testResult.getCustomFields().add(cf);
-	}
-	
-	public void testTestResultTestCaseId()
-	{
-		assertTrue( testResult.getId() == 100 );
-	}
+    protected TestCase testCase;
+    protected Build build;
+    protected TestPlan testPlan;
 
-	public void testTestResultNotes()
-	{
-		assertNotNull( this.testResult.getNotes() );
-		
-		String newNotes = "Home sweet home";
-		this.testResult.appendNotes( newNotes );
-		
-		assertNotNull( this.testResult.getNotes() );
-	}
-	
-	public void testTestResultAttachments()
-	{
-		assertNotNull( testResult.getAttachments() );
-		
-		assertEquals ( testResult.getAttachments().size(), 0 );
-		
-		Attachment attachment = new Attachment();
-		testResult.getAttachments().add( attachment );
-		
-		assertEquals( testResult.getAttachments().size(), 1 );
-		
-		attachment = new Attachment();
-		testResult.addAttachment( attachment );
-		
-		assertEquals( testResult.getAttachments().size(), 2 );
-	}
-	
-	public void testTestResultCustomFieldAndStatus()
-	{
-		assertNotNull( testResult.getCustomFieldAndStatus() );
-		
-		assertEquals( testResult.getCustomFieldAndStatus().size(), 0 );
-	}
+    protected TestCaseWrapper testResult;
+
+    @Before
+    public void setUp() {
+        testCase = new TestCase();
+        testCase.setId(100);
+        build = new Build();
+        build.setId(100);
+        testPlan = new TestPlan();
+        testPlan.setId(100);
+
+        testResult = new TestCaseWrapper(testCase);
+
+        CustomField cf = new CustomField();
+        cf.setName("nz");
+        testResult.getCustomFields().add(cf);
+
+        cf = new CustomField();
+        cf.setName("au");
+        testResult.getCustomFields().add(cf);
+    }
+
+    @Test
+    public void testTestResultTestCaseId() {
+        assertTrue(testResult.getId() == 100);
+    }
+
+    @Test
+    public void testTestResultNotes() {
+        assertNotNull(this.testResult.getNotes());
+
+        String newNotes = "Home sweet home";
+        this.testResult.appendNotes(newNotes);
+
+        assertNotNull(this.testResult.getNotes());
+    }
+
+    @Test
+    public void testTestResultAttachments() {
+        assertNotNull(testResult.getAttachments());
+
+        assertEquals(testResult.getAttachments().size(), 0);
+
+        Attachment attachment = new Attachment();
+        testResult.getAttachments().add(attachment);
+
+        assertEquals(testResult.getAttachments().size(), 1);
+
+        attachment = new Attachment();
+        testResult.addAttachment(attachment);
+
+        assertEquals(testResult.getAttachments().size(), 2);
+    }
+
+    @Test
+    public void testTestResultCustomFieldAndStatus() {
+        assertNotNull(testResult.getCustomFieldAndStatus());
+
+        assertEquals(testResult.getCustomFieldAndStatus().size(), 0);
+    }
 
 }

@@ -23,21 +23,23 @@
  */
 package hudson.plugins.testlink.result.issue9229;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
+
+import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
+import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import hudson.plugins.testlink.result.JUnitCaseClassNameResultSeeker;
 import hudson.plugins.testlink.result.ResultSeeker;
 import hudson.plugins.testlink.result.ResultSeekerTestCase;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 
-import org.jvnet.hudson.test.Bug;
-
-import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
-import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
-
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 1.0
  */
-@Bug(9229)
+@Issue("9229")
 public class TestIssue9229 extends ResultSeekerTestCase {
 
 	private final static String KEY_CUSTOM_FIELD = "testCustomField";
@@ -89,8 +91,9 @@ public class TestIssue9229 extends ResultSeekerTestCase {
 		return tcs;
 	}
 
+	@Test
 	public void testTestResultSeekerJUnitIssue9229() throws Exception {
-		buildAndAssertSuccess(project);	
+		j.buildAndAssertSuccess(project);	
 
 		assertEquals(1, testlink.getReport().getTestsTotal());
 		assertEquals(ExecutionStatus.FAILED, testlink.getTestCases().get(0).getExecutionStatus());

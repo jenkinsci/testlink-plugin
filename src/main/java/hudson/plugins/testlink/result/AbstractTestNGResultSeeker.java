@@ -33,6 +33,10 @@ import hudson.remoting.VirtualChannel;
 import java.io.File;
 import java.io.IOException;
 
+import org.jenkinsci.remoting.Role;
+import org.jenkinsci.remoting.RoleChecker;
+import org.jenkinsci.remoting.RoleSensitive;
+
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
@@ -108,6 +112,11 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 							
 							return attachment;
 						}
+
+                        @Override
+                        public void checkRoles(RoleChecker roleChecker) throws SecurityException {
+                            roleChecker.check((RoleSensitive) this, Role.UNKNOWN);
+                        }
 					});
 					testlink.uploadAttachment(executionId, attachment);
 				}

@@ -23,18 +23,18 @@
  */
 package hudson.plugins.testlink.parser.issue9993;
 
-import hudson.tasks.junit.SuiteResult;
-import hudson.tasks.junit.TestResult;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
 
-import org.jvnet.hudson.test.Bug;
+import hudson.tasks.junit.SuiteResult;
+import hudson.tasks.junit.TestResult;
 
 /**
  * Tests the JUnit parser for issue 9993.
@@ -42,11 +42,11 @@ import org.jvnet.hudson.test.Bug;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.5
  */
-@Bug(9993)
+@Issue("9993")
 public class TestIssue9993 
-extends TestCase
 {
 	
+    @Test
 	public void testParsingNumberOfResultsAndContents() throws IOException
 	{
 		ClassLoader cl = TestIssue9993.class.getClassLoader();
@@ -55,19 +55,20 @@ extends TestCase
 		TestResult testResult = new TestResult();
 		testResult.parse(junitFile);
 		
-		Assert.assertEquals( testResult.getSuites().size(), 1 );
+		assertEquals( testResult.getSuites().size(), 1 );
 		
 		SuiteResult testSuite = testResult.getSuites().iterator().next();
 		
-		Assert.assertEquals( testSuite.getCases().size(), 3 );
+		assertEquals( testSuite.getCases().size(), 3 );
 		
-		Assert.assertEquals( testSuite.getCases().get( 0 ).getName(), "UnitTest.Startup");
+		assertEquals( testSuite.getCases().get( 0 ).getName(), "UnitTest.Startup");
 		
 	}
 	
 	/**
 	 * This tests a modified version of the XML result file.
 	 */
+    @Test
 	public void testParsingNumberOfResultsAndContentsModified() throws IOException
 	{
 		ClassLoader cl = TestIssue9993.class.getClassLoader();
@@ -76,22 +77,22 @@ extends TestCase
 		TestResult testResult = new TestResult();
 		testResult.parse(junitFile);
 		
-		Assert.assertEquals( testResult.getSuites().size(), 2 );
+		assertEquals( testResult.getSuites().size(), 2 );
 		
 		Iterator<SuiteResult> suitesIterator = testResult.getSuites().iterator();
 		
 		SuiteResult testSuite = suitesIterator.next();
 		
-		Assert.assertEquals( testSuite.getCases().size(), 3 );
+		assertEquals( testSuite.getCases().size(), 3 );
 		
-		Assert.assertEquals( testSuite.getCases().get( 0 ).getName(), "UnitTest.Startup");
+		assertEquals( testSuite.getCases().get( 0 ).getName(), "UnitTest.Startup");
 		
 		testSuite = suitesIterator.next();
 		
-		Assert.assertEquals( testSuite.getCases().size(), 3 );
+		assertEquals( testSuite.getCases().size(), 3 );
 		
-		Assert.assertEquals( testSuite.getCases().get( 0 ).getName(), "A");
-		Assert.assertEquals( testSuite.getCases().get( 0 ).getClassName(), "com.test.qa.A");
+		assertEquals( testSuite.getCases().get( 0 ).getName(), "A");
+		assertEquals( testSuite.getCases().get( 0 ).getClassName(), "com.test.qa.A");
 		
 	}
 

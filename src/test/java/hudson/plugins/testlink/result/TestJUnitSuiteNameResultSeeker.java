@@ -23,6 +23,10 @@
  */
 package hudson.plugins.testlink.result;
 
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 
 /**
@@ -141,8 +145,9 @@ public class TestJUnitSuiteNameResultSeeker extends ResultSeekerTestCase {
 		return new JUnitSuiteNameResultSeeker(getResultsPattern(), KEY_CUSTOM_FIELD, false, false);
 	}
 
+	@Test
 	public void testManyTestLinkTestCaseWrappersToManyJUnitSuitesInManyFiles() throws Exception {
-		buildAndAssertSuccess(project);
+		j.buildAndAssertSuccess(project);
 		
 		assertTrue("Wrong number of results", testlink.getReport().getTestsTotal() == 7);
 

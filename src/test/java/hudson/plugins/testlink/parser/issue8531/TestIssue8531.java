@@ -23,15 +23,20 @@
  */
 package hudson.plugins.testlink.parser.issue8531;
 
-import hudson.tasks.junit.SuiteResult;
-import hudson.tasks.junit.TestResult;
-import hudson.tasks.junit.CaseResult;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import org.jvnet.hudson.test.Bug;
+import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
+
+import hudson.tasks.junit.CaseResult;
+import hudson.tasks.junit.SuiteResult;
+import hudson.tasks.junit.TestResult;
 
 /**
  * Tests the JUnit parser for issue 8531.
@@ -39,11 +44,11 @@ import org.jvnet.hudson.test.Bug;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
-@Bug(8531)
+@Issue("8531")
 public class TestIssue8531 
-extends junit.framework.TestCase
 {
-	
+
+    @Test
 	public void testJUnitParserIssue8531() throws IOException
 	{
 		ClassLoader cl = TestIssue8531.class.getClassLoader();
