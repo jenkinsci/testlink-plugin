@@ -60,7 +60,7 @@ public class TestTestLinkBuilder {
     @Before
     public void setUp() throws Exception {
         builder = new TestLinkBuilder("No testlink", "No project", "No plan", "No platform", "No build",
-                "class, time, sample-job-$BUILD_ID", Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
+                "class, time, sample-job-$BUILD_ID", "host, user",Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
                 null, null, null, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null);
     }
 
@@ -129,7 +129,7 @@ public class TestTestLinkBuilder {
         List<BuildStep> singleBuildSteps = new ArrayList<BuildStep>();
         singleBuildSteps.add(shell);
 
-        builder = new TestLinkBuilder("No testlink", "No project", "No plan", "No platform", "No build", "class, time",
+        builder = new TestLinkBuilder("No testlink", "No project", "No plan", "No platform", "No build", "class, time", "host, user",
                 Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, singleBuildSteps, null, null, null,
                 Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null);
 
@@ -159,6 +159,9 @@ public class TestTestLinkBuilder {
 
         assertNotNull(builder.getCustomFields());
         assertEquals(builder.getCustomFields(), "class, time");
+
+        assertNotNull(builder.getTestPlanCustomFields());
+        assertEquals(builder.getTestPlanCustomFields(), "host, user");
 
         assertFalse(builder.getTransactional());
         assertFalse(builder.getFailIfNoResults());
