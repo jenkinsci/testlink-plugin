@@ -1,14 +1,5 @@
 package hudson.plugins.testlink.result;
 
-import hudson.FilePath;
-import hudson.FilePath.FileCallable;
-import hudson.Launcher;
-import hudson.model.BuildListener;
-import hudson.model.Result;
-import hudson.model.AbstractBuild;
-import hudson.plugins.testlink.TestLinkSite;
-import hudson.remoting.VirtualChannel;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,7 +11,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.kohsuke.stapler.DataBoundConstructor;
+import org.jenkinsci.remoting.Role;
+import org.jenkinsci.remoting.RoleChecker;
+import org.jenkinsci.remoting.RoleSensitive;
 import org.tap4j.consumer.TapConsumer;
 import org.tap4j.consumer.TapConsumerFactory;
 import org.tap4j.model.Directive;
@@ -34,6 +27,14 @@ import org.tap4j.util.DirectiveValues;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
+import hudson.FilePath;
+import hudson.FilePath.FileCallable;
+import hudson.Launcher;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
+import hudson.model.Result;
+import hudson.plugins.testlink.TestLinkSite;
+import hudson.remoting.VirtualChannel;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
@@ -56,7 +57,6 @@ public abstract class AbstractTAPFileNameResultSeeker extends ResultSeeker {
      * @param attachTAPStream
      * @param attachYAMLishAttachments
      */
-    @DataBoundConstructor
     public AbstractTAPFileNameResultSeeker(String includePattern, String keyCustomField, boolean attachTAPStream,
             boolean attachYAMLishAttachments, boolean includeNotes, Boolean compareFullPath) {
         super(includePattern, keyCustomField, includeNotes);
@@ -129,6 +129,10 @@ public abstract class AbstractTAPFileNameResultSeeker extends ResultSeeker {
                             }
 
                             return testSets;
+                        }
+
+                        public void checkRoles(RoleChecker roleChecker) throws SecurityException {
+                            roleChecker.check((RoleSensitive) this, Role.UNKNOWN);
                         }
                     });
 
@@ -212,6 +216,11 @@ public abstract class AbstractTAPFileNameResultSeeker extends ResultSeeker {
                             }
 
                             return attachments;
+                        }
+
+                        @Override
+                        public void checkRoles(RoleChecker roleChecker) throws SecurityException {
+                            roleChecker.check((RoleSensitive) this, Role.UNKNOWN);
                         }
                     });
                     for (Attachment attachment : attachments) {

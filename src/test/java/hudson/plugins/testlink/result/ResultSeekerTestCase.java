@@ -23,21 +23,23 @@
  */
 package hudson.plugins.testlink.result;
 
-import hudson.FilePath;
-import hudson.Launcher;
-import hudson.model.BuildListener;
-import hudson.model.AbstractBuild;
-import hudson.model.FreeStyleProject;
-import hudson.plugins.testlink.TestLinkSiteFake;
-import hudson.tasks.Builder;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
-import org.jvnet.hudson.test.HudsonTestCase;
+import org.junit.Before;
+import org.junit.Rule;
+import org.jvnet.hudson.test.JenkinsRule;
+
+import hudson.FilePath;
+import hudson.Launcher;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
+import hudson.model.FreeStyleProject;
+import hudson.plugins.testlink.TestLinkSiteFake;
+import hudson.tasks.Builder;
 
 /**
  * Utility class for testing Result Seekers.
@@ -45,7 +47,9 @@ import org.jvnet.hudson.test.HudsonTestCase;
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 3.1
  */
-public abstract class ResultSeekerTestCase extends HudsonTestCase {
+public abstract class ResultSeekerTestCase {
+    
+    @Rule public JenkinsRule j = new JenkinsRule();
 
 	protected FreeStyleProject project;
 	protected TestLinkSiteFake testlink = new TestLinkSiteFake();
@@ -71,10 +75,9 @@ public abstract class ResultSeekerTestCase extends HudsonTestCase {
 	 */
 	public abstract String getResultsPattern();
 	
-	protected void setUp() throws Exception {
-		super.setUp();
-		
-		project = createFreeStyleProject();
+	@Before
+	public void setUp() throws Exception {
+		project = j.createFreeStyleProject();
 		File temp = File.createTempFile("resultseeker", Long.toString(System.nanoTime()));
 		
 		if(!(temp.delete())) {

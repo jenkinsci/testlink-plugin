@@ -23,26 +23,26 @@
  */
 package hudson.plugins.testlink.util;
 
-import hudson.EnvVars;
-import hudson.model.BuildListener;
-import hudson.model.StreamBuildListener;
-import hudson.plugins.testlink.result.TestCaseWrapper;
-
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
-import org.jvnet.hudson.test.Bug;
+import org.junit.Before;
+import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
+import hudson.EnvVars;
+import hudson.model.BuildListener;
+import hudson.model.StreamBuildListener;
+import hudson.plugins.testlink.result.TestCaseWrapper;
+import junit.framework.TestCase;
 
 /**
  * 
@@ -55,6 +55,7 @@ public class TestTestLinkHelper extends TestCase {
 	/**
 	 * Defines the Locale to US
 	 */
+	@Before
 	public void setUp() {
 		listener = new StreamBuildListener(new PrintStream(System.out),
 				Charset.defaultCharset());
@@ -73,6 +74,7 @@ public class TestTestLinkHelper extends TestCase {
 		}
 	}
 
+	@Test
 	public void testColoredExecutionStatusText() {
 		ExecutionStatus status = ExecutionStatus.PASSED;
 		String text = TestLinkHelper.getExecutionStatusTextColored(status);
@@ -91,6 +93,7 @@ public class TestTestLinkHelper extends TestCase {
 		assertTrue(text.equals("<span style='color: yellow'>Blocked</span>"));
 	}
 
+	@Test
 	public void testTestLinkJavaAPIProperties() {
 		String testLinkJavaAPIProperties = "httpd.server=false, testlink.security=true, test";
 
@@ -100,6 +103,7 @@ public class TestTestLinkHelper extends TestCase {
 		assertEquals(System.getProperties().get("httpd.server"), "false");
 	}
 
+	@Test
 	public void testCreateTestLinkEnvVars() {
 		TestCaseWrapper testCase = new TestCaseWrapper();
 		testCase.setId(100);
@@ -143,7 +147,8 @@ public class TestTestLinkHelper extends TestCase {
 		assertTrue(envVarsEnvVars.equals(envVars));
 	}
 
-	@Bug(9672)
+	@Issue("9672")
+	@Test
 	public void testCreateTestLinkEnvVarsWithCommas() {
 		TestCaseWrapper testCase = new TestCaseWrapper();
 		testCase.setId(100);

@@ -23,22 +23,27 @@
  */
 package hudson.plugins.testlink;
 
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.0
  */
 public class TestTestLinkReport 
-extends junit.framework.TestCase
 {
 
 	private Report report;
 	
+	@Before
 	public void setUp()
 	{
 		this.report = new Report(100, null);
 	}
 	
+	@Test
 	public void testTesLinkReportGettersAndSetters()
 	{
 		assertTrue( this.report.getBuildId() == 100 );

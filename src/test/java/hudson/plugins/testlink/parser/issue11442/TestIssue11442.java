@@ -24,25 +24,24 @@
 package hudson.plugins.testlink.parser.issue11442;
 
 
-import hudson.tasks.junit.SuiteResult;
-import hudson.tasks.junit.TestResult;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.Issue;
+
+import hudson.tasks.junit.SuiteResult;
+import hudson.tasks.junit.TestResult;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 0.1
  */
-@Bug(value=11442)
+@Issue("11442")
 public class TestIssue11442
-extends TestCase
 {
 
 	@Test

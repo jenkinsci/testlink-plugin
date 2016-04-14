@@ -23,22 +23,23 @@
  */
 package hudson.plugins.testlink.result.issue10849;
 
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
+
+import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import hudson.plugins.testlink.result.JUnitCaseNameResultSeeker;
 import hudson.plugins.testlink.result.ResultSeeker;
 import hudson.plugins.testlink.result.ResultSeekerTestCase;
 import hudson.plugins.testlink.result.TestCaseWrapper;
-
-import org.junit.Assert;
-import org.jvnet.hudson.test.Bug;
-
-import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 
 /**
  * Tests for issue 10849. In this issue, the user reported
  * 
  * @author Bruno P. Kinoshita
  */
-@Bug(10849)
+@Issue("10849")
 public class TestPerformance10849 extends ResultSeekerTestCase {
 
 	private static final String KEY_CUSTOM_FIELD = "testCustomField";
@@ -100,15 +101,16 @@ public class TestPerformance10849 extends ResultSeekerTestCase {
 		return tcs;
 	}
 
+	@Test
 	public void testPerformance10849() throws Exception {
 		long start = System.currentTimeMillis();
-		buildAndAssertSuccess(project);
+		j.buildAndAssertSuccess(project);
 		assertTrue(testlink.getReport().getTestsTotal() > 0);
 		long end = System.currentTimeMillis();
 
 		System.out.println("Took: " + (end - start));
 
-		Assert.assertTrue((end - start) < 5000);
+		assertTrue((end - start) < 5000);
 	}
 
 }

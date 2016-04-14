@@ -26,11 +26,19 @@ package hudson.plugins.testlink;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 import hudson.plugins.testlink.util.TestLinkHelper;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import java.lang.reflect.Constructor;
 import java.util.Locale;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionType;
+import br.eti.kinoshita.testlinkjavaapi.constants.TestCaseStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**
@@ -42,12 +50,12 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
  * @since 2.1
  */
 public class TestReportSummary 
-extends junit.framework.TestCase
 {
 
 	/**
 	 * Prepares for the tests.
 	 */
+    @Before
 	public void setUp()
 	{
 		Locale.setDefault(new Locale("en", "US"));
@@ -56,6 +64,7 @@ extends junit.framework.TestCase
 	/**
 	 * Tests the hidden constructor of the ReportSummary class.
 	 */
+    @Test
 	public void testConstructor()
 	{
 		try
@@ -75,6 +84,7 @@ extends junit.framework.TestCase
 	/**
 	 * Tests getPlusSignal() method.
 	 */
+    @Test
 	public void getPlusSignal()
 	{
 		String plusSignal = TestLinkHelper.getPlusSignal(1, 0);
@@ -87,6 +97,7 @@ extends junit.framework.TestCase
 	/**
 	 * Tests the createReportSummary() method with a previous TestLinkReport.
 	 */
+    @Test
 	public void testSummary()
 	{
 		Report report = new Report(1, "My build");
@@ -105,6 +116,7 @@ extends junit.framework.TestCase
 	/**
 	 * Tests the createReportSummary() method with a previous TestLinkReport.
 	 */
+    @Test
 	public void testSummaryWithPrevious()
 	{
 		Report report = new Report(1, "My build");
@@ -126,13 +138,14 @@ extends junit.framework.TestCase
 	/**
 	 * Tests the createReportSummaryDetails() method.
 	 */
+    @Test
 	public void testSummaryDetails()
 	{
 		Report report = new Report(1, null);
 		
-		TestCase testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 1, 1, null, false, null, 1, 1, null, null, ExecutionStatus.PASSED, null, null);
-		TestCase testCase2 = new TestCase(2, "tc2", 2, 2, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 2, 2, null, false, null, 2, 2, null, null, ExecutionStatus.FAILED, null, null);
-		TestCase testCase3 = new TestCase(3, "tc3", 3, 3, "kinow", "No summary", null, "", null, ExecutionType.AUTOMATED, null, 3, 3, null, false, null, 3, 3, null, null, ExecutionStatus.BLOCKED, null, null);
+		TestCase testCase1 = new TestCase(1, "tc1", 1, 1, "kinow", "No summary", null, "", TestCaseStatus.FINAL, null, ExecutionType.AUTOMATED, null, 1, 1, null, false, null, 1, 1, null, null, ExecutionStatus.PASSED, null, null);
+		TestCase testCase2 = new TestCase(2, "tc2", 2, 2, "kinow", "No summary", null, "", TestCaseStatus.FINAL, null, ExecutionType.AUTOMATED, null, 2, 2, null, false, null, 2, 2, null, null, ExecutionStatus.FAILED, null, null);
+		TestCase testCase3 = new TestCase(3, "tc3", 3, 3, "kinow", "No summary", null, "", TestCaseStatus.FINAL, null, ExecutionType.AUTOMATED, null, 3, 3, null, false, null, 3, 3, null, null, ExecutionStatus.BLOCKED, null, null);
 		testCase1.setFullExternalId("1");
 		testCase2.setFullExternalId("2");
 		testCase3.setFullExternalId("3");

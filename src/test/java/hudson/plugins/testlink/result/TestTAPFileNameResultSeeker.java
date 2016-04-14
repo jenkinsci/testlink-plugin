@@ -23,6 +23,10 @@
  */
 package hudson.plugins.testlink.result;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 
 /**
@@ -100,15 +104,17 @@ public class TestTAPFileNameResultSeeker extends ResultSeekerTestCase
 		return tcs;
 	}
 
+	@Test
 	public void testTestResultSeekerTAPOne() throws Exception {
-		buildAndAssertSuccess(project);
+		j.buildAndAssertSuccess(project);
 		
 		assertEquals(3, testlink.getReport().getTestsTotal());
 		//assertTrue( found.get(1).getExecutionStatus() == ExecutionStatus.PASSED );
 	}
 	
+	@Test
 	public void testTestResultSeekerTAPThree() throws Exception {
-		buildAndAssertSuccess(project);
+		j.buildAndAssertSuccess(project);
 		
 		assertEquals(3, testlink.getReport().getTestsTotal());
 		//assertTrue( found.get(2).getExecutionStatus() == ExecutionStatus.FAILED );

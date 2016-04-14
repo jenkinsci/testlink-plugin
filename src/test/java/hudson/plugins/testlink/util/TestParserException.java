@@ -23,7 +23,10 @@
  */
 package hudson.plugins.testlink.util;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Test;
 
 import com.tupilabs.testng.parser.ParserException;
 
@@ -34,10 +37,11 @@ import com.tupilabs.testng.parser.ParserException;
  * @see {@link ParserException}
  * @since 2.0
  */
-public class TestParserException extends TestCase {
+public class TestParserException {
 
     private ParserException exception;
 
+    @Test
     public void testTestLinkPluginException() {
         this.exception = new ParserException();
 
