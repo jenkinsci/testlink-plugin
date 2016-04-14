@@ -271,7 +271,7 @@
 		<dependency>
 			<groupId>br.eti.kinoshita</groupId>
 			<artifactId>testlink-java-api</artifactId>
-			<version>1.9.13-3-SNAPSHOT</version>
+			<version>1.9.14-0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
