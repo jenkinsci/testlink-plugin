@@ -169,7 +169,19 @@ public class TestLinkSite {
 		
 		return filteredTestcases.toArray(new TestCase[filteredTestcases.size()]);
 	}
-	
+
+	public TestPlan getTestPlanWithCustomFields(String[] customFieldNames){
+		TestPlan testPlan = getTestPlan();
+		for(String customFieldName: customFieldNames){
+			final CustomField customField = this.api.getTestPlanCustomFieldDesignValue(testPlan.getId(),
+					getTestProject().getId(),
+					customFieldName,
+					ResponseDetails.FULL);
+			testPlan.getCustomFields().add(customField);
+		}
+		return testPlan;
+	}
+
 	/**
 	 * Updates the test cases status in TestLink (note and status) and 
 	 * uploads any existing attachments.

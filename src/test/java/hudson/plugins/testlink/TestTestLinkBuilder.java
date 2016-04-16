@@ -39,6 +39,7 @@ import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import hudson.EnvVars;
+import hudson.plugins.testlink.util.TestLinkHelper;
 import hudson.tasks.BuildStep;
 import hudson.tasks.Shell;
 import hudson.util.VariableResolver;
@@ -60,7 +61,7 @@ public class TestTestLinkBuilder {
     @Before
     public void setUp() throws Exception {
         builder = new TestLinkBuilder("No testlink", "No project", "No plan", "No platform", "No build",
-                "class, time, sample-job-$BUILD_ID", Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
+                "class, time, sample-job-$BUILD_ID", "host, user",Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
                 null, null, null, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null);
     }
 
@@ -75,7 +76,8 @@ public class TestTestLinkBuilder {
         VariableResolver<String> varRes = new ByMap.ByMap(envVars);
 
         envVars.put("BUILD_ID", "1");
-        String[] customFieldsNames = builder.createArrayOfCustomFieldsNames(varRes, envVars);
+        String[] customFieldsNames = TestLinkHelper.createArrayOfCustomFieldsNames(varRes, envVars,
+                builder.getCustomFields());
 
         assertNotNull(customFieldsNames);
         assertTrue(customFieldsNames.length == 3);
@@ -87,7 +89,7 @@ public class TestTestLinkBuilder {
     @Test
     public void testNull() {
         builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null);
+                null, null, null, null, null, null, null);
 
         assertNotNull(builder);
 
@@ -111,6 +113,8 @@ public class TestTestLinkBuilder {
 
         assertNull(builder.getCustomFields());
 
+        assertNull(builder.getTestPlanCustomFields());
+
         assertNull(builder.getTransactional());
 
         assertNull(builder.getFailIfNoResults());
@@ -130,8 +134,8 @@ public class TestTestLinkBuilder {
         singleBuildSteps.add(shell);
 
         builder = new TestLinkBuilder("No testlink", "No project", "No plan", "No platform", "No build", "class, time",
-                Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, singleBuildSteps, null, null, null,
-                Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null);
+                "host, user", Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, singleBuildSteps, null,
+                null, null, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null);
 
         // FreeStyleProject project = new FreeStyleProject(hudson, "No
         // project");
@@ -159,6 +163,9 @@ public class TestTestLinkBuilder {
 
         assertNotNull(builder.getCustomFields());
         assertEquals(builder.getCustomFields(), "class, time");
+
+        assertNotNull(builder.getTestPlanCustomFields());
+        assertEquals(builder.getTestPlanCustomFields(), "host, user");
 
         assertFalse(builder.getTransactional());
         assertFalse(builder.getFailIfNoResults());
