@@ -124,7 +124,6 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
      * Kept here for backward compatibility. Don't add new fields.
      * @deprecated to add test plan custom fields
      */
-    @DataBoundConstructor
     public TestLinkBuilder(String testLinkName, String testProjectName,
             String testPlanName, String platformName, String buildName, String customFields,
             Boolean executionStatusNotRun, Boolean executionStatusPassed,
