@@ -23,12 +23,6 @@
  */
 package hudson.plugins.testlink.util;
 
-import hudson.EnvVars;
-import hudson.model.BuildListener;
-import hudson.plugins.testlink.Report;
-import hudson.plugins.testlink.TestLinkBuildAction;
-import hudson.plugins.testlink.result.TestCaseWrapper;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +36,13 @@ import br.eti.kinoshita.testlinkjavaapi.model.CustomField;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCaseStep;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
+import hudson.EnvVars;
+import hudson.Util;
+import hudson.model.BuildListener;
+import hudson.plugins.testlink.Report;
+import hudson.plugins.testlink.TestLinkBuildAction;
+import hudson.plugins.testlink.result.TestCaseWrapper;
+import hudson.util.VariableResolver;
 
 /**
  * Helper methods for TestLink.
@@ -67,6 +68,12 @@ public final class TestLinkHelper {
 	
 	// Used for HTTP basic auth
 	private static final String BASIC_HTTP_PASSWORD = "basicPassword";
+	
+	// For other utility methods
+	/**
+     * Comma constant for custom fields separated with delimiter.
+     */
+    private static final String COMMA = ",";
 
 	/**
 	 * Default hidden constructor for a helper class.
@@ -185,13 +192,13 @@ public final class TestLinkHelper {
 		
 		List<CustomField> testCaseCustomFields = testCase.getCustomFields();
 		for (CustomField customField : testCaseCustomFields) {
-			addCustomFieldEnvironmentVariableName( customField, testLinkEnvVar );
+			addCustomFieldEnvironmentVariableName(customField, testLinkEnvVar, TESTLINK_TESTCASE_PREFIX);
 		}
 
 		List<CustomField> testPlanCustomFields = testPlan.getCustomFields();
 
 		for(CustomField customField: testPlanCustomFields){
-			addTestPlanCustomFieldEnvironmentVariableName(customField, testLinkEnvVar);
+		    addCustomFieldEnvironmentVariableName(customField, testLinkEnvVar, TESTLINK_TESTPLAN_PREFIX);
 		}
 
 		List<TestCaseStep> steps = testCase.getSteps();
@@ -227,33 +234,35 @@ public final class TestLinkHelper {
 	
 	/**
 	 * <p>Formats a custom field into an environment variable. It appends 
-	 * TESTLINK_TESTCASE in front of the environment variable name.</p>
+	 * the ${prefix} in front of the environment variable name.</p>
 	 * 
-	 * <p>So, for example, the custom field which name is Sample  Custom Field and 
-	 * value is <b>Sample Value</b>, will be added into the environment variables 
+	 * <p>So, for example, the custom field which name is Sample  Custom Field,
+	 * value is <b>Sample Value</b>, and prefix is TESTLINK_TESTCASE. It will be added into the environment variables
 	 * as TESTLINK_TESTCASE_SAMPLE__CUSTOM_FIELD="Sample Value" (note for the double spaces).</p>
 	 * 
-	 * <p>If the custom's value contains commas (,), then this method splits the 
-	 * value and, for each token found, it creates a new environment variable 
+	 * <p>If the custom's value contains commas (,), then this method splits the
+	 * value and, for each token found, it creates a new environment variable
 	 * appending a numeric index after its name</p>
 	 * 
-	 * <p>So, for example, the custom field which name is Sample Custom Field and 
-	 * value is <b>Sample Value 1, Sample Value 2</b>, will generate three 
-	 * environment variables: TESTLINK_TESTCASE_SAMPLE_CUSTOM_FIELD="Sample Value 1, Sample Value 2", 
-	 * TESTLINK_TESTCASE_SAMPLE_CUSTOM_FIELD_0="Sample Value 1" and 
+	 * <p>So, for example, the custom field which name is Sample Custom Field, 
+	 * value is <b>Sample Value 1, Sample Value 2</b>, and prefix is TESTLINK_TESTCASE. It will generate three
+	 * environment variables: TESTLINK_TESTCASE_SAMPLE_CUSTOM_FIELD="Sample Value 1, Sample Value 2",
+	 * TESTLINK_TESTCASE_SAMPLE_CUSTOM_FIELD_0="Sample Value 1" and
 	 * TESTLINK_TESTCASE_SAMPLE_CUSTOM_FIELD_1="Sample Value 2".</p> 
 	 * 
 	 * @param customField The custom field
 	 * @param testLinkEnvVar TestLink envVars
+	 * @param prefix the variables name prefix
 	 */
-	public static void addCustomFieldEnvironmentVariableName(CustomField customField, Map<String, String> testLinkEnvVar) 
+	public static void addCustomFieldEnvironmentVariableName(CustomField customField, Map<String,
+	        String> testLinkEnvVar, String prefix) 
 	{
 		String customFieldName = customField.getName();
 		String customFieldValue = customField.getValue();
 		
 		customFieldName = customFieldName.toUpperCase(); // uppercase
 		customFieldName = customFieldName.trim(); // trim
-		customFieldName = TESTLINK_TESTCASE_PREFIX + customFieldName; // add prefix
+		customFieldName = prefix + customFieldName; // add prefix
 		customFieldName = customFieldName.replaceAll( "\\s+", "_" ); // replace white spaces
 		
 		testLinkEnvVar.put(customFieldName, customFieldValue);
@@ -270,42 +279,9 @@ public final class TestLinkHelper {
 					customFieldName = customFieldName.toUpperCase(); // uppercase
 					customFieldName = customFieldName.trim(); // trim
 					
-					String tokenName = TESTLINK_TESTCASE_PREFIX + customFieldName + "_" + index; // add prefix
+					String tokenName = prefix + customFieldName + "_" + index; // add prefix
 					tokenName = tokenName.replaceAll( "\\s+", "_" ); // replace white spaces
 					
-					testLinkEnvVar.put(tokenName, token);
-					++index;
-				}
-			}
-		}
-	}
-
-	public static void addTestPlanCustomFieldEnvironmentVariableName(CustomField customField, Map<String, String> testLinkEnvVar){
-		String customFieldName = customField.getName();
-		String customFieldValue = customField.getValue();
-
-		customFieldName = customFieldName.toUpperCase(); // uppercase
-		customFieldName = customFieldName.trim(); // trim
-		customFieldName = TESTLINK_TESTPLAN_PREFIX + customFieldName; // add prefix
-		customFieldName = customFieldName.replaceAll( "\\s+", "_" ); // replace white spaces
-
-		testLinkEnvVar.put(customFieldName, customFieldValue);
-
-		if (StringUtils.isNotBlank( customFieldValue )) {
-			StringTokenizer tokenizer = new StringTokenizer(customFieldValue, ",");
-			if (tokenizer.countTokens() > 1) {
-				int index = 0;
-				while (tokenizer.hasMoreTokens()) {
-					String token = tokenizer.nextToken();
-					token = token.trim();
-
-					customFieldName = customField.getName();
-					customFieldName = customFieldName.toUpperCase(); // uppercase
-					customFieldName = customFieldName.trim(); // trim
-
-					String tokenName = TESTLINK_TESTPLAN_PREFIX + customFieldName + "_" + index; // add prefix
-					tokenName = tokenName.replaceAll( "\\s+", "_" ); // replace white spaces
-
 					testLinkEnvVar.put(tokenName, token);
 					++index;
 				}
@@ -445,5 +421,48 @@ public final class TestLinkHelper {
 		int difference = current - previous;
         return difference > 0 ? " (+"+difference+")" : "";
     }
-	
+
+	/**
+     * Create an array of custom fields names using the Job configuration data.
+     *
+     * @param variableResolver Jenkins variable resolver
+     * @param envVars Jenkins environment variables
+     * @param customFields String containinig a comma separated list of custom fields
+     * @return String[] of custom fields names.
+     */
+	public static String[] createArrayOfCustomFieldsNames(final VariableResolver<String> variableResolver,
+            final EnvVars envVars, String customFields) {
+        String[] customFieldNamesArray = new String[0];
+        final String expandedCustomFields = expandVariable(variableResolver, envVars, customFields);
+
+        if (StringUtils.isNotBlank(expandedCustomFields)) {
+            StringTokenizer tokenizer = new StringTokenizer(expandedCustomFields, COMMA);
+            if (tokenizer.countTokens() > 0) {
+                customFieldNamesArray = new String[tokenizer.countTokens()];
+                int index = 0;
+                while (tokenizer.hasMoreTokens()) {
+                    String customFieldName = tokenizer.nextToken();
+                    customFieldName = customFieldName.trim();
+                    customFieldNamesArray[index] = customFieldName;
+                    index = index + 1;
+                }
+            }
+        }
+
+        return customFieldNamesArray;
+    }
+
+    /**
+     * Expands a text variable like BUILD-$VAR replacing the $VAR part with a environment variable that matches its
+     * name, minus $.
+     *
+     * @param variableResolver Jenkins Build Variable Resolver.
+     * @param envVars Jenkins Build Environment Variables.
+     * @param variable Variable value (includes mask).
+     * @return Expanded test project name job configuration property.
+     */
+    public static String expandVariable(VariableResolver<String> variableResolver, EnvVars envVars, String variable) {
+        return Util.replaceMacro(envVars.expand(variable), variableResolver);
+    }
+
 }

@@ -23,20 +23,14 @@
  */
 package hudson.plugins.testlink;
 
-import hudson.EnvVars;
-import hudson.Util;
-import hudson.model.Action;
+import java.util.List;
+
 import hudson.model.AbstractProject;
+import hudson.model.Action;
 import hudson.plugins.testlink.result.ResultSeeker;
 import hudson.plugins.testlink.util.ExecutionOrderComparator;
 import hudson.tasks.BuildStep;
 import hudson.tasks.Builder;
-import hudson.util.VariableResolver;
-
-import java.util.List;
-import java.util.StringTokenizer;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Contains basic logic for a Builder for TestLink plug-in. This class was created to reduce complexity and reduce the
@@ -48,10 +42,6 @@ import org.apache.commons.lang.StringUtils;
 public class AbstractTestLinkBuilder extends Builder {
 
     /* --- Job properties --- */
-    /**
-     * Comma constant for custom fields separated with delimiter.
-     */
-    private static final String COMMA = ",";
     /**
      * The name of the TestLink installation.
      */
@@ -78,7 +68,7 @@ public class AbstractTestLinkBuilder extends Builder {
     protected final String customFields;
 
     /**
-     * Comma separated list of custom fields to download from TestLink.
+     * Comma separated list of test plan custom fields to download from TestLink.
      */
     protected final String testPlanCustomFields;
 
@@ -168,6 +158,22 @@ public class AbstractTestLinkBuilder extends Builder {
     }
 
     /**
+     * Create a AbstractTestLinkBuilder.
+     * @deprecated to add test plan custom fields
+     */
+    public AbstractTestLinkBuilder(String testLinkName, String testProjectName, String testPlanName, 
+            String platformName, String buildName, String customFields, List<BuildStep> singleBuildSteps,
+            List<BuildStep> beforeIteratingAllTestCasesBuildSteps, List<BuildStep> iterativeBuildSteps,
+            List<BuildStep> afterIteratingAllTestCasesBuildSteps, Boolean transactional,
+            Boolean failedTestsMarkBuildAsFailure, Boolean failIfNoResults, Boolean failOnNotRun,
+            List<ResultSeeker> resultSeekers) {
+        this(testLinkName, testProjectName, testPlanName, platformName, buildName, customFields,
+                /*testPlanCustomFields*/ null, singleBuildSteps, beforeIteratingAllTestCasesBuildSteps,
+                iterativeBuildSteps, afterIteratingAllTestCasesBuildSteps, transactional, failedTestsMarkBuildAsFailure,
+                failIfNoResults, failOnNotRun, resultSeekers);
+    }
+
+    /**
      * This constructor is bound to a stapler request. All parameters here are passed by Jenkins.
      * 
      * @param testLinkName TestLink Installation name.
@@ -188,15 +194,16 @@ public class AbstractTestLinkBuilder extends Builder {
      * @deprecated
      */
     public AbstractTestLinkBuilder(String testLinkName, String testProjectName, String testPlanName,
-            String platformName, String buildName, String customFields, String testPlanCustomFields, Boolean executionStatusNotRun,
+            String platformName, String buildName, String customFields, Boolean executionStatusNotRun,
             Boolean executionStatusPassed, Boolean executionStatusFailed, Boolean executionStatusBlocked,
             List<BuildStep> singleBuildSteps, List<BuildStep> beforeIteratingAllTestCasesBuildSteps,
             List<BuildStep> iterativeBuildSteps, List<BuildStep> afterIteratingAllTestCasesBuildSteps,
             Boolean transactional, Boolean failedTestsMarkBuildAsFailure, Boolean failIfNoResults,
             Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
-        this(testLinkName, testProjectName, testPlanName, platformName, buildName, customFields, testPlanCustomFields, singleBuildSteps,
-             beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps, afterIteratingAllTestCasesBuildSteps, 
-             transactional, failedTestsMarkBuildAsFailure, failIfNoResults, failOnNotRun, resultSeekers);
+        this(testLinkName, testProjectName, testPlanName, platformName, buildName, customFields,
+             /*testPlanCustomFields*/ null, singleBuildSteps, beforeIteratingAllTestCasesBuildSteps,
+             iterativeBuildSteps, afterIteratingAllTestCasesBuildSteps, transactional, failedTestsMarkBuildAsFailure,
+             failIfNoResults, failOnNotRun, resultSeekers);
     }
 
     public String getTestLinkName() {
@@ -205,19 +212,6 @@ public class AbstractTestLinkBuilder extends Builder {
 
     public String getTestProjectName() {
         return this.testProjectName;
-    }
-
-    /**
-     * Expands a text variable like BUILD-$VAR replacing the $VAR part with a environment variable that matches its
-     * name, minus $.
-     * 
-     * @param variableResolver Jenkins Build Variable Resolver.
-     * @param envVars Jenkins Build Environment Variables.
-     * @param variable Variable value (includes mask).
-     * @return Expanded test project name job configuration property.
-     */
-    public String expandVariable(VariableResolver<String> variableResolver, EnvVars envVars, String variable) {
-        return Util.replaceMacro(envVars.expand(variable), variableResolver);
     }
 
     public String getTestPlanName() {
@@ -339,58 +333,4 @@ public class AbstractTestLinkBuilder extends Builder {
         return new TestLinkProjectAction(project);
     }
 
-    /* --- Utility methods --- */
-
-    /**
-     * Creates array of custom fields names using the Job configuration data.
-     * 
-     * @param variableResolver Jenkins variable resolver
-     * @param envVars Jenkins environment variables
-     * 
-     * @return Array of custom fields names.
-     */
-    protected String[] createArrayOfCustomFieldsNames(final VariableResolver<String> variableResolver,
-            final EnvVars envVars) {
-        String[] customFieldNamesArray = new String[0];
-        String customFields = expandVariable(variableResolver, envVars, this.getCustomFields());
-
-        if (StringUtils.isNotBlank(customFields)) {
-            StringTokenizer tokenizer = new StringTokenizer(customFields, COMMA);
-            if (tokenizer.countTokens() > 0) {
-                customFieldNamesArray = new String[tokenizer.countTokens()];
-                int index = 0;
-                while (tokenizer.hasMoreTokens()) {
-                    String customFieldName = tokenizer.nextToken();
-                    customFieldName = customFieldName.trim();
-                    customFieldNamesArray[index] = customFieldName;
-                    index = index + 1;
-                }
-            }
-        }
-
-        return customFieldNamesArray;
-    }
-
-
-    protected String[] createArrayOfTestPlanCustomFieldsNames(final VariableResolver<String> variableResolver,
-                                                              final EnvVars envVars){
-        String[] customFieldNamesArray = new String[0];
-        String customFields = expandVariable(variableResolver, envVars, this.getTestPlanCustomFields());
-
-        if (StringUtils.isNotBlank(customFields)) {
-            StringTokenizer tokenizer = new StringTokenizer(customFields, COMMA);
-            if (tokenizer.countTokens() > 0) {
-                customFieldNamesArray = new String[tokenizer.countTokens()];
-                int index = 0;
-                while (tokenizer.hasMoreTokens()) {
-                    String customFieldName = tokenizer.nextToken();
-                    customFieldName = customFieldName.trim();
-                    customFieldNamesArray[index] = customFieldName;
-                    index = index + 1;
-                }
-            }
-        }
-
-        return customFieldNamesArray;
-    }
 }
