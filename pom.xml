@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -12,7 +11,7 @@
 
 	<artifactId>testlink</artifactId>
 	<name>Jenkins TestLink Plugin</name>
-	<version>3.12-SNAPSHOT</version>
+	<version>3.12</version>
 	<packaging>hpi</packaging>
 	<description>This plug-in integrates Jenkins to TestLink</description>
 
@@ -230,7 +229,7 @@
         <connection>scm:git:git://github.com/jenkinsci/testlink-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:jenkinsci/testlink-plugin.git</developerConnection>
         <url>http://github.com/jenkinsci/testlink-plugin</url>
-        <tag>HEAD</tag>
+        <tag>testlink-3.12</tag>
     </scm>
 
     <dependencies>
