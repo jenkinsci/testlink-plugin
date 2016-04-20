@@ -299,7 +299,7 @@
         <dependency>
             <groupId>com.tupilabs</groupId>
             <artifactId>testng-parser</artifactId>
-            <version>0.3</version>
+            <version>0.5</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
