@@ -59,6 +59,10 @@ public class AbstractTestLinkBuilder extends Builder {
      */
     protected String buildName;
     /**
+     * The Build custom fields.
+     */
+    protected String buildCustomFields;
+    /**
      * The platform name.
      */
     protected final String platformName;
@@ -133,7 +137,7 @@ public class AbstractTestLinkBuilder extends Builder {
      * Create a AbstractTestLinkBuilder.
      */
     public AbstractTestLinkBuilder(String testLinkName, String testProjectName, String testPlanName, 
-            String platformName, String buildName, String customFields, String testPlanCustomFields, List<BuildStep> singleBuildSteps,
+            String platformName, String buildName, String buildCustomFields, String customFields, String testPlanCustomFields, List<BuildStep> singleBuildSteps,
             List<BuildStep> beforeIteratingAllTestCasesBuildSteps, List<BuildStep> iterativeBuildSteps,
             List<BuildStep> afterIteratingAllTestCasesBuildSteps, Boolean transactional,
             Boolean failedTestsMarkBuildAsFailure, Boolean failIfNoResults, Boolean failOnNotRun,
@@ -144,6 +148,7 @@ public class AbstractTestLinkBuilder extends Builder {
         this.testPlanName = testPlanName;
         this.platformName = platformName;
         this.buildName = buildName;
+        this.buildCustomFields = buildCustomFields;
         this.customFields = customFields;
         this.testPlanCustomFields = testPlanCustomFields;
         this.singleBuildSteps = singleBuildSteps;
@@ -162,12 +167,12 @@ public class AbstractTestLinkBuilder extends Builder {
      * @deprecated to add test plan custom fields
      */
     public AbstractTestLinkBuilder(String testLinkName, String testProjectName, String testPlanName, 
-            String platformName, String buildName, String customFields, List<BuildStep> singleBuildSteps,
+            String platformName, String buildName, String buildCustomFields, String customFields, List<BuildStep> singleBuildSteps,
             List<BuildStep> beforeIteratingAllTestCasesBuildSteps, List<BuildStep> iterativeBuildSteps,
             List<BuildStep> afterIteratingAllTestCasesBuildSteps, Boolean transactional,
             Boolean failedTestsMarkBuildAsFailure, Boolean failIfNoResults, Boolean failOnNotRun,
             List<ResultSeeker> resultSeekers) {
-        this(testLinkName, testProjectName, testPlanName, platformName, buildName, customFields,
+        this(testLinkName, testProjectName, testPlanName, platformName, buildName, buildCustomFields, customFields,
                 /*testPlanCustomFields*/ null, singleBuildSteps, beforeIteratingAllTestCasesBuildSteps,
                 iterativeBuildSteps, afterIteratingAllTestCasesBuildSteps, transactional, failedTestsMarkBuildAsFailure,
                 failIfNoResults, failOnNotRun, resultSeekers);
@@ -181,8 +186,8 @@ public class AbstractTestLinkBuilder extends Builder {
      * @param testPlanName TestLink Test Plan name.
      * @param platformName TestLink Platform name.
      * @param buildName TestLink Build name.
+     * @param buildCustomFields TestLink Build custom fields.
      * @param customFields TestLink comma-separated list of Custom Fields.
-     * @param keyCustomField Key custom field.
      * @param singleBuildSteps List of build steps to execute once for all automated test cases.
      * @param beforeIteratingAllTestCasesBuildSteps Command executed before iterating all test cases.
      * @param iterativeBuildSteps List of build steps to execute for each Automated Test Case.
@@ -194,13 +199,13 @@ public class AbstractTestLinkBuilder extends Builder {
      * @deprecated
      */
     public AbstractTestLinkBuilder(String testLinkName, String testProjectName, String testPlanName,
-            String platformName, String buildName, String customFields, Boolean executionStatusNotRun,
+            String platformName, String buildName, String buildCustomFields, String customFields, Boolean executionStatusNotRun,
             Boolean executionStatusPassed, Boolean executionStatusFailed, Boolean executionStatusBlocked,
             List<BuildStep> singleBuildSteps, List<BuildStep> beforeIteratingAllTestCasesBuildSteps,
             List<BuildStep> iterativeBuildSteps, List<BuildStep> afterIteratingAllTestCasesBuildSteps,
             Boolean transactional, Boolean failedTestsMarkBuildAsFailure, Boolean failIfNoResults,
             Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
-        this(testLinkName, testProjectName, testPlanName, platformName, buildName, customFields,
+        this(testLinkName, testProjectName, testPlanName, platformName, buildName, buildCustomFields, customFields,
              /*testPlanCustomFields*/ null, singleBuildSteps, beforeIteratingAllTestCasesBuildSteps,
              iterativeBuildSteps, afterIteratingAllTestCasesBuildSteps, transactional, failedTestsMarkBuildAsFailure,
              failIfNoResults, failOnNotRun, resultSeekers);
@@ -225,6 +230,8 @@ public class AbstractTestLinkBuilder extends Builder {
     public String getBuildName() {
         return this.buildName;
     }
+
+    public String getBuildCustomFields() { return this.buildCustomFields; }
 
     public String getCustomFields() {
         return this.customFields;
