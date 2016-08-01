@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 
+import org.hamcrest.core.StringContains;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -32,6 +33,8 @@ import br.eti.kinoshita.testlinkjavaapi.model.ReportTCResultResponse;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
+
+import java.util.HashMap;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestTestLinkSite {
@@ -86,7 +89,7 @@ public class TestTestLinkSite {
 		verify(api)
 				.reportTCResult(3, 4, 2, status, 1,
 						"build-name", "notes", null, null, null, "platform",
-						null, null);
+						new HashMap<String, String>(), null);
 		Report report = testLinkSite.getReport();
 		assertThat(report.getPassed(), is(1));
 		assertThat(report.getFailed(), is(0));
@@ -106,7 +109,7 @@ public class TestTestLinkSite {
 		verify(api)
 				.reportTCResult(3, 4, 2, status, 1,
 						"build-name", "notes", null, null, null, "platform",
-						null, null);
+						new HashMap<String, String>(), null);
 		Report report = testLinkSite.getReport();
 		assertThat(report.getPassed(), is(0));
 		assertThat(report.getFailed(), is(1));
@@ -126,7 +129,7 @@ public class TestTestLinkSite {
 		verify(api)
 				.reportTCResult(3, 4, 2, status, 1,
 						"build-name", "notes", null, null, null, "platform",
-						null, null);
+						new HashMap<String, String>(), null);
 		Report report = testLinkSite.getReport();
 		assertThat(report.getPassed(), is(0));
 		assertThat(report.getFailed(), is(0));

@@ -74,6 +74,11 @@ public class TestCaseWrapper implements Serializable {
 	 */
 	private TestCase testCase;
 
+	/**
+	 * Custom Field execution values
+     */
+	private Map<String, String> customFieldsExecutionValues = null;
+
 	public TestCaseWrapper() {
 		this(new TestCase());
 	}
@@ -147,7 +152,7 @@ public class TestCaseWrapper implements Serializable {
 	/**
 	 * Calculates the new value of this wrapped test case execution status, 
 	 * given a number of custom fields.
-	 * @param numberOfCustomFields
+	 * @param keyCustomFieldName
 	 * @return new value of this wrapped test case execution status
 	 */
 	public ExecutionStatus getExecutionStatus(String keyCustomFieldName) {
@@ -308,4 +313,7 @@ public class TestCaseWrapper implements Serializable {
 		this.testCase.setFullExternalId(fullExternalId);
 	}
 
+	public void setCustomFieldExecutionValue(Map<String, String> cfs) {this.customFieldsExecutionValues = cfs;}
+
+	public Map<String, String> getCustomFieldsExecutionValues(){return this.customFieldsExecutionValues;}
 }
