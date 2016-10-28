@@ -24,8 +24,11 @@
 package hudson.plugins.testlink.result;
 
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.plugins.testlink.TestLinkSite;
 
 import java.util.Map;
@@ -73,7 +76,7 @@ public class TAPFileNameMultiTestPointsResultSeeker extends AbstractTAPFileNameR
 
     @Override
     protected void updateTestCase(Map<String, TestSet> testSets, String key, TestCaseWrapper automatedTestCase,
-            String value, AbstractBuild<?, ?> build, BuildListener listener, TestLinkSite testlink) {
+                                  String value, Run<?, ?> build, FilePath workspace, TaskListener listener, TestLinkSite testlink) {
         final TestSet testSet = testSets.get(key);
         int executionNumbers = testSet.getNumberOfTestResults();
         for (Integer i = 1; i <= executionNumbers; i++) {
@@ -93,7 +96,7 @@ public class TAPFileNameMultiTestPointsResultSeeker extends AbstractTAPFileNameR
                 automatedTestCase.appendNotes(notes);
             }
 
-            this.handleResult(automatedTestCase, build, listener, testlink, status, testSets, key);
+            this.handleResult(automatedTestCase, build, workspace, listener, testlink, status, testSets, key);
         }
     }
 }

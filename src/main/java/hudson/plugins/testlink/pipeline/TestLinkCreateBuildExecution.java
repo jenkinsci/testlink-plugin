@@ -10,7 +10,6 @@ import hudson.plugins.testlink.TestLinkBuilderDescriptor;
 import hudson.plugins.testlink.TestLinkInstallation;
 import hudson.plugins.testlink.TestLinkSite;
 import hudson.plugins.testlink.result.ResultSeeker;
-import hudson.plugins.testlink.util.TestLinkHelper;
 import hudson.tasks.BuildStep;
 import org.apache.tools.ant.taskdefs.Parallel;
 import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
@@ -57,7 +56,6 @@ public class TestLinkCreateBuildExecution extends AbstractSynchronousNonBlocking
         if (installation == null) {
             throw new AbortException("Failed to find TestLink installation: " + config.getTestLinkName());
         }
-        TestLinkHelper.setTestLinkJavaAPIProperties(installation.getTestLinkJavaAPIProperties(), listener);
 
         final TestLinkSite testLinkSite;
         final String testLinkUrl = installation.getUrl();

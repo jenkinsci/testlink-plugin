@@ -24,9 +24,12 @@
 package hudson.plugins.testlink.result;
 
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.plugins.testlink.TestLinkSite;
 import hudson.plugins.testlink.util.Messages;
 import hudson.tasks.junit.JUnitParser;
@@ -85,11 +88,11 @@ public class JUnitSuiteNameResultSeeker extends AbstractJUnitResultSeeker {
 	 * hudson.plugins.testlink.result.Report)
 	 */
 	@Override
-	public void seek(TestCaseWrapper[] automatedTestCases,AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
+	public void seek(TestCaseWrapper[] automatedTestCases, Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener, TestLinkSite testlink) throws ResultSeekerException {
 		listener.getLogger().println( Messages.Results_JUnit_LookingForTestSuites() );
 		try {
 			final JUnitParser parser = new JUnitParser(false);
-			final TestResult testResult = parser.parse(this.includePattern, build, launcher, listener);
+			final TestResult testResult = parser.parseResult(this.includePattern, build, workspace, launcher, listener);
 			
 			for(SuiteResult suiteResult : testResult.getSuites()) {
 				for(TestCaseWrapper automatedTestCase : automatedTestCases) {
@@ -104,7 +107,7 @@ public class JUnitSuiteNameResultSeeker extends AbstractJUnitResultSeeker {
 								automatedTestCase.appendNotes(notes);
 							}
 							
-							super.handleResult(automatedTestCase, build, listener, testlink, suiteResult);
+							super.handleResult(automatedTestCase, build, workspace, listener, testlink, suiteResult);
 						}
 					}
 				}

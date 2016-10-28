@@ -67,7 +67,13 @@ public class TestLinkUploadTestResultsStep extends AbstractStepImpl implements S
      * Test results file (Junit.xml) path
      */
     @DataBoundSetter
-    private String resultsFilePath = null;
+    private String resultsFilePattern = null;
+
+    /**
+     * Test results file (Junit.xml) path
+     */
+    @DataBoundSetter
+    private String keyCustomField = null;
 
     @DataBoundConstructor
     public TestLinkUploadTestResultsStep(){
@@ -110,7 +116,9 @@ public class TestLinkUploadTestResultsStep extends AbstractStepImpl implements S
         return buildNotes;
     }
 
-    public String getResultsFilePath() { return resultsFilePath; }
+    public String getResultsFilePattern() { return resultsFilePattern; }
+
+    public String getKeyCustomField() { return keyCustomField; }
 
     @Extension
     public static final class DescriptorImpl extends AbstractStepDescriptorImpl {

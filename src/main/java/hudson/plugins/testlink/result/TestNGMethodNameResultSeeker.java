@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.remoting.Role;
 import org.jenkinsci.remoting.RoleChecker;
@@ -92,10 +94,10 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * @see hudson.plugins.testlink.result.ResultSeeker#seekAndUpdate(hudson.plugins.testlink.result.TestCaseWrapper<?>[], hudson.model.AbstractBuild, hudson.Launcher, hudson.model.BuildListener, hudson.plugins.testlink.TestLinkSite, hudson.plugins.testlink.result.Report)
 	 */
 	@Override
-	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, final BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
+	public void seek(TestCaseWrapper[] automatedTestCases, Run<?, ?> build, FilePath workspace, Launcher launcher, final TaskListener listener, TestLinkSite testlink) throws ResultSeekerException {
 		listener.getLogger().println( Messages.Results_TestNG_LookingForTestMethod() );
 		try {
-			final List<Suite> suites = build.getWorkspace().act(new FilePath.FileCallable<List<Suite>>() {
+			final List<Suite> suites = workspace.act(new FilePath.FileCallable<List<Suite>>() {
 				private static final long serialVersionUID = 1L;
 
 				private List<Suite> suites = new ArrayList<Suite>();
@@ -137,7 +139,7 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 											automatedTestCase.appendNotes(notes);
 										}
 										
-										super.handleResult(automatedTestCase, build, listener, testlink, status, suite);
+										super.handleResult(automatedTestCase, build, workspace, listener, testlink, status, suite);
 									}
 								}
 							}

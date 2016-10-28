@@ -17,7 +17,6 @@ import hudson.plugins.testlink.TestLinkBuilderDescriptor;
 import hudson.plugins.testlink.TestLinkInstallation;
 import hudson.plugins.testlink.TestLinkSite;
 import hudson.plugins.testlink.result.ResultSeeker;
-import hudson.plugins.testlink.util.TestLinkHelper;
 import hudson.tasks.BuildStep;
 import jdk.nashorn.internal.ir.debug.JSONWriter;
 import net.sf.json.JSONArray;
@@ -60,7 +59,6 @@ public class TestLinkDownloadTestPlanExecution extends AbstractSynchronousNonBlo
         if (installation == null) {
             throw new AbortException("Failed to find TestLink installation: " + config.getTestLinkName());
         }
-        TestLinkHelper.setTestLinkJavaAPIProperties(installation.getTestLinkJavaAPIProperties(), listener);
 
         final TestLinkSite testLinkSite;
         final String testLinkUrl = installation.getUrl();

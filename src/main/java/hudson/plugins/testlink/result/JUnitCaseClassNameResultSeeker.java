@@ -24,9 +24,12 @@
 package hudson.plugins.testlink.result;
 
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.plugins.testlink.TestLinkJunitWrapper;
 import hudson.plugins.testlink.TestLinkSite;
 import hudson.plugins.testlink.util.Messages;
@@ -88,12 +91,11 @@ public class JUnitCaseClassNameResultSeeker extends AbstractJUnitResultSeeker {
 	 * @see hudson.plugins.testlink.result.ResultSeeker#seekAndUpdate(hudson.plugins.testlink.result.TestCaseWrapper<?>[], hudson.model.AbstractBuild, hudson.Launcher, hudson.model.BuildListener, hudson.plugins.testlink.TestLinkSite, hudson.plugins.testlink.result.Report)
 	 */
 	@Override
-	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
+	public void seek(TestCaseWrapper[] automatedTestCases, Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener, TestLinkSite testlink) throws ResultSeekerException {
 		listener.getLogger().println( Messages.Results_JUnit_LookingForTestClasses() ); // i18n
 		try {
-		    listener.getLogger().println("invoking TestLinkJunitWrapper");
 			final TestLinkJunitWrapper parser = new TestLinkJunitWrapper(false, false);
-			final TestResult testResult = parser.parseResult(this.includePattern, build, build.getWorkspace(), launcher, listener);
+			final TestResult testResult = parser.parseResult(this.includePattern, build, workspace, launcher, listener);
 			final Map<String, Map<String, String>> customfields = parser.getCustomFields();
 
 			for(final SuiteResult suiteResult : testResult.getSuites()) {
@@ -129,7 +131,7 @@ public class JUnitCaseClassNameResultSeeker extends AbstractJUnitResultSeeker {
 				
 				// Here we update testlink with our findings
 				for(Map.Entry<String, TestCaseWrapper> entry : classNameTestCase.entrySet()) {
-					super.handleResult(entry.getValue(), build, listener, testlink, suiteResult);
+					super.handleResult(entry.getValue(), build, workspace, listener, testlink, suiteResult);
 				}
 			}
 			

@@ -262,7 +262,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			if(getResultSeekers() != null) {
 				for (ResultSeeker resultSeeker : getResultSeekers()) {
 					LOGGER.log(Level.INFO, "Seeking test results. Using: " + resultSeeker.getDescriptor().getDisplayName());
-					resultSeeker.seek(automatedTestCases, build, launcher, listener, testLinkSite);
+					resultSeeker.seek(automatedTestCases, build, build.getWorkspace(), launcher, listener, testLinkSite);
 				}
 			}
 		} catch (ResultSeekerException trse) {

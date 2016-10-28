@@ -67,7 +67,7 @@ public class TestLinkJunitWrapper extends JUnitParser {
         TestResult r = super.parseResult(testResultLocations, build, workspace, launcher, listener);
 
         /* Second parse of files to find Test Case custom field values */
-        this.customFields = (Map<String, Map<String, String>>)workspace.act(new TestLinkJunitWrapper.ParseResultCallable(testResultLocations, logger));
+        this.customFields = (Map<String, Map<String, String>>)workspace.act(new TestLinkJunitWrapper.ParseResultCallable(testResultLocations));
         Iterator it = customFields.entrySet().iterator();
         while (it.hasNext()){
             Map.Entry pair = (Map.Entry)it.next();
@@ -82,13 +82,11 @@ public class TestLinkJunitWrapper extends JUnitParser {
         return r;
     }
 
-    private static final class ParseResultCallable extends MasterToSlaveFileCallable<Map<String, Map<String, String>>> {
+    private static class ParseResultCallable extends MasterToSlaveFileCallable<Map<String, Map<String, String>>> {
         private final String testResults;
-        private final PrintStream logger;
 
-        private ParseResultCallable(String testResults, PrintStream logger) {
+        private ParseResultCallable(String testResults) {
             this.testResults = testResults;
-            this.logger = logger;
         }
 
         public Map<String, Map<String, String>> invoke(File ws, VirtualChannel channel) throws IOException {
