@@ -106,8 +106,10 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 					
 					for(String xml : xmls) {
 						final File input = new File(workspace, xml);
-						Suite suite = parser.parse(input);
-						suites.add(suite);
+						List <Suite> suitz = parser.parse(input);
+						for(Suite suite : suitz){
+							suites.add(suite);
+						}
 					}
 					
 					return suites;
