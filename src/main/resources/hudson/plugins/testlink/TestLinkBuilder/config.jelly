@@ -24,7 +24,11 @@
   <f:entry title="${%Build Name}" help="${rootURL}/../plugin/testlink/help-buildName.html">
 	  <f:textbox name="TestLinkBuilder.buildName" value="${instance.buildName}" />
   </f:entry>
-  
+
+  <f:entry title="${%Build Custom Fields Values}" help="${rootURL}/../plugin/testlink/help-buildCustomFields.html">
+    <f:textbox name="TestLinkBuilder.buildCustomFields" value="${instance.buildCustomFields}" />
+  </f:entry>
+
   <f:entry title="${%Custom Fields}" help="${rootURL}/../plugin/testlink/help-customFields.html">
 	  <f:textbox id="customFields" name="TestLinkBuilder.customFields" value="${instance.customFields}" />
   </f:entry>

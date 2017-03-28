@@ -217,7 +217,7 @@ public class TestLinkSite {
 				null, // bug id
 				platformId, // platform id
 				platformName, // platform name
-				null, // custom fields
+				testCase.getCustomFieldsExecutionValues(), // custom fields
 				null);
 			
 			switch(testCase.getExecutionStatus()) {

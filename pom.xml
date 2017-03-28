@@ -270,7 +270,7 @@
         <dependency>
             <groupId>br.eti.kinoshita</groupId>
             <artifactId>testlink-java-api</artifactId>
-            <version>1.9.14-0</version>
+            <version>1.9.14-1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -305,6 +305,11 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>junit</artifactId>
             <version>1.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-step-api</artifactId>
+            <version>2.1</version>
         </dependency>
     </dependencies>
 

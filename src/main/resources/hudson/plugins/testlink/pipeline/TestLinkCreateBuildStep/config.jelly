@@ -1,0 +1,29 @@
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+    <f:entry title="${%Test Link Name}" field="testLinkName">
+        <f:textbox default="" />
+    </f:entry>
+    <f:entry title="${%Test Project Name}" field="testProjectName">
+        <f:textbox default="" />
+    </f:entry>
+    <f:entry title="${%Test Plan Name}" field="testPlanName">
+        <f:textbox default="" />
+    </f:entry>
+    <f:entry title="${%Build Name}" field="buildName">
+        <f:textbox default="" />
+    </f:entry>
+    <f:entry title="${%Build Custom Fields}" field="buildCustomFields">
+        <f:textbox default="" />
+    </f:entry>
+    <f:entry title="${%Platform Name}" field="platformName">
+        <f:textbox default="" />
+    </f:entry>
+    <f:entry title="${%Custom Fields}" field="customFields">
+        <f:textbox default="" />
+    </f:entry>
+    <f:entry title="${%Test Plan Custom Fields}" field="testPlanCustomFields">
+        <f:textbox default="" />
+    </f:entry>
+    <f:entry title="${%Build Notes}" field="buildNotes">
+        <f:textbox default="" />
+    </f:entry>
+</j:jelly>

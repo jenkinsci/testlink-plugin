@@ -24,14 +24,10 @@
 package hudson.plugins.testlink.result;
 
 import hudson.DescriptorExtensionList;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
-import hudson.model.BuildListener;
-import hudson.model.Describable;
-import hudson.model.AbstractBuild;
-import hudson.model.Descriptor;
-import hudson.model.Hudson;
-import hudson.model.Node;
+import hudson.model.*;
 import hudson.plugins.testlink.TestLinkSite;
 
 import java.io.File;
@@ -144,7 +140,7 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	 * @param testlink TestLink site for updating test status
 	 * @throws ResultSeekerException
 	 */
-	public abstract void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestLinkSite testlink) throws ResultSeekerException;
+	public abstract void seek(TestCaseWrapper[] automatedTestCases, Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener, TestLinkSite testlink) throws ResultSeekerException;
 
 	/**
 	 * Retrieves the file content encoded in Base64.
@@ -172,7 +168,7 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	 *         pattern in the directory.
 	 * @throws IOException
 	 */
-	protected String[] scan(final File directory, final String includes, final BuildListener listener) throws IOException {
+	protected String[] scan(final File directory, final String includes, final TaskListener listener) throws IOException {
 		String[] fileNames = new String[0];
 
 		if (StringUtils.isNotBlank(includes)) {

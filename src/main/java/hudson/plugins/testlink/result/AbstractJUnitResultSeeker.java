@@ -26,6 +26,8 @@ package hudson.plugins.testlink.result;
 import java.io.File;
 import java.io.IOException;
 
+import hudson.FilePath;
+import hudson.model.*;
 import org.jenkinsci.remoting.Role;
 import org.jenkinsci.remoting.RoleChecker;
 import org.jenkinsci.remoting.RoleSensitive;
@@ -34,9 +36,6 @@ import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
 import hudson.FilePath.FileCallable;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
-import hudson.model.Result;
 import hudson.plugins.testlink.TestLinkSite;
 import hudson.plugins.testlink.util.Messages;
 import hudson.remoting.VirtualChannel;
@@ -78,14 +77,13 @@ public abstract class AbstractJUnitResultSeeker extends ResultSeeker {
 		return attachJUnitXML;
 	}
 
-	protected void handleResult(TestCaseWrapper automatedTestCase, AbstractBuild<?, ?> build, BuildListener listener, TestLinkSite testlink, final SuiteResult suiteResult) {
+	protected void handleResult(TestCaseWrapper automatedTestCase, Run<?, ?> build, FilePath workspace, TaskListener listener, TestLinkSite testlink, final SuiteResult suiteResult) {
 		if(automatedTestCase.getExecutionStatus(this.keyCustomField) != ExecutionStatus.NOT_RUN) {
 			try {
-				listener.getLogger().println( Messages.TestLinkBuilder_Update_AutomatedTestCases() );
 				final int executionId = testlink.updateTestCase(automatedTestCase);
 				
 				if(executionId > 0 && this.isAttachJUnitXML()) {
-					Attachment attachment = build.getWorkspace().act( new FileCallable<Attachment>() {
+					Attachment attachment = workspace.act( new FileCallable<Attachment>() {
 
 						private static final long serialVersionUID = -5411683541842375558L;
 

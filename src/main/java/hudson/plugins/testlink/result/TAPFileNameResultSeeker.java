@@ -24,12 +24,16 @@
 package hudson.plugins.testlink.result;
 
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.plugins.testlink.TestLinkSite;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.Facet;
 
 /**
  * <p>Seeks for test results matching each TAP file name with the key 
@@ -63,7 +67,7 @@ public class TAPFileNameResultSeeker extends AbstractTAPFileNameResultSeeker {
 	}
 	
 	@Override
-	public void seek(final TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, final BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
-		super.seek(automatedTestCases, build, launcher, listener, testlink);
+	public void seek(final TestCaseWrapper[] automatedTestCases, Run<?, ?> build, FilePath workspace, Launcher launcher, final TaskListener listener, TestLinkSite testlink) throws ResultSeekerException {
+		super.seek(automatedTestCases, build, workspace, launcher, listener, testlink);
 	}
 }
