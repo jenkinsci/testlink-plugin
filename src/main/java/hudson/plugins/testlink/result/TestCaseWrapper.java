@@ -152,7 +152,7 @@ public class TestCaseWrapper implements Serializable {
 	 */
 	public ExecutionStatus getExecutionStatus(String keyCustomFieldName) {
 		String[] keyCustomFieldValues = this.getKeyCustomFieldValues(keyCustomFieldName);
-		int numberOfCustomFields = keyCustomFieldValues != null ? keyCustomFieldValues.length : 0;
+		int numberOfCustomFields = keyCustomFieldValues.length;
 		ExecutionStatus status = ExecutionStatus.NOT_RUN;
 		if (customFieldAndStatus.size() > 0 && customFieldAndStatus.size() == numberOfCustomFields) {
 			status = ExecutionStatus.PASSED;
