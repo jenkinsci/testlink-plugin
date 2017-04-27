@@ -9,18 +9,18 @@
           
 	  	  <f:entry title="${%Name}">
             <f:textbox name="TestLink.name" value="${inst.name}" 
-               checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)" />
+              checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)" />
           </f:entry>
           
           <f:entry title="URL" help="${rootURL}/../plugin/testlink/help-testlinkUrl.html">
             <f:textbox name="TestLink.url" value="${inst.url}" 
             default="http://localhost/testlink/lib/api/xmlrpc/v1/xmlrpc.php" 
-            checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)" />
+              checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)" />
           </f:entry>
 
           <f:entry title="${%Developer Key}">
             <f:textbox name="TestLink.devKey" value="${inst.devKey}" 
-            checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)" />
+              checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)" />
           </f:entry>
           
           <f:advanced>	  
