@@ -27,6 +27,7 @@ import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
+import hudson.plugins.testlink.TestLinkJunitWrapper;
 import hudson.plugins.testlink.TestLinkSite;
 import hudson.plugins.testlink.util.Messages;
 import hudson.tasks.junit.JUnitParser;
@@ -63,7 +64,7 @@ public class JUnitCaseClassNameResultSeeker extends AbstractJUnitResultSeeker {
 	/**
 	 * @param includePattern Include pattern used when looking for results
 	 * @param keyCustomField Key custom field to match against the results
-	 * @param attachJunitXML Bit that enables attaching result file to TestLink
+	 * @param attachJUnitXML Bit that enables attaching result file to TestLink
 	 */
 	@DataBoundConstructor
 	public JUnitCaseClassNameResultSeeker(String includePattern, String keyCustomField, boolean attachJUnitXML, boolean includeNotes) {
@@ -90,9 +91,11 @@ public class JUnitCaseClassNameResultSeeker extends AbstractJUnitResultSeeker {
 	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
 		listener.getLogger().println( Messages.Results_JUnit_LookingForTestClasses() ); // i18n
 		try {
-			final JUnitParser parser = new JUnitParser(false);
-			final TestResult testResult = parser.parse(this.includePattern, build, launcher, listener);
-			
+		    listener.getLogger().println("invoking TestLinkJunitWrapper");
+			final TestLinkJunitWrapper parser = new TestLinkJunitWrapper(false, false);
+			final TestResult testResult = parser.parseResult(this.includePattern, build, build.getWorkspace(), launcher, listener);
+			final Map<String, Map<String, String>> customfields = parser.getCustomFields();
+
 			for(final SuiteResult suiteResult : testResult.getSuites()) {
 				
 				final List<CaseResult> caseResults = this.filter(suiteResult.getCases()); 
@@ -109,7 +112,11 @@ public class JUnitCaseClassNameResultSeeker extends AbstractJUnitResultSeeker {
 								//final ExecutionStatus previousStatus = automatedTestCase.getCustomFieldAndStatus().get(value);
 								final ExecutionStatus status = this.getExecutionStatus(caseResult);
 								automatedTestCase.addCustomFieldAndStatus(value, status);
-								
+								Map<String, String> cfs = customfields.get(caseResult.getClassName());
+								if (cfs != null && cfs.size() > 0){
+									automatedTestCase.setCustomFieldExecutionValue(cfs);
+								}
+
 								if(this.isIncludeNotes()) {
 									final String notes = this.getJUnitNotes(caseResult, build.number);
 									automatedTestCase.appendNotes(notes);
@@ -221,3 +228,4 @@ public class JUnitCaseClassNameResultSeeker extends AbstractJUnitResultSeeker {
 	}
 
 }
+
