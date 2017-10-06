@@ -140,6 +140,7 @@ public abstract class AbstractTAPFileNameResultSeeker extends ResultSeeker {
                 for (TestCaseWrapper automatedTestCase : automatedTestCases) {
                     final String[] commaSeparatedValues = automatedTestCase
                             .getKeyCustomFieldValues(this.keyCustomField);
+                    final String testCasePlatform = automatedTestCase.getPlatform();
                     for (String value : commaSeparatedValues) {
                         String tapFileNameWithoutExtension = key;
                         int leftIndex = 0;
@@ -153,7 +154,8 @@ public abstract class AbstractTAPFileNameResultSeeker extends ResultSeeker {
                             tapFileNameWithoutExtension = tapFileNameWithoutExtension.substring(leftIndex,
                                     tapFileNameWithoutExtension.lastIndexOf('.'));
                         }
-                        if (tapFileNameWithoutExtension.equals(value)) {
+                        if ( (testCasePlatform != null && tapFileNameWithoutExtension.equals(value+"-"+testCasePlatform)) ||
+                             (tapFileNameWithoutExtension.equals(value)) ) {
                             this.updateTestCase(testSets, key, automatedTestCase, value, build, listener, testlink);
                         }
                     }
