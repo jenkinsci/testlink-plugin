@@ -174,7 +174,7 @@ public class TestNGMethodNameDataProviderNameResultSeeker extends AbstractTestNG
 	}
 
 	/**
-	 * @param suite
+	 * @param method Test method
 	 * @return
 	 */
 	private ExecutionStatus getExecutionStatus(TestMethod method) {

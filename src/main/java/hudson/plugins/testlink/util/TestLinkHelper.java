@@ -141,9 +141,9 @@ public final class TestLinkHelper {
 	}
 	
 	/**
-	 * Maybe adds a system property if it is in format <key>=<value>.
+	 * Maybe adds a system property if it is in format (@code key=value}.
 	 * 
-	 * @param systemProperty System property entry in format <key>=<value>.
+	 * @param systemProperty System property entry in format {@code key=value}.
 	 * @param listener Jenkins Build listener
 	 */
 	public static void maybeAddSystemProperty(String systemProperty, BuildListener listener) {

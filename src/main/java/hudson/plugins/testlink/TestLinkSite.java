@@ -186,7 +186,7 @@ public class TestLinkSite {
 	 * Updates the test cases status in TestLink (note and status) and 
 	 * uploads any existing attachments.
 	 * 
-	 * @param testCases Test Cases
+	 * @param testCase Test Case
 	 */
 	public int updateTestCase(TestCaseWrapper testCase) {
 		int executionId = 0;

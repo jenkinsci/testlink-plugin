@@ -147,7 +147,6 @@ public class TestCaseWrapper implements Serializable {
 	/**
 	 * Calculates the new value of this wrapped test case execution status, 
 	 * given a number of custom fields.
-	 * @param numberOfCustomFields
 	 * @return new value of this wrapped test case execution status
 	 */
 	public ExecutionStatus getExecutionStatus(String keyCustomFieldName) {

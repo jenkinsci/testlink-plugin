@@ -155,7 +155,7 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 	}
 
 	/**
-	 * @param suite
+	 * @param method Method
 	 * @return
 	 */
 	private ExecutionStatus getExecutionStatus(TestMethod method) {
