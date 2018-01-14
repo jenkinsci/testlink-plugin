@@ -157,8 +157,7 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * <p>
 	 * In there is any skipped method, and {{@link #isMarkSkippedTestAsBlocked()} 
 	 * is true, then it returns Blocked.
-	 * 
-	 * @param suite
+	 *
 	 * @return
 	 */
 	private ExecutionStatus getExecutionStatus(com.tupilabs.testng.parser.Class clazz) {
