@@ -47,11 +47,9 @@ public class TestTestLinkResult
 	{
 		Report report = new Report(1, null);
 		AbstractBuild<?, ?> build = null;
-		TestLinkResult tlr = new TestLinkResult(report, build);
+		TestLinkResult tlr = new TestLinkResult(report);
 		
 		assertNotNull( tlr );
-		
-		assertNull( tlr.getOwner() );
 		
 		assertNotNull( tlr.getReport() );
 	}

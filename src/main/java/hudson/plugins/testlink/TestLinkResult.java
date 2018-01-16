@@ -30,19 +30,39 @@ import java.io.Serializable;
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 1.0
+ * @see TestLinkBuildAction
  */
 public class TestLinkResult implements Serializable {
 
     private static final long serialVersionUID = 3355678827881770594L;
 
-    private Report report;
-    private AbstractBuild<?, ?> build;
+    private final Report report;
 
+    // It would be possible to link actions, but there is no immediate need in the plugin API
+    private final transient AbstractBuild<?, ?> build;
+
+    /**
+     * Constructor
+     * @param report
+     */
+    public TestLinkResult(Report report) {
+        this.report = report;
+        this.build = null;
+    }
+
+    /**
+     * @deprecated Use {@link #TestLinkResult(Report)}
+     */
+    @Deprecated
     public TestLinkResult(Report report, AbstractBuild<?, ?> build) {
         this.report = report;
         this.build = build;
     }
 
+    /**
+     * @deprecated No longer used AND not persisted during restarts
+     */
+    @Deprecated
     public AbstractBuild<?, ?> getOwner() {
         return this.build;
     }
