@@ -275,7 +275,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		
 		listener.getLogger().println(Messages.TestLinkBuilder_ShowFoundTestResults(report.getTestsTotal()));
 		
-		final TestLinkResult result = new TestLinkResult(report, build);
+		final TestLinkResult result = new TestLinkResult(report);
 		final TestLinkBuildAction buildAction = new TestLinkBuildAction(result);
 		build.addAction(buildAction);
 		
