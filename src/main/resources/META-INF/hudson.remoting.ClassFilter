@@ -8,5 +8,14 @@ br.eti.kinoshita.testlinkjavaapi.model.CustomField
 br.eti.kinoshita.testlinkjavaapi.model.Platform
 
 
-#TestNG
-com.tupilabs.testng.parser.
+#TestNG - old classes
+hudson.plugins.testlink.testng.Class
+hudson.plugins.testlink.testng.Suite
+hudson.plugins.testlink.testng.Test
+hudson.plugins.testlink.testng.TestMethod
+
+# New classes in TestNG library - used for Remoting and XStream
+com.tupilabs.testng.parser.Class
+com.tupilabs.testng.parser.Suite
+com.tupilabs.testng.parser.Test
+com.tupilabs.testng.parser.TestMethod
