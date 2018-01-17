@@ -26,14 +26,11 @@ package hudson.plugins.testlink.result;
 import java.io.File;
 import java.io.IOException;
 
-import org.jenkinsci.remoting.Role;
-import org.jenkinsci.remoting.RoleChecker;
-import org.jenkinsci.remoting.RoleSensitive;
+import jenkins.MasterToSlaveFileCallable;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
-import hudson.FilePath.FileCallable;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Result;
@@ -85,7 +82,7 @@ public abstract class AbstractJUnitResultSeeker extends ResultSeeker {
 				final int executionId = testlink.updateTestCase(automatedTestCase);
 				
 				if(executionId > 0 && this.isAttachJUnitXML()) {
-					Attachment attachment = build.getWorkspace().act( new FileCallable<Attachment>() {
+					Attachment attachment = build.getWorkspace().act( new MasterToSlaveFileCallable<Attachment>() {
 
 						private static final long serialVersionUID = -5411683541842375558L;
 
@@ -105,11 +102,6 @@ public abstract class AbstractJUnitResultSeeker extends ResultSeeker {
 							
 							return attachment;
 						}
-
-                        @Override
-                        public void checkRoles(RoleChecker roleChecker) throws SecurityException {
-                            roleChecker.check((RoleSensitive) this, Role.UNKNOWN);
-                        }
 					});
 					testlink.uploadAttachment(executionId, attachment);
 				}

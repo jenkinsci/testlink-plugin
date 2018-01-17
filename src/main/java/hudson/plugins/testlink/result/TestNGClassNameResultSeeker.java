@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jenkins.MasterToSlaveFileCallable;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.remoting.Role;
 import org.jenkinsci.remoting.RoleChecker;
@@ -92,7 +93,7 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, final BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
 		listener.getLogger().println( Messages.Results_TestNG_LookingForTestSuites() );
 		try {
-			final List<Suite> suites = build.getWorkspace().act(new FilePath.FileCallable<List<Suite>>() {
+			final List<Suite> suites = build.getWorkspace().act(new MasterToSlaveFileCallable<List<Suite>>() {
 				private static final long serialVersionUID = 1L;
 
 				private List<Suite> suites = new ArrayList<Suite>();
@@ -111,11 +112,6 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 					
 					return suites;
 				}
-
-                @Override
-                public void checkRoles(RoleChecker roleChecker) throws SecurityException {
-                    roleChecker.check((RoleSensitive) this, Role.UNKNOWN);
-                }
 			});
 			for(Suite suite : suites) {
 				for(Test test : suite.getTests() ) {

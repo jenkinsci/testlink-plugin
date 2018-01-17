@@ -28,9 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jenkinsci.remoting.Role;
-import org.jenkinsci.remoting.RoleChecker;
-import org.jenkinsci.remoting.RoleSensitive;
+import jenkins.MasterToSlaveFileCallable;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import com.tupilabs.testng.parser.Suite;
@@ -39,7 +37,6 @@ import com.tupilabs.testng.parser.TestMethod;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import hudson.Extension;
-import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
@@ -91,7 +88,7 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, final BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
 		listener.getLogger().println( Messages.Results_TestNG_LookingForTestSuites() );
 		try {
-			final List<Suite> suites = build.getWorkspace().act(new FilePath.FileCallable<List<Suite>>() {
+			final List<Suite> suites = build.getWorkspace().act(new MasterToSlaveFileCallable<List<Suite>>() {
 				private static final long serialVersionUID = 1L;
 
 				private List<Suite> suites = new ArrayList<Suite>();
@@ -110,11 +107,6 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 					
 					return suites;
 				}
-
-                @Override
-                public void checkRoles(RoleChecker roleChecker) throws SecurityException {
-                    roleChecker.check((RoleSensitive) this, Role.UNKNOWN);
-                }
 			});
 			for(Suite suite : suites) {
 				for(TestCaseWrapper automatedTestCase : automatedTestCases) {
