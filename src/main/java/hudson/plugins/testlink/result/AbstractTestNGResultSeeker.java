@@ -44,6 +44,8 @@ import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
 import com.tupilabs.testng.parser.Suite;
 import com.tupilabs.testng.parser.TestNGParser;
 
+import javax.annotation.Nonnull;
+
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 3.1
@@ -58,7 +60,7 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 	
 	public static final String TEXT_XML_CONTENT_TYPE = "text/xml";
 
-	protected final TestNGParser parser = new TestNGParser();
+	protected transient TestNGParser _parser = null;
 	
 	private boolean attachTestNGXML = false;
 	
@@ -68,6 +70,14 @@ public abstract class AbstractTestNGResultSeeker extends ResultSeeker {
 		super(includePattern, keyCustomField, includeNotes);
 		this.attachTestNGXML = attachTestNGXML;
 		this.markSkippedTestAsBlocked = markSkippedTestAsBlocked;
+	}
+
+	@Nonnull
+	protected TestNGParser getParser() {
+		if (_parser == null) {
+			_parser = new TestNGParser();
+		}
+		return _parser;
 	}
 
 	public void setAttachTestNGXML(boolean attachTestNGXML) {

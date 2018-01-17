@@ -7,3 +7,6 @@ br.eti.kinoshita.testlinkjavaapi.model.TestCaseStep
 br.eti.kinoshita.testlinkjavaapi.model.CustomField
 br.eti.kinoshita.testlinkjavaapi.model.Platform
 
+
+#TestNG
+com.tupilabs.testng.parser.

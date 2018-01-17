@@ -37,7 +37,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import com.tupilabs.testng.parser.Suite;
 import com.tupilabs.testng.parser.Test;
 import com.tupilabs.testng.parser.TestMethod;
-import com.tupilabs.testng.parser.TestNGParser;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import hudson.Extension;
@@ -61,9 +60,7 @@ import hudson.remoting.VirtualChannel;
 public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 
 	private static final long serialVersionUID = 3885800916930897675L;
-	
-	private final TestNGParser parser = new TestNGParser();
-	
+
 	/**
 	 * @param includePattern
 	 * @param keyCustomField
@@ -106,7 +103,7 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 					
 					for(String xml : xmls) {
 						final File input = new File(workspace, xml);
-						List <Suite> suitz = parser.parse(input);
+						List <Suite> suitz = getParser().parse(input);
 						for(Suite suite : suitz){
 							suites.add(suite);
 						}

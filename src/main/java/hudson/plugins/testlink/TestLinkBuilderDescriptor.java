@@ -49,7 +49,6 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 import com.tupilabs.testng.parser.Suite;
-import com.tupilabs.testng.parser.TestNGParser;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
@@ -158,7 +157,6 @@ public class TestLinkBuilderDescriptor extends BuildStepDescriptor<Builder> {
     @Initializer(before = InitMilestone.PLUGINS_STARTED)
     public static void addAliases() {
         Items.XSTREAM2.addCompatibilityAlias("hudson.plugins.testlink.testng.Suite", Suite.class);
-        Items.XSTREAM2.addCompatibilityAlias("hudson.plugins.testlink.testng.TestNGParser", TestNGParser.class);
         Items.XSTREAM2.addCompatibilityAlias("hudson.plugins.testlink.testng.Test",
                 com.tupilabs.testng.parser.Test.class);
         Items.XSTREAM2.addCompatibilityAlias("hudson.plugins.testlink.testng.TestMethod",
