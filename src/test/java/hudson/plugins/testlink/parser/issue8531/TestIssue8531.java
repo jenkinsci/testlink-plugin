@@ -39,7 +39,7 @@ import hudson.tasks.junit.SuiteResult;
 import hudson.tasks.junit.TestResult;
 
 /**
- * Tests the JUnit parser for issue 8531.
+ * Tests the JUnit _parser for issue 8531.
  * 
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1

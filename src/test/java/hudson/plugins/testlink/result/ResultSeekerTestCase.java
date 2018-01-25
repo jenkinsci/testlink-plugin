@@ -115,10 +115,11 @@ public abstract class ResultSeekerTestCase {
 class ResultSeekerBuilder extends Builder implements Serializable {
 
 	private static final long serialVersionUID = 3497104063426101764L;
-	
-	private ResultSeeker seeker;
-	private TestCaseWrapper[] tcs;
-	private TestLinkSiteFake testlink;
+
+	// Not serialized to the disk - test class
+	private transient ResultSeeker seeker;
+	private transient TestCaseWrapper[] tcs;
+	private transient TestLinkSiteFake testlink;
 	
 	public ResultSeekerBuilder(ResultSeeker seeker, TestCaseWrapper[] tcs, TestLinkSiteFake testlink) {
 		this.seeker = seeker;

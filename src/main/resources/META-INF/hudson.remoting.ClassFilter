@@ -1,0 +1,21 @@
+# In TestCaseWrapper, contains only base classes
+br.eti.kinoshita.testlinkjavaapi.model.Attachment
+
+# Test case and nested classes which may need whitelisting, no deserialization logic there
+br.eti.kinoshita.testlinkjavaapi.model.TestCase
+br.eti.kinoshita.testlinkjavaapi.model.TestCaseStep
+br.eti.kinoshita.testlinkjavaapi.model.CustomField
+br.eti.kinoshita.testlinkjavaapi.model.Platform
+
+
+#TestNG - old classes
+hudson.plugins.testlink.testng.Class
+hudson.plugins.testlink.testng.Suite
+hudson.plugins.testlink.testng.Test
+hudson.plugins.testlink.testng.TestMethod
+
+# New classes in TestNG library - used for Remoting and XStream
+com.tupilabs.testng.parser.Class
+com.tupilabs.testng.parser.Suite
+com.tupilabs.testng.parser.Test
+com.tupilabs.testng.parser.TestMethod
