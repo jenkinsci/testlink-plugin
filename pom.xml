@@ -11,7 +11,7 @@
 
 	<artifactId>testlink</artifactId>
 	<name>Jenkins TestLink Plugin</name>
-	<version>3.13-SNAPSHOT</version>
+	<version>3.13</version>
 	<packaging>hpi</packaging>
 	<description>This plug-in integrates Jenkins to TestLink</description>
 
@@ -233,7 +233,7 @@
         <connection>scm:git:git://github.com/jenkinsci/testlink-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:jenkinsci/testlink-plugin.git</developerConnection>
         <url>http://github.com/jenkinsci/testlink-plugin</url>
-        <tag>HEAD</tag>
+        <tag>testlink-3.13</tag>
     </scm>
 
     <dependencies>
