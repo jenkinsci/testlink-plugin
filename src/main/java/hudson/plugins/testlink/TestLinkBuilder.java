@@ -236,10 +236,10 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		}
 		
 		for(TestCaseWrapper tcw : automatedTestCases) {
-		    testLinkSite.getReport().addTestCase(tcw);
-		    if(LOGGER.isLoggable(Level.FINE)) {
-		        LOGGER.log(Level.FINE, "TestLink automated test case ID [" + tcw.getId() + "], name [" +tcw.getName()+ "]");
-		    }
+			testLinkSite.getReport().addTestCase(tcw);
+			if(LOGGER.isLoggable(Level.FINE)) {
+				LOGGER.log(Level.FINE, "TestLink automated test case ID [" + tcw.getId() + "], name [" + tcw.getName() + "], platform [" + tcw.getPlatform() + "]");
+			}
 		}
 		
 		listener.getLogger().println(Messages.TestLinkBuilder_ExecutingSingleBuildSteps());

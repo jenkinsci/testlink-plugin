@@ -62,6 +62,7 @@ public final class TestLinkHelper {
 	private static final String TESTLINK_TESTCASE_TESTPROJECT_ID = "TESTLINK_TESTCASE_TESTPROJECTID";
 	private static final String TESTLINK_TESTCASE_AUTHOR_ENVVAR = "TESTLINK_TESTCASE_AUTHOR";
 	private static final String TESTLINK_TESTCASE_SUMMARY_ENVVAR = "TESTLINK_TESTCASE_SUMMARY";
+	private static final String TESTLINK_TESTCASE_PLATFORM_ENVVAR = "TESTLINK_TESTCASE_PLATFORM";
 	private static final String TESTLINK_BUILD_NAME_ENVVAR = "TESTLINK_BUILD_NAME";
 	private static final String TESTLINK_TESTPLAN_NAME_ENVVAR = "TESTLINK_TESTPLAN_NAME";
 	private static final String TESTLINK_TESTPROJECT_NAME_ENVVAR = "TESTLINK_TESTPROJECT_NAME";
@@ -187,6 +188,7 @@ public final class TestLinkHelper {
 		testLinkEnvVar.put( TESTLINK_TESTCASE_TESTPROJECT_ID, ""+testCase.getTestProjectId() );
 		testLinkEnvVar.put( TESTLINK_TESTCASE_AUTHOR_ENVVAR, ""+testCase.getAuthorLogin() );
 		testLinkEnvVar.put( TESTLINK_TESTCASE_SUMMARY_ENVVAR, StringUtils.defaultIfEmpty(testCase.getSummary(), "") );
+		testLinkEnvVar.put( TESTLINK_TESTCASE_PLATFORM_ENVVAR, StringUtils.defaultIfEmpty(testCase.getPlatform(), "") );
 		testLinkEnvVar.put( TESTLINK_BUILD_NAME_ENVVAR, StringUtils.defaultIfEmpty(build.getName(), ""));
 		testLinkEnvVar.put( TESTLINK_TESTPLAN_NAME_ENVVAR, StringUtils.defaultIfEmpty(testPlan.getName(), ""));
 		testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, StringUtils.defaultIfEmpty(testProject.getName(), ""));
@@ -387,6 +389,8 @@ public final class TestLinkHelper {
 		builder.append("</th><th>");
 		builder.append(Messages.ReportSummary_Details_Name());
 		builder.append("</th><th>");
+		builder.append(Messages.ReportSummary_Details_Platform());
+		builder.append("</th><th>");
 		builder.append(Messages.ReportSummary_Details_TestProjectId());
 		builder.append("</th><th>");
 		builder.append(Messages.ReportSummary_Details_ExecutionStatus());
@@ -400,6 +404,7 @@ public final class TestLinkHelper {
         	builder.append("<td>"+tc.getFullExternalId()+"</td>");
         	builder.append("<td>"+tc.getVersion()+"</td>");
         	builder.append("<td>"+tc.getName()+"</td>");
+        	builder.append("<td>"+tc.getPlatform()+"</td>");
         	builder.append("<td>"+tc.getTestProjectId()+"</td>");
     		builder.append("<td>"+TestLinkHelper.getExecutionStatusTextColored( tc.getExecutionStatus() )+"</td>\n");
         	

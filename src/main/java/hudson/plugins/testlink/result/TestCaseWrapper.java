@@ -87,6 +87,9 @@ public class TestCaseWrapper implements Serializable {
 		this.notes = new StringBuilder();
 		this.attachments = new LinkedList<Attachment>();
 		this.customFieldAndStatus = new HashMap<String, ExecutionStatus>();
+		if (this.testCase.getPlatform() != null) {
+			this.setPlatform(this.testCase.getPlatform().getName());
+		}
 	}
 
 	/**
