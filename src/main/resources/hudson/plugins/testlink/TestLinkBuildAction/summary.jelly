@@ -6,7 +6,7 @@
 	xmlns:f="/lib/form"
     xmlns:i="jelly:fmt">
     <t:summary icon="/plugin/testlink/icons/testlink-48.png">
-		${it.summary}
-		${it.details}
+			<j:out value="${it.summary}"/>
+			<j:out value="${it.details}"/>
 	</t:summary>
 </j:jelly>
