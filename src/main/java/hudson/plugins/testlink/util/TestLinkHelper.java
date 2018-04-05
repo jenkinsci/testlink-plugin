@@ -192,7 +192,7 @@ public final class TestLinkHelper {
 		testLinkEnvVar.put( TESTLINK_TESTPLAN_NAME_ENVVAR, StringUtils.defaultIfEmpty(testPlan.getName(), ""));
 		testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, StringUtils.defaultIfEmpty(testProject.getName(), ""));
                 testLinkEnvVar.put( TESTLINK_TESTCASE_EXTERNAL_ID_ENVVAR, StringUtils.defaultIfEmpty(testCase.getFullExternalId(), ""));
-                testLinkEnvVar.put( TESTLINK_TESTCASE_VERSION_ENVVAR, StringUtils.defaultIfEmpty(testCase.getVersion(), ""));
+                testLinkEnvVar.put( TESTLINK_TESTCASE_VERSION, ""+testCase.getVersion() );
 
 		List<CustomField> testCaseCustomFields = testCase.getCustomFields();
 		for (CustomField customField : testCaseCustomFields) {
