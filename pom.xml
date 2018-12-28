@@ -26,7 +26,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jenkins.version>2.60.3</jenkins.version>
-        <java.level>7</java.level>
+        <java.level>8</java.level>
         <!-- TODO: remove once FindBugs issues are resolved -->
         <findbugs.failOnError>false</findbugs.failOnError>
     </properties>
