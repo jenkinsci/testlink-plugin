@@ -240,7 +240,7 @@
         <dependency>
             <groupId>br.eti.kinoshita</groupId>
             <artifactId>testlink-java-api</artifactId>
-            <version>1.9.16-1</version>
+            <version>1.9.17-0</version>
         </dependency>
         <dependency>
             <groupId>org.tap4j</groupId>
