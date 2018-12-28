@@ -36,11 +36,6 @@
         <url>http://issues.jenkins-ci.org/browse/JENKINS/component/15754</url>
     </issueManagement>
 
-    <ciManagement>
-        <system>Jenkins</system>
-        <url>http://ci.jenkins-ci.org/view/Plugins/job/plugins_testlink</url>
-    </ciManagement>
-
     <developers>
         <developer>
             <id>kinow</id>
