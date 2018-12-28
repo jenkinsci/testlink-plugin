@@ -209,7 +209,8 @@ public class TestLinkSite {
 				testCase.getId(), 
 				testCase.getInternalId(), 
 				testPlan.getId(), 
-				testCase.getExecutionStatus(), 
+				testCase.getExecutionStatus(),
+				null, // List<TestCaseStepResult> steps
 				build.getId(), 
 				build.getName(), 
 				testCase.getNotes(), 
