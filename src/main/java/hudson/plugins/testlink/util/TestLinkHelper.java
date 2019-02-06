@@ -66,6 +66,7 @@ public final class TestLinkHelper {
 	private static final String TESTLINK_TESTPLAN_NAME_ENVVAR = "TESTLINK_TESTPLAN_NAME";
 	private static final String TESTLINK_TESTPROJECT_NAME_ENVVAR = "TESTLINK_TESTPROJECT_NAME";
 	private static final String TESTLINK_TESTCASE_EXTERNAL_ID_ENVVAR = "TESTLINK_TESTCASE_EXTERNAL_ID";
+	private static final String TESTLINK_TESTCASE_VERSION_ENVVAR = "TESTLINK_TESTCASE_VERSION";
 
 	// Used for HTTP basic auth
 	private static final String BASIC_HTTP_PASSWORD = "basicPassword";
@@ -191,6 +192,7 @@ public final class TestLinkHelper {
 		testLinkEnvVar.put( TESTLINK_TESTPLAN_NAME_ENVVAR, StringUtils.defaultIfEmpty(testPlan.getName(), ""));
 		testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, StringUtils.defaultIfEmpty(testProject.getName(), ""));
                 testLinkEnvVar.put( TESTLINK_TESTCASE_EXTERNAL_ID_ENVVAR, StringUtils.defaultIfEmpty(testCase.getFullExternalId(), ""));
+                testLinkEnvVar.put( TESTLINK_TESTCASE_VERSION_ENVVAR, ""+testCase.getVersion() );
 
 		List<CustomField> testCaseCustomFields = testCase.getCustomFields();
 		for (CustomField customField : testCaseCustomFields) {
