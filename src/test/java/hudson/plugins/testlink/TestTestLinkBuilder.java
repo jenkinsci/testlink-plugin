@@ -60,7 +60,7 @@ public class TestTestLinkBuilder {
 
     @Before
     public void setUp() throws Exception {
-        builder = new TestLinkBuilder("No testlink", "No project", "No plan", "No platform", "No build",
+        builder = new TestLinkBuilder("No testlink", "No project", "No plan", "No platform", "No build", "Not build custom field",
                 "class, time, sample-job-$BUILD_ID", "host, user",Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null,
                 null, null, null, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null);
     }
@@ -89,7 +89,7 @@ public class TestTestLinkBuilder {
     @Test
     public void testNull() {
         builder = new TestLinkBuilder(null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null);
 
         assertNotNull(builder);
 
@@ -102,6 +102,8 @@ public class TestTestLinkBuilder {
         assertNull(builder.getPlatformName());
 
         assertNull(builder.getBuildName());
+
+        assertNull(builder.getBuildCustomFields());
 
         assertNull(builder.getSingleBuildSteps());
 
@@ -133,7 +135,7 @@ public class TestTestLinkBuilder {
         List<BuildStep> singleBuildSteps = new ArrayList<BuildStep>();
         singleBuildSteps.add(shell);
 
-        builder = new TestLinkBuilder("No testlink", "No project", "No plan", "No platform", "No build", "class, time",
+        builder = new TestLinkBuilder("No testlink", "No project", "No plan", "No platform", "No build", "No build custom fields", "class, time",
                 "host, user", Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, singleBuildSteps, null,
                 null, null, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, null);
 
@@ -156,6 +158,9 @@ public class TestTestLinkBuilder {
 
         assertNotNull(builder.getBuildName());
         assertEquals(builder.getBuildName(), "No build");
+
+        assertNotNull(builder.getBuildCustomFields());
+        assertEquals(builder.getBuildCustomFields(), "No build custom fields");
 
         assertNotNull(builder.getSingleBuildSteps());
         assertEquals(builder.getSingleBuildSteps(), singleBuildSteps);
