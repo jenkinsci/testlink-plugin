@@ -7,18 +7,13 @@ import br.eti.kinoshita.testlinkjavaapi.constants.ResponseDetails;
 import br.eti.kinoshita.testlinkjavaapi.constants.TestCaseDetails;
 import br.eti.kinoshita.testlinkjavaapi.model.*;
 import com.google.inject.Inject;
-import com.thoughtworks.xstream.io.json.JsonWriter;
 import hudson.AbortException;
 import hudson.Launcher;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import hudson.plugins.testlink.TestLinkBuilder;
 import hudson.plugins.testlink.TestLinkBuilderDescriptor;
 import hudson.plugins.testlink.TestLinkInstallation;
 import hudson.plugins.testlink.TestLinkSite;
-import hudson.plugins.testlink.result.ResultSeeker;
-import hudson.tasks.BuildStep;
-import jdk.nashorn.internal.ir.debug.JSONWriter;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
@@ -26,10 +21,7 @@ import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.net.URL;
-import java.util.ArrayList;
 
 /**
  * Created by azikha01 on 11/10/2016.

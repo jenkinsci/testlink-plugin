@@ -17,7 +17,6 @@ import hudson.tasks.BuildStep;
 import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
 import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 

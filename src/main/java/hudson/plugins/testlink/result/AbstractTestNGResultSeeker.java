@@ -23,13 +23,10 @@
  */
 package hudson.plugins.testlink.result;
 
-import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.FilePath;
-import hudson.FilePath.FileCallable;
-import hudson.model.AbstractBuild;
 import hudson.plugins.testlink.TestLinkSite;
 import hudson.remoting.VirtualChannel;
 

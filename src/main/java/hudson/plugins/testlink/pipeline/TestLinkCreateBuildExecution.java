@@ -3,7 +3,6 @@ package hudson.plugins.testlink.pipeline;
 import com.google.inject.Inject;
 import hudson.AbortException;
 import hudson.Launcher;
-import hudson.console.ConsoleNote;
 import hudson.model.*;
 import hudson.plugins.testlink.TestLinkBuilder;
 import hudson.plugins.testlink.TestLinkBuilderDescriptor;
@@ -11,15 +10,10 @@ import hudson.plugins.testlink.TestLinkInstallation;
 import hudson.plugins.testlink.TestLinkSite;
 import hudson.plugins.testlink.result.ResultSeeker;
 import hudson.tasks.BuildStep;
-import org.apache.tools.ant.taskdefs.Parallel;
 import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
 import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by azikha01 on 11/10/2016.

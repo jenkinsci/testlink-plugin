@@ -26,8 +26,6 @@ package hudson.plugins.testlink.result;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.BuildListener;
-import hudson.model.AbstractBuild;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.plugins.testlink.TestLinkSite;

@@ -35,7 +35,6 @@ import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
 import hudson.plugins.testlink.TestLinkSite;
-import hudson.plugins.testlink.util.Messages;
 import hudson.remoting.VirtualChannel;
 import hudson.tasks.junit.SuiteResult;
 

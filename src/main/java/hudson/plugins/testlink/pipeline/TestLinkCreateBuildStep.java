@@ -8,8 +8,6 @@ import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
-import static hudson.plugins.testlink.pipeline.TestLinkCreateBuildStep.DescriptorImpl.STEP_NAME;
-
 /**
  * Created by azikha01 on 11/10/2016.
  */

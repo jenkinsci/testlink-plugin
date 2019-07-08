@@ -41,12 +41,10 @@ import hudson.Util;
 import jenkins.MasterToSlaveFileCallable;
 import hudson.remoting.VirtualChannel;
 import org.dom4j.io.SAXReader;
-import hudson.util.io.ParserConfigurator;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import java.util.List;
 import java.util.Iterator;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
