@@ -25,17 +25,19 @@ package hudson.plugins.testlink;
 
 import hudson.model.Action;
 import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.plugins.testlink.util.TestLinkHelper;
 
 import java.io.Serializable;
 
+import jenkins.model.RunAction2;
 import org.kohsuke.stapler.StaplerProxy;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 1.0
  */
-public class TestLinkBuildAction implements Action, Serializable, StaplerProxy {
+public class TestLinkBuildAction implements RunAction2, Serializable, StaplerProxy {
 
     private static final long serialVersionUID = -914904584770393909L;
 
@@ -43,12 +45,30 @@ public class TestLinkBuildAction implements Action, Serializable, StaplerProxy {
     public static final String ICON_FILE_NAME = "/plugin/testlink/icons/testlink-24.png";
     public static final String URL_NAME = "testLinkResult";
 
-    private AbstractBuild<?, ?> build;
+    private transient Run<?, ?> build;
     private TestLinkResult result;
 
+    public TestLinkBuildAction(TestLinkResult result) {
+        this.result = result;
+    }
+
+    /**
+     * @deprecated Use {@link #TestLinkBuildAction(TestLinkResult)} without build definition.
+     */
+    @Deprecated
     public TestLinkBuildAction(AbstractBuild<?, ?> build, TestLinkResult result) {
         this.build = build;
         this.result = result;
+    }
+
+    @Override
+    public void onLoad(Run<?, ?> r) {
+        this.build = r;
+    }
+
+    @Override
+    public void onAttached(Run<?, ?> r) {
+        this.build = r;
     }
 
     public String getDisplayName() {
@@ -67,8 +87,23 @@ public class TestLinkBuildAction implements Action, Serializable, StaplerProxy {
         return this.result;
     }
 
-    public AbstractBuild<?, ?> getBuild() {
+    /**
+     * Gets Run to which the action is attached.
+     * @return Run instance
+     * @since TODO
+     */
+    public Run<?, ?> getRun() {
         return build;
+    }
+
+    /**
+     * @deprecated Use {@link #getRun()}
+     */
+    public AbstractBuild<?, ?> getBuild() {
+        if (build instanceof AbstractBuild<?, ?>) {
+            return (AbstractBuild<?, ?>)build;
+        }
+        throw new IllegalStateException("Calling old API against a non-AbstractBuild run type. Run: " + build);
     }
 
     /**
@@ -107,7 +142,7 @@ public class TestLinkBuildAction implements Action, Serializable, StaplerProxy {
      */
     public TestLinkBuildAction getPreviousAction() {
         if (this.build != null) {
-            AbstractBuild<?, ?> previousBuild = this.build.getPreviousBuild();
+            Run<?, ?> previousBuild = this.build.getPreviousBuild();
             if (previousBuild != null) {
                 return previousBuild.getAction(TestLinkBuildAction.class);
             }

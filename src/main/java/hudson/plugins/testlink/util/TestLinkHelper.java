@@ -65,7 +65,9 @@ public final class TestLinkHelper {
 	private static final String TESTLINK_BUILD_NAME_ENVVAR = "TESTLINK_BUILD_NAME";
 	private static final String TESTLINK_TESTPLAN_NAME_ENVVAR = "TESTLINK_TESTPLAN_NAME";
 	private static final String TESTLINK_TESTPROJECT_NAME_ENVVAR = "TESTLINK_TESTPROJECT_NAME";
-	
+	private static final String TESTLINK_TESTCASE_EXTERNAL_ID_ENVVAR = "TESTLINK_TESTCASE_EXTERNAL_ID";
+	private static final String TESTLINK_TESTCASE_VERSION_ENVVAR = "TESTLINK_TESTCASE_VERSION";
+
 	// Used for HTTP basic auth
 	private static final String BASIC_HTTP_PASSWORD = "basicPassword";
 	
@@ -140,9 +142,9 @@ public final class TestLinkHelper {
 	}
 	
 	/**
-	 * Maybe adds a system property if it is in format <key>=<value>.
+	 * Maybe adds a system property if it is in format (@code key=value}.
 	 * 
-	 * @param systemProperty System property entry in format <key>=<value>.
+	 * @param systemProperty System property entry in format {@code key=value}.
 	 * @param listener Jenkins Build listener
 	 */
 	public static void maybeAddSystemProperty(String systemProperty, BuildListener listener) {
@@ -189,7 +191,9 @@ public final class TestLinkHelper {
 		testLinkEnvVar.put( TESTLINK_BUILD_NAME_ENVVAR, StringUtils.defaultIfEmpty(build.getName(), ""));
 		testLinkEnvVar.put( TESTLINK_TESTPLAN_NAME_ENVVAR, StringUtils.defaultIfEmpty(testPlan.getName(), ""));
 		testLinkEnvVar.put( TESTLINK_TESTPROJECT_NAME_ENVVAR, StringUtils.defaultIfEmpty(testProject.getName(), ""));
-		
+                testLinkEnvVar.put( TESTLINK_TESTCASE_EXTERNAL_ID_ENVVAR, StringUtils.defaultIfEmpty(testCase.getFullExternalId(), ""));
+                testLinkEnvVar.put( TESTLINK_TESTCASE_VERSION_ENVVAR, ""+testCase.getVersion() );
+
 		List<CustomField> testCaseCustomFields = testCase.getCustomFields();
 		for (CustomField customField : testCaseCustomFields) {
 			addCustomFieldEnvironmentVariableName(customField, testLinkEnvVar, TESTLINK_TESTCASE_PREFIX);
@@ -337,7 +341,7 @@ public final class TestLinkHelper {
 	public static String createReportSummary(Report testLinkReport, Report previous) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildID(testLinkReport.getBuildId())+"</b></p>");
-		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildName(testLinkReport.getBuildName())+"</b></p>");
+		builder.append("<p><b>"+Messages.ReportSummary_Summary_BuildName(Util.escape(testLinkReport.getBuildName()))+"</b></p>");
 		builder.append("<p><a href=\"" + TestLinkBuildAction.URL_NAME + "\">");
 		
 		Integer total = testLinkReport.getTestsTotal();
@@ -393,11 +397,11 @@ public final class TestLinkHelper {
         for(TestCaseWrapper tc: report.getTestCases() )
         {
         	builder.append("<tr>\n");
-        	
+
         	builder.append("<td>"+tc.getId()+"</td>");
-        	builder.append("<td>"+tc.getFullExternalId()+"</td>");
+        	builder.append("<td>"+Util.escape(tc.getFullExternalId())+"</td>");
         	builder.append("<td>"+tc.getVersion()+"</td>");
-        	builder.append("<td>"+tc.getName()+"</td>");
+        	builder.append("<td>"+Util.escape(tc.getName())+"</td>");
         	builder.append("<td>"+tc.getTestProjectId()+"</td>");
     		builder.append("<td>"+TestLinkHelper.getExecutionStatusTextColored( tc.getExecutionStatus() )+"</td>\n");
         	
@@ -407,8 +411,6 @@ public final class TestLinkHelper {
         builder.append("</table>");
         return builder.toString();
 	}
-
-	
 
 	/**
 	 * Prints the difference between two int values, showing a plus sign if the 

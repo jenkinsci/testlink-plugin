@@ -28,17 +28,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import hudson.model.Run;
-import hudson.model.TaskListener;
-import org.jenkinsci.remoting.Role;
-import org.jenkinsci.remoting.RoleChecker;
-import org.jenkinsci.remoting.RoleSensitive;
+import jenkins.MasterToSlaveFileCallable;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import com.tupilabs.testng.parser.Suite;
 import com.tupilabs.testng.parser.Test;
 import com.tupilabs.testng.parser.TestMethod;
-import com.tupilabs.testng.parser.TestNGParser;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import hudson.Extension;
@@ -46,6 +41,8 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.plugins.testlink.TestLinkSite;
 import hudson.plugins.testlink.util.Messages;
 import hudson.remoting.VirtualChannel;
@@ -62,8 +59,6 @@ import hudson.remoting.VirtualChannel;
 public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 
 	private static final long serialVersionUID = 3998602647639013614L;
-	
-	private final TestNGParser parser = new TestNGParser();
 	
 	/**
 	 * @param includePattern
@@ -96,7 +91,7 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 	public void seek(TestCaseWrapper[] automatedTestCases, Run<?, ?> build, FilePath workspace, Launcher launcher, final TaskListener listener, TestLinkSite testlink) throws ResultSeekerException {
 		listener.getLogger().println( Messages.Results_TestNG_LookingForTestSuites() );
 		try {
-			final List<Suite> suites = workspace.act(new FilePath.FileCallable<List<Suite>>() {
+			final List<Suite> suites = workspace.act(new MasterToSlaveFileCallable<List<Suite>>() {
 				private static final long serialVersionUID = 1L;
 
 				private List<Suite> suites = new ArrayList<Suite>();
@@ -107,17 +102,14 @@ public class TestNGSuiteNameResultSeeker extends AbstractTestNGResultSeeker {
 					
 					for(String xml : xmls) {
 						final File input = new File(workspace, xml);
-						Suite suite = parser.parse(input);
-						suites.add(suite);
+						List <Suite> suitz = getParser().parse(input);
+						for(Suite suite : suitz){
+							suites.add(suite);
+						}
 					}
 					
 					return suites;
 				}
-
-                @Override
-                public void checkRoles(RoleChecker roleChecker) throws SecurityException {
-                    roleChecker.check((RoleSensitive) this, Role.UNKNOWN);
-                }
 			});
 			for(Suite suite : suites) {
 				for(TestCaseWrapper automatedTestCase : automatedTestCases) {

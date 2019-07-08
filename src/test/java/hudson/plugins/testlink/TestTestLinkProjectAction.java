@@ -97,15 +97,15 @@ public class TestTestLinkProjectAction {
             hudsonBuild1 = project.createExecutable();
             hudsonBuild1.number = 1;
             Report report = new Report(1, null);
-            TestLinkResult result = new TestLinkResult(report, hudsonBuild1);
-            TestLinkBuildAction buildAction = new TestLinkBuildAction(hudsonBuild1, result);
+            TestLinkResult result = new TestLinkResult(report);
+            TestLinkBuildAction buildAction = new TestLinkBuildAction(result);
             hudsonBuild1.addAction(buildAction);
             hudsonBuild1.run();
 
             hudsonBuild2 = project.createExecutable();
             Report report2 = new Report(1, null);
-            TestLinkResult result2 = new TestLinkResult(report2, hudsonBuild1);
-            TestLinkBuildAction buildAction2 = new TestLinkBuildAction(hudsonBuild1, result2);
+            TestLinkResult result2 = new TestLinkResult(report2);
+            TestLinkBuildAction buildAction2 = new TestLinkBuildAction(result2);
             hudsonBuild2.addAction(buildAction2);
             hudsonBuild2.run();
 

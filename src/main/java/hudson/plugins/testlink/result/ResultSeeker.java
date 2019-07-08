@@ -134,8 +134,7 @@ public abstract class ResultSeeker implements Serializable, Describable<ResultSe
 	 * <p>For each result found, it is automatically updated in TestLink, and 
 	 * the Report is updated.</p>
 	 * 
-	 * @param automatedTestcases Automated test cases
-	 * @param workspace Build workspace, used when looking for results using the include pattern
+	 * @param automatedTestCases Automated test cases
 	 * @param listener Build listener for logging
 	 * @param testlink TestLink site for updating test status
 	 * @throws ResultSeekerException

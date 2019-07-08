@@ -42,9 +42,7 @@ import br.eti.kinoshita.testlinkjavaapi.constants.TestCaseStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 
 /**
- * Tests the ReportSummary class.
- *
- * @see {@link ResultsSummary}
+ * Tests the Report Summary.
  *
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1

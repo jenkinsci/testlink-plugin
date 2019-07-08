@@ -28,8 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import hudson.model.Run;
-import hudson.model.TaskListener;
+import jenkins.MasterToSlaveFileCallable;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.remoting.Role;
 import org.jenkinsci.remoting.RoleChecker;
@@ -46,6 +45,8 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.plugins.testlink.TestLinkSite;
 import hudson.plugins.testlink.util.Messages;
 import hudson.remoting.VirtualChannel;
@@ -94,7 +95,7 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 	public void seek(TestCaseWrapper[] automatedTestCases, Run<?, ?> build, FilePath workspace, Launcher launcher, final TaskListener listener, TestLinkSite testlink) throws ResultSeekerException {
 		listener.getLogger().println( Messages.Results_TestNG_LookingForTestSuites() );
 		try {
-			final List<Suite> suites = workspace.act(new FilePath.FileCallable<List<Suite>>() {
+			final List<Suite> suites = workspace.act(new MasterToSlaveFileCallable<List<Suite>>() {
 				private static final long serialVersionUID = 1L;
 
 				private List<Suite> suites = new ArrayList<Suite>();
@@ -105,17 +106,14 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 					
 					for(String xml : xmls) {
 						final File input = new File(workspace, xml);
-						Suite suite = parser.parse(input);
-						suites.add(suite);
+						List <Suite> suitz = getParser().parse(input);
+						for(Suite suite : suitz){
+							suites.add(suite);
+						}
 					}
 					
 					return suites;
 				}
-
-                @Override
-                public void checkRoles(RoleChecker roleChecker) throws SecurityException {
-                    roleChecker.check((RoleSensitive) this, Role.UNKNOWN);
-                }
 			});
 			for(Suite suite : suites) {
 				for(Test test : suite.getTests() ) {
@@ -157,8 +155,7 @@ public class TestNGClassNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * <p>
 	 * In there is any skipped method, and {{@link #isMarkSkippedTestAsBlocked()} 
 	 * is true, then it returns Blocked.
-	 * 
-	 * @param suite
+	 *
 	 * @return
 	 */
 	private ExecutionStatus getExecutionStatus(com.tupilabs.testng.parser.Class clazz) {

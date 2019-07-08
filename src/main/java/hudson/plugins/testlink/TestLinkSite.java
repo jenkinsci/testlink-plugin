@@ -186,7 +186,7 @@ public class TestLinkSite {
 	 * Updates the test cases status in TestLink (note and status) and 
 	 * uploads any existing attachments.
 	 * 
-	 * @param testCases Test Cases
+	 * @param testCase Test Case
 	 */
 	public int updateTestCase(TestCaseWrapper testCase) {
 		int executionId = 0;
@@ -209,7 +209,8 @@ public class TestLinkSite {
 				testCase.getId(), 
 				testCase.getInternalId(), 
 				testPlan.getId(), 
-				testCase.getExecutionStatus(), 
+				testCase.getExecutionStatus(),
+				null, // List<TestCaseStepResult> steps
 				build.getId(), 
 				build.getName(), 
 				testCase.getNotes(), 

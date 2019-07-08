@@ -6,4 +6,5 @@ target/
 inject-tests/
 test-output
 *~
+*.iml
 .idea

@@ -12,9 +12,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import hudson.model.*;
-import org.jenkinsci.remoting.Role;
-import org.jenkinsci.remoting.RoleChecker;
-import org.jenkinsci.remoting.RoleSensitive;
+
+import jenkins.MasterToSlaveFileCallable;
+
 import org.tap4j.consumer.TapConsumer;
 import org.tap4j.consumer.TapConsumerFactory;
 import org.tap4j.model.Directive;
@@ -29,7 +29,6 @@ import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.Attachment;
 import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
 import hudson.FilePath;
-import hudson.FilePath.FileCallable;
 import hudson.Launcher;
 import hudson.plugins.testlink.TestLinkSite;
 import hudson.remoting.VirtualChannel;
@@ -107,7 +106,7 @@ public abstract class AbstractTAPFileNameResultSeeker extends ResultSeeker {
 
         try {
             final Map<String, TestSet> testSets = workspace.act(
-                    new FilePath.FileCallable<Map<String, TestSet>>() {
+            		new MasterToSlaveFileCallable<Map<String, TestSet>>() {
                         private static final long serialVersionUID = 1L;
 
                         private Map<String, TestSet> testSets;
@@ -127,10 +126,6 @@ public abstract class AbstractTAPFileNameResultSeeker extends ResultSeeker {
                             }
 
                             return testSets;
-                        }
-
-                        public void checkRoles(RoleChecker roleChecker) throws SecurityException {
-                            roleChecker.check((RoleSensitive) this, Role.UNKNOWN);
                         }
                     });
 
@@ -189,7 +184,7 @@ public abstract class AbstractTAPFileNameResultSeeker extends ResultSeeker {
 
                 if (executionId > 0 && this.isAttachTAPStream()) {
                     final String remoteWs = workspace.getRemote();
-                    List<Attachment> attachments = workspace.act(new FileCallable<List<Attachment>>() {
+                    List<Attachment> attachments = workspace.act(new MasterToSlaveFileCallable<List<Attachment>>() {
 
                         private static final long serialVersionUID = -5411683541842375558L;
 
@@ -214,11 +209,6 @@ public abstract class AbstractTAPFileNameResultSeeker extends ResultSeeker {
                             }
 
                             return attachments;
-                        }
-
-                        @Override
-                        public void checkRoles(RoleChecker roleChecker) throws SecurityException {
-                            roleChecker.check((RoleSensitive) this, Role.UNKNOWN);
                         }
                     });
                     for (Attachment attachment : attachments) {

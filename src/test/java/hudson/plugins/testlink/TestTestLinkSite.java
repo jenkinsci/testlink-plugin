@@ -87,7 +87,7 @@ public class TestTestLinkSite {
 		assertThat(executionId, is(321));
 
 		verify(api)
-				.reportTCResult(3, 4, 2, status, 1,
+				.reportTCResult(3, 4, 2, status, null, 1,
 						"build-name", "notes", null, null, null, "platform",
 						new HashMap<String, String>(), null);
 		Report report = testLinkSite.getReport();
@@ -107,7 +107,7 @@ public class TestTestLinkSite {
 		assertThat(executionId, is(321));
 
 		verify(api)
-				.reportTCResult(3, 4, 2, status, 1,
+				.reportTCResult(3, 4, 2, status, null, 1,
 						"build-name", "notes", null, null, null, "platform",
 						new HashMap<String, String>(), null);
 		Report report = testLinkSite.getReport();
@@ -127,7 +127,7 @@ public class TestTestLinkSite {
 		assertThat(executionId, is(321));
 
 		verify(api)
-				.reportTCResult(3, 4, 2, status, 1,
+				.reportTCResult(3, 4, 2, status, null, 1,
 						"build-name", "notes", null, null, null, "platform",
 						new HashMap<String, String>(), null);
 		Report report = testLinkSite.getReport();
@@ -217,7 +217,7 @@ public class TestTestLinkSite {
 		
 		when(
 				api.reportTCResult(anyInt(), anyInt(), anyInt(),
-						eq(status), anyInt(), anyString(),
+						eq(status), any(), anyInt(), anyString(),
 						anyString(), anyBoolean(), anyString(), anyInt(),
 						anyString(), anyMapOf(String.class, String.class),
 						anyBoolean())).thenReturn(reportTCResultResponse);
