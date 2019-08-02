@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -90,7 +91,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
             List<BuildStep> afterIteratingAllTestCasesBuildSteps,
             Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
             Boolean failIfNoResults, List<ResultSeeker> resultSeekers) {
-        this(testLinkName, testProjectName, testPlanName, buildName,
+        this(testLinkName, testProjectName, testPlanName, buildName, null,
                 null, customFields, executionStatusNotRun, executionStatusPassed,
                 executionStatusFailed, executionStatusBlocked, singleBuildSteps,
                 beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
@@ -112,7 +113,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
             List<BuildStep> afterIteratingAllTestCasesBuildSteps,
             Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
             Boolean failIfNoResults, Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
-        super(testLinkName, testProjectName, testPlanName, buildName, null, 
+        super(testLinkName, testProjectName, testPlanName, buildName, null, null,
                 customFields, executionStatusNotRun, executionStatusPassed,
                 executionStatusFailed, executionStatusBlocked, singleBuildSteps,
                 beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
@@ -125,7 +126,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
      * @deprecated to add test plan custom fields
      */
     public TestLinkBuilder(String testLinkName, String testProjectName,
-            String testPlanName, String platformName, String buildName, String customFields,
+            String testPlanName, String platformName, String buildName, String buildCustomFields, String customFields,
             Boolean executionStatusNotRun, Boolean executionStatusPassed,
             Boolean executionStatusFailed, Boolean executionStatusBlocked,
             List<BuildStep> singleBuildSteps,
@@ -134,7 +135,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
             List<BuildStep> afterIteratingAllTestCasesBuildSteps,
             Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
             Boolean failIfNoResults, Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
-        super(testLinkName, testProjectName, testPlanName, platformName, buildName,
+        super(testLinkName, testProjectName, testPlanName, platformName, buildName, buildCustomFields,
                 customFields, singleBuildSteps, beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
                 afterIteratingAllTestCasesBuildSteps, transactional, failedTestsMarkBuildAsFailure, 
                 failIfNoResults, failOnNotRun, resultSeekers);
@@ -142,7 +143,8 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 
 	@DataBoundConstructor
 	public TestLinkBuilder(String testLinkName, String testProjectName,
-			String testPlanName, String platformName, String buildName, String customFields, String testPlanCustomFields,
+			String testPlanName, String platformName, String buildName,
+			String buildCustomFields, String customFields, String testPlanCustomFields,
 			Boolean executionStatusNotRun, Boolean executionStatusPassed,
 			Boolean executionStatusFailed, Boolean executionStatusBlocked,
 			List<BuildStep> singleBuildSteps,
@@ -151,7 +153,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			List<BuildStep> afterIteratingAllTestCasesBuildSteps,
 			Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
 			Boolean failIfNoResults, Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
-		super(testLinkName, testProjectName, testPlanName, platformName, buildName,
+		super(testLinkName, testProjectName, testPlanName, platformName, buildName, buildCustomFields,
 				customFields, testPlanCustomFields, singleBuildSteps, beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
 				afterIteratingAllTestCasesBuildSteps, transactional, failedTestsMarkBuildAsFailure, 
 				failIfNoResults, failOnNotRun, resultSeekers);
@@ -194,6 +196,8 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 					build.getEnvironment(listener), getPlatformName());
 			final String buildName = TestLinkHelper.expandVariable(build.getBuildVariableResolver(),
 					build.getEnvironment(listener), getBuildName());
+			final String buildCustomFields = TestLinkHelper.expandVariable(build.getBuildVariableResolver(),
+					build.getEnvironment(listener), getBuildCustomFields());
 			final String buildNotes = Messages.TestLinkBuilder_Build_Notes();
 			if(LOGGER.isLoggable(Level.FINE)) {
 				LOGGER.log(Level.FINE, "TestLink project name: ["+testProjectName+"]");
@@ -201,9 +205,10 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 				LOGGER.log(Level.FINE, "TestLink platform name: ["+platformName+"]");
 				LOGGER.log(Level.FINE, "TestLink build name: ["+buildName+"]");
 				LOGGER.log(Level.FINE, "TestLink build notes: ["+buildNotes+"]");
+				LOGGER.log(Level.FINE, "TestLink build Custom Fields: ["+buildCustomFields+"]");
 			}
 			// TestLink Site object
-			testLinkSite = this.getTestLinkSite(testLinkUrl, testLinkDevKey, testProjectName, testPlanName, platformName, buildName, buildNotes);
+			testLinkSite = this.getTestLinkSite(testLinkUrl, testLinkDevKey, testProjectName, testPlanName, platformName, buildName, buildCustomFields, buildNotes);
 			
 			if (StringUtils.isNotBlank(platformName) && testLinkSite.getPlatform() == null) 
 			    listener.getLogger().println(Messages.TestLinkBuilder_PlatformNotFound(platformName));
@@ -257,7 +262,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			if(getResultSeekers() != null) {
 				for (ResultSeeker resultSeeker : getResultSeekers()) {
 					LOGGER.log(Level.INFO, "Seeking test results. Using: " + resultSeeker.getDescriptor().getDisplayName());
-					resultSeeker.seek(automatedTestCases, build, launcher, listener, testLinkSite);
+					resultSeeker.seek(automatedTestCases, build, build.getWorkspace(), launcher, listener, testLinkSite);
 				}
 			}
 		} catch (ResultSeekerException trse) {
@@ -325,7 +330,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 	 */
 	public TestLinkSite getTestLinkSite(String testLinkUrl, String testLinkDevKey, 
 	        String testProjectName, String testPlanName, String platformName, 
-	        String buildName, String buildNotes) throws MalformedURLException {
+	        String buildName, String buildCustomFields, String buildNotes) throws MalformedURLException {
 		final TestLinkAPI api;
 		final URL url = new URL(testLinkUrl);
 		api = new TestLinkAPI(url, testLinkDevKey);
@@ -344,7 +349,23 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			}
 		}
 
+		/* Extract custom fields and values */
+		java.util.Map<String, String> cfs = new HashMap<String, String>();
+		if(buildCustomFields != null && !(buildCustomFields.isEmpty())) {
+			for (String part: buildCustomFields.split(",")) {
+				String[] cf = part.split(":");
+				String name = cf[0].replaceAll("\\s+", "");
+				String value = cf[1].replaceAll("\\s+", "");
+				cfs.put(name, value);
+			}
+		}
+
 		final Build build = api.createBuild(testPlan.getId(), buildName, buildNotes);
+		try {
+			api.updateBuildCustomFields(build.getId(), testProject.getId(), testPlan.getId(), cfs);
+		}catch(TestLinkAPIException e) {
+			LOGGER.log(Level.INFO, "TestLink builder failed ro update build custom fields. " + e);
+		}
 		return new TestLinkSite(api, testProject, testPlan, platform, build);
 	}
 

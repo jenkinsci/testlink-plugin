@@ -1,0 +1,18 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+    <f:entry title="${%Test Link Name}" field="testLinkName">
+        <f:textbox default="" />
+    </f:entry>
+    <f:entry title="${%Test Project Name}" field="testProjectName">
+        <f:textbox default="" />
+    </f:entry>
+    <f:entry title="${%Test Plan Name}" field="testPlanName">
+        <f:textbox default="" />
+    </f:entry>
+    <f:entry title="${%Test case Id Custom Fields}" field="customFields">
+        <f:textbox default="" />
+    </f:entry>
+    <f:entry title="${%Test Plan file name}" field="testPlanFileName">
+        <f:textbox default="" />
+    </f:entry>
+</j:jelly>

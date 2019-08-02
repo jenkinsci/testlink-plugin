@@ -138,7 +138,7 @@ class ResultSeekerBuilder extends Builder implements Serializable {
 			traverseDirectory(f);
         }
 		
-        seeker.seek(tcs, build, launcher, listener, testlink);
+        seeker.seek(tcs, build, build.getWorkspace(), launcher, listener, testlink);
         return (seeker != null);
 	}
 	private static void traverseDirectory(FilePath f) throws InterruptedException, IOException {

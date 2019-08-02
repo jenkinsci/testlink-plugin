@@ -38,9 +38,12 @@ import com.tupilabs.testng.parser.TestMethod;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.plugins.testlink.TestLinkSite;
 import hudson.plugins.testlink.util.Messages;
 import hudson.remoting.VirtualChannel;
@@ -86,10 +89,10 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 	 * @see hudson.plugins.testlink.result.ResultSeeker#seekAndUpdate(hudson.plugins.testlink.result.TestCaseWrapper<?>[], hudson.model.AbstractBuild, hudson.Launcher, hudson.model.BuildListener, hudson.plugins.testlink.TestLinkSite, hudson.plugins.testlink.result.Report)
 	 */
 	@Override
-	public void seek(TestCaseWrapper[] automatedTestCases, AbstractBuild<?, ?> build, Launcher launcher, final BuildListener listener, TestLinkSite testlink) throws ResultSeekerException {
+	public void seek(TestCaseWrapper[] automatedTestCases, Run<?, ?> build, FilePath workspace, Launcher launcher, final TaskListener listener, TestLinkSite testlink) throws ResultSeekerException {
 		listener.getLogger().println( Messages.Results_TestNG_LookingForTestMethod() );
 		try {
-			final List<Suite> suites = build.getWorkspace().act(new MasterToSlaveFileCallable<List<Suite>>() {
+			final List<Suite> suites = workspace.act(new MasterToSlaveFileCallable<List<Suite>>() {
 				private static final long serialVersionUID = 1L;
 
 				private List<Suite> suites = new ArrayList<Suite>();
@@ -128,7 +131,7 @@ public class TestNGMethodNameResultSeeker extends AbstractTestNGResultSeeker {
 											automatedTestCase.appendNotes(notes);
 										}
 										
-										super.handleResult(automatedTestCase, build, listener, testlink, status, suite);
+										super.handleResult(automatedTestCase, build, workspace, listener, testlink, status, suite);
 									}
 								}
 							}
