@@ -351,15 +351,21 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 
 		/* Extract custom fields and values */
 		java.util.Map<String, String> cfs = new HashMap<String, String>();
-		for (String part: buildCustomFields.split(",")) {
-			String[] cf = part.split(":");
-			String name = cf[0].replaceAll("\\s+", "");
-			String value = cf[1].replaceAll("\\s+", "");
-			cfs.put(name, value);
+		if(buildCustomFields != null && !(buildCustomFields.isEmpty())) {
+			for (String part: buildCustomFields.split(",")) {
+				String[] cf = part.split(":");
+				String name = cf[0].replaceAll("\\s+", "");
+				String value = cf[1].replaceAll("\\s+", "");
+				cfs.put(name, value);
+			}
 		}
 
 		final Build build = api.createBuild(testPlan.getId(), buildName, buildNotes);
-		api.updateBuildCustomFields(build.getId(), testProject.getId(), testPlan.getId(), cfs);
+		try {
+			api.updateBuildCustomFields(build.getId(), testProject.getId(), testPlan.getId(), cfs);
+		}catch(TestLinkAPIException e) {
+			LOGGER.log(Level.INFO, "TestLink builder failed ro update build custom fields. " + e);
+		}
 		return new TestLinkSite(api, testProject, testPlan, platform, build);
 	}
 
