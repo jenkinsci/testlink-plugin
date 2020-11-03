@@ -76,70 +76,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 	@Extension
 	public static final TestLinkBuilderDescriptor DESCRIPTOR = new TestLinkBuilderDescriptor();
 
-	/**
-	 * Kept here for backward compatibility. Don't add new fields.
-	 * @deprecated
-	 */
-    public TestLinkBuilder(String testLinkName, String testProjectName,
-            String testPlanName, String buildName, String customFields,
-            Boolean executionStatusNotRun, Boolean executionStatusPassed,
-            Boolean executionStatusFailed, Boolean executionStatusBlocked,
-            List<BuildStep> singleBuildSteps,
-            List<BuildStep> beforeIteratingAllTestCasesBuildSteps,
-            List<BuildStep> iterativeBuildSteps,
-            List<BuildStep> afterIteratingAllTestCasesBuildSteps,
-            Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
-            Boolean failIfNoResults, List<ResultSeeker> resultSeekers) {
-        this(testLinkName, testProjectName, testPlanName, buildName,
-                null, customFields, executionStatusNotRun, executionStatusPassed,
-                executionStatusFailed, executionStatusBlocked, singleBuildSteps,
-                beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
-                afterIteratingAllTestCasesBuildSteps, transactional,
-                failedTestsMarkBuildAsFailure, failIfNoResults, false, resultSeekers);
-    }
 	
-    /**
-     * Kept here for backward compatibility. Don't add new fields.
-     * @deprecated
-     */
-    public TestLinkBuilder(String testLinkName, String testProjectName,
-            String testPlanName, String buildName, String customFields,
-            Boolean executionStatusNotRun, Boolean executionStatusPassed,
-            Boolean executionStatusFailed, Boolean executionStatusBlocked,
-            List<BuildStep> singleBuildSteps,
-            List<BuildStep> beforeIteratingAllTestCasesBuildSteps,
-            List<BuildStep> iterativeBuildSteps,
-            List<BuildStep> afterIteratingAllTestCasesBuildSteps,
-            Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
-            Boolean failIfNoResults, Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
-        super(testLinkName, testProjectName, testPlanName, buildName, null, 
-                customFields, executionStatusNotRun, executionStatusPassed,
-                executionStatusFailed, executionStatusBlocked, singleBuildSteps,
-                beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
-                afterIteratingAllTestCasesBuildSteps, transactional,
-                failedTestsMarkBuildAsFailure, failIfNoResults, failOnNotRun, resultSeekers);
-    }
-
-    /**
-     * Kept here for backward compatibility. Don't add new fields.
-     * @deprecated to add test plan custom fields
-     */
-    public TestLinkBuilder(String testLinkName, String testProjectName,
-            String testPlanName, String platformName, String buildName, String customFields,
-            Boolean executionStatusNotRun, Boolean executionStatusPassed,
-            Boolean executionStatusFailed, Boolean executionStatusBlocked,
-            List<BuildStep> singleBuildSteps,
-            List<BuildStep> beforeIteratingAllTestCasesBuildSteps,
-            List<BuildStep> iterativeBuildSteps,
-            List<BuildStep> afterIteratingAllTestCasesBuildSteps,
-            Boolean transactional, Boolean failedTestsMarkBuildAsFailure,
-            Boolean failIfNoResults, Boolean failOnNotRun, List<ResultSeeker> resultSeekers) {
-        super(testLinkName, testProjectName, testPlanName, platformName, buildName,
-                customFields, singleBuildSteps, beforeIteratingAllTestCasesBuildSteps, iterativeBuildSteps,
-                afterIteratingAllTestCasesBuildSteps, transactional, failedTestsMarkBuildAsFailure, 
-                failIfNoResults, failOnNotRun, resultSeekers);
-    }
-
 	@DataBoundConstructor
 	public TestLinkBuilder(String testLinkName, String testProjectName,
 			String testPlanName, String platformName, String buildName, String customFields, String testPlanCustomFields,
@@ -275,8 +212,7 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 		
 		listener.getLogger().println(Messages.TestLinkBuilder_ShowFoundTestResults(report.getTestsTotal()));
 		
-		final TestLinkResult result = new TestLinkResult(report);
-		final TestLinkBuildAction buildAction = new TestLinkBuildAction(result);
+		final TestLinkBuildAction buildAction = new TestLinkBuildAction(report);
 		build.addAction(buildAction);
 		
 		if(report.getTestsTotal() <= 0 && this.getFailIfNoResults() == Boolean.TRUE) {
