@@ -29,11 +29,17 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.kohsuke.stapler.DataBoundConstructor;
+
+import com.cloudbees.plugins.credentials.CredentialsMatcher;
+import com.cloudbees.plugins.credentials.CredentialsMatchers;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
 
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
@@ -57,8 +63,10 @@ import hudson.plugins.testlink.result.ResultSeekerException;
 import hudson.plugins.testlink.result.TestCaseWrapper;
 import hudson.plugins.testlink.util.Messages;
 import hudson.plugins.testlink.util.TestLinkHelper;
+import hudson.security.ACL;
 import hudson.tasks.BuildStep;
 import hudson.tasks.Builder;
+import jenkins.model.Jenkins;
 
 /**
  * A builder to add a TestLink build step.
@@ -95,6 +103,19 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 	}
 
 	/**
+	 * Get the credential ID.
+	 * @param credentialId credential ID
+	 * @return either the credential with the devKey, or {@code null}
+	 */
+	private Optional<StringCredentials> getCredential(String credentialId) {
+	    final List<StringCredentials> lookupCredentials = CredentialsProvider.lookupCredentials(
+                StringCredentials.class, Jenkins.getInstance(), ACL.SYSTEM, null, null);
+        CredentialsMatcher credentialsMatcher = CredentialsMatchers.withId(credentialId);
+        return Optional.of(CredentialsMatchers.firstOrNull(lookupCredentials,
+                credentialsMatcher));
+	}
+
+	/**
 	 * Called when the job is executed.
 	 */
 	@Override
@@ -113,12 +134,18 @@ public class TestLinkBuilder extends AbstractTestLinkBuilder {
 			throw new AbortException(Messages.TestLinkBuilder_InvalidTLAPI());
 		}
 
+		final String credentialsId = installation.getCredentialsId();
+		final String testLinkDevKey = this
+		        .getCredential(credentialsId)
+		        .orElseThrow(() -> new AbortException("Invalid credential ID " + credentialsId))
+		        .getSecret()
+		        .getPlainText();
+
 		TestLinkHelper.setTestLinkJavaAPIProperties(installation.getTestLinkJavaAPIProperties(), listener);
 
 		final TestLinkSite testLinkSite;
 		final TestCaseWrapper[] automatedTestCases;
 		final String testLinkUrl = installation.getUrl();
-		final String testLinkDevKey = installation.getDevKey();
 		TestPlan testPlan;
 		listener.getLogger().println(Messages.TestLinkBuilder_UsedTLURL(testLinkUrl));
 

@@ -1,5 +1,5 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
   
   <f:section title="TestLink">
     <f:entry title="${%TestLink Installation}" 
@@ -18,9 +18,8 @@
               checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)" />
           </f:entry>
 
-          <f:entry title="${%Developer Key}">
-            <f:textbox name="TestLink.devKey" value="${inst.devKey}" 
-              checkUrl="'${rootURL}/builder/TestLinkBuilder/checkMandatory?value='+escape(this.value)" />
+          <f:entry title="${%Credentials}" field="credentialsId">
+            <c:select/>
           </f:entry>
           
           <f:advanced>	  
