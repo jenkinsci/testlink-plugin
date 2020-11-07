@@ -34,7 +34,7 @@ avoid including sensitive data, as attachments can take a while to be
 deleted from JIRA, as the process is manual and quite troublesome
 ![(smile)](https://wiki.jenkins.io/s/en_GB/8100/5084f018d64a97dc638ca9a178856f851ea353ff/_/images/icons/emoticons/smile.svg)
 
-Jenkins TestLink Plug-in Tutorial
+## Jenkins TestLink Plug-in Tutorial
 
 Check out this tutorial with step-by-step instructions on how to
 integrate Jenkins and TestLink using TestLink Plug-in.
@@ -65,7 +65,7 @@ plug-in.](https://wiki.jenkins.io/display/JENKINS/Who+is+using+TestLink+Plug-in)
 
 The TestLink plug-in integrates **Jenkins** with
 [TestLink](http://testlink.org/). TestLink plug-in uses
-[testlink-java-api](http://testlinkjavaapi.sourceforge.net/ "testlink-java-api")
+[testlink-java-api](https://github.com/kinow/testlink-java-api "testlink-java-api")
 to access TestLink **XML-RPC** API. With the information that you
 provide in the build step configuration the plug-in **retrieves
 automated tests from TestLink**. With the plug-in, you are able to
@@ -522,11 +522,11 @@ Test execution notes being added twice and incorrectly formatted
 
 1.  **Settings automated tests properties as environment variables.**
 2.  **Switch from dbfacade-testlink-java-api to testlink-java-api**
-    **<http://sourceforge.net/projects/testlinkjavaapi/>.**
+    **<https://github.com/kinow/testlink-java-api>.**
 3.  **JUnit parser.**
 4.  **TestNG parser.**
 5.  **TAP parser using tap4j**
-    **<http://sourceforge.net/projects/tap4j/>.**
+    **<http://tupilabs.com/tap4j/>.**
 
 ### Release 1.1
 
