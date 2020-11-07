@@ -26,36 +26,62 @@ package hudson.plugins.testlink;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
+
+import org.jenkinsci.plugins.plaincredentials.StringCredentials;
+import org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl;
+import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
+
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.CredentialsScope;
+import com.cloudbees.plugins.credentials.CredentialsStore;
+import com.cloudbees.plugins.credentials.domains.Domain;
+
+import hudson.util.Secret;
+import jenkins.model.Jenkins;
 
 /**
  * Tests the TestLinkBuilderInstallation class.
- * 
+ *
  * @see {@link TestLinkInstallation}
- * 
+ *
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 2.1
  */
 public class TestTestLinkBuilderInstallation 
 {
 
+    @Rule
+    public JenkinsRule r = new JenkinsRule();
+
 	/**
 	 * Tests with a TestLinkBuilderInstallation object.
+	 * @throws IOException when adding a credentials, if it fails
 	 */
     @Test
-	public void testInstallation()
+	public void testInstallation() throws IOException
 	{
-		TestLinkInstallation inst = 
+        final String credentialsId = "tl-test-api-key";
+        final CredentialsStore store = CredentialsProvider.lookupStores(r.getInstance()).iterator().next();
+        final Secret secret = Secret.fromString("068848");
+        final StringCredentials credentials = new StringCredentialsImpl(
+                CredentialsScope.GLOBAL,
+                credentialsId,
+                "Test devKey used for unit tests",
+                secret);
+        store.addCredentials(Domain.global(), credentials);
+        final TestLinkInstallation inst = 
 			new TestLinkInstallation(
 					"TestLink 1.9.1", 
 					"http://localhost/testlink-1.9.1/lib/api/xml-rpc.php", 
-					"068848", "");
-		
-		assertNotNull( inst );
-		
-		assertEquals( inst.getName(), "TestLink 1.9.1" );
-		assertEquals( inst.getUrl(), "http://localhost/testlink-1.9.1/lib/api/xml-rpc.php" );
-		assertEquals( inst.getDevKey(), "068848" );
+					credentialsId,
+					"");
+
+		assertEquals(inst.getName(), "TestLink 1.9.1");
+		assertEquals(inst.getUrl(), "http://localhost/testlink-1.9.1/lib/api/xml-rpc.php");
+		assertEquals(inst.getDevKey(), "068848");
 	}
-	
+
 }
