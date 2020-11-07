@@ -73,7 +73,7 @@ execute **build steps** that call testing tools. It reads **TestNG**,
 **JUnit** and **TAP** test report **formats**, used to update TestLink
 test cases' executions.
 
-![](https://wiki.jenkins.io/download/attachments/46335320/1.png?version=2&modificationDate=1318036291000&api=v2){width="900"}
+![](https://wiki.jenkins.io/download/attachments/46335320/1.png?version=2&modificationDate=1318036291000&api=v2)
 
 The job configuration changed! Now there are three sections, what helps
 you to configure your job, and add extra build steps, result seeking
@@ -81,26 +81,26 @@ strategies and general information about TestLink.
 
 TestLink configuration section
 
-![](https://wiki.jenkins.io/download/attachments/46335320/001.PNG?version=2&modificationDate=1331609348000&api=v2){width="900"}
+![](https://wiki.jenkins.io/download/attachments/46335320/001.PNG?version=2&modificationDate=1331609348000&api=v2)
 
 Test Execution section
 
-![](https://wiki.jenkins.io/download/attachments/46335320/002.PNG?version=2&modificationDate=1331609353000&api=v2){width="900"}
+![](https://wiki.jenkins.io/download/attachments/46335320/002.PNG?version=2&modificationDate=1331609353000&api=v2)
 
 And Result Seeking Strategy section
 
-![](https://wiki.jenkins.io/download/attachments/46335320/003.PNG?version=2&modificationDate=1331609355000&api=v2){width="900"}
+![](https://wiki.jenkins.io/download/attachments/46335320/003.PNG?version=2&modificationDate=1331609355000&api=v2)
 
 You can use environment variables in Test project name, Test plan name
 or Build name. For instance, build-project-$BUILD\_NUMBER would be
 replaced by build-project- and the number of the Build executed in
 Jenkins.
 
-![](https://wiki.jenkins.io/download/attachments/46335320/3.png?version=1&modificationDate=1318035980000&api=v2){width="900"}
+![](https://wiki.jenkins.io/download/attachments/46335320/3.png?version=1&modificationDate=1318035980000&api=v2)
 
-![](https://wiki.jenkins.io/download/attachments/46335320/4.png?version=1&modificationDate=1318035980000&api=v2){width="900"}
+![](https://wiki.jenkins.io/download/attachments/46335320/4.png?version=1&modificationDate=1318035980000&api=v2)
 
-![](https://wiki.jenkins.io/download/attachments/46335320/5.png?version=1&modificationDate=1318035979000&api=v2){width="900"}
+![](https://wiki.jenkins.io/download/attachments/46335320/5.png?version=1&modificationDate=1318035979000&api=v2)
 
 #### How does the plug-in execute my automated tests?
 
@@ -270,7 +270,7 @@ not be fixed here.
 
 ## Sponsors
 
-[![](https://wiki.jenkins.io/download/attachments/46335320/logo1.png?version=1&modificationDate=1342969072000&api=v2){width="300"}](http://www.tupilabs.com/)
+[![](https://wiki.jenkins.io/download/attachments/46335320/logo1.png?version=1&modificationDate=1342969072000&api=v2)](http://www.tupilabs.com/)
 
 For commercial support, please get contact us
 via [@tupilabs](https://twitter.com/tupilabs)
