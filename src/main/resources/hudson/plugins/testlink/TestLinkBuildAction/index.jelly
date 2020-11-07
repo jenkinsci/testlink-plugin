@@ -3,7 +3,10 @@
 	xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson"
 	xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 	<l:layout norefresh="true">
-		<st:include it="${it.owner}" page="sidepanel.jelly" />
+        <j:set var="build" value="${it.owningRun}" />
+        <j:if test="${build != null}">
+		  <st:include it="${build}" page="sidepanel.jelly" optional="true" />
+        </j:if>
 		<l:main-panel>
 
 			<h1>${%TestLink Results}</h1>

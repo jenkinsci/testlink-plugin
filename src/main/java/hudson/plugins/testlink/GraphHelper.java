@@ -1,10 +1,5 @@
 package hudson.plugins.testlink;
 
-import hudson.util.ChartUtil.NumberOnlyBuildLabel;
-import hudson.util.ColorPalette;
-import hudson.util.ShiftedCategoryAxis;
-import hudson.util.StackedAreaRenderer2;
-
 import java.awt.Color;
 import java.io.IOException;
 
@@ -22,6 +17,11 @@ import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+
+import hudson.util.ChartUtil.NumberOnlyBuildLabel;
+import hudson.util.ColorPalette;
+import hudson.util.ShiftedCategoryAxis;
+import hudson.util.StackedAreaRenderer2;
 
 /**
  * Helper class for trend graph generation.
@@ -94,8 +94,7 @@ public class GraphHelper {
             public String generateToolTip(CategoryDataset dataset, int row, int column) {
                 NumberOnlyBuildLabel label = (NumberOnlyBuildLabel) dataset.getColumnKey(column);
                 TestLinkBuildAction build = label.build.getAction(TestLinkBuildAction.class);
-                TestLinkResult result = build.getResult();
-                Report report = result.getReport();
+                Report report = build.getReport();
 
                 switch (row) {
                 case 0:

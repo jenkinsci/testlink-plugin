@@ -23,15 +23,19 @@
  */
 package hudson.plugins.testlink;
 
-import hudson.model.Action;
-import hudson.model.AbstractBuild;
-import hudson.model.Run;
-import hudson.plugins.testlink.util.TestLinkHelper;
-
 import java.io.Serializable;
 
-import jenkins.model.RunAction2;
+import javax.annotation.CheckForNull;
+
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
+import org.kohsuke.stapler.StaplerRequest;
+
+import hudson.model.Run;
+import hudson.plugins.testlink.util.TestLinkHelper;
+import jenkins.model.RunAction2;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
@@ -46,19 +50,11 @@ public class TestLinkBuildAction implements RunAction2, Serializable, StaplerPro
     public static final String URL_NAME = "testLinkResult";
 
     private transient Run<?, ?> build;
-    private TestLinkResult result;
 
-    public TestLinkBuildAction(TestLinkResult result) {
-        this.result = result;
-    }
+    private final Report report;
 
-    /**
-     * @deprecated Use {@link #TestLinkBuildAction(TestLinkResult)} without build definition.
-     */
-    @Deprecated
-    public TestLinkBuildAction(AbstractBuild<?, ?> build, TestLinkResult result) {
-        this.build = build;
-        this.result = result;
+    public TestLinkBuildAction(Report report) {
+        this.report = report;
     }
 
     @Override
@@ -83,10 +79,6 @@ public class TestLinkBuildAction implements RunAction2, Serializable, StaplerPro
         return URL_NAME;
     }
 
-    public Object getTarget() {
-        return this.result;
-    }
-
     /**
      * Gets Run to which the action is attached.
      * @return Run instance
@@ -96,45 +88,30 @@ public class TestLinkBuildAction implements RunAction2, Serializable, StaplerPro
         return build;
     }
 
-    /**
-     * @deprecated Use {@link #getRun()}
-     */
-    public AbstractBuild<?, ?> getBuild() {
-        if (build instanceof AbstractBuild<?, ?>) {
-            return (AbstractBuild<?, ?>)build;
+    @Restricted(NoExternalUse.class) // only used from stapler/jelly
+    @CheckForNull
+    public Run<?,?> getOwningRun() {
+        StaplerRequest req = Stapler.getCurrentRequest();
+        if (req == null) {
+            return null;
         }
-        throw new IllegalStateException("Calling old API against a non-AbstractBuild run type. Run: " + build);
+        return req.findAncestorObject(Run.class);
     }
 
-    /**
-     * @return TestLink job execution result
-     */
-    public TestLinkResult getResult() {
-        return this.result;
+    public Report getReport() {
+        return this.report;
     }
 
     /**
      * @return Previous TestLink report
      */
     private Report getPreviousReport() {
-        TestLinkResult previousResult = this.getPreviousResult();
+        TestLinkBuildAction previousResult = this.getPreviousAction();
         Report previousReport = null;
         if (previousResult != null) {
             previousReport = previousResult.getReport();
         }
         return previousReport;
-    }
-
-    /**
-     * @return Previous TestLink job execution result
-     */
-    public TestLinkResult getPreviousResult() {
-        TestLinkBuildAction previousAction = this.getPreviousAction();
-        TestLinkResult previousResult = null;
-        if (previousAction != null) {
-            previousResult = previousAction.getResult();
-        }
-        return previousResult;
     }
 
     /**
@@ -154,14 +131,19 @@ public class TestLinkBuildAction implements RunAction2, Serializable, StaplerPro
      * @return Report summary
      */
     public String getSummary() {
-        return TestLinkHelper.createReportSummary(result.getReport(), this.getPreviousReport());
+        return TestLinkHelper.createReportSummary(this.getReport(), this.getPreviousReport());
     }
 
     /**
      * @return Detailed Report summary
      */
     public String getDetails() {
-        return TestLinkHelper.createReportSummaryDetails(result.getReport(), this.getPreviousReport());
+        return TestLinkHelper.createReportSummaryDetails(this.getReport(), this.getPreviousReport());
+    }
+
+    @Override
+    public Object getTarget() {
+        return this;
     }
 
 }

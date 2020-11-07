@@ -23,12 +23,6 @@
  */
 package hudson.plugins.testlink;
 
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.Run;
-import hudson.util.ChartUtil;
-import hudson.util.DataSetBuilder;
-
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -37,6 +31,12 @@ import java.util.Map;
 import org.jfree.chart.JFreeChart;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.Run;
+import hudson.util.ChartUtil;
+import hudson.util.DataSetBuilder;
 
 /**
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
@@ -197,8 +197,7 @@ public class TestLinkProjectAction extends AbstractTestLinkProjectAction {
             ChartUtil.NumberOnlyBuildLabel label = new ChartUtil.NumberOnlyBuildLabel((Run<?, ?>) build);
             TestLinkBuildAction action = build.getAction(getBuildActionClass());
             if (action != null) {
-                final TestLinkResult result = action.getResult();
-                final Report report = result.getReport();
+                final Report report = action.getReport();
                 dataset.add(report.getBlocked(), "Blocked", label);
                 dataset.add(report.getFailed(), "Failed", label);
                 dataset.add(report.getNotRun(), "Not Run", label);
