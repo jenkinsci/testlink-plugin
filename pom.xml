@@ -28,7 +28,9 @@
         <jenkins.version>2.249.3</jenkins.version>
         <java.level>8</java.level>
         <!-- TODO: remove once FindBugs issues are resolved -->
-        <findbugs.failOnError>false</findbugs.failOnError>
+        <spotbugs.failOnError>false</spotbugs.failOnError>
+        <spotbugs.effort>Max</spotbugs.effort>
+        <spotbugs.threshold>Medium</spotbugs.threshold>
     </properties>
 
     <issueManagement>
