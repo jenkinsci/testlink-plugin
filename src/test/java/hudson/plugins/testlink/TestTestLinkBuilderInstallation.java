@@ -24,7 +24,6 @@
 package hudson.plugins.testlink;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 
@@ -40,7 +39,6 @@ import com.cloudbees.plugins.credentials.CredentialsStore;
 import com.cloudbees.plugins.credentials.domains.Domain;
 
 import hudson.util.Secret;
-import jenkins.model.Jenkins;
 
 /**
  * Tests the TestLinkBuilderInstallation class.
