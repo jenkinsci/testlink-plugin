@@ -211,25 +211,6 @@ TestLink for each TAP Test Result with its execution status
 Want to see this plug-in in your language? Send us an e-mail and we will
 get in touch with the text that needs to be translated.
 
-## Compatibility Matrix
-
-The plug-in 1.0 and 1.1 versions were pilot projects that should be
-ignored. They have issues in distributed environments and depend on
-Maven. Please, consider updating your plug-in to the 2.0 version.
-
-We don't maintain the plug-in for Hudson. Issues happening in Hudson may
-not be fixed here.
-
-|          |        |        |        |             |             |             |             |        |               |        |        |                 |        |        |        |        |        |        |        |        |         |
-|----------|--------|--------|--------|-------------|-------------|-------------|-------------|--------|---------------|--------|--------|-----------------|--------|--------|--------|--------|--------|--------|--------|--------|---------|
-| Plugin   | 1.0    | 1.1    | 2.0    | 2.1         | 2.2         | 2.2.1       | 2.2.2       | 2.4    | 2.5           | 3.0    | 3.1    | 3.2             | 3.3    | 3.4    | 3.5    | 3.6    | 3.7    | 3.8    | 3.9    | 3.10   | 3.11    |
-| TestLink | 1.9.0  | 1.9.0  | 1.9.0  | 1.9.0       | 1.9.0       | 1.9.0       | 1.9.0       | 1.9.2  | 1.9.3         | 1.9.3  | 1.9.3  | 1.9.4 and 1.9.5 | 1.9.6  | 1.9.6  | 1.9.6  | 1.9.7  | 1.9.7  | 1.9.8  | 1.9.8  | 1.9.8+ | 1.9.14+ |
-| Jenkins  | 1.366+ | 1.366+ | 1.388+ | 1.388+      | 1.388+      | 1.388+      | 1.388+      | 1.388+ | 1.398+        | 1.398+ | 1.398+ | 1.466+          | 1.466+ | 1.466+ | 1.466+ | 1.466+ | 1.466+ | 1.466+ | 1.509+ | 1.509  | 1.642.3 |
-| Hudson   | 1.366  | 1.366  | 1.388  | 1.388-1.395 | 1.388-1.395 | 1.388-1.395 | 1.388-1.395 | ?      | Not supported | \-     | \-     | \-              | \-     | \-     | \-     | \-     | \-     | \-     | \-     | \-     | \-      |
-
--   3.7 is broken with 1.9.8 due to a backward incompatibility in
-    TestLink XML-RPC API, please use 3.8 or higher
-
 ## Resources
 
 1.  [Enabling SSL for Jenkins TestLink plugin in
