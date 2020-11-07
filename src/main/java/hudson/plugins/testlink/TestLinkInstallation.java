@@ -24,8 +24,18 @@
 package hudson.plugins.testlink;
 
 import java.io.Serializable;
+import java.util.List;
 
+import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.kohsuke.stapler.DataBoundConstructor;
+
+import com.cloudbees.plugins.credentials.CredentialsMatcher;
+import com.cloudbees.plugins.credentials.CredentialsMatchers;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+
+import hudson.security.ACL;
+import hudson.util.Secret;
+import jenkins.model.Jenkins;
 
 /**
  * Represents the TestLink installation in Hudson global configuration.
@@ -48,9 +58,9 @@ public class TestLinkInstallation implements Serializable {
     private String url;
 
     /**
-     * A valid user dev key
+     * Jenkins credentials ID (must contain the API Key)
      */
-    private String devKey;
+    private String credentialsId;
 
     /**
      * TestLink Java API properties
@@ -58,10 +68,10 @@ public class TestLinkInstallation implements Serializable {
     private String testLinkJavaAPIProperties;
 
     @DataBoundConstructor
-    public TestLinkInstallation(String name, String url, String devKey, String testLinkJavaAPIProperties) {
+    public TestLinkInstallation(String name, String url, String credentialsId, String testLinkJavaAPIProperties) {
         this.name = name;
         this.url = url;
-        this.devKey = devKey;
+        this.credentialsId = credentialsId;
         this.testLinkJavaAPIProperties = testLinkJavaAPIProperties;
     }
 
@@ -73,8 +83,21 @@ public class TestLinkInstallation implements Serializable {
         return this.url;
     }
 
+    public String getCredentialsId() {
+        return credentialsId;
+    }
+
     public String getDevKey() {
-        return this.devKey;
+        List<StringCredentials> lookupCredentials = CredentialsProvider.lookupCredentials(
+                StringCredentials.class, Jenkins.getInstance(), ACL.SYSTEM, null, null);
+        CredentialsMatcher credentialsMatcher = CredentialsMatchers.withId(credentialsId);
+        StringCredentials devKeyCredential = CredentialsMatchers.firstOrNull(lookupCredentials,
+                credentialsMatcher);
+        if (devKeyCredential != null) {
+            final Secret secret = devKeyCredential.getSecret();
+            return secret.getPlainText();
+        }
+        return null;
     }
 
     public String getTestLinkJavaAPIProperties() {

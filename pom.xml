@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>3.0</version>
+        <version>4.12</version>
         <relativePath />
     </parent>
 
@@ -25,10 +25,12 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jenkins.version>2.60.3</jenkins.version>
+        <jenkins.version>2.249.3</jenkins.version>
         <java.level>8</java.level>
         <!-- TODO: remove once FindBugs issues are resolved -->
-        <findbugs.failOnError>false</findbugs.failOnError>
+        <spotbugs.failOnError>false</spotbugs.failOnError>
+        <spotbugs.effort>Max</spotbugs.effort>
+        <spotbugs.threshold>Medium</spotbugs.threshold>
     </properties>
 
     <issueManagement>
@@ -251,12 +253,10 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.6</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.11</version>
         </dependency>
         <dependency>
             <groupId>xml-apis</groupId>
@@ -264,18 +264,6 @@
             <version>1.4.01</version>
             <type>jar</type>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-core</artifactId>
-            <version>1.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
-            <version>1.3</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -292,6 +280,16 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>junit</artifactId>
             <version>1.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>credentials</artifactId>
+            <version>2.3.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>plain-credentials</artifactId>
+            <version>1.7</version>
         </dependency>
     </dependencies>
 
