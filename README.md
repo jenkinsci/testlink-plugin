@@ -261,6 +261,7 @@ via [@tupilabs](https://twitter.com/tupilabs)
 ### Release 4.0 (????-??-??)
 
 1.  [JENKINS-64023](https://issues.jenkins-ci.org/browse/JENKINS-64023) - org.apache.commons.jelly.JellyTagException: jar:file:/var/lib/jenkins/plugins/testlink/WEB-INF/lib/testlink.jar!/hudson/plugins/testlink/TestLinkResult/index.jelly:6:57: No page found 'sidepanel.jelly' for class hudson.plugins.testlink.TestLinkResult
+2.  Added Credentials Plugin, and Plain Credentials Plugin as dependency, storing devKey in a string credential now, instead of using plain text
 
 ### Release 3.16 (2019-02-07)
 
