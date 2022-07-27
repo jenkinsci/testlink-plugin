@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
+import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -78,15 +79,7 @@ public abstract class ResultSeekerTestCase {
 	@Before
 	public void setUp() throws Exception {
 		project = j.createFreeStyleProject();
-		File temp = File.createTempFile("resultseeker", Long.toString(System.nanoTime()));
-		
-		if(!(temp.delete())) {
-			throw new IOException("Could not delete temp directory " + temp);
-		}
-		
-		if(!(temp.mkdir())) {
-			throw new IOException("Could not create temp directory " + temp);
-		}
+		File temp = Files.createTempDirectory("resultseeker" + Long.toString(System.nanoTime())).toFile();
 		
 		File workspaceFile = new File(temp, getResultsDirectory());
 		
