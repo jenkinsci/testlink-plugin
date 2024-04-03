@@ -211,16 +211,20 @@ public class TestLinkSite {
 				testPlan.getId(), 
 				testCase.getExecutionStatus(),
 				null, // List<TestCaseStepResult> steps
-				build.getId(), 
-				build.getName(), 
-				testCase.getNotes(), 
+				build.getId(),
+				build.getName(),
+				testCase.getNotes(),
+				null, // execution duration
 				null, // guess
 				null, // bug id
 				platformId, // platform id
 				platformName, // platform name
 				null, // custom fields
-				null);
-			
+				null, // overwrite
+				null, // user
+				null // timestamp
+				);
+
 			switch(testCase.getExecutionStatus()) {
     			case PASSED:
     				report.setPassed(report.getPassed()+1);
