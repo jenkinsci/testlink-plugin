@@ -133,20 +133,20 @@ public class TestLinkSite {
 	 */
 	public TestCase[] getAutomatedTestCases(String[] customFieldsNames) {
 		final TestCase[] testCases = this.api.getTestCasesForTestPlan(
-				getTestPlan().getId(), 
-				null, 
-				null, 
-				null, 
-				null,
-				null, 
-				null, 
+				getTestPlan().getId(),
+				null, // testCasesId
+				null, // buildId
+				null, // keywordsIds
+				null, // keywords
+				null, // executed
+				null, // assigned to
 				null, // execute status
-				ExecutionType.AUTOMATED, 
+				ExecutionType.AUTOMATED,
 				Boolean.TRUE,
-				TestCaseDetails.FULL);			
-		
+				TestCaseDetails.FULL);
+
 		ArrayList<TestCase> filteredTestcases = new ArrayList<TestCase>();
-		
+
 		for( final TestCase testCase : testCases ) {
 			testCase.setTestProjectId(getTestProject().getId());
 			testCase.setExecutionStatus(ExecutionStatus.NOT_RUN);
@@ -162,11 +162,12 @@ public class TestLinkSite {
 					testCase.getCustomFields().add(customField);
 				}
 			}
-			
-			if(platform == null || testCase.getPlatform().getName().equals(platform.getName()))
+
+			if(platform == null || testCase.getPlatform().getName().equals(platform.getName())) {
 				filteredTestcases.add(testCase);
+			}
 		}
-		
+
 		return filteredTestcases.toArray(new TestCase[filteredTestcases.size()]);
 	}
 
@@ -202,13 +203,21 @@ public class TestLinkSite {
 		    // platformId is set to null
 		    platformName = testCase.getPlatform(); // platform name
 		}
-		
+
 		if (testCase.getExecutionStatus() != null && !ExecutionStatus.NOT_RUN.equals(testCase.getExecutionStatus())) {
 			// Update Test Case status
+
+/* from Java API:
+ *  public ReportTCResultResponse reportTCResult(Integer testCaseId, Integer testCaseExternalId, Integer testPlanId,
+            ExecutionStatus status, List<TestCaseStepResult> steps, Integer buildId, String buildName, String notes,
+            Integer executionDuration, Boolean guess, String bugId, Integer platformId, String platformName,
+            Map<String, String> customFields, Boolean overwrite, String user, String timestamp)
+ */
+
 			final ReportTCResultResponse reportTCResultResponse = api.reportTCResult(
-				testCase.getId(), 
-				testCase.getInternalId(), 
-				testPlan.getId(), 
+				testCase.getId(),
+				testCase.getInternalId(),
+				testPlan.getId(),
 				testCase.getExecutionStatus(),
 				null, // List<TestCaseStepResult> steps
 				build.getId(),
